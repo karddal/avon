@@ -1,0 +1,153 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{xcolor}
+
+\setlength{\parskip}{0pt}
+\setlength{\parindent}{0pt}
+\setlist{noitemsep, topsep=2pt, partopsep=1pt, parsep=0pt}
+\usepackage[compact]{titlesec}
+\titlespacing{\section}{0pt}{8pt}{4pt}
+\titlespacing{\subsection}{0pt}{6pt}{3pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\thepage}
+\lhead{Meeting Agenda}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\title{\textbf{Meeting Agenda\\Continuous Assessment for Revision Control}}
+\date{}
+
+\begin{document}
+
+\maketitle
+\section*{Meeting Details}
+\begin{tabular}{ll}
+\textbf{Date:} & [TBD] \\
+\textbf{Time:} & [TBD] \\
+\textbf{Location:} & [TBD] \\
+\end{tabular}
+
+\vspace{0.5em}
+
+\textbf{Attendees:}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Clients:} [TBD]
+    \item \textbf{Developers:} Hrushikesh Emkay, Josh Jenkins, Yuxuan Wang, Mihaly Toth-Tarsoly, Jack Dempsey
+\end{itemize}
+
+\vspace{1em}
+
+\section*{Meeting Objectives}
+\begin{itemize}
+    \item Introduce team members and establish communication preferences
+    \item Review and clarify project requirements and scope
+    \item Discuss technical approach and architecture preferences
+    \item Align on timeline, milestones, and deliverables
+    \item Define next steps and action items
+\end{itemize}
+
+\vspace{1em}
+\section*{Agenda}
+
+\vspace{1em}
+
+\subsection*{1. Introductions and Welcome \hfill}
+\begin{itemize}[leftmargin=*]
+    \item Team introductions
+    \item Roles and responsibilities
+    \item Communication preferences
+\end{itemize}
+
+\vspace{2em}
+
+\subsection*{2. Project Overview \hfill}
+\begin{itemize}[leftmargin=*]
+    \item Overall queries about the project
+    \begin{itemize}
+        \item 
+    \end{itemize}
+    \item Target Users and Key Stakeholders
+    \begin{itemize}
+        \item Is this application aimed at just computer science students or students from other courses?
+    \end{itemize}
+\end{itemize}
+
+\vspace{2em}
+
+\subsection*{3. Requirements and Scope \hfill}
+\begin{itemize}[leftmargin=*]
+    \item Core features and functionality
+    \begin{itemize}
+        \item What features are non-negotiable within the final product?
+    \end{itemize}
+    \item Minimal Viable Product (MVP)
+    \begin{itemize}
+        \item What are the functional expectations for the MVP?
+    \end{itemize}
+    \item Nice-to-have items
+    \begin{itemize}
+        \item What features would a perfect solution contain?
+    \end{itemize}
+    \item Integration requirements
+    \begin{itemize}
+        \item Are there applications with which the software will have to integrate with?
+    \end{itemize}
+\end{itemize}
+
+\vspace{2em}
+
+\subsection*{4. Technical Discussion \hfill}
+\begin{itemize}[leftmargin=*]
+    \item Proposed technology stack
+    \begin{itemize}
+        \item Is there a preferred technology stack for the project?
+    \end{itemize}
+    \item Existing systems
+    \begin{itemize}
+        \item Are we building this application from scratch or adding onto an existing system?
+    \end{itemize}
+    \item Security and compliance requirements
+    \begin{itemize}
+        \item Do you have any security and compliance concerns?
+        \item We are already aware of these:
+    \end{itemize}
+    \item Performance and scalability needs
+    \begin{itemize}
+        \item What size of target audience is this application supposed to cater for?
+    \end{itemize}
+\end{itemize}
+
+\vspace{2em}
+
+\subsection*{5. Timeline and Milestones \hfill}
+\begin{itemize}[leftmargin=*]
+    \item Project phases and key milestones
+    \begin{itemize}
+        \item Minimal Viable Product (MVP) Release: 20th November
+        \item Beta Release: Week 17
+        \item Final Release: Week 24
+    \end{itemize}
+    \item Are these alright as rough dates, is there any reason why feedback couldn't be given on these dates?
+\end{itemize}
+
+\vspace{2em}
+
+\subsection*{7. Open Questions and Discussion \hfill }
+\begin{itemize}[leftmargin=*]
+    \item 
+    \item 
+    \item 
+\end{itemize}
+
+\vspace{1em}
+
+\section*{Follow-up}
+\textbf{Next Meeting:} [Date , time and Location] \\
+\textbf{Availability:} [Available for consistent meetings and Feedback Sessions?]
+
+\end{document}
