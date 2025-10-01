@@ -23,7 +23,7 @@
 ## To-Do List
 
 ## Next Meeting
-**Date:**   <DATE>
+**Date:**   <NEXTDATE>
 
 **Time:**   12:00
 
