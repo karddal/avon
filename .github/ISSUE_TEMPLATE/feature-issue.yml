@@ -1,0 +1,36 @@
+name: Feature Issue
+description: Issue for adding a new feature or enhancing an existing feature.
+title: "[Feature] - <ADD TITLE HERE>"
+labels: ["enhancement"]
+projects: ["spe-uob/2025-ContinuousAssessment"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please fill in the following information regarding your issue.
+  - type: textarea
+    id: feature-details
+    attributes:
+      label: "Feature Details"
+      description: "Describe the details of the feature you are adding."
+      placeholder: "The feature is..."
+    validations:
+      required: true
+  - type: textarea
+    id: additional-information
+    attributes:
+      label: "Additional Information"
+      description: "Describe any additional information required. "
+      placeholder: "Additional information..."
+    validations:
+      required: false
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "Checklist"
+      description: "Tasks that must be completed before submitting issue"
+      options:
+        - label: "I have added a comprehensive description of my new feature."
+          required: true
+        - label: "I have added all issue metadata, including: assignees, labels, priority, size, start date, milestone"
+          required: true
