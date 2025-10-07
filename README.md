@@ -25,28 +25,31 @@
 
 ## Important Links
 
-Figma - Logo - Important - Docs - Flowcharts - ER Diagrams - [Kanban Board](https://github.com/orgs/spe-uob/projects/309/views/1?layout_template=board)
+[Figma](https://www.figma.com/design/0GAtKL9idVkkgqkVF0u59z/CARC?node-id=0-1&p=f&t=6Tt63sBXywwS4rsh-0) - Logo - Important Docs - Flowcharts - ER Diagrams - [Kanban Board](https://github.com/orgs/spe-uob/projects/309/views/1?layout_template=board)
 
 ## Tech Stack
 
 #### Frontend
-
+[Next.js
+](https://nextjs.org/)
 #### Backend
+[Springboot](https://spring.io/projects/spring-boot)
 
 #### Tools & Libraries
+Easy command running - [Just](https://github.com/casey/just)
 
 #### Servers
 
 #### Database
 
 #### Linter(s)
+Typescript - [ESLint](https://eslint.org/)
 
 #### CI/CD
 
 #### Testing
 
 #### Caching [?]
-
 
 ## Installation
 
@@ -108,3 +111,7 @@ As a *Lecturer*, I want a way to view the timeline of updates in a coursework, t
 | Yuxuan Wang         | [om23078@bristol.ac.uk](mailto:om23078@bristol.ac.uk)   |
 | Mihaly Toth-Tarsoly | [wq24423@bristol.ac.uk](mailto:WQ24423@bristol.ac.uk)   |
 | Jack Dempsey        | [wm24026@bristol.ac.uk](mailto:WM24026@bristol.ac.uk)   |
+
+## Contributing
+See [CONTRIBUTING.md](CONTRIBUTING.md)
+
