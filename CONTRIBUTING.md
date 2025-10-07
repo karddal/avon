@@ -10,7 +10,7 @@ This is a quick guide on how to contribute to Avon.
 ### Pull Requests
 Before opening a Pull Request, please make sure you have done the following:
 - Made a new branch for your feature/change (use a descriptive name)
-- Keep the PR consice, only to the feature you plan to add.
+- Keep the PR concice, only to the feature you plan to add.
 - Test your code.
 - If fixing an issue, make sure to state that your PR closes it.
 
