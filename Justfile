@@ -22,4 +22,16 @@ fix-be:
 
 fixit: fix-fe fix-be
 
+test-be:
+    @echo "Testing backend..."
+    cd backend && ./gradlew test
+
+test: test-be
+
+run-fe:
+    cd frontend && bun run dev
+
+run-be:
+    cd backend && ./gradlew bootRun
+
 
