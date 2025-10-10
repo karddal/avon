@@ -20,15 +20,15 @@
 ## Checklist
 <!-- Place an X between the [], like this: [X]. -->
 
-- [] I have linked all related issues.
-- [] I have added all relevant pull request metadata.
-- [] I have performed a self-review of my code.
-- [] I have run ```just check``` and/or ```just fixit``` to ensure the code style is correct.
-- [] I have added comments to my code.
-- [] I have added tests to cover my changes.
-- [] All new and existing tests passed. (run ```just test```)
-- [] I have updated the documentation if necessary.
-- [] My changes cause no new warnings or errors.
+- [ ] I have linked all related issues.
+- [ ] I have added all relevant pull request metadata.
+- [ ] I have performed a self-review of my code.
+- [ ] I have run ```just check``` and/or ```just fixit``` to ensure the code style is correct.
+- [ ] I have added comments to my code.
+- [ ] I have added tests to cover my changes.
+- [ ] All new and existing tests passed. (run ```just test```)
+- [ ] I have updated the documentation if necessary.
+- [ ] My changes cause no new warnings or errors.
 
 ## Additional comments
 <!-- Any additional comments / info -->
