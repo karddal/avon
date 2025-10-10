@@ -7,12 +7,12 @@ body:
   - type: markdown
     attributes:
       value: |
-        Please fill in the following information regarding your issue.
+        Please fill in the following information regarding your issue. Please take your time and include as much detail as possible, as it will help everyone that works on it.
   - type: textarea
     id: feature-details
     attributes:
       label: "Bug Details"
-      description: "Describe the details of the bug you are reporting. Include the actual and expected behaviour."
+      description: "Describe the details of the bug you are reporting. Include the actual and expected behaviour. "
       placeholder: "The bug is..."
     validations:
       required: true
@@ -20,7 +20,7 @@ body:
     id: reproduction-steps
     attributes:
       label: "Reproduction Steps"
-      description: "Describes the steps needed to be taken to reproduce the bug."
+      description: "Describes the steps needed to be taken to reproduce the bug. This is crucial!"
       placeholder: "The steps to reproduce this bug are..."
     validations:
       required: true
@@ -28,7 +28,7 @@ body:
     id: environment
     attributes:
       label: "Environment Details"
-      description: "Please provide information about the environment you are experiencing this bug in, including: OS, browser, etc."
+      description: "Please provide information about the environment that the bug occurred in. This includes browser, version, operating system etc."
       placeholder: "The environment details are..."
     validations:
       required: true
@@ -46,7 +46,7 @@ body:
     id: error-log
     attributes:
       label: "Error logs"
-      description: "If applicable, copy and paste the error logs that were displayed."
+      description: "If applicable, copy and paste the error logs that were displayed. This would be the Spring logs for backend, or the Browser console / terminal logs for frontend."
       render: shell
       placeholder: "Error logs..."
     validations:
@@ -67,5 +67,6 @@ body:
       options:
         - label: "I have added a comprehensive description of my issue and filled out all relevant fields."
           required: true
-        - label: "I have added all issue metadata, including: assignees, labels, priority, size, start date, milestone"
+        - label: "I have added all metadata, labels, assignees, project, milestones, dates etc."
           required: true
+        - label: "I have ensured that the issue is reproducible using the instructions I have provided."
