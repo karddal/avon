@@ -1,0 +1,18 @@
+# MacOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+
+# Logs
+*.log
+
+# IntellIJ
+.idea/
+*.iml
+*.iws
+out/
+
+# VSCode
+.vscode/
+
