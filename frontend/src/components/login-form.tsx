@@ -1,13 +1,6 @@
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Field,
   FieldDescription,
@@ -16,7 +9,7 @@ import {
   FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 export function LoginForm({
   className,
@@ -77,7 +70,7 @@ export function LoginForm({
                 <div className="flex items-center">
                   <FieldLabel htmlFor="password">Password</FieldLabel>
                   <a
-                    href="#"
+                    href="/login"
                     className="ml-auto text-sm underline-offset-4 hover:underline"
                   >
                     Forgot your password?
@@ -93,8 +86,8 @@ export function LoginForm({
               <Field>
                 <Button type="submit">Login</Button>
                 <FieldDescription className="text-center flex flex-row justify-center gap-4">
-                  <a href="#">Contact Us</a>
-                  <a href="#">Privacy Statement</a>
+                  <a href="/login">Contact Us</a>
+                  <a href="/login">Privacy Statement</a>
                 </FieldDescription>
               </Field>
             </FieldGroup>
