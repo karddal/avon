@@ -15,17 +15,17 @@ export default async function UnitPage({
   // const desc = getDescFromUnit(slug);
 
   return (
-    <div className="flex flex-col gap-2 overflow-y-hidden">
+    <div className="flex flex-col gap-2 min-h-0">
       <div className="flex flex-col col-span-3">
         <div className="font-semibold text-5xl text-shadow-2xs mb-4">
           <span className="font-light">{slug} </span>
           {name}
         </div>
-        <div className="w-full h-1 bg-accent-foreground"></div>
+        <div className="w-full bg-accent-foreground"></div>
       </div>
 
-      <section className="grid gap-2 sm:grid-cols-1 lg:grid-cols-3">
-        <div className="flex flex-col col-span-2 gap-2">
+      <section className="grid gap-2 sm:grid-cols-1 lg:grid-cols-3 min-h-0">
+        <div className="flex flex-col col-span-2 gap-2 min-h-0">
           <Card className="flex flex-col">
             <CardTitle className="font-semibold text-2xl px-6">
               Description
@@ -49,53 +49,71 @@ export default async function UnitPage({
               </p>
             </CardContent>
           </Card>
-          <Card className="flex flex-col">
-            <CardTitle className="font-semibold text-2xl px-6">
-              Coursework
+          <Card className="flex flex-col min-h-0 mb-4">
+            <CardTitle>
+              <div className="flex font-semibold text-2xl px-6">Coursework</div>
+              <Tabs defaultValue="account" className="w-[400px] px-6">
+                <TabsList>
+                  <TabsTrigger value="account">Ongoing</TabsTrigger>
+                  <TabsTrigger value="password">Finished</TabsTrigger>
+                </TabsList>
+              </Tabs>
             </CardTitle>
             <CardContent>
-              <div className="flex flex-row gap-2 mb-4">
-                {/* <div className="border text-foreground bg-accent-foreground/10 px-2">
-                  Ongoing
+              <div className="gap-2 flex-1 flex-col min-h-0 overflow-y-scroll">
+                <div className="flex flex-col gap-2 mb-4 min-h-0 overflow-y-scroll">
+                  <Suspense fallback={<Skeleton />}>
+                    <Card className="gap-2 p-0 bg-accent w-full text-2xl font-normal">
+                      <p className="p-4">Power to the People</p>
+                      <div className="w-full h-1 bg-pink-500"></div>
+                    </Card>
+                    <Card className="gap-2 p-0 bg-accent w-full text-2xl font-normal">
+                      <p className="p-4">Simplify</p>
+                      <div className="w-full h-1 bg-pink-500"></div>
+                    </Card>
+                    <Card className="gap-2 p-0 bg-accent w-full text-2xl font-normal">
+                      <p className="p-4">List</p>
+                      <div className="w-full h-1 bg-blue-500"></div>
+                    </Card>
+                    <Card className="gap-2 p-0 bg-accent w-full text-2xl font-normal">
+                      <p className="p-4">Sketch</p>
+                      <div className="w-full h-1 bg-blue-500"></div>
+                    </Card>
+                    <Card className="gap-2 p-0 bg-accent w-full text-2xl font-normal">
+                      <p className="p-4">Sketch</p>
+                      <div className="w-full h-1 bg-blue-500"></div>
+                    </Card>
+                    <Card className="gap-2 p-0 bg-accent w-full text-2xl font-normal">
+                      <p className="p-4">Sketch</p>
+                      <div className="w-full h-1 bg-blue-500"></div>
+                    </Card>
+                    <Card className="gap-2 p-0 bg-accent w-full text-2xl font-normal">
+                      <p className="p-4">Sketch</p>
+                      <div className="w-full h-1 bg-blue-500"></div>
+                    </Card>
+                    <Card className="gap-2 p-0 bg-accent w-full text-2xl font-normal">
+                      <p className="p-4">Sketch</p>
+                      <div className="w-full h-1 bg-blue-500"></div>
+                    </Card>
+                    <Card className="gap-2 p-0 bg-accent w-full text-2xl font-normal">
+                      <p className="p-4">Sketch</p>
+                      <div className="w-full h-1 bg-blue-500"></div>
+                    </Card>
+                    <Card className="gap-2 p-0 bg-accent w-full text-2xl font-normal">
+                      <p className="p-4">Sketch</p>
+                      <div className="w-full h-1 bg-blue-500"></div>
+                    </Card>
+                    <Card className="gap-2 p-0 bg-accent w-full text-2xl font-normal">
+                      <p className="p-4">Sketch</p>
+                      <div className="w-full h-1 bg-blue-500"></div>
+                    </Card>
+                  </Suspense>
                 </div>
-                <div className="border text-foreground bg-accent px-2">
-                  Finished
-                </div> */}
-                <Tabs defaultValue="account" className="w-[400px]">
-                  <TabsList>
-                    <TabsTrigger value="account">Ongoing</TabsTrigger>
-                    <TabsTrigger value="password">Finished</TabsTrigger>
-                  </TabsList>
-                </Tabs>
-              </div>
-              <div className="gap-2 overflow-y-auto flex flex-col h-96">
-                <Suspense fallback={<Skeleton />}>
-                  <Card className="gap-2 p-0 bg-accent w-full text-2xl font-normal">
-                    <p className="p-4">Power to the People</p>
-                    <div className="w-full h-1 bg-pink-500"></div>
-                  </Card>
-                  <Card className="gap-2 p-0 bg-accent w-full text-2xl font-normal">
-                    <p className="p-4">Simplify</p>
-                    <div className="w-full h-1 bg-pink-500"></div>
-                  </Card>
-                  <Card className="gap-2 p-0 bg-accent w-full text-2xl font-normal">
-                    <p className="p-4">List</p>
-                    <div className="w-full h-1 bg-blue-500"></div>
-                  </Card>
-                  <Card className="gap-2 p-0 bg-accent w-full text-2xl font-normal">
-                    <p className="p-4">Sketch</p>
-                    <div className="w-full h-1 bg-blue-500"></div>
-                  </Card>
-                  <Card className="gap-2 p-0 bg-accent w-full text-2xl font-normal">
-                    <p className="p-4">Sketch</p>
-                    <div className="w-full h-1 bg-blue-500"></div>
-                  </Card>
-                </Suspense>
               </div>
             </CardContent>
           </Card>
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 mb-4">
           <Card className="flex flex-col lg:col-span-1">
             <CardTitle className="font-semibold text-2xl px-6">
               Unit Staff
