@@ -1,0 +1,180 @@
+import { Suspense } from "react";
+import { Avatar } from "@/components/ui/avatar";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+export default async function UnitPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  // const name = getNameFromUnit(slug);
+  const name = "Imperative and Functional Programming";
+  // const desc = getDescFromUnit(slug);
+
+  return (
+    <div className="flex flex-col gap-2 overflow-y-hidden">
+      <div className="flex flex-col col-span-3">
+        <div className="font-semibold text-5xl text-shadow-2xs mb-4">
+          <span className="font-light">{slug} </span>
+          {name}
+        </div>
+        <div className="w-full h-1 bg-accent-foreground"></div>
+      </div>
+
+      <section className="grid gap-2 sm:grid-cols-1 lg:grid-cols-3">
+        <div className="flex flex-col col-span-2 gap-2">
+          <Card className="flex flex-col">
+            <CardTitle className="font-semibold text-2xl px-6">
+              Description
+            </CardTitle>
+            <CardContent>
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                Suspendisse mollis pellentesque arcu ac tempor. Cras iaculis
+                dictum ullamcorper. Vivamus at pulvinar lectus. Pellentesque
+                fringilla sollicitudin semper. Cras mi odio, cursus a risus
+                eget, facilisis interdum ligula. Sed vestibulum risus in
+                vulputate dictum. Nulla viverra purus in sem dignissim tempus.
+                Vestibulum pellentesque aliquam feugiat. Vestibulum sed justo eu
+                sem consequat luctus. Nulla ex enim, iaculis eu tincidunt vel,
+                maximus ac ante. Pellentesque habitant morbi tristique senectus
+                et netus et malesuada fames ac turpis egestas. Proin sed mauris
+                velit. Phasellus tempor consequat nisi sed rutrum. Nullam rutrum
+                facilisis arcu, id rhoncus quam pulvinar a. Integer quis erat
+                quis tortor pharetra interdum. Nam ut arcu euismod tellus
+                sagittis facilisis et a nisl.
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="flex flex-col">
+            <CardTitle className="font-semibold text-2xl px-6">
+              Coursework
+            </CardTitle>
+            <CardContent>
+              <div className="flex flex-row gap-2 mb-4">
+                {/* <div className="border text-foreground bg-accent-foreground/10 px-2">
+                  Ongoing
+                </div>
+                <div className="border text-foreground bg-accent px-2">
+                  Finished
+                </div> */}
+                <Tabs defaultValue="account" className="w-[400px]">
+                  <TabsList>
+                    <TabsTrigger value="account">Ongoing</TabsTrigger>
+                    <TabsTrigger value="password">Finished</TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </div>
+              <div className="gap-2 overflow-y-auto flex flex-col h-96">
+                <Suspense fallback={<Skeleton />}>
+                  <Card className="gap-2 p-0 bg-accent w-full text-2xl font-normal">
+                    <p className="p-4">Power to the People</p>
+                    <div className="w-full h-1 bg-pink-500"></div>
+                  </Card>
+                  <Card className="gap-2 p-0 bg-accent w-full text-2xl font-normal">
+                    <p className="p-4">Simplify</p>
+                    <div className="w-full h-1 bg-pink-500"></div>
+                  </Card>
+                  <Card className="gap-2 p-0 bg-accent w-full text-2xl font-normal">
+                    <p className="p-4">List</p>
+                    <div className="w-full h-1 bg-blue-500"></div>
+                  </Card>
+                  <Card className="gap-2 p-0 bg-accent w-full text-2xl font-normal">
+                    <p className="p-4">Sketch</p>
+                    <div className="w-full h-1 bg-blue-500"></div>
+                  </Card>
+                  <Card className="gap-2 p-0 bg-accent w-full text-2xl font-normal">
+                    <p className="p-4">Sketch</p>
+                    <div className="w-full h-1 bg-blue-500"></div>
+                  </Card>
+                </Suspense>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        <div className="flex flex-col gap-2">
+          <Card className="flex flex-col lg:col-span-1">
+            <CardTitle className="font-semibold text-2xl px-6">
+              Unit Staff
+            </CardTitle>
+            <CardContent className="flex flex-col gap-2">
+              <Card className="p-0 bg-accent flex flex-row items-center gap-4">
+                <Avatar className="bg-slate-300 size-16 rounded-none"></Avatar>
+                <div className="flex flex-col">
+                  <div className="text-xl font-semibold">Sion Hannuna</div>
+                  <div className="font-light">
+                    Senior Lecturer, School of Computer Science
+                  </div>
+                </div>
+              </Card>
+              <Card className="p-0 bg-accent flex flex-row items-center gap-4">
+                <Avatar className="bg-slate-300 size-16 rounded-none"></Avatar>
+                <div className="flex flex-col">
+                  <div className="text-xl font-semibold">Sion Hannuna</div>
+                  <div className="font-light">
+                    Senior Lecturer, School of Computer Science
+                  </div>
+                </div>
+              </Card>
+              <Card className="p-0 bg-accent flex flex-row items-center gap-4">
+                <Avatar className="bg-slate-300 size-16 rounded-none"></Avatar>
+                <div className="flex flex-col">
+                  <div className="text-xl font-semibold">Sion Hannuna</div>
+                  <div className="font-light">
+                    Senior Lecturer, School of Computer Science
+                  </div>
+                </div>
+              </Card>
+            </CardContent>
+          </Card>
+          <Card className="flex flex-col lg:col-span-1">
+            <CardTitle className="font-semibold text-2xl px-6">
+              Announcements
+            </CardTitle>
+            <CardContent className="flex flex-col gap-2">
+              <Card className="py-0 bg-accent flex flex-row items-center gap-4">
+                <div className="flex flex-row">
+                  <div className="bg-red-500 h-auto w-1"></div>
+                  <div className="flex flex-col px-2">
+                    <div className="text-xl font-semibold">New coursework!</div>
+                    <div className="font-light">
+                      <span className="font-bold">Sketch</span> has been
+                      released. Get started now!
+                    </div>
+                  </div>
+                </div>
+              </Card>
+              <Card className="py-0 bg-accent flex flex-row items-center gap-4">
+                <div className="flex flex-row">
+                  <div className="bg-red-500 h-auto w-1"></div>
+                  <div className="flex flex-col px-2">
+                    <div className="text-xl font-semibold">New coursework!</div>
+                    <div className="font-light">
+                      <span className="font-bold">Sketch</span> has been
+                      released. Get started now!
+                    </div>
+                  </div>
+                </div>
+              </Card>
+              <Card className="py-0 bg-accent flex flex-row items-center gap-4">
+                <div className="flex flex-row">
+                  <div className="bg-red-500 h-auto w-1"></div>
+                  <div className="flex flex-col px-2">
+                    <div className="text-xl font-semibold">New coursework!</div>
+                    <div className="font-light">
+                      <span className="font-bold">Sketch</span> has been
+                      released. Get started now!
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+    </div>
+  );
+}
