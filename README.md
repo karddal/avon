@@ -22,7 +22,6 @@
 
 ## Overview
 
-
 ## Important Links
 
 [Figma](https://www.figma.com/design/0GAtKL9idVkkgqkVF0u59z/CARC?node-id=0-1&p=f&t=6Tt63sBXywwS4rsh-0) - Logo - Important Docs - Flowcharts - ER Diagrams - [Kanban Board](https://github.com/orgs/spe-uob/projects/309/views/1?layout_template=board)
@@ -43,7 +42,7 @@ Easy command running - [Just](https://github.com/casey/just)
 #### Database
 
 #### Linter(s)
-Typescript - [ESLint](https://eslint.org/)
+Typescript - [Biome](https://biomejs.dev/)
 
 #### CI/CD
 
@@ -61,7 +60,7 @@ Typescript - [ESLint](https://eslint.org/)
 
 ## Stakeholders
 
-**Client**: [School of Computer Science (Mike Fraser and Tilo Berghardt)](https://spe-uob.github.io/options-system/projects/continuous-assessment-with-revision-control)
+**Client**: [School of Computer Science (Mike Fraser and Tilo Berghardt)](https://www.bristol.ac.uk/science-engineering/schools/computer-science/)
 
 ### Typical Stakeholders
 
