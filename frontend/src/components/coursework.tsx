@@ -33,7 +33,7 @@ const colourMap: colourMap = {
 export default function Coursework({ props }: { props: courseworkData }) {
 	return (
 		<>
-            <Link href="/units">
+            <Link href="/coursework">
                     <div className={`${colourMap[props.color]} w-full h-2`}></div>
                     <Card className="bg-muted flex flex-col p-2 hover:bg-foreground/10 ">
                             <div className="flex flex-row justify-between">
