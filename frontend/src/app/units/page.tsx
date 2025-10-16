@@ -18,7 +18,7 @@ export default function UnitPage() {
 		{ name: "Imperative and Functional Programming", code: "100016", year: 2025, finished: true, color: "blue", mark: 0, courseworkLive: false },
 		{ name: "Computer Architecure", code: "100015", year: 2025, finished: false, color: "amber", mark: 0, courseworkLive: false },
 		{ name: "Mathematics for Computer Science", code: "100014", year: 2025, finished: true, color: "teal", mark: 0, courseworkLive: false },
-		{ name: "Object Oriented Programming and Algorithms", code: "100018", year: 2025, finished: false, color: "emerald", mark: 0, courseworkLive: false },
+		{ name: "Object Oriented Programming and Algorithms", code: "100018", year: 2025, finished: false, color: "emerald", mark: 0, courseworkLive: true },
 		{ name: "Software Tools", code: "100012", year: 2025, finished: false, color: "rose", mark: 0, courseworkLive: false },
 		{ name: "Mathematics for Computer Science B", code: "100013", year: 2025, finished: false, color: "purple", mark: 0, courseworkLive: false },
 	]
@@ -38,6 +38,7 @@ export default function UnitPage() {
 							<TabsTrigger className="bg-accent" value="ongoing">Ongoing</TabsTrigger>
 							<TabsTrigger className="bg-accent" value="finished">Finished</TabsTrigger>
 						</div>
+
 					</TabsList>
 					<TabsContent value="ongoing">
 						<section className="grid gap-4 grid-cols-2">

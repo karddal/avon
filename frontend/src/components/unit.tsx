@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Card } from "./ui/card";
+import { Dot } from "lucide-react";
 
 type unitData = {
 	name: string;
@@ -31,6 +32,8 @@ const colourMap: colourMap = {
 
 export default function Unit({ props }: { props: unitData }) {
 
+	const liveCoursework = props.courseworkLive ? "" : "hidden"
+
 	return (
 		<>
 			<Link href="/units">
@@ -39,7 +42,13 @@ export default function Unit({ props }: { props: unitData }) {
 					<div className="flex flex-row items-center justify-between w-full">
 						<div className="flex flex-col">
 							<div className="flex flex-col">
-								<div className="text-sm">Unit Code: {props.code}</div>
+								<div className="flex flex-row text-sm align-center items-center">
+									<p>Unit Code: {props.code}</p>
+									<div className={`${liveCoursework} flex flex-row justify-center items-center`}>
+										<Dot color="#ff0000" size={30} strokeWidth={3} fill="#ff0000" />
+										<p className="-ml-2 text-red-600">Coursework Live</p>
+									</div>
+								</div>
 								<div className="text-lg">{props.name}</div>
 							</div>
 							<br />
