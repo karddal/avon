@@ -28,12 +28,12 @@ export default function courseworkListing() {
 					</div>
 				</TabsList>
 				<TabsContent value="ongoing">
-					<section className="grid gap-4 grid-cols-2">
+					<section className="grid gap-4 grid-cols-1 lg:grid-cols-2">
 						{ongoingUnits}
 					</section>
 				</TabsContent>
 				<TabsContent value="finished">
-					<section className="grid gap-4 grid-cols-2">
+					<section className="grid gap-4 grid-cols-1 lg:grid-cols-2">
 						{finishedUnits}
 					</section>
 				</TabsContent>
