@@ -12,12 +12,25 @@ type unitData = {
 
 }
 
+
+const colourMap: {} = {
+	red: "bg-red-400",
+	blue: "bg-red-400",
+	green: "bg-green-400",
+	purple: "bg-purple-400",
+	amber: "bg-amber-400",
+	teal: "bg-teal-600",
+	emerald: "bg-emerald-400",
+	fuchsia: "bg-fuchsia-400",
+	rose: "bg-rose-700"
+}
+
 export default function Unit({ props }: { props: unitData }) {
 
 	return (
 		<>
 			<Link href="/units">
-				<div className={`bg-${props.color}-400 w-full h-2`}></div>
+				<div className={`${colourMap[props.color]} w-full h-2`}></div>
 				<Card className="bg-muted flex flex-row p-2 h-18 items-center hover:bg-foreground/10">
 					<div className="flex flex-row items-center justify-between w-full">
 						<div className="flex flex-col">
