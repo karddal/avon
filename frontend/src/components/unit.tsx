@@ -12,17 +12,21 @@ type unitData = {
 
 }
 
+// TODO: Make a more concrete type
+type colourMap = {
+	[key: string]: string
+}
 
-const colourMap: {} = {
-	red: "bg-red-400",
-	blue: "bg-red-400",
-	green: "bg-green-400",
-	purple: "bg-purple-400",
-	amber: "bg-amber-400",
-	teal: "bg-teal-600",
-	emerald: "bg-emerald-400",
-	fuchsia: "bg-fuchsia-400",
-	rose: "bg-rose-700"
+const colourMap: colourMap = {
+	"red": "bg-red-400",
+	"blue": "bg-red-400",
+	"green": "bg-green-400",
+	"purple": "bg-purple-400",
+	"amber": "bg-amber-400",
+	"teal": "bg-teal-600",
+	"emerald": "bg-emerald-400",
+	"fuchsia": "bg-fuchsia-400",
+	"rose": "bg-rose-700"
 }
 
 export default function Unit({ props }: { props: unitData }) {
