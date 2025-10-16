@@ -1,92 +1,43 @@
-import Link from "next/link";
-import { Card } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Coursework from "@/components/coursework";
 
 export default function courseworkListing() {
-  return (
-    <div className="space-y-6">
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Link href="/units">
-          <div className="bg-amber-400 w-full h-2"></div>
-          <Card className="bg-muted flex flex-col p-2 hover:bg-foreground/10">
-                <div className="flex flex-row justify-between">
-                    <p className="text-2xl font-semibold">
-                        Teddy Bear
-                    </p>
-                    <p className="text-2xl text-muted-foreground">
-                        Due: 20/12/2024
-                    </p>
-                </div>
-                <div className="flex flex-row gap-4">
-                    <Progress value={45} className="w-3/5 mt-2"/>
-                    <strong>70%</strong>
-                </div>
-          </Card>
-        </Link>
-        <Link href="/units">
-          <div className="bg-purple-400 w-full h-2"></div>
-          <Card className="bg-muted flex flex-row p-2 items-center hover:bg-foreground/10">
-            <div className="flex flex-row items-center justify-between w-full">
-              <div className="flex flex-col">
-                <p className="text-2xl flex flex-row gap-2 items-center">
-                  Unit Name
-                </p>
-                <br />
-                <div className="flex flex-row gap-4">
-                  <p>
-                    <strong>1</strong> coursework assigned
-                  </p>
-                  <p>
-                    Current Mark: <strong>70%</strong>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </Link>
-        <Link href="/units">
-          <div className="bg-red-400 w-full h-2"></div>
-          <Card className="bg-muted flex flex-row p-2 items-center hover:bg-foreground/10">
-            <div className="flex flex-row items-center justify-between w-full">
-              <div className="flex flex-col">
-                <p className="text-2xl flex flex-row gap-2 items-center">
-                  Unit Name
-                </p>
-                <br />
-                <div className="flex flex-row gap-4">
-                  <p>
-                    <strong>1</strong> coursework assigned
-                  </p>
-                  <p>
-                    Current Mark: <strong>70%</strong>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </Link>
-        <Link href="/units">
-          <div className="bg-blue-400 w-full h-2"></div>
-          <Card className="bg-muted flex flex-row p-2 items-center hover:bg-foreground/10">
-            <div className="flex flex-row items-center justify-between w-full">
-              <div className="flex flex-col">
-                <p className="text-2xl flex flex-row gap-2 items-center">
-                  Unit Name
-                </p>
-                <br />
-                <div className="flex flex-row gap-4">
-                  <p>
-                    <strong>1</strong> coursework assigned
-                  </p>
-                  <p>
-                    Current Mark: <strong>70%</strong>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </Link>
-      </section>
-    </div>
-  );
+    
+    const apiCall = [
+
+		{ name: "List", code: "100016", year: 2025, finished: true, color: "blue", dueDate: "20/9/2025", testsPassed: 50, totalTests: 50},
+		{ name: "Sketch", code: "100016", year: 2025, finished: true, color: "amber", dueDate: "20/12/2025", testsPassed: 58, totalTests: 58},
+		{ name: "Power to the People", code: "100016", year: 2025, finished: false, color: "teal", dueDate: "18/10/2025", testsPassed: 13, totalTests: 68},
+		{ name: "Scotland Yard", code: "100018", year: 2025, finished: false, color: "emerald", dueDate: "16/11/2025", testsPassed: 21, totalTests: 43},
+		{ name: "Simplify", code: "100016", year: 2025, finished: false, color: "rose", dueDate: "5/10/2025", testsPassed: 46, totalTests: 74},
+	]
+    const ongoing = apiCall.filter(unit => unit.finished === false)
+	const ongoingUnits = ongoing.map((unit) => <Coursework key={unit.code} props={unit} />)
+
+    const finished = apiCall.filter(unit => unit.finished === true)
+	const finishedUnits = finished.map((unit) => <Coursework key={unit.code} props={unit} />)
+
+    return (
+        <div className="space-y-6">
+			{/* <YearSelector /> */}
+			<Tabs defaultValue="ongoing">
+				<TabsList className="flex flex-row gap-4 bg-background">
+					<div className="bg-accent p-1">
+						<TabsTrigger className="bg-accent" value="ongoing">Ongoing</TabsTrigger>
+						<TabsTrigger className="bg-accent" value="finished">Finished</TabsTrigger>
+					</div>
+				</TabsList>
+				<TabsContent value="ongoing">
+					<section className="grid gap-4 grid-cols-2">
+						{ongoingUnits}
+					</section>
+				</TabsContent>
+				<TabsContent value="finished">
+					<section className="grid gap-4 grid-cols-2">
+						{finishedUnits}
+					</section>
+				</TabsContent>
+			</Tabs>
+        </div>
+    );
 }

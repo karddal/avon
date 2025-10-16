@@ -14,7 +14,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <header className="flex h-16 shrink-0 items-center gap-2 px-4">
           <ModeToggle />
           <SidebarTrigger className="-ml-1" />
-          <p className="font-normal text-xl">Units</p>
+          <p className="font-normal text-xl">Courseworks</p>
         </header>
         <div className="flex flex-1 flex-col gap-4 px-4">{children}</div>
       </SidebarInset>
