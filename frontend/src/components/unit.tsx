@@ -49,7 +49,10 @@ export default function Unit({ props }: { props: unitData }) {
 										<p className="-ml-2 text-red-600">Coursework Live</p>
 									</div>
 								</div>
-								<div className="text-lg">{props.name}</div>
+								<div className="flex flex-row items-center gap-x-5">
+									<p className="text-lg">{props.name}</p>
+									<p className={`${props.finished ? "" : "hidden"} italic`}>Grade: {props.mark}</p>
+								</div>
 							</div>
 							<br />
 							<div className="flex flex-row gap-4">

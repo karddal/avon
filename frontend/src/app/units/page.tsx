@@ -15,16 +15,16 @@ import { useEffect, useState } from "react";
 export default function UnitPage() {
 
 	const apiCall = [
-		{ id: 0, name: "Imperative and Functional Programming", code: "COMS100016", year: "2024/2025", finished: true, color: "blue", mark: 0, courseworkLive: false },
-		{ id: 1, name: "Computer Architecure", code: "COMS100015", year: "2024/2025", finished: true, color: "amber", mark: 0, courseworkLive: false },
-		{ id: 2, name: "Mathematics for Computer Science", code: "COMS100014", year: "2024/2025", finished: true, color: "teal", mark: 0, courseworkLive: false },
-		{ id: 3, name: "Object Oriented Programming and Algorithms", code: "COMS100018", year: "2024/2025", finished: true, color: "emerald", mark: 0, courseworkLive: false },
-		{ id: 4, name: "Software Tools", code: "COMS100012", year: "2024/2025", finished: true, color: "rose", mark: 0, courseworkLive: false },
-		{ id: 5, name: "Mathematics for Computer Science B", code: "COMS100013", year: "2024/2025", finished: true, color: "purple", mark: 0, courseworkLive: false },
+		{ id: 0, name: "Imperative and Functional Programming", code: "COMS100016", year: "2024/2025", finished: true, color: "blue", mark: 76, courseworkLive: false },
+		{ id: 1, name: "Computer Architecure", code: "COMS100015", year: "2024/2025", finished: true, color: "amber", mark: 69, courseworkLive: false },
+		{ id: 2, name: "Mathematics for Computer Science A", code: "COMS100014", year: "2024/2025", finished: true, color: "teal", mark: 68, courseworkLive: false },
+		{ id: 3, name: "Object Oriented Programming and Algorithms", code: "COMS100018", year: "2024/2025", finished: true, color: "emerald", mark: 77, courseworkLive: false },
+		{ id: 4, name: "Software Tools", code: "COMS100012", year: "2024/2025", finished: true, color: "rose", mark: 65, courseworkLive: false },
+		{ id: 5, name: "Mathematics for Computer Science B", code: "COMS100013", year: "2024/2025", finished: true, color: "purple", mark: 89, courseworkLive: false },
 		{ id: 6, name: "Programming Languages and Computation", code: "COMS100016", year: "2025/2026", finished: true, color: "blue", mark: 0, courseworkLive: false },
 		{ id: 7, name: "Interaction and Society", code: "COMS100015", year: "2025/2026", finished: false, color: "amber", mark: 0, courseworkLive: false },
 		{ id: 8, name: "Computer Systems A", code: "COMS100014", year: "2025/2026", finished: true, color: "teal", mark: 0, courseworkLive: false },
-		{ id: 9, name: "Computer Systems B", code: "COMS100018", year: "2025/2026", finished: false, color: "emerald", mark: 0, courseworkLive: false },
+		{ id: 9, name: "Computer Systems B", code: "COMS100018", year: "2025/2026", finished: false, color: "emerald", mark: 0, courseworkLive: true },
 		{ id: 10, name: "Algorithms and Data", code: "COMS100012", year: "2025/2026", finished: false, color: "rose", mark: 0, courseworkLive: false },
 		{ id: 11, name: "Software Engineering Project", code: "COMS100013", year: "2025/2026", finished: false, color: "purple", mark: 0, courseworkLive: true },
 
