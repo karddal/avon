@@ -10,23 +10,39 @@ import {
 	TabsList,
 	TabsTrigger,
 } from "@/components/ui/tabs"
+import { useState } from "react";
 
 export default function UnitPage() {
 
 	const apiCall = [
-		{ id: 0, name: "Imperative and Functional Programming", code: "100016", year: 2025, finished: true, color: "blue", mark: 0, courseworkLive: false },
-		{ id: 1, name: "Computer Architecure", code: "100015", year: 2025, finished: false, color: "amber", mark: 0, courseworkLive: false },
-		{ id: 2, name: "Mathematics for Computer Science", code: "100014", year: 2025, finished: true, color: "teal", mark: 0, courseworkLive: false },
-		{ id: 3, name: "Object Oriented Programming and Algorithms", code: "100018", year: 2025, finished: false, color: "emerald", mark: 0, courseworkLive: true },
-		{ id: 4, name: "Software Tools", code: "100012", year: 2025, finished: false, color: "rose", mark: 0, courseworkLive: false },
-		{ id: 5, name: "Mathematics for Computer Science B", code: "100013", year: 2025, finished: false, color: "purple", mark: 0, courseworkLive: true },
+		{ id: 0, name: "Imperative and Functional Programming", code: "COMS100016", year: "2024/2025", finished: true, color: "blue", mark: 0, courseworkLive: false },
+		{ id: 1, name: "Computer Architecure", code: "COMS100015", year: "2024/2025", finished: true, color: "amber", mark: 0, courseworkLive: false },
+		{ id: 2, name: "Mathematics for Computer Science", code: "COMS100014", year: "2024/2025", finished: true, color: "teal", mark: 0, courseworkLive: false },
+		{ id: 3, name: "Object Oriented Programming and Algorithms", code: "COMS100018", year: "2024/2025", finished: true, color: "emerald", mark: 0, courseworkLive: false },
+		{ id: 4, name: "Software Tools", code: "COMS100012", year: "2024/2025", finished: true, color: "rose", mark: 0, courseworkLive: false },
+		{ id: 5, name: "Mathematics for Computer Science B", code: "COMS100013", year: "2024/2025", finished: true, color: "purple", mark: 0, courseworkLive: false },
+		{ id: 6, name: "Programming Languages and Computation", code: "COMS100016", year: "2025/2026", finished: true, color: "blue", mark: 0, courseworkLive: false },
+		{ id: 7, name: "Interaction and Society", code: "COMS100015", year: "2025/2026", finished: false, color: "amber", mark: 0, courseworkLive: false },
+		{ id: 8, name: "Computer Systems A", code: "COMS100014", year: "2025/2026", finished: true, color: "teal", mark: 0, courseworkLive: false },
+		{ id: 9, name: "Computer Systems B", code: "COMS100018", year: "2025/2026", finished: false, color: "emerald", mark: 0, courseworkLive: false },
+		{ id: 10, name: "Algorithms and Data", code: "COMS100012", year: "2025/2026", finished: false, color: "rose", mark: 0, courseworkLive: false },
+		{ id: 11, name: "Software Engineering Project", code: "COMS100013", year: "2025/2026", finished: false, color: "purple", mark: 0, courseworkLive: true },
 
 	]
-	const ongoing = apiCall.filter(unit => unit.finished === false)
+
+	// We get this through our API call and to toggle between ongoing and finished
+	const latestYear = "2025"
+	const [year, setYear] = useState(latestYear)
+	const nextYear = parseInt(year) + 1
+	const academicYear: string = parseInt(year) + "/" + nextYear
+	console.log("Academic Year", academicYear)
+
+	const byYear = apiCall.filter(unit => unit.year === academicYear)
+	const ongoing = byYear.filter(unit => unit.finished === false)
 	const ongoingSorted = ongoing.sort((a, b) => Number(b.courseworkLive) - Number(a.courseworkLive))
 	const ongoingUnits = ongoingSorted.map((unit) => <Unit key={unit.id} props={unit} />)
 
-	const finished = apiCall.filter(unit => unit.finished === true)
+	const finished = byYear.filter(unit => unit.finished === true)
 	const finishedUnits = finished.map((unit) => <Unit key={unit.id} props={unit} />)
 	return (
 		<>
@@ -34,7 +50,7 @@ export default function UnitPage() {
 				{/* <YearSelector /> */}
 				<Tabs defaultValue="ongoing">
 					<TabsList className="flex flex-row gap-4 bg-background">
-						<YearSelector />
+						<YearSelector value={year} setValue={setYear} />
 						<div className="bg-accent p-1">
 							<TabsTrigger className="bg-accent" value="ongoing">Ongoing</TabsTrigger>
 							<TabsTrigger className="bg-accent" value="finished">Finished</TabsTrigger>

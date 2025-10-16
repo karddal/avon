@@ -5,7 +5,7 @@ import { Dot } from "lucide-react";
 type unitData = {
 	name: string;
 	code: string;
-	year: number;
+	year: string;
 	finished: boolean;
 	color: string;
 	mark: number;

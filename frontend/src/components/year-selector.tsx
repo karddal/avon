@@ -17,10 +17,9 @@ import {
 } from "@/components/ui/popover"
 import { useState } from "react";
 
-export default function YearSelector() {
+export default function YearSelector({ value, setValue }) {
     const [open, setOpen] = useState(false)
-    const [value, setValue] = useState("2025")
-
+    // const [value, setValue] = useState("2025")
 
     const years = [
         { value: "2025", label: "2025/2026", },
@@ -43,7 +42,7 @@ export default function YearSelector() {
                             >
                                 {value
                                     ? years.find((year) => year.value === value)?.label
-                                    : "Select framework..."}
+                                    : ""}
                                 <ChevronsUpDown className="opacity-50" />
                             </Button>
                         </PopoverTrigger>
