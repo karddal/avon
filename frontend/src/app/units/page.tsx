@@ -10,7 +10,7 @@ import {
 	TabsList,
 	TabsTrigger,
 } from "@/components/ui/tabs"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function UnitPage() {
 
@@ -34,25 +34,34 @@ export default function UnitPage() {
 	const latestYear = "2025"
 	const [year, setYear] = useState(latestYear)
 	const nextYear = parseInt(year) + 1
-	const academicYear: string = parseInt(year) + "/" + nextYear
-	console.log("Academic Year", academicYear)
+	const nextLatestYear = parseInt(year) + 1
+	const currentAcademicYear: string = parseInt(year) + "/" + nextYear
+	const latestAcademicYear: string = parseInt(latestYear) + "/" + nextLatestYear
+	console.log("Academic Year", currentAcademicYear)
 
-	const byYear = apiCall.filter(unit => unit.year === academicYear)
+	const byYear = apiCall.filter(unit => unit.year === currentAcademicYear)
 	const ongoing = byYear.filter(unit => unit.finished === false)
 	const ongoingSorted = ongoing.sort((a, b) => Number(b.courseworkLive) - Number(a.courseworkLive))
 	const ongoingUnits = ongoingSorted.map((unit) => <Unit key={unit.id} props={unit} />)
 
 	const finished = byYear.filter(unit => unit.finished === true)
 	const finishedUnits = finished.map((unit) => <Unit key={unit.id} props={unit} />)
+
+	// Changing ongoing to completed based on the year 
+	const [activeTab, setActiveTab] = useState(currentAcademicYear === latestAcademicYear ? "ongoing" : "finished")
+
+	useEffect(() => {
+		currentAcademicYear === latestAcademicYear ? setActiveTab("ongoing") : setActiveTab("finished")
+	}, [year])
 	return (
 		<>
 			<div className="space-y-6">
 				{/* <YearSelector /> */}
-				<Tabs defaultValue="ongoing">
+				<Tabs value={activeTab} onValueChange={setActiveTab}>
 					<TabsList className="flex flex-row gap-4 bg-background">
 						<YearSelector value={year} setValue={setYear} />
 						<div className="bg-accent p-1">
-							<TabsTrigger className="bg-accent" value="ongoing">Ongoing</TabsTrigger>
+							<TabsTrigger className={`${currentAcademicYear === latestAcademicYear ? "" : "hidden"} bg-accent`} value="ongoing">Ongoing</TabsTrigger>
 							<TabsTrigger className="bg-accent" value="finished">Finished</TabsTrigger>
 						</div>
 
@@ -68,7 +77,7 @@ export default function UnitPage() {
 						</section>
 					</TabsContent>
 				</Tabs>
-			</div>
+			</div >
 		</>
 	);
 }
