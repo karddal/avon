@@ -4,10 +4,7 @@ import { Suspense } from "react";
 import { StatsChart } from "@/components/stats-chart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-<<<<<<< HEAD
 import { Tabs, TabsContent, TabsTrigger, TabsList } from "@/components/ui/tabs";
-=======
->>>>>>> refs/remotes/origin/admin-dashboard-page
 
 export default function DashboardPage() {
   return (
@@ -96,53 +93,6 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
         <div className="col-span-3 flex lg:flex-row flex-col gap-4">
-<<<<<<< HEAD
-=======
-          <Card className="flex flex-col lg:w-[70%]">
-            <CardTitle>
-              <div className="font-semibold text-2xl px-6">Coursework</div>
-              <div className="font-light text-l px-6">
-                See your currently assigned courseworks here.
-              </div>
-            </CardTitle>
-            <CardContent>
-              <div className="gap-2 overflow-y-auto flex flex-col h-96">
-                <Suspense fallback={<Skeleton />}>
-                  <Link href="/coursework/power-to-the-people">
-                    <Card className="gap-2 p-0 bg-accent w-full text-2xl font-normal hover:bg-foreground/10">
-                      <p className="p-4">Power to the People</p>
-                      <div className="w-full h-1 bg-pink-500"></div>
-                    </Card>
-                  </Link>
-                  <Link href="/coursework/simplify">
-                    <Card className="gap-2 p-0 bg-accent w-full text-2xl font-normal hover:bg-foreground/10">
-                      <p className="p-4">Simplify</p>
-                      <div className="w-full h-1 bg-pink-500"></div>
-                    </Card>
-                  </Link>
-                  <Link href="/coursework/list">
-                    <Card className="gap-2 p-0 bg-accent w-full text-2xl font-normal hover:bg-foreground/10">
-                      <p className="p-4">List</p>
-                      <div className="w-full h-1 bg-blue-500"></div>
-                    </Card>
-                  </Link>
-                  <Link href="/coursework/sketch">
-                    <Card className="gap-2 p-0 bg-accent w-full text-2xl font-normal hover:bg-foreground/10">
-                      <p className="p-4">Sketch</p>
-                      <div className="w-full h-1 bg-blue-500"></div>
-                    </Card>
-                  </Link>
-                  <Link href="/coursework/sketch">
-                    <Card className="gap-2 p-0 bg-accent w-full text-2xl font-normal hover:bg-foreground/10">
-                      <p className="p-4">Sketch</p>
-                      <div className="w-full h-1 bg-blue-500"></div>
-                    </Card>
-                  </Link>
-                </Suspense>
-              </div>
-            </CardContent>
-          </Card>
->>>>>>> refs/remotes/origin/admin-dashboard-page
           <Card className="flex flex-col lg:w-[30%]">
             <CardTitle>
               <div className="font-semibold text-2xl px-6">Quick Actions</div>
@@ -155,13 +105,7 @@ export default function DashboardPage() {
                 <Card className="bg-green-400/10 p-2">
                   <CardContent className="flex flex-row p-0 items-center gap-4">
                     <Plus className="size-12 p-0"></Plus>
-<<<<<<< HEAD
                     <p className="font-semibold text-xl">Create coursework</p>
-=======
-                    <p className="font-semibold text-xl">
-                      Create a new coursework
-                    </p>
->>>>>>> refs/remotes/origin/admin-dashboard-page
                   </CardContent>
                 </Card>
               </Link>
@@ -170,13 +114,7 @@ export default function DashboardPage() {
                 <Card className="bg-red-400/10 p-2">
                   <CardContent className="flex flex-row p-0 items-center gap-4">
                     <Flag className="size-12 p-0"></Flag>
-<<<<<<< HEAD
                     <p className="font-semibold text-xl">End submissions</p>
-=======
-                    <p className="font-semibold text-xl">
-                      End submissions to a coursework
-                    </p>
->>>>>>> refs/remotes/origin/admin-dashboard-page
                   </CardContent>
                 </Card>
               </Link>
@@ -190,7 +128,6 @@ export default function DashboardPage() {
               </Link>
             </CardContent>
           </Card>
-<<<<<<< HEAD
           <Card className="flex flex-col lg:w-full">
             <CardContent>
               <Tabs defaultValue="coursework" className="">
@@ -308,8 +245,6 @@ export default function DashboardPage() {
               </div>
             </CardContent>
           </Card> */}
-=======
->>>>>>> refs/remotes/origin/admin-dashboard-page
         </div>
       </section>
     </div>
