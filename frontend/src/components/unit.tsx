@@ -35,11 +35,11 @@ export default function Unit({ props }: { props: unitData }) {
 	return (
 		<Link href="/units">
 			<div className={`${colourMap[props.color]} h-2`}></div>
-			<Card className="bg-muted flex flex-row p-2 h-18 items-center hover:bg-foreground/10">
+			<Card className="bg-muted flex flex-row p-2 items-center hover:bg-foreground/10">
 				<div className="flex flex-row items-center justify-between w-full">
 					<div className="flex flex-col">
 						<div className="flex flex-col">
-							<div className="flex flex-row text-sm align-center items-center">
+							<div className="flex flex-row align-center items-center">
 								<p>Unit Code: {props.code}</p>
 								<div
 									className={`${liveCoursework} flex flex-row justify-center items-center`}
@@ -53,7 +53,7 @@ export default function Unit({ props }: { props: unitData }) {
 									<p className="-ml-2 text-red-600">Coursework Live</p>
 								</div>
 							</div>
-							<div className="flex flex-row items-center gap-x-10 text-sm lg:text-lg">
+							<div className="flex flex-row items-center gap-x-10 lg:text-lg">
 								<p className="">{props.name}</p>
 								<p className={`${props.finished ? "" : "hidden"} italic`}>
 									Grade: {props.mark}
