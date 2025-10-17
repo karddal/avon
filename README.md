@@ -6,49 +6,38 @@
   
 ## Contents
 
-- [Overview](#overview)
 - [Important Links](#important-links)
 - [Tech Stack](#tech-stack)
 - [Installation](#installation)
 	- [Prerequisites](#prerequisites)
 	- [Running Locally](#running-locally)
-- [Project Structure](#project-structure)
+- [Project Description](#project-description)
 - [Stakeholders](#stakeholders)
 - [User Stories](#user-stories)
 - [Flow Steps](#flow-steps)
+- [Project Structure](#project-structure)
 - [Team Members](#team-members)
-- [Contributing](#contributing)
-
-
-## Overview
+- [Contributing / Developer Instructions](#contributing--developer-instructions)
 
 ## Important Links
 
-[Figma](https://www.figma.com/design/0GAtKL9idVkkgqkVF0u59z/CARC?node-id=0-1&p=f&t=6Tt63sBXywwS4rsh-0) - Logo - Important Docs - Flowcharts - ER Diagrams - [Kanban Board](https://github.com/orgs/spe-uob/projects/309/views/1?layout_template=board)
+- [Figma](https://www.figma.com/design/0GAtKL9idVkkgqkVF0u59z/CARC?node-id=0-1&p=f&t=6Tt63sBXywwS4rsh-0)
+- ER Diagrams (tbd)
+- [Kanban Board](https://github.com/orgs/spe-uob/projects/309/views/1?layout_template=board)
 
 ## Tech Stack
 
-#### Frontend
-[Next.js
-](https://nextjs.org/)
-#### Backend
-[Springboot](https://spring.io/projects/spring-boot)
+[Next.js](https://nextjs.org/) frontend, [Spring Boot](https://spring.io/projects/spring-boot) backend.
 
 #### Tools & Libraries
-Easy command running - [Just](https://github.com/casey/just)
-
-#### Servers
+We use the [Just](https://github.com/casey/just) command runner to simplify the collaboration workflow. See the instructions in CONTRIBUTING.md
 
 #### Database
+PostgreSQL
 
 #### Linter(s)
-Typescript - [Biome](https://biomejs.dev/)
-
-#### CI/CD
-
-#### Testing
-
-#### Caching [?]
+- Typescript: [Biome](https://biomejs.dev/)
+- Java: [Spotless](https://github.com/diffplug/spotless)
 
 ## Installation
 
@@ -56,31 +45,41 @@ Typescript - [Biome](https://biomejs.dev/)
 
 ### Running Locally
 
-## Project Structure
+## Project Description
+
+CARC aims to be a VLE that works with staff and students, rather than against them. The goal is to have a system that allows lecturers to view the progress of students _as_ they progress through the coursework, allowing
+measurement of performance _throughout_ coursework completion, rather than just at the end.
+CARC also aims to relieve some small measure of the frustration felt with current systems; by allowing all common tasks to be conducted from within the same place, automatically. This will save time and reduce frustration for both lecturers, and students.
 
 ## Stakeholders
 
 **Client**: [School of Computer Science (Mike Fraser and Tilo Berghardt)](https://www.bristol.ac.uk/science-engineering/schools/computer-science/)
 
-### Typical Stakeholders
-
 **End users**: Students, Lecturers/Unit Directors
+### Students
 
-- <u>Students</u>: Should be able to access their assigned coursework, collaborate with other classmates in group tasks, and have version control capabilities of their projects.
-- <u>Lecturers/Unit Directors</u>: Should be able to view the coursework for all the students in their cohort. They should be able to see how their students have progressed with their work. They should be able to grade their work. 
+Students will use the system to view assigned coursework, track their progress throughout completion, and upload their finished product. 
+Goals for a more advanced system include the ability for multiple students to work on the same submission together as a group. 
+Students should also be able to run certain tools on their assignment, such automated tests.
 
-**Organisation and System Managers**: Unit Directors
+### Lecturers, Unit directors
 
+Lecturers and unit directors will set and manage coursework. These users will assign it to a particular 
+_unit_. These units will be created either automatically or manually. 
+Lecturers should be able to track the progress of all their students through a particular coursework in a convenient way, and the system should give them access to tools like running auto-marking scripts, and perhaps plagiarism detection.
+Broader analytics features could also be available, such as the time spent on particular courseworks on average, or average mark, etc.
 
 ## User Stories
 
 As a *Student*, I want to have an easier and less stressful way to upload my coursework and projects either via the command line or online, as it will remove the sense of panic and lack of confidence in my near-deadline submissions.
 
-As a *Student*, I want to be able to work easily with my classmate on an assigned coursework task, so I can spend more time working and less time organising files.
+As a *Student*, I want to be able to work easily with my classmate on an assigned coursework task, so I can spend more time working and less time organising files. I want to be able to run tools like automarking scripts easily.
 
 As a *Lecturer*, I want to be able to click a button called '*Create Coursework*' that takes me to a form that allows me input details for the coursework, including name, description, deadline etc. I should be able to then send an invite link to all my students via email that allows them to join the coursework and work on their projects. This simplifies the process of me setting up a project and simplifies the process of my students joing the project.
 
 As a *Lecturer*, I want a way to view the timeline of updates in a coursework, to see how organised each student is, and how they are getting along with their project.
+
+As a *Lecturer*, I want to spend less time zipping and unzipping folders and running scripts manually.
 
 ## Flow Steps
 
@@ -100,6 +99,13 @@ As a *Lecturer*, I want a way to view the timeline of updates in a coursework, t
 4. Assign coursework to all users/teams of users, specifying a start and end date.
 5. Monitor progress and commit history of individual students via their dashboard.
 
+## Project structure
+- `/frontend` contains the frontend code
+- `/backend` contains the backend code
+- `/Agendas` contains agendas for meetings
+- the `Justfile` is a configuration file for the Just command runner, containing custom scripts to make collaboration easier.
+- `README.md` - you are here :)
+- `CONTRIBUTING.md` contains information on how to contribute to the project.
 
 ## Team Members
 
@@ -111,6 +117,6 @@ As a *Lecturer*, I want a way to view the timeline of updates in a coursework, t
 | Mihaly Toth-Tarsoly | [wq24423@bristol.ac.uk](mailto:WQ24423@bristol.ac.uk)   |
 | Jack Dempsey        | [wm24026@bristol.ac.uk](mailto:WM24026@bristol.ac.uk)   |
 
-## Contributing
+## Contributing / Developer Instructions
 See [CONTRIBUTING.md](CONTRIBUTING.md)
 
