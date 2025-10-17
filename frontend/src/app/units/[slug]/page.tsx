@@ -1,9 +1,9 @@
 import { Suspense } from "react";
+import { DropdownCard } from "@/components/dropdown-card";
 import { Avatar } from "@/components/ui/avatar";
-import { Card, CardContent, CardTitle, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DropdownCard } from "@/components/dropdown-card";
 
 export default async function UnitPage({
   params,

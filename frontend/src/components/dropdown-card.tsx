@@ -1,7 +1,6 @@
 "use client";
-import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
-import { ArrowRight } from "lucide-react";
 import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface DropdownCardProps {
   title: string;
