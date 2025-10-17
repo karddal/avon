@@ -1,6 +1,6 @@
 import { Dot } from "lucide-react";
 import Link from "next/link";
-import { Card } from "./ui/card";
+import { Card, CardContent } from "./ui/card";
 
 type unitData = {
 	name: string;
@@ -36,8 +36,8 @@ export default function Unit({ props }: { props: unitData }) {
 		<Link href="/units">
 			<div className={`${colourMap[props.color]} h-2`}></div>
 			<Card className="bg-muted flex flex-row p-2 items-center hover:bg-foreground/10">
-				<div className="flex flex-row items-center justify-between w-full">
-					<div className="flex flex-col">
+				<CardContent className="flex flex-row items-center justify-between w-full">
+					<div className="flex flex-col w-full">
 						<div className="flex flex-col">
 							<div className="flex flex-row align-center items-center">
 								<p>Unit Code: {props.code}</p>
@@ -53,7 +53,7 @@ export default function Unit({ props }: { props: unitData }) {
 									<p className="-ml-2 text-red-600">Coursework Live</p>
 								</div>
 							</div>
-							<div className="flex flex-row items-center gap-x-10 lg:text-lg">
+							<div className="flex flex-row items-center justify-between w-full gap-x-10 lg:text-lg">
 								<p className="">{props.name}</p>
 								<p className={`${props.finished ? "" : "hidden"} italic`}>
 									Grade: {props.mark}
@@ -63,7 +63,7 @@ export default function Unit({ props }: { props: unitData }) {
 						<br />
 						<div className="flex flex-row gap-4"></div>
 					</div>
-				</div>
+				</CardContent>
 			</Card>
 		</Link>
 	);
