@@ -42,7 +42,10 @@ export default async function UnitPage({
                 sem consequat luctus. Nulla ex enim, iaculis eu tincidunt vel,
                 maximus ac ante. Pellentesque habitant morbi tristique senectus
                 et netus et malesuada fames ac turpis egestas. Proin sed mauris
-                velit.
+                velit. Phasellus tempor consequat nisi sed rutrum. Nullam rutrum
+                facilisis arcu, id rhoncus quam pulvinar a. Integer quis erat
+                quis tortor pharetra interdum. Nam ut arcu euismod tellus
+                sagittis facilisis et a nisl.
               </p>
             </CardContent>
           </Card>
