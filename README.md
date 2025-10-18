@@ -129,10 +129,33 @@ A modern, responsive Next.JS frontend designed to be fast and lightweight consum
 2. These could include relative 'difficulty' scores based on previous years, average number of tests passed, etc.
 
 ## Project structure
-- `/frontend` contains the frontend code
+### Frontend
+`/frontend` contains the frontend code
+```
+└── frontend/
+    ├── public/
+    │   └── (assets)
+    ├── src/
+    │   ├── app/
+    │   │   ├── (page name)/
+    │   │   │   └── (sub page name)/
+    │   │   ├── .../
+    │   │   ├── page.tsx
+    │   │   ├── layout.tsx
+    │   │   ├── globals.css
+    │   │   └── favicon.ico 
+    │   ├── components/
+    │   │   ├── (our components)
+    │   │   └── ui/
+    │   │       └── (shadcn)
+    │   ├── hooks
+    │   └── lib
+    ├── .gitignore
+    └── bun.lock (dependency list)
+```
 - `/backend` contains the backend code
 - `/Agendas` contains agendas for meetings
-- the `Justfile` is a configuration file for the Just command runner, containing custom scripts to make collaboration easier.
+- `Justfile` is a configuration file for the Just command runner, containing custom scripts to make collaboration easier.
 - `README.md` - you are here :)
 - `CONTRIBUTING.md` contains information on how to contribute to the project.
 
