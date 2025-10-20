@@ -2,8 +2,10 @@ import {
   BookText,
   ChartLine,
   LayoutDashboard,
+  LogOut,
   Settings,
   SwatchBook,
+  BookCheck,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -33,6 +35,13 @@ const items = [
     admin: true,
   },
   {
+    title: "Markbook",
+    url: "/markbook",
+    icon: BookCheck,
+    admin: true,
+    bottom: false,
+  },
+  {
     title: "Units",
     url: "#",
     icon: SwatchBook,
@@ -50,6 +59,14 @@ const items = [
     url: "#",
     icon: Settings,
     admin: false,
+    bottom: true,
+  },
+  {
+    title: "Log Out",
+    url: "/logout",
+    icon: LogOut,
+    admin: false,
+    bottom: true,
   },
 ];
 
@@ -84,26 +101,54 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarMenu className="flex flex-row flex-wrap justify-center items-center md:flex-col md:flex-wrap md:justify md:items-center">
-            {items.map((item) => (
-              <SidebarMenuItem
-                className=" aspect-square
-                md:flex-1 md:!h-full md:!w-full"
-                key={item.title}
-              >
-                <SidebarMenuButton className="h-full" asChild>
-                  <Link
-                    className="flex flex-col justify-center items-center
-                    !h-32 !w-32 md:!h-full md:!w-full aspect-square"
-                    href={item.url}
+        <SidebarGroup className="h-full">
+          <SidebarMenu className="flex flex-col justify-center md:justify-between h-full">
+            <div className="flex flex-row flex-wrap justify-center items-center md:flex-col ">
+              {items
+                .filter((item) => !item.bottom)
+                .map((item) => (
+                  <SidebarMenuItem
+                    key={item.title}
+                    className="aspect-square md:flex-1 md:!h-full md:!w-full"
                   >
-                    <item.icon size={100} className="!size-12" />
-                    <span className="text-accent-foreground">{item.title}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
+                    <SidebarMenuButton className="h-full" asChild>
+                      <Link
+                        href={item.url}
+                        className="flex flex-col justify-center items-center !h-32 !w-32 md:!h-full md:!w-full aspect-square"
+                      >
+                        <item.icon className="!size-10" />
+                        <span className="text-accent-foreground">
+                          {item.title}
+                        </span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+            </div>
+
+            {/* bottom part of sidebar */}
+            <div className="flex flex-row flex-wrap justify-center items-center md:flex-col">
+              {items
+                .filter((item) => item.bottom)
+                .map((item) => (
+                  <SidebarMenuItem
+                    key={item.title}
+                    className="aspect-square md:flex-1 md:!h-full md:!w-full"
+                  >
+                    <SidebarMenuButton className="h-full" asChild>
+                      <Link
+                        href={item.url}
+                        className="flex flex-col justify-center items-center !h-32 !w-32 md:!h-full md:!w-full aspect-square"
+                      >
+                        <item.icon className="!size-10" />
+                        <span className="text-accent-foreground">
+                          {item.title}
+                        </span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+            </div>
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
