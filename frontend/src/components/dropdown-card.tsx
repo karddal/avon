@@ -17,12 +17,12 @@ export function DropdownCard({
 }: DropdownCardProps) {
   const [open, setOpen] = useState(false);
   return (
-    <Card
-      className={`flex flex-col gap-0 hover:bg-accent-foreground/5 cursor-pointer ${className}`}
-      onClick={() => setOpen(!open)}
-    >
-      <CardHeader className="flex flex-row items-center gap-4">
-        <CardTitle>
+    <Card className={`flex flex-col gap-0 ${className}`}>
+      <CardHeader
+        className="flex flex-row items-center gap-4 cursor-pointer "
+        onClick={() => setOpen(!open)}
+      >
+        <CardTitle className="hover:bg-accent-foreground/5">
           <div className="text-2xl">{title}</div>
           <div className="font-light">{desc}</div>
         </CardTitle>
