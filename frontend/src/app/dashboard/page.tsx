@@ -3,12 +3,12 @@
 import { Edit, Flag, Plus } from "lucide-react";
 import Link from "next/link";
 import { Suspense, useState } from "react";
+import Coursework from "@/components/coursework";
 import { StatsChart } from "@/components/stats-chart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Unit from "@/components/unit";
-import Coursework from "@/components/coursework";
 
 export default function DashboardPage() {
   const apiCall = [
@@ -139,13 +139,13 @@ export default function DashboardPage() {
   const nextYear = (parseInt(year, 10) + 1).toString();
   const currentAcademicYear: string = `${parseInt(year, 10)}/${parseInt(
     nextYear,
-    10
+    10,
   )}`;
 
   const byYear = apiCall.filter((unit) => unit.year === currentAcademicYear);
   const ongoing = byYear.filter((unit) => unit.finished === false);
   const ongoingSorted = ongoing.sort(
-    (a, b) => Number(b.courseworkLive) - Number(a.courseworkLive)
+    (a, b) => Number(b.courseworkLive) - Number(a.courseworkLive),
   );
   const ongoingUnits = ongoingSorted.map((unit) => (
     <Unit key={unit.id} props={unit} />
@@ -214,7 +214,7 @@ export default function DashboardPage() {
   ));
 
   const finishedCW = courseworkApiCall.filter((unit) => unit.finished === true);
-  const finishedCourseworks = finishedCW.map((unit) => (
+  const _finishedCourseworks = finishedCW.map((unit) => (
     <Coursework key={unit.courseworkId} props={unit} />
   ));
   return (
