@@ -1,12 +1,16 @@
-package uk.ac.bristol.cs.carc.entity;
+package uk.ac.bristol.cs.carc.db.infrastructure.jpa.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.UUID;
 
 @Entity
 @Table()
+@Data
+@AllArgsConstructor
 //TODO: maybe class name need some change to clarify the linking table
 //TODO: I will add java doc before merge to the dev branch
 //TODO: generate the database using flyway
@@ -27,4 +31,8 @@ public class LecturerEnrollment {
     @ManyToOne
     @JoinColumn(name = "unit_id")
     private Unit unit;
+
+    public LecturerEnrollment() {
+
+    }
 }

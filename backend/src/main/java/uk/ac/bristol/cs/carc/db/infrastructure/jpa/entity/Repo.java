@@ -1,6 +1,8 @@
-package uk.ac.bristol.cs.carc.entity;
+package uk.ac.bristol.cs.carc.db.infrastructure.jpa.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.HashSet;
@@ -9,6 +11,8 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "repo")
+@Data
+@AllArgsConstructor
 public class Repo {
     @Id
     @Column(columnDefinition = "uuid", nullable = false, updatable = false)
@@ -27,5 +31,8 @@ public class Repo {
     private String name;
 
     @Column(nullable = false)
-    private String link;
+    private String url;
+
+    public Repo() {
+    }
 }

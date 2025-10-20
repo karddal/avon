@@ -1,13 +1,17 @@
-package uk.ac.bristol.cs.carc.entity;
+package uk.ac.bristol.cs.carc.db.infrastructure.jpa.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.UUID;
 
 @Entity
 @Table()
-public class StudentEnrollment {
+@Data
+@AllArgsConstructor
+public class RepoOwner {
     @Id
     @Column(columnDefinition = "uuid", nullable = false, updatable = false)
     @GeneratedValue
@@ -15,10 +19,13 @@ public class StudentEnrollment {
     private UUID id;
 
     @ManyToOne
+    @JoinColumn(name = "repo_id")
+    private Repo repo;
+
+    @ManyToOne
     @JoinColumn(name = "student_id")
     private Student student;
 
-    @ManyToOne
-    @JoinColumn(name = "unit_id")
-    private Unit unit;
+    public RepoOwner() {
+    }
 }

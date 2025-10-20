@@ -1,6 +1,8 @@
-package uk.ac.bristol.cs.carc.entity;
+package uk.ac.bristol.cs.carc.db.infrastructure.jpa.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.util.HashSet;
@@ -9,6 +11,8 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "coursework")
+@Data
+@AllArgsConstructor
 public class Coursework {
     @Id
     @Column(columnDefinition = "uuid", nullable = false, updatable = false)
@@ -24,5 +28,11 @@ public class Coursework {
     private Unit unit;
 
     @Column(nullable = false)
-    private String name;
+    private String title;
+
+    @Column(nullable = false)
+    private String description;
+
+    public Coursework() {
+    }
 }
