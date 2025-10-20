@@ -1,11 +1,11 @@
 import {
+  BookCheck,
   BookText,
   ChartLine,
   LayoutDashboard,
   LogOut,
   Settings,
   SwatchBook,
-  BookCheck,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
