@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Unit from "@/components/unit";
+import Coursework from "@/components/coursework";
 
 export default function DashboardPage() {
   const apiCall = [
@@ -138,16 +139,83 @@ export default function DashboardPage() {
   const nextYear = (parseInt(year, 10) + 1).toString();
   const currentAcademicYear: string = `${parseInt(year, 10)}/${parseInt(
     nextYear,
-    10,
+    10
   )}`;
 
   const byYear = apiCall.filter((unit) => unit.year === currentAcademicYear);
   const ongoing = byYear.filter((unit) => unit.finished === false);
   const ongoingSorted = ongoing.sort(
-    (a, b) => Number(b.courseworkLive) - Number(a.courseworkLive),
+    (a, b) => Number(b.courseworkLive) - Number(a.courseworkLive)
   );
   const ongoingUnits = ongoingSorted.map((unit) => (
     <Unit key={unit.id} props={unit} />
+  ));
+
+  const courseworkApiCall = [
+    {
+      courseworkId: "112354",
+      name: "List",
+      code: "100016",
+      year: 2025,
+      finished: true,
+      color: "blue",
+      dueDate: "20/9/2025",
+      testsPassed: 50,
+      totalTests: 50,
+    },
+    {
+      courseworkId: "347483",
+      name: "Sketch",
+      code: "100016",
+      year: 2025,
+      finished: true,
+      color: "amber",
+      dueDate: "20/12/2025",
+      testsPassed: 58,
+      totalTests: 58,
+    },
+    {
+      courseworkId: "566567",
+      name: "Power to the People",
+      code: "100016",
+      year: 2025,
+      finished: false,
+      color: "teal",
+      dueDate: "18/10/2025",
+      testsPassed: 13,
+      totalTests: 68,
+    },
+    {
+      courseworkId: "886567",
+      name: "Scotland Yard",
+      code: "100018",
+      year: 2025,
+      finished: false,
+      color: "emerald",
+      dueDate: "16/11/2025",
+      testsPassed: 21,
+      totalTests: 43,
+    },
+    {
+      courseworkId: "977557",
+      name: "Simplify",
+      code: "100016",
+      year: 2025,
+      finished: false,
+      color: "rose",
+      dueDate: "5/10/2025",
+      testsPassed: 46,
+      totalTests: 74,
+    },
+  ];
+  const ongoingCW = courseworkApiCall.filter((unit) => unit.finished === false);
+  const ongoingCourseworks = ongoingCW.map((unit) => (
+    <Coursework key={unit.courseworkId} props={unit} />
+  ));
+
+  const finishedCW = courseworkApiCall.filter((unit) => unit.finished === true);
+  const finishedCourseworks = finishedCW.map((unit) => (
+    <Coursework key={unit.courseworkId} props={unit} />
   ));
   return (
     <div className="space-y-6 mb-2">
@@ -276,7 +344,9 @@ export default function DashboardPage() {
                   <TabsContent
                     className="flex flex-col gap-2"
                     value="coursework"
-                  ></TabsContent>
+                  >
+                    {ongoingCourseworks}
+                  </TabsContent>
                   <TabsContent className="flex flex-col gap-2" value="units">
                     {ongoingUnits}
                   </TabsContent>
