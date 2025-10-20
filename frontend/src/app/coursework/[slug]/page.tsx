@@ -1,8 +1,8 @@
 import { Suspense } from "react";
 import { DropdownCard } from "@/components/dropdown-card";
-import { RunTestsItem } from "@/components/run-tests-item";
+import RunTestsItem from "@/components/run-tests-item";
+import TestPassedProgressBar from "@/components/tests-passed-progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default async function UnitPage({
@@ -76,14 +76,32 @@ export default async function UnitPage({
 
             <CardContent>
               <div className="gap-4 flex-1 flex-col min-h-0 overflow-y-scroll">
-                <div className="flex flex-col gap-4 bg-accent/50 border min-h-0 overflow-y-scroll">
+                <div className="flex flex-col gap-4 min-h-0 overflow-y-scroll">
                   <Suspense fallback={<Skeleton />}>
                     <Card className="gap-2 p-4 bg-accent w-full text-2xl font-normal">
                       <p>Tests finished</p>
-                      <div className="flex flex-row items-center">
-                        <Progress className="flex-1" value={33} />
-                        <p className="text-sm">33/100 passed</p>
-                      </div>
+                      <TestPassedProgressBar
+                        className=""
+                        value={100}
+                        colour="green-600"
+                      />
+                      <p className="text-sm">100/100 tests passed.</p>
+                      <p className="text-sm font-light">
+                        20 October 2025 15:00
+                      </p>
+                      {/*<div className="w-full h-1 bg-green-600"></div>*/}
+                    </Card>
+                    <Card className="gap-2 p-4 bg-accent w-full text-2xl font-normal">
+                      <p>Tests finished</p>
+                      <TestPassedProgressBar
+                        className=""
+                        value={33}
+                        colour="amber-600"
+                      />
+                      <p className="text-sm">33/100 tests passed.</p>
+                      <p className="text-sm font-light">
+                        20 October 2025 11:00
+                      </p>
                       {/*<div className="w-full h-1 bg-green-600"></div>*/}
                     </Card>
                   </Suspense>

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/item";
 import { Spinner } from "@/components/ui/spinner";
 
-export function RunTestsItem() {
+export default function RunTestsItem() {
   const [actionState, setActionState] = useState<number>(0);
 
   async function clicked() {
