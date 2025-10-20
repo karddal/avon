@@ -1,12 +1,12 @@
 "use client";
 
-import { Edit, Flag, Plus, Settings } from "lucide-react";
+import { Edit, Flag, Plus } from "lucide-react";
 import Link from "next/link";
 import { Suspense, useState } from "react";
 import { StatsChart } from "@/components/stats-chart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsTrigger, TabsList } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Unit from "@/components/unit";
 
 export default function DashboardPage() {
@@ -134,17 +134,17 @@ export default function DashboardPage() {
   ];
 
   const latestYear = "2025";
-  const [year, setYear] = useState(latestYear);
+  const [year, _setYear] = useState(latestYear);
   const nextYear = (parseInt(year, 10) + 1).toString();
   const currentAcademicYear: string = `${parseInt(year, 10)}/${parseInt(
     nextYear,
-    10
+    10,
   )}`;
 
   const byYear = apiCall.filter((unit) => unit.year === currentAcademicYear);
   const ongoing = byYear.filter((unit) => unit.finished === false);
   const ongoingSorted = ongoing.sort(
-    (a, b) => Number(b.courseworkLive) - Number(a.courseworkLive)
+    (a, b) => Number(b.courseworkLive) - Number(a.courseworkLive),
   );
   const ongoingUnits = ongoingSorted.map((unit) => (
     <Unit key={unit.id} props={unit} />
@@ -155,13 +155,14 @@ export default function DashboardPage() {
         <Card className="col-span-3 gap-0">
           <CardContent className="grid xl:grid-cols-4 grid-cols-2 gap-4">
             <Card className="p-2 gap-0 bg-accent flex flex-col justify-between">
-              <CardHeader>
-                <CardTitle className="text-center text-xl font-light py-2">
+              <CardHeader className="p-0">
+                <CardTitle className="text-center text-normal lg:text-xl font-light py-2">
                   Commits
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <StatsChart
+                  className="hidden md:flex"
                   colour="green"
                   data={[
                     { day: "Monday", simplify: 4, sketch: 6 },
@@ -181,13 +182,14 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
             <Card className="p-2 gap-0 bg-accent flex flex-col justify-between">
-              <CardHeader>
-                <CardTitle className="text-center text-xl font-light py-2">
+              <CardHeader className="p-0">
+                <CardTitle className="text-center text-normal lg:text-xl font-light py-2">
                   Tests passed
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <StatsChart
+                  className="hidden md:flex"
                   colour="blue"
                   data={[
                     { day: "Monday", simplify: 9, sketch: 6 },
@@ -206,14 +208,15 @@ export default function DashboardPage() {
                 />
               </CardContent>
             </Card>
-            <Card className="p-2 gap-0 bg-accent flex flex-col justify-between">
-              <CardHeader>
-                <CardTitle className="text-center text-xl font-light py-2">
+            <Card className="align-center p-2 gap-0 bg-accent flex flex-col justify-between">
+              <CardHeader className="p-0">
+                <CardTitle className="text-center text-normal lg:text-xl font-light py-2">
                   Late submissions
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <StatsChart
+                  className="hidden md:flex"
                   colour="red"
                   data={[
                     { day: "Monday", simplify: 1, sketch: 0 },
@@ -233,13 +236,14 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
             <Card className="p-2 gap-0 bg-accent flex flex-col justify-between">
-              <CardHeader>
-                <CardTitle className="text-center text-xl font-light py-2">
+              <CardHeader className="p-0">
+                <CardTitle className="text-center text-normal lg:text-xl font-light py-2">
                   AI Commits
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <StatsChart
+                  className="hidden md:flex"
                   colour="blue"
                   data={[
                     { day: "Monday", simplify: 1, sketch: 0 },
