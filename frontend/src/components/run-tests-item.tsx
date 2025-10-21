@@ -1,6 +1,7 @@
 "use client";
 import { CheckCheckIcon, CheckIcon } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Item,
@@ -24,6 +25,7 @@ export default function RunTestsItem() {
     const delay2 = new Promise((r) => setTimeout(r, 500));
     await delay2;
     setActionState(0);
+    toast.success("Test run started successfully.");
   }
   return (
     <Item variant="outline">
