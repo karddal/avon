@@ -29,7 +29,7 @@ export default async function UnitPage({
       </div>
 
       <section className="grid gap-4 grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 min-h-0 mb-2">
-        <div className="flex flex-col lg:col-span-2 gap-4 xl:min-h-0">
+        <div className="flex flex-col lg:col-span-2 gap-4 lg:min-h-0">
           <Card>
             <CardHeader>
               <CardTitle>
@@ -74,40 +74,34 @@ export default async function UnitPage({
               {/*</Tabs>*/}
             </CardHeader>
 
-            <CardContent>
-              <div className="gap-4 flex-1 flex-col min-h-0 overflow-y-scroll">
-                <div className="flex flex-col gap-4 min-h-0 overflow-y-scroll">
-                  <Suspense fallback={<Skeleton />}>
-                    <Card className="gap-2 p-4 bg-accent w-full text-2xl font-normal">
-                      <p>Tests finished</p>
-                      <TestPassedProgressBar
-                        className=""
-                        value={100}
-                        colour="#59AC77"
-                      />
-                      <p className="text-sm">100/100 tests passed.</p>
-                      <p className="text-sm font-light">
-                        20 October 2025 15:00
-                      </p>
-                      {/*<div className="w-full h-1 bg-green-600"></div>*/}
-                    </Card>
-                    <Card className="gap-2 p-4 bg-accent w-full text-2xl font-normal">
-                      <p>Tests finished</p>
-                      <TestPassedProgressBar
-                        className=""
-                        value={35}
-                        colour="#F4991A"
-                      />
-                      <p className="text-sm">35/100 tests passed.</p>
-                      <p className="text-sm font-light">
-                        20 October 2025 15:00
-                      </p>
-                      {/*<div className="w-full h-1 bg-green-600"></div>*/}
-                    </Card>
-                  </Suspense>
+            <Suspense fallback={<Skeleton />}>
+              <CardContent className="overflow-y-scroll">
+                <div className="flex flex-col gap-2">
+                  <Card className="gap-2 p-4 bg-accent w-full text-2xl font-normal">
+                    <p>Tests finished</p>
+                    <TestPassedProgressBar
+                      className=""
+                      value={100}
+                      colour="#59AC77"
+                    />
+                    <p className="text-sm">100/100 tests passed.</p>
+                    <p className="text-sm font-light">20 October 2025 15:00</p>
+                    {/*<div className="w-full h-1 bg-green-600"></div>*/}
+                  </Card>
+                  <Card className="gap-2 p-4 bg-accent w-full text-2xl font-normal">
+                    <p>Tests finished</p>
+                    <TestPassedProgressBar
+                      className=""
+                      value={35}
+                      colour="#F4991A"
+                    />
+                    <p className="text-sm">35/100 tests passed.</p>
+                    <p className="text-sm font-light">20 October 2025 15:00</p>
+                    {/*<div className="w-full h-1 bg-green-600"></div>*/}
+                  </Card>
                 </div>
-              </div>
-            </CardContent>
+              </CardContent>
+            </Suspense>
           </Card>
         </div>
         <div className="flex flex-col xl:col-span-1 lg:col-span-2 gap-4 min-h-0">

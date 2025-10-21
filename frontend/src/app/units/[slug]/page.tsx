@@ -26,7 +26,7 @@ export default async function UnitPage({
       </div>
 
       <section className="grid gap-4 grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 min-h-0 mb-2">
-        <div className="flex flex-col lg:col-span-2 gap-4 xl:min-h-0">
+        <div className="flex flex-col lg:col-span-2 gap-4 lg:min-h-0">
           <Card>
             <CardHeader>
               <CardTitle>
