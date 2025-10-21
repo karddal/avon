@@ -162,6 +162,11 @@ export default function UnitPage() {
       ? setActiveTab("ongoing")
       : setActiveTab("finished");
   }, [currentAcademicYear, latestAcademicYear]);
+
+  // Weird logic so that when you hover the tab trigger that isnt selected then it changes to a cursor
+  const ongoingHover = (activeTab == "ongoing" ? "" : "hover:cursor-pointer")
+  const finishedHover = (activeTab == "finished" ? "" : "hover:cursor-pointer")
+  const currentYear = (currentAcademicYear === latestAcademicYear ? "" : "hidden")
   return (
     <div className="space-y-6">
       {/* <YearSelector /> */}
@@ -170,12 +175,12 @@ export default function UnitPage() {
           <YearSelector value={year} setValue={setYear} />
           <div className="bg-accent p-1">
             <TabsTrigger
-              className={`${currentAcademicYear === latestAcademicYear ? "" : "hidden"} bg-accent`}
+              className={`${currentYear} ${ongoingHover} bg-accent`}
               value="ongoing"
             >
               Ongoing
             </TabsTrigger>
-            <TabsTrigger className="bg-accent" value="finished">
+            <TabsTrigger className={`bg-accent ${finishedHover}`} value="finished">
               Finished
             </TabsTrigger>
           </div>
