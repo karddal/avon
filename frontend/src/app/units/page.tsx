@@ -172,7 +172,7 @@ export default function UnitPage() {
     <div className="space-y-6">
       {/* <YearSelector /> */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="flex flex-row gap-4 bg-background">
+        <TabsList className="flex flex-row gap-4 bg-background my-4">
           <YearSelector value={year} setValue={setYear} />
           <div className="bg-accent p-1">
             <TabsTrigger
