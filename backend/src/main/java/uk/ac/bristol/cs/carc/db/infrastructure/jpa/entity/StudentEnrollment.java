@@ -20,11 +20,11 @@ public class StudentEnrollment {
 
     @ManyToOne
     @JoinColumn(name = "student_id")
-    private Student student;
+    private StudentEntity student;
 
     @ManyToOne
     @JoinColumn(name = "unit_id")
-    private Unit unit;
+    private UnitEntity unit;
 
     public StudentEnrollment() {
     }

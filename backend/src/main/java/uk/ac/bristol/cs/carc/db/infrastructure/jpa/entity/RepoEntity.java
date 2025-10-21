@@ -10,23 +10,29 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "unit_group")
+@Table(name = "repo")
 @Data
 @AllArgsConstructor
-public class UnitGroup {
+public class RepoEntity {
     @Id
     @Column(columnDefinition = "uuid", nullable = false, updatable = false)
     @GeneratedValue
     @UuidGenerator(style = UuidGenerator.Style.TIME)
     private UUID id;
 
+    @OneToMany(mappedBy = "repo", cascade = CascadeType.ALL,  orphanRemoval = true)
+    private Set<RepoOwnerEntity> repoOwners = new HashSet<>();
+
     @ManyToOne
-    @JoinColumn(name = "unit_id")
-    private Unit unit;
+    @JoinColumn(name = "coursework_id")
+    private CourseworkEntity coursework;
 
     @Column(nullable = false)
-    private String groupName;
+    private String name;
 
-    public UnitGroup() {
+    @Column(nullable = false)
+    private String url;
+
+    public RepoEntity() {
     }
 }

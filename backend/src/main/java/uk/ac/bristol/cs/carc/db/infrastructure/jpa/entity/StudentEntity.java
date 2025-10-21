@@ -10,19 +10,21 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "lecturer")
+@Table(name = "student")
 @Data
 @AllArgsConstructor
-public class Lecturer {
+public class StudentEntity {
     @Id
     @Column(columnDefinition = "uuid", nullable = false, updatable = false)
     @GeneratedValue
         @UuidGenerator(style = UuidGenerator.Style.TIME)
     private UUID id;
 
-    //tbd
-    @OneToMany(mappedBy = "lecturer", cascade = CascadeType.ALL,  orphanRemoval = true)
-    private Set<LecturerEnrollment> lecturerEnrollments = new HashSet<>();
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL,  orphanRemoval = true)
+    private Set<StudentEnrollment> studentEnrollments = new HashSet<>();
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL,  orphanRemoval = true)
+    private Set<RepoOwnerEntity> repoOwners = new HashSet<>();
 
     @Column(nullable = false)
     private String emailDomain;
@@ -39,6 +41,6 @@ public class Lecturer {
     @Column(nullable = false)
     private String lastName;
 
-    public Lecturer() {
+    public StudentEntity() {
     }
 }

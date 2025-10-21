@@ -11,7 +11,7 @@ import java.util.UUID;
 @Table()
 @Data
 @AllArgsConstructor
-public class RepoOwner {
+public class RepoOwnerEntity {
     @Id
     @Column(columnDefinition = "uuid", nullable = false, updatable = false)
     @GeneratedValue
@@ -20,12 +20,12 @@ public class RepoOwner {
 
     @ManyToOne
     @JoinColumn(name = "repo_id")
-    private Repo repo;
+    private RepoEntity repo;
 
     @ManyToOne
     @JoinColumn(name = "student_id")
-    private Student student;
+    private StudentEntity student;
 
-    public RepoOwner() {
+    public RepoOwnerEntity() {
     }
 }

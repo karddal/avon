@@ -5,34 +5,26 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.hibernate.annotations.UuidGenerator;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "coursework")
+@Table(name = "unit_group")
 @Data
 @AllArgsConstructor
-public class Coursework {
+public class UnitGroupEntity {
     @Id
     @Column(columnDefinition = "uuid", nullable = false, updatable = false)
     @GeneratedValue
     @UuidGenerator(style = UuidGenerator.Style.TIME)
     private UUID id;
 
-    @OneToMany(mappedBy = "coursework", cascade = CascadeType.ALL,  orphanRemoval = true)
-    private Set<Repo> repos = new HashSet<>();
-
     @ManyToOne
     @JoinColumn(name = "unit_id")
-    private Unit unit;
+    private UnitEntity unit;
 
     @Column(nullable = false)
-    private String title;
+    private String groupName;
 
-    @Column(nullable = false)
-    private String description;
-
-    public Coursework() {
+    public UnitGroupEntity() {
     }
 }

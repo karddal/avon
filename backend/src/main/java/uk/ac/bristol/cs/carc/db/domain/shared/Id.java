@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.util.Objects;
 
 @Getter
-public class Id<T> {
+public abstract class Id<T> {
     private final T value;
 
     @Override

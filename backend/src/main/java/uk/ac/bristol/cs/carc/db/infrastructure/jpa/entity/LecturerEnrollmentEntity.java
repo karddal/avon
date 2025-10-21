@@ -17,7 +17,7 @@ import java.util.UUID;
 //TODO: improve the structure of data base, turing the strategy of database
 //TODO: finish basic api of database
 //TODO: testing
-public class LecturerEnrollment {
+public class LecturerEnrollmentEntity {
     @Id
     @Column(columnDefinition = "uuid", nullable = false, updatable = false)
     @GeneratedValue
@@ -26,13 +26,13 @@ public class LecturerEnrollment {
 
     @ManyToOne
     @JoinColumn(name = "lecturer_id")
-    private Lecturer lecturer;
+    private LecturerEntity lecturer;
 
     @ManyToOne
     @JoinColumn(name = "unit_id")
-    private Unit unit;
+    private UnitEntity unit;
 
-    public LecturerEnrollment() {
+    public LecturerEnrollmentEntity() {
 
     }
 }

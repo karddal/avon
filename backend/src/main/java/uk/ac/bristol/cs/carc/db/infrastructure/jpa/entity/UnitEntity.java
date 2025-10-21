@@ -13,7 +13,7 @@ import java.util.UUID;
 @Table(name = "unit")
 @Data
 @AllArgsConstructor
-public class Unit {
+public class UnitEntity {
     @Id
     @Column(columnDefinition = "uuid", nullable = false, updatable = false)
     @GeneratedValue
@@ -21,16 +21,16 @@ public class Unit {
     private UUID id;
 
     @OneToMany(mappedBy = "unit", cascade = CascadeType.ALL,  orphanRemoval = true)
-    private Set<LecturerEnrollment> lecturerEnrollments = new HashSet<>();
+    private Set<LecturerEnrollmentEntity> lecturerEnrollments = new HashSet<>();
 
     @OneToMany(mappedBy = "unit", cascade = CascadeType.ALL,  orphanRemoval = true)
     private Set<StudentEnrollment> studentEnrollments = new HashSet<>();
 
     @OneToMany(mappedBy = "unit", cascade = CascadeType.ALL,  orphanRemoval = true)
-    private Set<Coursework> coursework = new HashSet<>();
+    private Set<CourseworkEntity> coursework = new HashSet<>();
 
     @OneToMany(mappedBy = "unit_group", cascade = CascadeType.ALL,  orphanRemoval = true)
-    private Set<UnitGroup> unitGroups = new HashSet<>();
+    private Set<UnitGroupEntity> unitGroups = new HashSet<>();
 
     @Column(nullable = false)
     private String unitCode;
@@ -40,6 +40,6 @@ public class Unit {
 
     private String description;
 
-    public Unit() {
+    public UnitEntity() {
     }
 }
