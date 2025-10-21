@@ -97,10 +97,10 @@ export default function NotificationBar() {
                 <DropdownMenuTrigger className="mx-2 hover:cursor-pointer">
                     <Bell size={20} />
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="mx-5 h-128">
-                    <DropdownMenuItem className="w-128 flex flex-col p-1">
-                        {notifications}
-                    </DropdownMenuItem>
+                <DropdownMenuContent className="mx-5 h-128 w-128 flex flex-col p-1">
+                    {/* <DropdownMenuItem className="w-128 flex flex-col p-1"> */}
+                    {notifications}
+                    {/* </DropdownMenuItem> */}
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>

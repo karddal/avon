@@ -9,7 +9,7 @@ type notificationData = {
 
 export default function NotificationMessage({ props }: { props: notificationData }) {
     return (
-        <div className="flex flex-col p-2 border border-slate-300">
+        <div className="flex flex-col p-2 m-2 border border-slate-300 hover:bg-slate-200 hover:cursor-pointer">
             <div className="flex flex-row justify-between align-bottom items-center">
                 <p className="text-lg">{props.title}</p>
                 {/* Add date and time logic */}
