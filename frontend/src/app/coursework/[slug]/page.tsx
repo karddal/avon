@@ -83,7 +83,7 @@ export default async function UnitPage({
                       <TestPassedProgressBar
                         className=""
                         value={100}
-                        colour="green-600"
+                        colour="#59AC77"
                       />
                       <p className="text-sm">100/100 tests passed.</p>
                       <p className="text-sm font-light">
@@ -95,12 +95,12 @@ export default async function UnitPage({
                       <p>Tests finished</p>
                       <TestPassedProgressBar
                         className=""
-                        value={33}
-                        colour="amber-600"
+                        value={35}
+                        colour="#F4991A"
                       />
-                      <p className="text-sm">33/100 tests passed.</p>
+                      <p className="text-sm">35/100 tests passed.</p>
                       <p className="text-sm font-light">
-                        20 October 2025 11:00
+                        20 October 2025 15:00
                       </p>
                       {/*<div className="w-full h-1 bg-green-600"></div>*/}
                     </Card>
@@ -112,53 +112,19 @@ export default async function UnitPage({
         </div>
         <div className="flex flex-col xl:col-span-1 lg:col-span-2 gap-4 min-h-0">
           <DropdownCard
+            title={"Information"}
+            desc={"Important information about the coursework appears here."}
+          >
+            {" "}
+            <p>Set date: </p>
+            <p>Due date: </p>
+          </DropdownCard>
+          <DropdownCard
             title="Tools"
             desc="Tools you can use for this coursework appear here."
           >
             {" "}
             <RunTestsItem />
-          </DropdownCard>
-          <DropdownCard
-            title="Announcements"
-            desc="Recent announcements appear here."
-          >
-            {" "}
-            <Card className="py-0 bg-accent flex flex-row items-center gap-4">
-              <div className="flex flex-row">
-                <div className="bg-red-500 h-auto w-1"></div>
-                <div className="flex flex-col px-2">
-                  <div className="text-xl font-semibold">New coursework!</div>
-                  <div className="font-light">
-                    <span className="font-bold">Sketch</span> has been released.
-                    Get started now!
-                  </div>
-                </div>
-              </div>
-            </Card>
-            <Card className="py-0 bg-accent flex flex-row items-center gap-4">
-              <div className="flex flex-row">
-                <div className="bg-red-500 h-auto w-1"></div>
-                <div className="flex flex-col px-2">
-                  <div className="text-xl font-semibold">New coursework!</div>
-                  <div className="font-light">
-                    <span className="font-bold">Sketch</span> has been released.
-                    Get started now!
-                  </div>
-                </div>
-              </div>
-            </Card>
-            <Card className="py-0 bg-accent flex flex-row items-center gap-4">
-              <div className="flex flex-row">
-                <div className="bg-red-500 h-auto w-1"></div>
-                <div className="flex flex-col px-2">
-                  <div className="text-xl font-semibold">New coursework!</div>
-                  <div className="font-light">
-                    <span className="font-bold">Sketch</span> has been released.
-                    Get started now!
-                  </div>
-                </div>
-              </div>
-            </Card>
           </DropdownCard>
         </div>
       </section>

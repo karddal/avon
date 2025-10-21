@@ -19,7 +19,7 @@ export function DropdownCard({
   return (
     <Card className={`flex flex-col gap-0 ${className}`}>
       <CardHeader
-        className="flex flex-row items-center gap-4 cursor-pointer "
+        className="flex flex-row items-center gap-4 cursor-pointer select-none "
         onClick={() => setOpen(!open)}
       >
         <CardTitle className="hover:bg-accent-foreground/5">
