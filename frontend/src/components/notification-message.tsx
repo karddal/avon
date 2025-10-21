@@ -1,3 +1,5 @@
+import { Dot } from "lucide-react";
+
 type notificationData = {
     key: number;
     title: string;
@@ -5,13 +7,20 @@ type notificationData = {
     time: string;
     from: string;
     message: string;
+    read: boolean;
 }
 
 export default function NotificationMessage({ props }: { props: notificationData }) {
+    const unreadMessage = props.read ? "hidden" : ""
     return (
         <div className="flex flex-col p-2 m-2 border border-slate-300 hover:bg-slate-200 hover:cursor-pointer">
             <div className="flex flex-row justify-between align-bottom items-center">
-                <p className="text-lg">{props.title}</p>
+                <div className="flex flex-row">
+                    <div className={`${unreadMessage}`}>
+                        <Dot color="#ff0000" size={35} strokeWidth={3} fill="#ff0000" />
+                    </div>
+                    <p className="text-lg">{props.title}</p>
+                </div>
                 {/* Add date and time logic */}
                 <p className="">4 hours ago</p>
             </div>
