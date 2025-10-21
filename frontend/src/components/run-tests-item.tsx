@@ -52,7 +52,7 @@ export default function RunTestsItem() {
         )}
         {actionState === 2 && (
           <Button variant="outline" size="lg" disabled>
-            <CheckIcon color="var(--color-success)" /> Run tests
+            <CheckIcon color="oklch(0.696 0.17 162.48)" /> Run tests
           </Button>
         )}
       </ItemActions>
