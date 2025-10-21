@@ -18,6 +18,7 @@
 - [Project Structure](#project-structure)
 - [Team Members](#team-members)
 - [Contributing / Developer Instructions](#contributing--developer-instructions)
+- [Architecture Diagram](#architecture-diagram)
 
 ## Important Links
 
@@ -168,6 +169,11 @@ A modern, responsive Next.JS frontend designed to be fast and lightweight consum
 | Yuxuan Wang         | [om23078@bristol.ac.uk](mailto:om23078@bristol.ac.uk)   |
 | Mihaly Toth-Tarsoly | [wq24423@bristol.ac.uk](mailto:wq24423@bristol.ac.uk)   |
 | Jack Dempsey        | [wm24026@bristol.ac.uk](mailto:wm24026@bristol.ac.uk)   |
+
+## Architecture Diagram
+<img width="3019" height="4013" alt="architecture" src="https://github.com/user-attachments/assets/0d617d6a-55b5-40a7-ac64-a5d919f4ff60" />
+
+
 
 ## Contributing / Developer Instructions
 See [CONTRIBUTING.md](CONTRIBUTING.md)
