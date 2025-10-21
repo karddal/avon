@@ -45,7 +45,12 @@ export default function Unit({ props }: { props: unitData }) {
                 <div
                   className={`${liveCoursework} flex flex-row justify-center items-center`}
                 >
-                  <Dot color="#ff0000" size={30} strokeWidth={3} fill="#ff0000" />
+                  <Dot
+                    color="#ff0000"
+                    size={30}
+                    strokeWidth={3}
+                    fill="#ff0000"
+                  />
                   <p className="-ml-2 text-red-600">Coursework Live</p>
                 </div>
               </div>
