@@ -9,8 +9,6 @@
 - [Important Links](#important-links)
 - [Tech Stack](#tech-stack)
 - [Installation](#installation)
-	- [Prerequisites](#prerequisites)
-	- [Running Locally](#running-locally)
 - [Project Description](#project-description)
 - [Stakeholders](#stakeholders)
 - [User Stories](#user-stories)
@@ -22,29 +20,21 @@
 
 ## Important Links
 
-- [Figma](https://www.figma.com/design/0GAtKL9idVkkgqkVF0u59z/CARC?node-id=0-1&p=f&t=6Tt63sBXywwS4rsh-0)
-- ER Diagrams (tbd)
-- [Kanban Board](https://github.com/orgs/spe-uob/projects/309/views/1?layout_template=board)
+| [Figma](https://www.figma.com/design/0GAtKL9idVkkgqkVF0u59z/CARC?node-id=0-1&p=f&t=6Tt63sBXywwS4rsh-0)  | ER Diagrams | [Kanban Board](https://github.com/orgs/spe-uob/projects/309/views/1?layout_template=board)
+|--------|-------------|---------
 
 ## Tech Stack
 
-[Next.js](https://nextjs.org/) frontend, [Spring Boot](https://spring.io/projects/spring-boot) backend.
-
-#### Tools & Libraries
-We use the [Just](https://github.com/casey/just) command runner to simplify the collaboration workflow. See the instructions in CONTRIBUTING.md
-
-#### Database
-PostgreSQL
-
-#### Linter(s)
-- Typescript: [Biome](https://biomejs.dev/)
-- Java: [Spotless](https://github.com/diffplug/spotless)
+| Category  | Tech |
+|-----------|------|
+| Frontend  | [Next.js](https://nextjs.org/), TailwindCSS  |
+| Backend   | [Spring Boot](https://spring.io/projects/spring-boot) |
+| Database  | [PostgreSQL](https://www.postgresql.org/) |
+| Linters   | [Biome](https://biomejs.dev/), [Spotless](https://github.com/diffplug/spotless)
+| Tools     | [Just](https://github.com/casey/just), [Git](https://git-scm.com/), [Bun](https://bun.dev/) |
 
 ## Installation
-
-### Prerequisites
-
-### Running Locally
+See [CONTRIBUTING.md](CONTRIBUTING.md)
 
 ## Project Description
 
