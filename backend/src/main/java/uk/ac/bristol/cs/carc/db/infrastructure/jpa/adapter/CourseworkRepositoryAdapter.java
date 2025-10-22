@@ -2,6 +2,7 @@ package uk.ac.bristol.cs.carc.db.infrastructure.jpa.adapter;
 
 import uk.ac.bristol.cs.carc.db.domain.ids.CourseworkId;
 import uk.ac.bristol.cs.carc.db.domain.ids.RepoId;
+import uk.ac.bristol.cs.carc.db.domain.ids.UnitId;
 import uk.ac.bristol.cs.carc.db.domain.model.Coursework;
 import uk.ac.bristol.cs.carc.db.domain.port.out.CourseworkRepositoryPort;
 import uk.ac.bristol.cs.carc.db.infrastructure.jpa.entity.CourseworkEntity;
@@ -15,17 +16,26 @@ import java.util.UUID;
 
 public class CourseworkRepositoryAdapter implements CourseworkRepositoryPort {
     private final CourseworkRepository courseworkRepository;
-    private final GenericAdapter<Coursework, CourseworkEntity, UUID, CourseworkMapper> base;
-
-    @Override
-    public Set<RepoId> findReposByCoursework(CourseworkId courseworkId) {
-        Set<UUID> repoUUIDs = courseworkRepository.findRepoIdsByUnitId(courseworkId.getValue());
-        return IdConverter.toDomainSet(repoUUIDs, RepoId::new);
-    }
+    private final GenericAdapter<Coursework, CourseworkEntity, UUID> base;
 
     public CourseworkRepositoryAdapter(CourseworkRepository courseworkRepository, CourseworkMapper courseworkMapper) {
         this.courseworkRepository = courseworkRepository;
-        this.base = new GenericAdapter<>(courseworkRepository, courseworkMapper);
+        this.base = new GenericAdapter<>(this.courseworkRepository, courseworkMapper);
+    }
+
+    @Override
+    public void linkCourseworkToUnit(UnitId unitId, CourseworkId courseworkId) {
+
+    }
+
+    @Override
+    public void unlinkCourseworkFromUnit(UnitId unitId, CourseworkId courseworkId) {
+
+    }
+
+    @Override
+    public Set<RepoId> findReposByCoursework(CourseworkId courseworkId) {
+        return Set.of();
     }
 
     @Override

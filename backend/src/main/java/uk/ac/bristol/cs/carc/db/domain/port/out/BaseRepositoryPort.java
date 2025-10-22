@@ -1,4 +1,4 @@
-package uk.ac.bristol.cs.carc.db.domain.shared;
+package uk.ac.bristol.cs.carc.db.domain.port.out;
 
 import java.util.Optional;
 
