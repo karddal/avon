@@ -43,13 +43,13 @@ const items = [
   },
   {
     title: "Units",
-    url: "#",
+    url: "/units",
     icon: SwatchBook,
     admin: false,
   },
   {
     title: "Coursework",
-    url: "/courseworks",
+    url: "/coursework",
     icon: BookText,
     admin: false,
   },
@@ -116,7 +116,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         href={item.url}
                         className="flex flex-col justify-center items-center !h-32 !w-32 md:!h-full md:!w-full aspect-square"
                       >
-                        <item.icon className="!size-10" />
+                        <item.icon strokeWidth={1} className="!size-8" />
                         <span className="text-accent-foreground">
                           {item.title}
                         </span>
@@ -140,7 +140,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         href={item.url}
                         className="flex flex-col justify-center items-center !h-32 !w-32 md:!h-full md:!w-full aspect-square"
                       >
-                        <item.icon className="!size-10" />
+                        <item.icon strokeWidth={1} className="!size-8" />
                         <span className="text-accent-foreground">
                           {item.title}
                         </span>
