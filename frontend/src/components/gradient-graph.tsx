@@ -35,10 +35,9 @@ export default function GradientGraph({
         const colour = `hsl(${hue}, 100%, 40%)`;
         const hoverColour = `hsl(${hue}, 100%, 60%)`;
         return (
-          <Tooltip>
+          <Tooltip key={student.uuid}>
             <TooltipTrigger>
               <div
-                key={student.uuid}
                 className="aspect-square size-8 border cursor-pointer"
                 onMouseEnter={() => setHovered(Number(student.uuid))}
                 onMouseLeave={() => setHovered(null)}
