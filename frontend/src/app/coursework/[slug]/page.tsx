@@ -12,7 +12,7 @@ export default async function UnitPage({
 }) {
   const { slug } = await params;
   // const name = getNameFromUnit(slug);
-  const name = "Sketch";
+  const _name = "Sketch";
   // const desc = getDescFromUnit(slug);
 
   return (
@@ -20,10 +20,10 @@ export default async function UnitPage({
       <div className="flex flex-col col-span-3">
         <div className="font-semibold text-5xl text-shadow-2xs">
           <span className="font-light">
-            Imperative and Functional Programming{" "}
+            Imperative and Functional Programming
           </span>
           <br />
-          {name}
+          {slug}
         </div>
         <div className="w-full bg-accent-foreground"></div>
       </div>

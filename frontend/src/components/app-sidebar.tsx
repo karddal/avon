@@ -1,5 +1,23 @@
-import { GalleryVerticalEnd } from "lucide-react";
+import {
+  BookCheck,
+  BookText,
+  ChartLine,
+  LayoutDashboard,
+  Settings,
+  SwatchBook,
+  User,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 import type * as React from "react";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import {
   Sidebar,
@@ -9,74 +27,165 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 
-const data = {
-  navMain: [
-    {
-      title: "Units",
-      url: "#",
-      icon: "Units",
-      items: [
-        {
-          title: "Coursework",
-          url: "#",
-          icon: "Coursework",
-        },
-        {
-          title: "Project Structure",
-          url: "#",
-        },
-      ],
-    },
-  ],
-};
+const items = [
+  {
+    title: "Dashboard",
+    url: "/dashboard",
+    icon: LayoutDashboard,
+    admin: true,
+  },
+  {
+    title: "Analytics",
+    url: "/analytics",
+    icon: ChartLine,
+    admin: true,
+  },
+  {
+    title: "Markbook",
+    url: "/markbook",
+    icon: BookCheck,
+    admin: true,
+    bottom: false,
+  },
+  {
+    title: "Units",
+    url: "/units",
+    icon: SwatchBook,
+    admin: false,
+  },
+  {
+    title: "Coursework",
+    url: "/coursework",
+    icon: BookText,
+    admin: false,
+  },
+
+  {
+    title: "Settings",
+    url: "#",
+    icon: Settings,
+    admin: false,
+    bottom: true,
+  },
+  // {
+  //   title: "Log Out",
+  //   url: "/logout",
+  //   icon: LogOut,
+  //   admin: false,
+  //   bottom: true,
+  // },
+];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar variant="floating" {...props}>
       <SidebarHeader>
         <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <a href="/">
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <GalleryVerticalEnd className="size-4" />
-                </div>
-                <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-medium">avon</span>
-                </div>
-              </a>
+          <SidebarMenuItem className="py-4 md:py-0">
+            <SidebarMenuButton
+              className="size-20 w-full justify-center md:justify-center md:aspect-square"
+              asChild
+            >
+              <div>
+                <Image
+                  src="/avon.png"
+                  alt="logo"
+                  width={200}
+                  height={200}
+                  className="dark:block hidden p-4 md:p-0"
+                />
+                <Image
+                  src="/avonlight.png"
+                  alt="logo"
+                  width={200}
+                  height={200}
+                  className="dark:hidden p-4 md:p-0"
+                />
+              </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarMenu className="gap-2">
-            {data.navMain.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild>
-                  <a href={item.url} className="font-medium">
-                    {item.title}
-                  </a>
+        <SidebarGroup className="h-full">
+          <SidebarMenu className="flex flex-col justify-center md:justify-between h-full">
+            <div className="flex flex-row flex-wrap justify-center items-center md:flex-col ">
+              {items
+                .filter((item) => !item.bottom)
+                .map((item) => (
+                  <SidebarMenuItem
+                    key={item.title}
+                    className="aspect-square md:flex-1 md:!h-full md:!w-full"
+                  >
+                    <SidebarMenuButton className="h-full" asChild>
+                      <Link
+                        href={item.url}
+                        className="flex flex-col justify-center items-center !h-32 !w-32 md:!h-full md:!w-full aspect-square"
+                      >
+                        <item.icon strokeWidth={1} className="!size-8" />
+                        <span className="text-accent-foreground">
+                          {item.title}
+                        </span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+            </div>
+
+            {/* bottom part of sidebar */}
+            <div className="flex flex-row flex-wrap justify-center items-center md:flex-col">
+              {items
+                .filter((item) => item.bottom)
+                .map((item) => (
+                  <SidebarMenuItem
+                    key={item.title}
+                    className="aspect-square md:flex-1 md:!h-full md:!w-full"
+                  >
+                    <SidebarMenuButton className="h-full" asChild>
+                      <Link
+                        href={item.url}
+                        className="flex flex-col justify-center items-center !h-32 !w-32 md:!h-full md:!w-full aspect-square"
+                      >
+                        <item.icon strokeWidth={1} className="!size-8" />
+                        <span className="text-accent-foreground">
+                          {item.title}
+                        </span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+
+              <SidebarMenuItem
+                key={"Account"}
+                className="aspect-square hidden md:flex md:flex-1 md:!h-full md:!w-full"
+              >
+                <SidebarMenuButton
+                  className="flex aspect-square justify-center align-center !h-full"
+                  asChild
+                >
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="!h-full hover:bg-accent-foreground/10">
+                      <Link
+                        href="#"
+                        className="flex flex-col justify-center items-center !h-32 !w-32 md:!h-full md:!w-full aspect-square"
+                      >
+                        <User strokeWidth={1} className="!size-8" />
+                        <span className="text-accent-foreground text-sm">
+                          Account
+                        </span>
+                      </Link>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent side="right">
+                      <DropdownMenuItem>[Username]</DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>Logout</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </SidebarMenuButton>
-                {item.items?.length ? (
-                  <SidebarMenuSub className="ml-0 border-l-0 px-1.5">
-                    {item.items.map((item) => (
-                      <SidebarMenuSubItem key={item.title}>
-                        <SidebarMenuSubButton asChild isActive={item.isActive}>
-                          <a href={item.url}>{item.title}</a>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    ))}
-                  </SidebarMenuSub>
-                ) : null}
               </SidebarMenuItem>
-            ))}
+            </div>
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
