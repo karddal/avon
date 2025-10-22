@@ -47,7 +47,7 @@ A modern, responsive Next.JS frontend designed to be fast and lightweight consum
 
 ## Stakeholders
 
-**Client**: [School of Computer Science (Mike Fraser and Tilo Berghardt)](https://www.bristol.ac.uk/science-engineering/schools/computer-science/)
+**Client**: [School of Computer Science (Mike Fraser and Tilo Burghardt)](https://www.bristol.ac.uk/science-engineering/schools/computer-science/)
 
 **End users**: Students, Lecturers/Unit Directors
 
