@@ -3,13 +3,21 @@ import {
   BookText,
   ChartLine,
   LayoutDashboard,
-  LogOut,
   Settings,
   SwatchBook,
+  User,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import type * as React from "react";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import {
   Sidebar,
@@ -61,13 +69,13 @@ const items = [
     admin: false,
     bottom: true,
   },
-  {
-    title: "Log Out",
-    url: "/logout",
-    icon: LogOut,
-    admin: false,
-    bottom: true,
-  },
+  // {
+  //   title: "Log Out",
+  //   url: "/logout",
+  //   icon: LogOut,
+  //   admin: false,
+  //   bottom: true,
+  // },
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -148,6 +156,35 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
+
+              <SidebarMenuItem
+                key={"Account"}
+                className="aspect-square hidden md:flex md:flex-1 md:!h-full md:!w-full"
+              >
+                <SidebarMenuButton
+                  className="flex aspect-square justify-center align-center !h-full"
+                  asChild
+                >
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="!h-full hover:bg-accent-foreground/10">
+                      <Link
+                        href="#"
+                        className="flex flex-col justify-center items-center !h-32 !w-32 md:!h-full md:!w-full aspect-square"
+                      >
+                        <User strokeWidth={1} className="!size-8" />
+                        <span className="text-accent-foreground text-sm">
+                          Account
+                        </span>
+                      </Link>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent side="right">
+                      <DropdownMenuItem>[Username]</DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>Logout</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </div>
           </SidebarMenu>
         </SidebarGroup>
