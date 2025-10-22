@@ -10,6 +10,7 @@ type unitData = {
   color: string;
   mark: number;
   courseworkLive: boolean;
+  read: boolean;
 };
 
 // TODO: Make a more concrete type
