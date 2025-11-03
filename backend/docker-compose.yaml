@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: ${POSTGRES_IMAGE:-postgres:18}
+    container_name: ${COMPOSE_PROJECT_NAME:-pg_db}-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: ${PGDATA:-/var/lib/postgresql/18/docker}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pg_data:
+    name: ${PG_VOLUME:-pg-data}
