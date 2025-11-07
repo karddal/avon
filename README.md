@@ -1,6 +1,6 @@
 # Continuous Assessment for Revision Control
 
-![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white) ![AWS](https://img.shields.io/badge/aws-%23232f3e.svg?style=for-the-badge&logo=amazon&logoColor=white) ![GitLab](https://img.shields.io/badge/GitLab-FC6D26?style=for-the-badge&logo=gitlab&logoColor=white) ![Next.JS](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white) ![Spring Boot](https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
+![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white) ![AWS](https://img.shields.io/badge/aws-%23232f3e.svg?style=for-the-badge&logo=amazon&logoColor=white) ![GitLab](https://img.shields.io/badge/GitLab-FC6D26?style=for-the-badge&logo=gitlab&logoColor=white) ![Next.JS](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white) ![FastAPI](https://img.shields.io/badge/FastAPI-009485.svg?style=for-the-badge&logo=fastapi&logoColor=white)
 
 **Continuous Assessment for Revision Control (CARC)** is a **Virtual Learning Environment (VLE)** allowing lecturers to track the progress of students through coursework.
   
@@ -28,7 +28,7 @@
 | Category  | Tech |
 |-----------|------|
 | Frontend  | [Next.js](https://nextjs.org/), TailwindCSS  |
-| Backend   | [Spring Boot](https://spring.io/projects/spring-boot) |
+| Backend   | [FastAPI](https://fastapi.tiangolo.com/) |
 | Database  | [PostgreSQL](https://www.postgresql.org/) |
 | Linters   | [Biome](https://biomejs.dev/), [Spotless](https://github.com/diffplug/spotless)
 | Tools     | [Just](https://github.com/casey/just), [Git](https://git-scm.com/), [Bun](https://bun.dev/) |
@@ -43,7 +43,7 @@ CARC aims to be a VLE that works with staff and students, rather than against th
 measurement of performance _throughout_ coursework completion, rather than just at the end.
 CARC also aims to relieve some small measure of the frustration felt with current systems; by allowing all common tasks to be conducted from within the same place, automatically. The project was conceived because the clients realised that having a more fulsome understanding of the process taken to complete courseworks would allow more accurate and fair evaluation of students. In addition, there are plans to perhaps be able to deal with the threat that AI poses to traditional academic assignments, by embracing it. For example, courseworks can be split into stages that are assessed separately, and the contributions by humans and AI weighed up to decide on a final result.
 
-A modern, responsive Next.JS frontend designed to be fast and lightweight consumes an API exposed by a modular Spring Boot backend, organised using the Hexagonal architecture.
+A modern, responsive Next.JS frontend designed to be fast and lightweight consumes an API exposed by a modular FastAPI backend. In the future, we will potentially integrate with a system being designed in parallel by a University team. As such, we are going to write extensive documentation to allow for code re-use. The backend (FastAPI) was chosen for this purpose.
 
 ## Stakeholders
 
