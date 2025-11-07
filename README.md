@@ -162,9 +162,7 @@ A modern, responsive Next.JS frontend designed to be fast and lightweight consum
 | Jack Dempsey        | [wm24026@bristol.ac.uk](mailto:wm24026@bristol.ac.uk)   |
 
 ## Architecture Diagram
-<img width="3019" height="4013" alt="architecture" src="https://github.com/user-attachments/assets/0d617d6a-55b5-40a7-ac64-a5d919f4ff60" />
-
-
+<img width="2743" height="4275" alt="Blank diagram" src="https://github.com/user-attachments/assets/eb254416-470f-4a1f-88cc-cac42fa51883" />
 
 ## Contributing / Developer Instructions
 See [CONTRIBUTING.md](CONTRIBUTING.md)
