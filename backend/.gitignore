@@ -1,0 +1,4 @@
+database.db
+backend.egg-info
+dist
+**/__pycache__
