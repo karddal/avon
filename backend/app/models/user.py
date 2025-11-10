@@ -9,7 +9,7 @@ class User(SQLModel, table = True):
     first_name: str = Field(index = True)
     last_name: str = Field(index = True)
     email: str = Field(index = True)
-    password: str = Field()
+    hashed_password: str = Field()
     creation_date: datetime.datetime = Field(default_factory = datetime.datetime.now)
     is_lecturer: bool = Field(default = False)
 

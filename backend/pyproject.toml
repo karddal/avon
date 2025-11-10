@@ -9,7 +9,9 @@ description = "FastAPI backend"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "bcrypt<5",
     "fastapi[standard-no-fastapi-cloud-cli]>=0.121.0",
+    "passlib>=1.7.4",
     "sqlmodel>=0.0.27",
     "uvicorn>=0.30.0",
 ]

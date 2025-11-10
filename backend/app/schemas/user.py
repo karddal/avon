@@ -1,15 +1,18 @@
+import datetime
 from typing import Annotated
 
 import re
+from uuid import UUID
+
 from pydantic import BaseModel, EmailStr, AfterValidator, field_validator
 from pydantic_core.core_schema import ValidationInfo
 
 
 def name_is_correct_length(name: str) -> str:
-    if 1<=len(name)<=100:
+    if 1<=len(name)<=72:
         return name
     else:
-        raise ValueError("Name must be between 1 and 15 characters")
+        raise ValueError("Name must be between 1 and 72 characters")
 
 def is_valid_password(password: str) -> str:
     if len(password)<8 or len(password) > 30:
@@ -33,6 +36,7 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: Password
     password_repeat: str
+    is_lecturer: bool
 
     @field_validator('password_repeat', mode='after')
     @classmethod
@@ -44,4 +48,14 @@ class UserCreate(BaseModel):
         except KeyError:
             raise ValueError("Password must not be empty")
 
+class UserRead(BaseModel):
+    id: UUID
+    first_name: str
+    last_name: str
+    email: EmailStr
+    creation_date: datetime.datetime
+    is_lecturer: bool
 
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: Password
