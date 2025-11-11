@@ -41,7 +41,9 @@ source = { editable = "." }
 dependencies = [
     { name = "bcrypt" },
     { name = "fastapi", extra = ["standard-no-fastapi-cloud-cli"] },
+    { name = "httpx" },
     { name = "passlib" },
+    { name = "pytest" },
     { name = "sqlmodel" },
     { name = "uvicorn" },
 ]
@@ -56,7 +58,9 @@ dev = [
 requires-dist = [
     { name = "bcrypt", specifier = "<5" },
     { name = "fastapi", extras = ["standard-no-fastapi-cloud-cli"], specifier = ">=0.121.0" },
+    { name = "httpx", specifier = ">=0.28.1" },
     { name = "passlib", specifier = ">=1.7.4" },
+    { name = "pytest", specifier = ">=8.4.2" },
     { name = "sqlmodel", specifier = ">=0.0.27" },
     { name = "uvicorn", specifier = ">=0.30.0" },
 ]
