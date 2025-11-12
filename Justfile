@@ -8,7 +8,7 @@ check-fe:
 
 check-be:
     @echo "Formatting and linting backend..."
-    cd backend && ./gradlew spotlessCheck
+    cd backend && uv run ruff check
 
 check: check-fe check-be
 
@@ -18,7 +18,7 @@ fix-fe:
 
 fix-be:
     @echo "Fixing backend..."
-    cd backend && ./gradlew spotlessApply
+    cd backend && uv run ruff check --fix
 
 fixit: fix-fe fix-be
 
@@ -32,6 +32,5 @@ run-fe:
     cd frontend && bun run dev
 
 run-be:
-    cd backend && ./gradlew bootRun
-
+    cd backend && uv run fastapi dev
 
