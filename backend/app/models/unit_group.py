@@ -1,5 +1,4 @@
 import uuid
-import sqlmodel
 
 from sqlmodel import SQLModel, Field
 from uuid import UUID

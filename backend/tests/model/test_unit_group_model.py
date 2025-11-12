@@ -1,7 +1,6 @@
 import uuid
 import pytest
 from pydantic import ValidationError
-from fastapi import FastAPI
 from sqlmodel import SQLModel, create_engine, Session, select
 
 from app.models import unit_group
