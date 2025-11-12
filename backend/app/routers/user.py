@@ -17,6 +17,9 @@ session_dependency = Annotated[Session, Depends(get_session)]
 
 @router.post('/create', response_model=UserRead, status_code=status.HTTP_201_CREATED)
 async def create_user(user: UserCreate, session: session_dependency):
+    # checker weather the user is already exist
+    #currenttly using each student should have different
+    #maybe need to change when we decide our login method
     db_user = session.exec(select(User).where(User.email == user.email)).first()
     if db_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
@@ -58,6 +61,7 @@ async def delete_user(user_id: UUID, session: session_dependency):
 
     return
 
+#some example login for test password security
 @router.post("/login", response_model=UserRead)
 async def login(login_data: UserLogin, session: session_dependency):
     db_user = session.exec(select(User).where(User.email == login_data.email)).first()

@@ -15,14 +15,14 @@ engine = create_engine(TEST_DATABASE_URL, connect_args={"check_same_thread": Fal
 
 
 def get_session_override():
-    """Dependency override: use a test database session instead of the real one."""
+    #use a test database session instead of the real one.
     with Session(engine) as session:
         yield session
 
 
 @pytest.fixture(scope="session", autouse=True)
 def create_db_and_tables():
-    """Create all tables before running tests and drop them after the test session."""
+    #Create all tables before running tests and drop them after the test session.
     SQLModel.metadata.create_all(engine)
     yield
     SQLModel.metadata.drop_all(engine)
@@ -30,7 +30,7 @@ def create_db_and_tables():
 
 @pytest.fixture(autouse=True)
 def clear_users_table():
-    """Clear all records from the User table before each test to ensure isolation."""
+    #Clear all records from the User table before each test to ensure isolation.
     with Session(engine) as session:
         users = session.exec(select(User)).all()
         for u in users:

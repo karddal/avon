@@ -48,6 +48,7 @@ class UserCreate(BaseModel):
         except KeyError:
             raise ValueError("Password must not be empty")
 
+# the return template for router to output without output user password
 class UserRead(BaseModel):
     id: UUID
     first_name: str
