@@ -2,9 +2,9 @@ import datetime
 import uuid
 
 from typing import List
+from app.models.unit_group import UnitGroup
+from app.models.user_group_member import UserGroupMember
 from sqlmodel import SQLModel, Field, Relationship
-from unit_group import UnitGroup
-from user_group_member import UserGroupMember
 
 
 class Unit(SQLModel, table=True):
