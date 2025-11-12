@@ -3,5 +3,4 @@ backend.egg-info
 dist
 **/__pycache__
 
-uv.lock
 *.db

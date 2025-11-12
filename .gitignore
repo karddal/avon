@@ -16,5 +16,4 @@ out/
 # VSCode
 .vscode/
 
-*.lock
 *.db
