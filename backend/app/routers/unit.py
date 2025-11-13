@@ -1,11 +1,10 @@
 
 
 from fastapi import APIRouter, Depends
-from sqlmodel import Session, select
+from sqlmodel import Session
 from app.db.session import get_session
 from typing import Annotated
 
-from app.models.user import User
 
 # from app.models.user import User
 # from app.schemas.user import UserCreate
