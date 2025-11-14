@@ -2,7 +2,10 @@ import datetime
 import uuid
 
 from typing import List, TYPE_CHECKING
+
+from app.models.unit_enrollment import UnitEnrollment
 if TYPE_CHECKING:
+    from app.models.user import User 
     from app.models.unit_group import UnitGroup
 from app.models.unit_group_member import UnitGroupMember
 
@@ -18,4 +21,9 @@ class Unit(SQLModel, table=True):
     groups: List["UnitGroup"] = Relationship(
         back_populates="units",
         link_model=UnitGroupMember
+    )
+
+    users: List["User"] = Relationship(
+        back_populates="units",
+        link_model=UnitEnrollment
     )
