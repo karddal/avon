@@ -6,7 +6,7 @@ from uuid import UUID
 
 from app.models.coursework import Coursework
 from app.models.unit import Unit
-from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkUpdate
+from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkUpdate, CourseworkDelete
 
 router = APIRouter(prefix = "/coursework", tags=["coursework"])
 session_dependency = Annotated[Session, Depends(get_session)]
@@ -34,17 +34,20 @@ async def get_coursework(id: UUID, session: session_dependency):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
     return coursework
 
-@router.delete('/{id}')
+@router.delete('/{id}', response_model=CourseworkDelete)
 async def delete_coursework(id: UUID, session: session_dependency):
     coursework = session.get(Coursework,id)
 
     if coursework is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
-    
+    #print("\n\n\n\n\n\n\n")
     session.delete(coursework)
     session.commit()
-    
-    return 
+
+    #print("got here")
+    courseworkDeleted = CourseworkDelete(id=id, deletion_successful=True)
+    #print(courseworkDeleted)
+    return courseworkDeleted
 
 @router.put('/{id}', response_model = CourseworkRead)
 async def update_coursework(id: UUID, coursework: CourseworkUpdate, session: session_dependency):

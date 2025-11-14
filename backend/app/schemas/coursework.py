@@ -26,8 +26,6 @@ def is_valid_due_date(date: datetime.datetime) -> datetime.datetime:
         
     now = datetime.datetime.now(datetime.timezone.utc)
     one_year_onwards = now + datetime.timedelta(days=365)
-    print("\n\n\n\n\n\n")
-    print(now, date)
 
     if date <= now:
         raise ValueError("Due date must be greater than now")
@@ -47,7 +45,7 @@ class CourseworkRead(BaseModel):
     name: str
     description: str
     unit_id: UUID
-    due_date: DueDate #DueDate #already validated as from our api
+    due_date: datetime.datetime
     creation_date: datetime.datetime
 
 class CourseworkCreate(BaseModel):
@@ -63,4 +61,8 @@ class CourseworkUpdate(BaseModel):
     description: Description | None = None
     unit_id: UUID | None = None
     due_date: DueDate | None = None
+
+class CourseworkDelete(BaseModel):
+    id: UUID
+    deletion_successful: bool
 
