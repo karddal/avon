@@ -63,10 +63,10 @@ def seed_data():
         unit_result = session.exec(statement).first()
         # Populate the Units Page if empty
         if not unit_result:
-            unit1 = Unit(name="Algorithms and Data", description="hard unit", groups=[group1, group2, group3])
-            unit2 = Unit(name="Software Engineering Project", description="lots of work", groups=[group1, group2, group3])
-            unit3 = Unit(name="Imperative and Functional Programming", description="haskell was enlightening", groups=[group1, group2, group3])
-            unit4 = Unit(name="Computer Architecture", description="second part was very fun", groups=[group1, group2, group3])
+            unit1 = Unit(name="Algorithms and Data", description="hard unit", groups=[group1, group2, group3], users=[])
+            unit2 = Unit(name="Software Engineering Project", description="lots of work", groups=[group1, group2, group3], users=[])
+            unit3 = Unit(name="Imperative and Functional Programming", description="haskell was enlightening", groups=[group1, group2, group3], users=[])
+            unit4 = Unit(name="Computer Architecture", description="second part was very fun", groups=[group1, group2, group3], users=[])
             session.add_all([unit1, unit2, unit3, unit4])
             session.commit()
             session.refresh(unit1)
@@ -118,42 +118,48 @@ def seed_data():
                 last_name="Emkay",
                 email="rsh@bristol.ac.uk",
                 hashed_password="$argon2id$v=19$m=65536,t=3,p=4$YmEXd8OiqssP687E6GPWuQ$oPUtLJ8fr+4OTANWYlOl0UsmNeAcE6kRaNpoHSElYAY",
-                is_lecturer=False
+                is_lecturer=False,
+                units=[unit1, unit2]
             )
             user2 = User(
                 first_name="Josh Jenkins",
                 last_name="Jenkins",
                 email="j.jenkins@bristol.ac.uk",
                 hashed_password="$argon2id$v=19$m=65536,t=3,p=4$YmEXd8OiqssP687E6GPWuQ$oPUtLJ8fr+4OTANWYlOl0UsmNeAcE6kRaNpoHSElYAY",
-                is_lecturer=False
+                is_lecturer=False,
+                units=[unit1, unit2]
             )
             user3 = User(
                 first_name="Yuxuan",
                 last_name="Wang",
                 email="yuxuan.wang@university.ac.uk",
                 hashed_password="$argon2id$v=19$m=65536,t=3,p=4$YmEXd8OiqssP687E6GPWuQ$oPUtLJ8fr+4OTANWYlOl0UsmNeAcE6kRaNpoHSElYAY",
-                is_lecturer=False
+                is_lecturer=False,
+                units=[unit3, unit2]
             )
             user4 = User(
                 first_name="Dempsey",
                 last_name="Jack",
                 email="jwd@university.ac.uk",
                 hashed_password="$argon2id$v=19$m=65536,t=3,p=4$YmEXd8OiqssP687E6GPWuQ$oPUtLJ8fr+4OTANWYlOl0UsmNeAcE6kRaNpoHSElYAY",
-                is_lecturer=False
+                is_lecturer=False,
+                units=[unit3, unit2]
             )
             user5 = User(
                 first_name="Mihaly",
                 last_name="Toth-Tarsoly",
                 email="mihaly@university.ac.uk",  # Fixed duplicate email
                 hashed_password="$argon2id$v=19$m=65536,t=3,p=4$YmEXd8OiqssP687E6GPWuQ$oPUtLJ8fr+4OTANWYlOl0UsmNeAcE6kRaNpoHSElYAY",
-                is_lecturer=False
+                is_lecturer=False,
+                units=[unit1, unit3]
             )
             user6 = User(
                 first_name="Tilo",
                 last_name="Burghardt",
                 email="tilo@university.ac.uk",
                 hashed_password="$argon2id$v=19$m=65536,t=3,p=4$YmEXd8OiqssP687E6GPWuQ$oPUtLJ8fr+4OTANWYlOl0UsmNeAcE6kRaNpoHSElYAY",  # Changed password hash
-                is_lecturer=True
+                is_lecturer=True,
+                units=[unit3, unit4]
             )
             session.add_all([user1, user2, user3, user4, user5, user6])
             session.commit()

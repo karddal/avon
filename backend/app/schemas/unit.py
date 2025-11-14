@@ -15,7 +15,7 @@ Name = Annotated[str, AfterValidator(name_is_correct_length)]
 class UnitRead(BaseModel):
   name: Name
   description: str
-  creation_date: datetime.datetime
+  creation_date: datetime
 
 class UnitCreate(BaseModel):
     name: Name
@@ -26,3 +26,16 @@ class UnitUpdate(BaseModel):
     name: Name
     description: str
     group_ids: Optional[List[uuid.UUID]] = None
+
+class UnitAll(BaseModel):
+    units: List[UnitRead]
+
+## Maybe port the below to Jack's Coursework Schema
+class CourseworkRead(BaseModel):
+    name: str
+    description: str
+    due_date: datetime
+    creation_date: datetime
+
+class CourseworkAll(BaseModel):
+    courseworks: List[CourseworkRead]
