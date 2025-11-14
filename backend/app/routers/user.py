@@ -5,13 +5,13 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session, select
 
-from app.core.security import hash_password, verify_password, Token, authenticate_user, create_access_token
+from app.core.security import hash_password, Token, authenticate_user, create_access_token
 from app.core.settings import settings
 from app.db.session import get_session
 from typing import Annotated
 
 from app.models.user import User
-from app.schemas.user import UserCreate, UserRead, UserLogin
+from app.schemas.user import UserCreate, UserRead
 
 router = APIRouter(prefix="/users", tags=["users"])
 session_dependency = Annotated[Session, Depends(get_session)]

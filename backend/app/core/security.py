@@ -7,13 +7,12 @@ import jwt
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from jwt import InvalidTokenError
-from passlib.context import CryptContext
 from pwdlib import PasswordHash
 from pydantic import BaseModel
 from sqlmodel import select
 from starlette import status
 
-from app.core.settings import Settings, settings
+from app.core.settings import settings
 from app.db.session import SessionDep
 from app.models.user import User
 
