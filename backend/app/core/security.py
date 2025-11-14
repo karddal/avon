@@ -1,6 +1,6 @@
 import uuid
 from datetime import timedelta, datetime, timezone
-from http.client import HTTPException
+from fastapi import HTTPException
 from typing import Annotated
 
 import jwt
@@ -34,7 +34,7 @@ class Token(BaseModel):
     token_type: str
 
 class TokenData(BaseModel):
-    user_id: uuid.UUID | None = None
+    user_id: str | None = None
 
 class UserNotFoundError(Exception):
     def __init__(self, message: str):
@@ -44,24 +44,27 @@ class PasswordIncorrectError(Exception):
     def __init__(self, message: str):
         self.message = message
 
-def get_user(username: str, password: str, session: SessionDep) -> type[User]:
+def get_user(username: str, session: SessionDep) -> type[User]:
     user = session.exec(select(User).where(User.username == username)).first()
     if not user:
         raise UserNotFoundError("User not found")
-    if not verify_password(user.hashed_password, password):
-        raise PasswordIncorrectError("Incorrect password")
     return user
 
-def get_user_by_uuid(user_id: uuid.UUID, password: str, session: SessionDep) -> type[User]:
+def get_user_by_uuid(user_id: uuid.UUID, session: SessionDep) -> type[User]:
     user = session.get(User, user_id)
+    print(session.exec(select(User)).all())
     if not user:
         raise UserNotFoundError("User not found")
-    if not verify_password(user.hashed_password, password):
-        raise PasswordIncorrectError("Incorrect password")
     return user
 
-def authenticate_user(username: str, password: str, session: SessionDep) -> bool | type[User]:
-    user = get_user(username, password, session)
+def get_user_by_username(email: str, session: SessionDep) -> type[User]:
+    user = session.exec(select(User).where(User.email == email)).first()
+    if not user:
+        raise UserNotFoundError("User not found")
+    return user
+
+def authenticate_user(username: str, password: str, session: SessionDep) -> type[User]:
+    user = get_user_by_username(username, session)
     if not user:
         raise UserNotFoundError("User not found")
     if not verify_password(password, user.hashed_password):
@@ -87,20 +90,15 @@ async def get_current_user(token: Annotated[str, Depends(oath2_scheme)], session
     try:
         payload = jwt.decode(token, settings.jwt_secret_key, algorithms=[ALGORITHM])
         username = payload.get("sub")
+        print(username)
         if username is None:
             raise credentials_exception
-        token_data = TokenData(username = username)
     except InvalidTokenError:
         raise credentials_exception
-    user = get_user_by_uuid(user_id=token_data.user_id, session=session)
+    user = get_user_by_username(email=username, session=session)
     if user is None:
         raise credentials_exception
     return user
-
-async def get_current_active_user(
-    current_user: Annotated[User, Depends(get_current_user)],
-):
-    return current_user
 
 
 
