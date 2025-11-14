@@ -1,14 +1,17 @@
+from datetime import timedelta
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session, select
 
-from app.core.security import hash_password, verify_password
+from app.core.security import hash_password, Token, authenticate_user, create_access_token
+from app.core.settings import settings
 from app.db.session import get_session
 from typing import Annotated
 
 from app.models.user import User
-from app.schemas.user import UserCreate, UserRead, UserLogin
+from app.schemas.user import UserCreate, UserRead
 
 router = APIRouter(prefix="/users", tags=["users"])
 session_dependency = Annotated[Session, Depends(get_session)]
@@ -61,11 +64,30 @@ async def delete_user(user_id: UUID, session: session_dependency):
     return
 
 #some example login for test password security
-@router.post("/login", response_model=UserRead)
-async def login(login_data: UserLogin, session: session_dependency):
-    db_user = session.exec(select(User).where(User.email == login_data.email)).first()
+# @router.post("/login", response_model=UserRead)
+# async def login(login_data: UserLogin, session: session_dependency):
+#     db_user = session.exec(select(User).where(User.email == login_data.email)).first()
+#
+#     if not db_user or not verify_password(login_data.password, db_user.hashed_password):
+#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Incorrect email or password")
+#
+#     return db_user
 
-    if not db_user or not verify_password(login_data.password, db_user.hashed_password):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Incorrect email or password")
+@router.post("/token")
+async def login_for_access_token(
+        form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
+        session: session_dependency,
+) -> Token:
+    user = authenticate_user(form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate creds",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=settings.access_token_expiry_minutes)
+    access_token = create_access_token(
+        data = {"sub", user.id}, expires_delta=access_token_expires
+    )
+    return Token(access_token=access_token, token_type="bearer")
 
-    return db_user
