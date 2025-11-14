@@ -42,7 +42,7 @@ class CourseworkRead(BaseModel):
     name: str
     description: str
     unit_id: UUID
-    due_date: datetime.datetime #already validated as from our api
+    due_date: DueDate #already validated as from our api
     creation_date: datetime.datetime
 
 class CourseworkCreate(BaseModel):

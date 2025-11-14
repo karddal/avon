@@ -55,7 +55,7 @@ async def update_user(id: UUID, coursework: CourseworkUpdate, session: session_d
     
     if coursework.unit_id is not None:
         unit_exists = session.exec(select(Unit).where(Unit.id == coursework.unit_id)).first()
-        if unit_exists:
+        if not unit_exists:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Corresponding unit not found")
 
     coursework_data = coursework.model_dump(exclude_unset=True)
