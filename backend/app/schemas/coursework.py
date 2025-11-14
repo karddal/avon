@@ -21,11 +21,16 @@ def is_valid_description(description: str) -> str:
 
 
 def is_valid_due_date(date: datetime.datetime) -> datetime.datetime:
-    now = datetime.datetime.now()
+    if date.tzinfo is None:
+        date = date.replace(tzinfo=datetime.timezone.utc)
+        
+    now = datetime.datetime.now(datetime.timezone.utc)
     one_year_onwards = now + datetime.timedelta(days=365)
+    print("\n\n\n\n\n\n")
+    print(now, date)
 
     if date <= now:
-        raise ValueError("Due date must be greater than today")
+        raise ValueError("Due date must be greater than now")
     elif date > one_year_onwards:
         raise ValueError("Due date must be within one year from now")
     else:
@@ -42,7 +47,7 @@ class CourseworkRead(BaseModel):
     name: str
     description: str
     unit_id: UUID
-    due_date: DueDate #already validated as from our api
+    due_date: DueDate #DueDate #already validated as from our api
     creation_date: datetime.datetime
 
 class CourseworkCreate(BaseModel):
