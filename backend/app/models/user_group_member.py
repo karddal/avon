@@ -5,3 +5,4 @@ class UserGroupMember(SQLModel, table = True):
     group_id: UUID = Field(foreign_key="unitgroup.id", primary_key=True)
     unit_id: UUID = Field(foreign_key="unit.id", primary_key=True)
 
+    
