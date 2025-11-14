@@ -7,10 +7,10 @@ from sqlmodel import Session, SQLModel, create_engine, select
 
 from app.models.coursework import Coursework
 from app.models.unit import Unit
-from backend.app.models.unit_enrollment import UnitEnrollment
+from app.models.unit_enrollment import UnitEnrollment
 from app.models.unit_group import UnitGroup
 from app.models.user import User
-from app.models.user_group_member import UserGroupMember
+from app.models.unit_group_member import UnitGroupMember
 
 sqlite_file_name = "database.db"
 sqlite_url = f"sqlite:///{sqlite_file_name}"
@@ -192,19 +192,19 @@ def seed_data():
             groups = session.exec(select(UnitGroup)).all()
             group1, group2, group3 = groups[0], groups[1], groups[2]
         
-        statement = select(UserGroupMember)
+        statement = select(UnitGroupMember)
         data = session.exec(statement).first()  # Changed from Session.exec
         if not data:
-            ugm1 = UserGroupMember(group_id=group1.id, unit_id=unit3.id)
-            ugm2 = UserGroupMember(group_id=group1.id, unit_id=unit4.id)
+            ugm1 = UnitGroupMember(group_id=group1.id, unit_id=unit3.id)
+            ugm2 = UnitGroupMember(group_id=group1.id, unit_id=unit4.id)
             
-            ugm3 = UserGroupMember(group_id=group2.id, unit_id=unit1.id)
-            ugm4 = UserGroupMember(group_id=group2.id, unit_id=unit2.id)
+            ugm3 = UnitGroupMember(group_id=group2.id, unit_id=unit1.id)
+            ugm4 = UnitGroupMember(group_id=group2.id, unit_id=unit2.id)
             
-            ugm5 = UserGroupMember(group_id=group3.id, unit_id=unit1.id)
-            ugm6 = UserGroupMember(group_id=group3.id, unit_id=unit2.id)
-            ugm7 = UserGroupMember(group_id=group3.id, unit_id=unit3.id)
-            ugm8 = UserGroupMember(group_id=group3.id, unit_id=unit4.id)
+            ugm5 = UnitGroupMember(group_id=group3.id, unit_id=unit1.id)
+            ugm6 = UnitGroupMember(group_id=group3.id, unit_id=unit2.id)
+            ugm7 = UnitGroupMember(group_id=group3.id, unit_id=unit3.id)
+            ugm8 = UnitGroupMember(group_id=group3.id, unit_id=unit4.id)
             
             session.add_all([ugm1, ugm2, ugm3, ugm4, ugm5, ugm6, ugm7, ugm8])
             session.commit()
@@ -217,7 +217,7 @@ SessionDep = Annotated[Session, Depends(get_session)]
 async def lifespan(app: FastAPI):
     create_db_and_tables()
     print("yo yo")
-    seed_data()
+    # seed_data()
     print("beep beep")
     yield
 

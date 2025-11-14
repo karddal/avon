@@ -4,9 +4,9 @@ from app.db.session import SessionDep
 from app.models.user import User
 from app.models.unit import Unit
 from app.models.coursework import Coursework
-from app.models.unit_enrollement import UnitEnrollment
+from app.models.unit_enrollment import UnitEnrollment
 from app.models.unit_group import UnitGroup
-from app.models.user_group_member import UserGroupMember
+from app.models.unit_group_member import UnitGroupMember
 
 router = APIRouter(prefix="/check")
 
@@ -42,7 +42,7 @@ async def get_groups(session: SessionDep):
 
 @router.get("/user-group-members")
 async def get_user_group_members(session: SessionDep):
-    statement = select(UserGroupMember)
+    statement = select(UnitGroupMember)
     ugm = session.exec(statement).all()
     return {"user_group_members": [member.model_dump() for member in ugm]}
 
@@ -55,7 +55,7 @@ async def get_counts(session: SessionDep):
     coursework = session.exec(select(func.count(Coursework.id))).one()
     enrollments = session.exec(select(func.count(UnitEnrollment.unit_id))).one()
     groups = session.exec(select(func.count(UnitGroup.id))).one()
-    ugm = session.exec(select(func.count(UserGroupMember.group_id))).one()
+    ugm = session.exec(select(func.count(UnitGroupMember.group_id))).one()
     
     return {
         "units": units,
