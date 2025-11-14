@@ -1,9 +1,6 @@
 import uuid
-from app.models.unit import Unit
-from app.models.user_group_member import UserGroupMember
-from sqlmodel import SQLModel, Field, Relationship
+from sqlmodel import SQLModel, Field
 from uuid import UUID
-from typing import List
 
 
 
