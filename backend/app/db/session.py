@@ -10,7 +10,6 @@ from app.models.unit import Unit
 from app.models.unit_enrollment import UnitEnrollment
 from app.models.unit_group import UnitGroup
 from app.models.user import User
-from app.models.unit_group_member import UnitGroupMember
 
 sqlite_file_name = "database.db"
 sqlite_url = f"sqlite:///{sqlite_file_name}"
