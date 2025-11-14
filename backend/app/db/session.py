@@ -30,15 +30,44 @@ def create_db_and_tables():
 def seed_data():
     print("hello")
     with Session(engine) as session:
+
+        statement = select(UnitGroup)
+        unit_group_data = session.exec(statement).first()
+        if not unit_group_data:
+            group1 = UnitGroup(
+                name="Year 1 Computer Science",
+                academic_year=2025,
+                units=[]
+            )
+            group2 = UnitGroup(
+                name="Year 2 Computer Science",
+                academic_year=2024,
+                units=[]
+            )
+            group3 = UnitGroup(
+                name="Year 3 Computer Science",
+                academic_year=2023,
+                units=[]
+            )
+            session.add_all([group1, group2, group3])  # Added this line
+            session.commit()  # Added this line
+            session.refresh(group1)  # Added this line
+            session.refresh(group2)  # Added this line
+            session.refresh(group3)  # Added this line
+        else:
+            # If groups already exist, fetch them
+            groups = session.exec(select(UnitGroup)).all()
+            group1, group2, group3 = groups[0], groups[1], groups[2]
+        
         # Get Units
         statement = select(Unit)
         unit_result = session.exec(statement).first()
         # Populate the Units Page if empty
         if not unit_result:
-            unit1 = Unit(name="Algorithms and Data", description="hard unit")
-            unit2 = Unit(name="Software Engineering Project", description="lots of work")
-            unit3 = Unit(name="Imperative and Functional Programming", description="haskell was enlightening")
-            unit4 = Unit(name="Computer Architecture", description="second part was very fun")
+            unit1 = Unit(name="Algorithms and Data", description="hard unit", groups=[group1, group2, group3])
+            unit2 = Unit(name="Software Engineering Project", description="lots of work", groups=[group1, group2, group3])
+            unit3 = Unit(name="Imperative and Functional Programming", description="haskell was enlightening", groups=[group1, group2, group3])
+            unit4 = Unit(name="Computer Architecture", description="second part was very fun", groups=[group1, group2, group3])
             session.add_all([unit1, unit2, unit3, unit4])
             session.commit()
             session.refresh(unit1)
@@ -167,47 +196,22 @@ def seed_data():
             ])
             session.commit()
         
-        statement = select(UnitGroup)
-        unit_group_data = session.exec(statement).first()
-        if not unit_group_data:
-            group1 = UnitGroup(
-                name="Year 1 Computer Science",
-                academic_year=2025
-            )
-            group2 = UnitGroup(
-                name="Year 2 Computer Science",
-                academic_year=2024
-            )
-            group3 = UnitGroup(
-                name="Year 3 Computer Science",
-                academic_year=2023
-            )
-            session.add_all([group1, group2, group3])  # Added this line
-            session.commit()  # Added this line
-            session.refresh(group1)  # Added this line
-            session.refresh(group2)  # Added this line
-            session.refresh(group3)  # Added this line
-        else:
-            # If groups already exist, fetch them
-            groups = session.exec(select(UnitGroup)).all()
-            group1, group2, group3 = groups[0], groups[1], groups[2]
-        
-        statement = select(UnitGroupMember)
-        data = session.exec(statement).first()  # Changed from Session.exec
-        if not data:
-            ugm1 = UnitGroupMember(group_id=group1.id, unit_id=unit3.id)
-            ugm2 = UnitGroupMember(group_id=group1.id, unit_id=unit4.id)
+        # statement = select(UnitGroupMember)
+        # data = session.exec(statement).first()  # Changed from Session.exec
+        # if not data:
+        #     ugm1 = UnitGroupMember(group_id=group1.id, unit_id=unit3.id)
+        #     ugm2 = UnitGroupMember(group_id=group1.id, unit_id=unit4.id)
             
-            ugm3 = UnitGroupMember(group_id=group2.id, unit_id=unit1.id)
-            ugm4 = UnitGroupMember(group_id=group2.id, unit_id=unit2.id)
+        #     ugm3 = UnitGroupMember(group_id=group2.id, unit_id=unit1.id)
+        #     ugm4 = UnitGroupMember(group_id=group2.id, unit_id=unit2.id)
             
-            ugm5 = UnitGroupMember(group_id=group3.id, unit_id=unit1.id)
-            ugm6 = UnitGroupMember(group_id=group3.id, unit_id=unit2.id)
-            ugm7 = UnitGroupMember(group_id=group3.id, unit_id=unit3.id)
-            ugm8 = UnitGroupMember(group_id=group3.id, unit_id=unit4.id)
+        #     ugm5 = UnitGroupMember(group_id=group3.id, unit_id=unit1.id)
+        #     ugm6 = UnitGroupMember(group_id=group3.id, unit_id=unit2.id)
+        #     ugm7 = UnitGroupMember(group_id=group3.id, unit_id=unit3.id)
+        #     ugm8 = UnitGroupMember(group_id=group3.id, unit_id=unit4.id)
             
-            session.add_all([ugm1, ugm2, ugm3, ugm4, ugm5, ugm6, ugm7, ugm8])
-            session.commit()
+        #     session.add_all([ugm1, ugm2, ugm3, ugm4, ugm5, ugm6, ugm7, ugm8])
+        #     session.commit()
         
         print("Database seeded successfully")
 
@@ -217,7 +221,7 @@ SessionDep = Annotated[Session, Depends(get_session)]
 async def lifespan(app: FastAPI):
     create_db_and_tables()
     print("yo yo")
-    # seed_data()
+    seed_data()
     print("beep beep")
     yield
 
