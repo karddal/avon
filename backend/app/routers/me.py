@@ -1,9 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlmodel import Session, select
-from app.core.security import create_access_token, get_current_user
+from app.core.security import get_current_user
 from app.db.session import get_session
 from app.models.coursework import Coursework
-from app.models.unit import Unit
 from app.models.user import User
 from typing import Annotated
 
