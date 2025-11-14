@@ -49,17 +49,17 @@ async def delete_coursework(id: UUID, session: session_dependency):
     #print(courseworkDeleted)
     return courseworkDeleted
 
-@router.put('/{id}', response_model = CourseworkRead)
+@router.put('/{id}', response_model=CourseworkRead)
 async def update_coursework(id: UUID, coursework: CourseworkUpdate, session: session_dependency):
-    coursework_db = session.get(Coursework,id)
+    coursework_db = session.get(Coursework, id)
 
     if coursework_db is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
-    
+        raise HTTPException(status_code=404, detail='Coursework not found')
+
     if coursework.unit_id is not None:
         unit_exists = session.exec(select(Unit).where(Unit.id == coursework.unit_id)).first()
         if not unit_exists:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Corresponding unit not found")
+            raise HTTPException(status_code=404, detail='Corresponding unit not found')
 
     coursework_data = coursework.model_dump(exclude_unset=True)
     coursework_db.sqlmodel_update(coursework_data)
@@ -68,3 +68,4 @@ async def update_coursework(id: UUID, coursework: CourseworkUpdate, session: ses
     session.commit()
     session.refresh(coursework_db)
     return coursework_db
+

@@ -56,7 +56,6 @@ class CourseworkCreate(BaseModel):
 
 
 class CourseworkUpdate(BaseModel):
-    id: UUID
     name: Name | None = None
     description: Description | None = None
     unit_id: UUID | None = None
