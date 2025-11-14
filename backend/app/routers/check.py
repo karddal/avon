@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from sqlmodel import select
+from app.core.security import create_access_token
 from app.db.session import SessionDep
 from app.models.user import User
 from app.models.unit import Unit
@@ -14,6 +15,7 @@ router = APIRouter(prefix="/check")
 async def get_users(session: SessionDep):
     statement = select(User)
     users = session.exec(statement).all()
+    print(create_access_token({"sub": "jwd@university.ac.uk"}))
     return {"users": [user.model_dump() for user in users]}
 
 @router.get("/units")
