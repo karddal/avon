@@ -14,11 +14,16 @@ session_dependency = Annotated[Session, Depends(get_session)]
 
 @router.post('/create', response_model = CourseworkRead, status_code=status.HTTP_201_CREATED)
 async def create_coursework(coursework: CourseworkCreate, session: session_dependency):
-    db_user = session.exec(select(Coursework).where((Coursework.unit_id == coursework.unit_id) & (Coursework.name == coursework.name))).first()
-    
-    if db_user:
+    courseworkAlreadyExists = session.exec(select(Coursework).where((Coursework.unit_id == coursework.unit_id) & (Coursework.name == coursework.name))).first()
+   
+    if courseworkAlreadyExists:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Coursework already made that belongs to the same unit and has the same name")
     
+    if coursework.unit_id is not None:
+        unit_exists = session.exec(select(Unit).where(Unit.id == coursework.unit_id)).first()
+        if not unit_exists:
+            raise HTTPException(status_code=404, detail='Corresponding unit not found')
+
     db_coursework = Coursework(name=coursework.name,description=coursework.description,unit_id=coursework.unit_id, due_date=coursework.due_date)
     print("data base",db_coursework.due_date)
     session.add(db_coursework)
