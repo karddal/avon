@@ -7,7 +7,7 @@ from sqlmodel import Session, SQLModel, create_engine, select
 
 from app.models.coursework import Coursework
 from app.models.unit import Unit
-from app.models.unit_enrollement import UnitEnrollment
+from backend.app.models.unit_enrollment import UnitEnrollment
 from app.models.unit_group import UnitGroup
 from app.models.user import User
 from app.models.user_group_member import UserGroupMember
@@ -89,42 +89,42 @@ def seed_data():
                 first_name="Hrushikesh",
                 last_name="Emkay",
                 email="rsh@bristol.ac.uk",
-                hashed_password="$2b$12$hashedpassword1",
+                hashed_password="$argon2id$v=19$m=65536,t=3,p=4$YmEXd8OiqssP687E6GPWuQ$oPUtLJ8fr+4OTANWYlOl0UsmNeAcE6kRaNpoHSElYAY",
                 is_lecturer=False
             )
             user2 = User(
                 first_name="Josh Jenkins",
                 last_name="Jenkins",
                 email="j.jenkins@bristol.ac.uk",
-                hashed_password="$2b$12$hashedpassword2",
+                hashed_password="$argon2id$v=19$m=65536,t=3,p=4$YmEXd8OiqssP687E6GPWuQ$oPUtLJ8fr+4OTANWYlOl0UsmNeAcE6kRaNpoHSElYAY",
                 is_lecturer=False
             )
             user3 = User(
                 first_name="Yuxuan",
                 last_name="Wang",
                 email="yuxuan.wang@university.ac.uk",
-                hashed_password="$2b$12$hashedpassword3",
+                hashed_password="$argon2id$v=19$m=65536,t=3,p=4$YmEXd8OiqssP687E6GPWuQ$oPUtLJ8fr+4OTANWYlOl0UsmNeAcE6kRaNpoHSElYAY",
                 is_lecturer=False
             )
             user4 = User(
                 first_name="Dempsey",
                 last_name="Jack",
                 email="jwd@university.ac.uk",
-                hashed_password="$2b$12$hashedpassword4",
+                hashed_password="$argon2id$v=19$m=65536,t=3,p=4$YmEXd8OiqssP687E6GPWuQ$oPUtLJ8fr+4OTANWYlOl0UsmNeAcE6kRaNpoHSElYAY",
                 is_lecturer=False
             )
             user5 = User(
                 first_name="Mihaly",
                 last_name="Toth-Tarsoly",
                 email="mihaly@university.ac.uk",  # Fixed duplicate email
-                hashed_password="$2b$12$hashedpassword5",
+                hashed_password="$argon2id$v=19$m=65536,t=3,p=4$YmEXd8OiqssP687E6GPWuQ$oPUtLJ8fr+4OTANWYlOl0UsmNeAcE6kRaNpoHSElYAY",
                 is_lecturer=False
             )
             user6 = User(
                 first_name="Tilo",
                 last_name="Burghardt",
                 email="tilo@university.ac.uk",
-                hashed_password="$2b$12$hashedpassword6",  # Changed password hash
+                hashed_password="$argon2id$v=19$m=65536,t=3,p=4$YmEXd8OiqssP687E6GPWuQ$oPUtLJ8fr+4OTANWYlOl0UsmNeAcE6kRaNpoHSElYAY",  # Changed password hash
                 is_lecturer=True
             )
             session.add_all([user1, user2, user3, user4, user5, user6])
