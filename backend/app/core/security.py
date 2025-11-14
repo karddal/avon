@@ -87,6 +87,7 @@ async def get_current_user(token: Annotated[str, Depends(oath2_scheme)], session
         headers = {"WWW-Authenticate": "Bearer"},
     )
     try:
+        print(repr(token), repr(settings.jwt_secret_key))
         payload = jwt.decode(token, settings.jwt_secret_key, algorithms=[ALGORITHM])
         username = payload.get("sub")
         print(username)

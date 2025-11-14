@@ -211,7 +211,6 @@ def seed_data():
             
         #     session.add_all([ugm1, ugm2, ugm3, ugm4, ugm5, ugm6, ugm7, ugm8])
         #     session.commit()
-        
         print("Database seeded successfully")
 
 SessionDep = Annotated[Session, Depends(get_session)]
