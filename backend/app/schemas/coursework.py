@@ -1,6 +1,5 @@
 from typing import Annotated
 
-import uuid
 import datetime
 from pydantic import BaseModel, AfterValidator
 from uuid import UUID
