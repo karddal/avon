@@ -32,14 +32,15 @@ export function LoginForm({
 
       const response = await axios
         .post("http://localhost:8000/auth/token", form, {
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
         })
         .catch((error) => {
           throw error;
         });
 
-      const token = response.data.access_token;
-      localStorage.setItem("token", token);
       window.location.href = "/dashboard";
     } catch (error) {
       console.error("Login failed:", error);

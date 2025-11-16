@@ -3,7 +3,7 @@ import { Card } from "./ui/card";
 import { Progress } from "./ui/progress";
 
 type courseworkData = {
-  courseworkId: string;
+  id: string;
   name: string;
   code: string;
   year: number;
@@ -33,7 +33,7 @@ const colourMap: colourMap = {
 
 export default function Coursework({ props }: { props: courseworkData }) {
   return (
-    <Link href="/coursework">
+    <Link href={`/coursework/${props.id}`}>
       <div className={`${colourMap[props.color]} w-full h-2`}></div>
       <Card className="bg-muted flex flex-col p-2 hover:bg-foreground/10 ">
         <div className="flex flex-row justify-between">
