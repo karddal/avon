@@ -1,6 +1,8 @@
 "use client";
 
+import axios from "axios";
 import Image from "next/image";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -12,23 +14,29 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
-import axios from "axios";
 
-export function LoginForm({className,...props}: React.ComponentProps<"div">) {
+export function LoginForm({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  
+
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    
-    try{
+
+    try {
       const form = new URLSearchParams();
       form.append("username", email);
       form.append("password", password);
-      
-      const response = await axios.post("http://localhost:8000/auth/token", form ,{ headers: { "Content-Type": "application/x-www-form-urlencoded" }
-      }).catch((error) => {throw error;});
+
+      const response = await axios
+        .post("http://localhost:8000/auth/token", form, {
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        })
+        .catch((error) => {
+          throw error;
+        });
 
       const token = response.data.access_token;
       localStorage.setItem("token", token);
@@ -88,7 +96,7 @@ export function LoginForm({className,...props}: React.ComponentProps<"div">) {
                   type="email"
                   placeholder="user@bristol.ac.uk"
                   value={email}
-                  onChange={(e)=>setEmail(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </Field>
