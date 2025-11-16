@@ -3,6 +3,7 @@
 import axios from "axios";
 import Image from "next/image";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -13,6 +14,7 @@ import {
   FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import LoginButton from "@/components/ui/login-button";
 import { cn } from "@/lib/utils";
 
 export function LoginForm({
@@ -20,11 +22,24 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const [email, setEmail] = useState("");
+  const [actionState, setActionState] = useState<number>(0);
+
   const [password, setPassword] = useState("");
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-
+    /*async function clicked() {
+    setActionState(1);
+    console.log("Started mock api call");
+    const delay = new Promise((r) => setTimeout(r, 1000));
+    await delay;
+    setActionState(2);
+    const delay2 = new Promise((r) => setTimeout(r, 500));
+    await delay2;
+    setActionState(0);
+    toast.success("Test run started successfully.");
+  }*/
+    setActionState(1);
     try {
       const form = new URLSearchParams();
       form.append("username", email);
@@ -44,7 +59,12 @@ export function LoginForm({
       window.location.href = "/dashboard";
     } catch (error) {
       console.error("Login failed:", error);
-      alert("Login failed. Please check your credentials and try again.");
+      // alert("Login failed. Please check your credentials and try again.");
+      setActionState(2);
+      toast.error("Login failed. Check your creds");
+      const delay = new Promise((r) => setTimeout(r, 2000));
+      await delay;
+      setActionState(0);
     }
   }
 
@@ -121,7 +141,12 @@ export function LoginForm({
                 />
               </Field>
               <Field>
-                <Button type="submit">Login</Button>
+                <LoginButton
+                  props={{
+                    actionState: actionState,
+                    setActionState: setActionState,
+                  }}
+                />
                 <FieldDescription className="text-center flex flex-row justify-center gap-4">
                   <a href="/login">Contact Us</a>
                   <a href="/login">Privacy Statement</a>
