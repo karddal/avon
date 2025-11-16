@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,11 +12,33 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+import axios from "axios";
 
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+export function LoginForm({className,...props}: React.ComponentProps<"div">) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    
+    try{
+      const form = new URLSearchParams();
+      form.append("username", email);
+      form.append("password", password);
+      
+      const response = await axios.post("http://localhost:8000/auth/token", form ,{ headers: { "Content-Type": "application/x-www-form-urlencoded" }
+      }).catch((error) => {throw error;});
+
+      const token = response.data.access_token;
+      localStorage.setItem("token", token);
+      window.location.href = "/dashboard";
+    } catch (error) {
+      console.error("Login failed:", error);
+      alert("Login failed. Please check your credentials and try again.");
+    }
+  }
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="drop-shadow-2xl shadow-none border">
@@ -36,7 +60,7 @@ export function LoginForm({
         </div>
 
         <CardContent>
-          <form>
+          <form onSubmit={handleSubmit}>
             <FieldGroup>
               <Field>
                 <Button
@@ -63,6 +87,8 @@ export function LoginForm({
                   id="email"
                   type="email"
                   placeholder="user@bristol.ac.uk"
+                  value={email}
+                  onChange={(e)=>setEmail(e.target.value)}
                   required
                 />
               </Field>
@@ -79,6 +105,8 @@ export function LoginForm({
                 <Input
                   id="password"
                   type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                   className="rounded-none"
                 />
