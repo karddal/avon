@@ -1,3 +1,5 @@
+"use cache";
+
 import {
   BookCheck,
   BookText,
@@ -78,7 +80,9 @@ const items = [
   // },
 ];
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export async function AppSidebar({
+  ...props
+}: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar variant="floating" {...props}>
       <SidebarHeader>

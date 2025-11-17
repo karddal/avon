@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import Loading from "@/app/coursework/loading";
 import CourseworkList from "@/components/coursework-list";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -20,9 +22,7 @@ export default function courseworkListing() {
           <CourseworkList />
         </TabsContent>
         <TabsContent value="finished">
-          <section className="grid gap-4 grid-cols-1 lg:grid-cols-2">
-            <CourseworkList />
-          </section>
+          <CourseworkList />
         </TabsContent>
       </Tabs>
     </div>

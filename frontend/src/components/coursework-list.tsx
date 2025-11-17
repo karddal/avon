@@ -1,6 +1,8 @@
 "use client";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import Loading from "@/app/coursework/loading";
+import { Skeleton } from "@/components/ui/skeleton";
 import Coursework from "./coursework";
 
 type courseworkData = {
@@ -10,13 +12,14 @@ type courseworkData = {
   year: number;
   finished: boolean;
   color: string;
-  dueDate: string;
+  due_date: string;
   testsPassed: number;
   totalTests: number;
 };
 
 export default function CourseworkList() {
   const [data, setData] = useState<courseworkData[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     axios
@@ -25,16 +28,19 @@ export default function CourseworkList() {
       })
       .then((response) => {
         setData(response.data);
-        console.log(response.data);
+        setLoading(false);
       })
       .catch((error) => {
         console.error("Failed to fetch coursework:", error);
+        setLoading(false);
       });
   }, []);
 
+  if (loading) return <Loading />;
+
   return (
     <section className="grid gap-4 grid-cols-1 lg:grid-cols-2">
-      {data.map((unit, _id) => (
+      {data.map((unit) => (
         <Coursework key={unit.id} props={unit} />
       ))}
     </section>
