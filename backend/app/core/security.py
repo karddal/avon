@@ -1,10 +1,8 @@
 import uuid
 from datetime import timedelta, datetime, timezone
-from fastapi import HTTPException
-from typing import Annotated
+from fastapi import Request, HTTPException
 
 import jwt
-from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from jwt import InvalidTokenError
 from pwdlib import PasswordHash
@@ -17,7 +15,7 @@ from app.db.session import SessionDep
 from app.models.user import User
 
 ALGORITHM = "HS256"
-oath2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 password_hash = PasswordHash.recommended()
 def hash_password(password: str) -> str:
@@ -80,13 +78,13 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
     encoded_jwt = jwt.encode(to_encode, settings.jwt_secret_key, algorithm=ALGORITHM)
     return encoded_jwt
 
-async def get_current_user(token: Annotated[str, Depends(oath2_scheme)], session: SessionDep):
+async def get_current_user(request: Request, session: SessionDep):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail = "Could not validate creds",
-        headers = {"WWW-Authenticate": "Bearer"},
     )
     try:
+        token = request.cookies.get("access_token")
         print(repr(token), repr(settings.jwt_secret_key))
         payload = jwt.decode(token, settings.jwt_secret_key, algorithms=[ALGORITHM])
         username = payload.get("sub")
