@@ -1,10 +1,8 @@
 import uuid
 from datetime import timedelta, datetime, timezone
 from fastapi import Request, HTTPException
-from typing import Annotated
 
 import jwt
-from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from jwt import InvalidTokenError
 from pwdlib import PasswordHash

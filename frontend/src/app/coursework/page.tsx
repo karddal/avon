@@ -1,8 +1,7 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CourseworkList from "@/components/coursework-list";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function courseworkListing() {
-
   return (
     <div className="space-y-6">
       {/* <YearSelector /> */}
@@ -18,7 +17,7 @@ export default function courseworkListing() {
           </div>
         </TabsList>
         <TabsContent value="ongoing" className="w-full">
-            <CourseworkList />
+          <CourseworkList />
         </TabsContent>
         <TabsContent value="finished">
           <section className="grid gap-4 grid-cols-1 lg:grid-cols-2">

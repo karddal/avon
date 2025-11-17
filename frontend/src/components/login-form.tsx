@@ -45,7 +45,7 @@ export function LoginForm({
       form.append("username", email);
       form.append("password", password);
 
-      const response = await axios
+      const _response = await axios
         .post("http://localhost:8000/auth/token", form, {
           withCredentials: true,
           headers: {
