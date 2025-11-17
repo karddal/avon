@@ -2,15 +2,11 @@ import { Dot } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent } from "./ui/card";
 
-type unitData = {
+type UnitData = {
+  id: string;
   name: string;
-  code: string;
-  year: string;
-  finished: boolean;
-  color: string;
-  mark: number;
-  courseworkLive: boolean;
-  read: boolean;
+  description?: string;
+  creation_date: string;
 };
 
 // TODO: Make a more concrete type
@@ -30,21 +26,22 @@ const colourMap: colourMap = {
   rose: "bg-rose-700",
 };
 
-export default function Unit({ props }: { props: unitData }) {
-  const liveCoursework = props.courseworkLive ? "" : "hidden";
+function getRandomColour(): string {
+  const colors = Object.keys(colourMap);
+  return colors[Math.floor(Math.random() * colors.length)];
+}
 
+export default function Unit({ props }: { props: UnitData }) {
   return (
-    <Link href="/units">
-      <div className={`${colourMap[props.color]} h-2`}></div>
+    <Link href={`/units/${props.id}`}>
+      <div className={`${colourMap[getRandomColour()]} h-2`}></div>
       <Card className="bg-muted flex flex-row p-2 items-center hover:bg-foreground/10">
         <CardContent className="flex flex-row items-center justify-between w-full p-0">
           <div className="flex flex-col w-full">
             <div className="flex flex-col">
               <div className="flex flex-row align-center items-center">
-                <p className="text-foreground/80">Unit Code: {props.code}</p>
-                <div
-                  className={`${liveCoursework} flex flex-row justify-center items-center`}
-                >
+                <p className="text-foreground/80">Unit Code: COMS00000</p>
+                <div className={`flex flex-row justify-center items-center`}>
                   <Dot
                     color="#ff0000"
                     size={30}
@@ -56,9 +53,9 @@ export default function Unit({ props }: { props: unitData }) {
               </div>
               <div className="flex flex-row items-center justify-between w-full gap-x-10 lg:text-lg">
                 <p className="text-xl">{props.name}</p>
-                <p className={`${props.finished ? "" : "hidden"} italic`}>
+                {/* <p className={`${props.finished ? "" : "hidden"} italic`}>
                   Grade: {props.mark}
-                </p>
+                </p> */}
               </div>
             </div>
             <br />
