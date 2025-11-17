@@ -82,7 +82,6 @@ async def get_current_user(request: Request, session: SessionDep):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail = "Could not validate creds",
-        headers = {"WWW-Authenticate": "Bearer"},
     )
     try:
         token = request.cookies.get("access_token")
