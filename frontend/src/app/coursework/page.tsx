@@ -1,5 +1,3 @@
-import { Suspense } from "react";
-import Loading from "@/app/coursework/loading";
 import CourseworkList from "@/components/coursework-list";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 

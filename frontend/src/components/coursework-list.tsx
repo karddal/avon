@@ -2,7 +2,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Loading from "@/app/coursework/loading";
-import { Skeleton } from "@/components/ui/skeleton";
 import Coursework from "./coursework";
 
 type courseworkData = {
