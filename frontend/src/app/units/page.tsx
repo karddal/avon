@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import YearSelector from "@/components/year-selector";
 import UnitList from "@/components/unit-list";
+import YearSelector from "@/components/year-selector";
 
 export default function UnitPage() {
   const [year, setYear] = useState<number | null>(null);
@@ -20,7 +20,7 @@ export default function UnitPage() {
 
   return (
     <div className="space-y-6">
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
+      <Tabs value={activeTab} onValueChange={(_v) => setActiveTab(activeTab)}>
         <TabsList className="flex flex-row gap-4 bg-background my-4">
           <YearSelector value={year} setValue={setYear} />
           <div className="bg-accent p-1 rounded-md flex gap-2">

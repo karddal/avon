@@ -111,10 +111,9 @@ async def get_courseworks(unit_id:UUID, session:session_dependency):
   print(courseworks)
   response = []
   for coursework in courseworks:
-      response_courswork = CourseworkRead(name=coursework.name, description=coursework.description, due_date=coursework.due_date, creation_date=coursework.creation_date)
+      response_courswork = CourseworkRead(id=coursework.id, name=coursework.name, description=coursework.description, due_date=coursework.due_date, creation_date=coursework.creation_date)
       response.append(response_courswork)
     
-# e42bfc9d-1f2c-4ce5-9283-57c76d07595c
   return CourseworkAll(courseworks=response)
 
 @router.get("/", response_model=UnitAll)
