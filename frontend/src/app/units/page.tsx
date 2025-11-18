@@ -4,10 +4,13 @@ import { Suspense, useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UnitList from "@/components/unit-list";
 import YearSelector from "@/components/year-selector";
+import Loading from "@/app/coursework/loading";
+
+type Status = "ongoing" | "finished";
 
 export default function UnitPage() {
   const [year, setYear] = useState<number | null>(null);
-  const [activeTab, setActiveTab] = useState<"ongoing" | "finished">("ongoing");
+  const [activeTab, setActiveTab] = useState<Status>("ongoing");
 
   // defer `new Date()` in useEffect to avoid pre-render errors
   useEffect(() => {
@@ -20,7 +23,7 @@ export default function UnitPage() {
 
   return (
     <div className="space-y-6">
-      <Tabs value={activeTab} onValueChange={(_v) => setActiveTab(activeTab)}>
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as Status)}>
         <TabsList className="flex flex-row gap-4 bg-background my-4">
           <YearSelector value={year} setValue={setYear} />
           <div className="bg-accent p-1 rounded-md flex gap-2">
@@ -39,14 +42,16 @@ export default function UnitPage() {
           </div>
         </TabsList>
 
-        <Suspense fallback={<p>Loading Units...</p>}>
-          <TabsContent value="ongoing">
+        <TabsContent value="ongoing">
+          <Suspense fallback={<Loading></Loading>}>
             <UnitList currentYear={year} finished={false} />
-          </TabsContent>
-          <TabsContent value="finished">
+          </Suspense>
+        </TabsContent>
+        <TabsContent value="finished">
+          <Suspense fallback={<Loading></Loading>}>
             <UnitList currentYear={year} finished={true} />
-          </TabsContent>
-        </Suspense>
+          </Suspense>
+        </TabsContent>
       </Tabs>
 
       <div className="text-sm text-muted-foreground pl-2">

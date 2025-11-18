@@ -71,7 +71,7 @@ export default function YearSelector({ value, setValue }: YearSelectorProps) {
                     <Check
                       className={cn(
                         "ml-auto",
-                        value === option.value ? "opacity-100" : "opacity-0",
+                        value === option.value ? "opacity-100" : "opacity-0"
                       )}
                     />
                   </CommandItem>

@@ -37,7 +37,7 @@ export default function UnitList({ currentYear, finished }: UnitListProps) {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <Loading />;
+  if (loading) return <div></div>;
 
   //  academic year window: Sept 1 -> Aug 31
   const start = new Date(currentYear, 8, 1); // Sept = month 8
