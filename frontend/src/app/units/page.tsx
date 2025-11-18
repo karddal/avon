@@ -1,10 +1,10 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
+import Loading from "@/app/coursework/loading";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UnitList from "@/components/unit-list";
 import YearSelector from "@/components/year-selector";
-import Loading from "@/app/coursework/loading";
 
 type Status = "ongoing" | "finished";
 

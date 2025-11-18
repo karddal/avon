@@ -1,7 +1,6 @@
 "use client";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Loading from "@/app/coursework/loading";
 import Unit from "@/components/unit";
 
 type UnitData = {
