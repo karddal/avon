@@ -43,6 +43,7 @@ function getRandomTestsPassed(): number {
 export default function Coursework({ props }: { props: courseworkData }) {
   const randomColor = getRandomColour();
   const testPassed = getRandomTestsPassed();
+  console.log(props);
   return (
     <Link href={`/coursework/${props.id}`}>
       <div className={`${colourMap[randomColor]} w-full h-2`}></div>

@@ -32,6 +32,7 @@ class UnitAll(BaseModel):
 
 ## Maybe port the below to Jack's Coursework Schema
 class CourseworkRead(BaseModel):
+    id: uuid.UUID
     name: str
     description: str
     due_date: datetime
