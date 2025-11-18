@@ -64,21 +64,6 @@ export default function CourseworkSection() {
       {courseworks.map((coursework) => (
         <Coursework key={coursework.id} props={coursework} />
       ))}
-      {courseworks.map((coursework) => (
-        <Coursework key={coursework.id} props={coursework} />
-      ))}
-      {courseworks.map((coursework) => (
-        <Coursework key={coursework.id} props={coursework} />
-      ))}
-      {courseworks.map((coursework) => (
-        <Coursework key={coursework.id} props={coursework} />
-      ))}
-      {courseworks.map((coursework) => (
-        <Coursework key={coursework.id} props={coursework} />
-      ))}
-      {courseworks.map((coursework) => (
-        <Coursework key={coursework.id} props={coursework} />
-      ))}
     </>
   );
 }
