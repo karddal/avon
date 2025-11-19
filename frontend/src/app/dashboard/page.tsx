@@ -28,7 +28,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6 mb-2">
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Card className="col-span-3 gap-0 shadow-none border-none">
+        <Card className="col-span-3 gap-0 shadow-none border-none bg-background">
           <CardContent className="grid xl:grid-cols-4 grid-cols-2 gap-4">
             <Card className="p-2 gap-0 bg-accent flex flex-col justify-between">
               <CardHeader className="p-0">

@@ -44,15 +44,14 @@ function getRandomTestsPassed(): number {
 export default function Coursework({ props }: { props: courseworkData }) {
   const randomColor = getRandomColour();
   const testPassed = getRandomTestsPassed();
-  console.log(props);
   return (
     <Link href={`/coursework/${props.id}`}>
       <div className={`${colourMap[randomColor]} w-full h-2`}></div>
       <Card className="bg-muted flex flex-col p-2 hover:bg-foreground/10 ">
         <div className="flex flex-row justify-between">
           <div className="flex flex-col">
-            <p className="text-sm lg:text-xl">{props.name}</p>
-            <p className="text-sm text-muted-foreground">{props.code}</p>
+            <p className="text-lg lg:text-xl">{props.name}</p>
+            <p className="text-muted-foreground">{props.code}</p>
           </div>
           <div className="flex flex-row gap-2">
             <p className="text-sm lg:text-xl text-muted-foreground">

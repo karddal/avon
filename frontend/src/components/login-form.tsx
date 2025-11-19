@@ -73,14 +73,14 @@ export function LoginForm({
       <Card className="drop-shadow-2xl shadow-none border">
         <div className="flex justify-center">
           <Image
-            src="/avon.png"
+            src="/images/avon.png"
             alt="logo"
             width={200}
             height={200}
             className="dark:block hidden"
           />
           <Image
-            src="/avonlight.png"
+            src="/images/avonlight.png"
             alt="logo"
             width={200}
             height={200}
