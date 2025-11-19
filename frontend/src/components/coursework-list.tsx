@@ -1,11 +1,10 @@
 "use client";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Loading from "@/app/coursework/loading";
-import Coursework from "./coursework";
-import Link from "next/link";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { PlusIcon } from "lucide-react";
+import Link from "next/link";
+import Coursework from "@/components/coursework";
 
 type courseworkData = {
   id: string;
@@ -14,37 +13,58 @@ type courseworkData = {
   year: number;
   finished: boolean;
   color: string;
+  creation_date: string;
   due_date: string;
   testsPassed: number;
   totalTests: number;
 };
 
-export default function CourseworkList() {
+type CourseworkListProps = {
+  finished: boolean;
+};
+
+export default function CourseworkList({ finished }: CourseworkListProps) {
   const [data, setData] = useState<courseworkData[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     axios
-      .get<courseworkData[]>("http://localhost:8000/me/courseworks", {
-        withCredentials: true,
-      })
+      .get("http://localhost:8000/me/courseworks", { withCredentials: true })
       .then((response) => {
-        setData(response.data);
-        setLoading(false);
+        const result = Array.isArray(response.data)
+          ? response.data
+          : response.data.units;
+        setData(result || []);
       })
-      .catch((error) => {
-        console.error("Failed to fetch coursework:", error);
-        setLoading(false);
-      });
+      .catch((err) => {
+        console.error("Failed to fetch courseworks:", err);
+        setData([]);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <Loading />;
+  if (loading) return <div></div>;
+
+  const now = new Date();
+
+  const filtered = data.filter((coursework) => {
+    const created = new Date(coursework.creation_date);
+    const due = new Date(coursework.due_date);
+
+    const isActive = now >= created && now <= due;
+
+    if (finished) {
+      return now > due;
+    }
+
+    return isActive;
+  });
 
   return (
     <>
-      <Link href="/units/coursework">
+      <Link href="/courseworks/create">
         <Card className="bg-muted/50 flex flex-row p-5 h-full items-center hover:bg-foreground/10">
-          <PlusIcon size={50}></PlusIcon>
+          <PlusIcon size={50} />
           <div className="flex flex-col">
             <CardTitle className="text-xl font-medium">
               Add new Coursework
@@ -53,9 +73,10 @@ export default function CourseworkList() {
           </div>
         </Card>
       </Link>
-      {data.map((unit) => (
-        <Coursework key={unit.id} props={unit} />
-      ))}
+      {filtered.length > 0 &&
+        filtered.map((coursework) => (
+          <Coursework key={coursework.id} props={coursework} />
+        ))}
     </>
   );
 }

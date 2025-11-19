@@ -18,12 +18,12 @@ export default function courseworkListing() {
         </TabsList>
         <TabsContent value="ongoing" className="w-full">
           <section className="grid gap-4 grid-cols-1 lg:grid-cols-2">
-            <CourseworkList />
+            <CourseworkList finished={false} />
           </section>
         </TabsContent>
         <TabsContent value="finished">
           <section className="grid gap-4 grid-cols-1 lg:grid-cols-2">
-            <CourseworkList />
+            <CourseworkList finished={true} />
           </section>
         </TabsContent>
       </Tabs>

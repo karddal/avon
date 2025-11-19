@@ -162,7 +162,7 @@ export default function DashboardPage() {
                     className="flex flex-col gap-2"
                     value="coursework"
                   >
-                    <CourseworkList />
+                    <CourseworkList finished={false} />
                   </TabsContent>
                   <TabsContent className="flex flex-col gap-2" value="units">
                     <UnitList currentYear={year} finished={false} />
