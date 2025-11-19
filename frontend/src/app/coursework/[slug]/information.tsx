@@ -2,8 +2,8 @@
 
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { DropdownCard } from "@/components/dropdown-card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type courseworkData = {
   id: string;
@@ -65,18 +65,16 @@ export default function CourseworkInformation() {
   const end_date = formatDateTimeString(coursework.due_date);
 
   return (
-    <>
-      <DropdownCard
-        title={"Information"}
-        desc={"Important information about the coursework appears here."}
-      >
-        <p>
-          <strong>Set date:</strong> {start_date}
-        </p>
-        <p>
-          <strong>Due date:</strong> {end_date}
-        </p>
-      </DropdownCard>
-    </>
+    <DropdownCard
+      title={"Information"}
+      desc={"Important information about the coursework appears here."}
+    >
+      <p>
+        <strong>Set date:</strong> {start_date}
+      </p>
+      <p>
+        <strong>Due date:</strong> {end_date}
+      </p>
+    </DropdownCard>
   );
 }

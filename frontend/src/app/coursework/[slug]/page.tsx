@@ -1,23 +1,14 @@
 import { Suspense } from "react";
+import CourseworkDescription from "@/app/coursework/[slug]/description";
+import CourseworkInformation from "@/app/coursework/[slug]/information";
+import CourseworkName from "@/app/coursework/[slug]/name";
 import { DropdownCard } from "@/components/dropdown-card";
 import RunTestsItem from "@/components/run-tests-item";
 import TestPassedProgressBar from "@/components/tests-passed-progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import CourseworkName from "@/app/coursework/[slug]/name";
-import CourseworkDescription from "@/app/coursework/[slug]/description";
-import CourseworkInformation from "@/app/coursework/[slug]/information";
 
-export default async function UnitPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-  // const name = getNameFromUnit(slug);
-  const _name = "Sketch";
-  // const desc = getDescFromUnit(slug);
-
+export default async function UnitPage() {
   return (
     <div className="flex flex-col gap-4 min-h-0">
       <div className="flex flex-col col-span-3">
