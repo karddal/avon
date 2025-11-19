@@ -12,6 +12,7 @@ type courseworkData = {
   year: number;
   finished: boolean;
   color: string;
+  created_date: string;
   due_date: string;
   testsPassed: number;
   totalTests: number;
@@ -29,7 +30,7 @@ export default function CourseworkSection() {
           {
             cache: "force-cache",
             credentials: "include",
-          },
+          }
         );
         if (!cwRes.ok) throw new Error("Failed to fetch courseworks");
         const cwData = await cwRes.json();

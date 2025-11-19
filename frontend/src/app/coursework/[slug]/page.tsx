@@ -4,6 +4,9 @@ import RunTestsItem from "@/components/run-tests-item";
 import TestPassedProgressBar from "@/components/tests-passed-progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import CourseworkName from "@/app/coursework/[slug]/name";
+import CourseworkDescription from "@/app/coursework/[slug]/description";
+import CourseworkInformation from "@/app/coursework/[slug]/information";
 
 export default async function UnitPage({
   params,
@@ -19,11 +22,9 @@ export default async function UnitPage({
     <div className="flex flex-col gap-4 min-h-0">
       <div className="flex flex-col col-span-3">
         <div className="font-semibold text-5xl text-shadow-2xs">
-          <span className="font-light">
-            Imperative and Functional Programming
-          </span>
-          <br />
-          {slug}
+          <Suspense>
+            <CourseworkName />
+          </Suspense>
         </div>
         <div className="w-full bg-accent-foreground"></div>
       </div>
@@ -40,22 +41,9 @@ export default async function UnitPage({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col overflow-y-scroll break-words h-32 border bg-accent">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Suspendisse mollis pellentesque arcu ac tempor. Cras iaculis
-                dictum ullamcorper. Vivamus at pulvinar lectus. Pellentesque
-                fringilla sollicitudin semper. Cras mi odio, cursus a risus
-                eget, facilisis interdum ligula. Sed vestibulum risus in
-                vulputate dictum. Nulla viverra purus in sem dignissim tempus.
-                Vestibulum pellentesque aliquam feugiat. Vestibulum sed justo eu
-                sem consequat luctus. Nulla ex enim, iaculis eu tincidunt vel,
-                maximus ac ante. Pellentesque habitant morbi tristique senectus
-                et netus et malesuada fames ac turpis egestas. Proin sed mauris
-                velit. Phasellus tempor consequat nisi sed rutrum. Nullam rutrum
-                facilisis arcu, id rhoncus quam pulvinar a. Integer quis erat
-                quis tortor pharetra interdum. Nam ut arcu euismod tellus
-                sagittis facilisis et a nisl.
-              </div>
+              <Suspense>
+                <CourseworkDescription />
+              </Suspense>
             </CardContent>
           </Card>
           <Card className="flex flex-col gap-4 h-96 md:h-[32rem] lg:min-h-0 xl:h-auto xl:min-h-0">
@@ -105,14 +93,9 @@ export default async function UnitPage({
           </Card>
         </div>
         <div className="flex flex-col xl:col-span-1 lg:col-span-2 gap-4 min-h-0">
-          <DropdownCard
-            title={"Information"}
-            desc={"Important information about the coursework appears here."}
-          >
-            {" "}
-            <p>Set date: </p>
-            <p>Due date: </p>
-          </DropdownCard>
+          <Suspense>
+            <CourseworkInformation />
+          </Suspense>
           <DropdownCard
             title="Tools"
             desc="Tools you can use for this coursework appear here."
