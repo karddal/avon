@@ -55,9 +55,7 @@ export default function CourseworkInformation() {
   if (!coursework)
     return (
       <div className="flex flex-row gap-1">
-        <Skeleton className="h-16 w-full bg-foreground/10"></Skeleton>
-        <Skeleton className="h-16 w-full bg-foreground/10"></Skeleton>
-        <Skeleton className="h-16 w-full bg-foreground/10"></Skeleton>
+        <Skeleton className="h-20 w-full bg-foreground/10"></Skeleton>
       </div>
     );
 
