@@ -106,9 +106,9 @@ export default function NotificationBar() {
   ));
 
   return (
-    <div>
+    <>
       <DropdownMenu>
-        <DropdownMenuTrigger className="mx-2 hover:cursor-pointer">
+        <DropdownMenuTrigger className="mx-2 hover:cursor-pointer p-2 hover:bg-accent hover:ease-in-out">
           <Bell size={20} />
         </DropdownMenuTrigger>
         <DropdownMenuContent className="mx-5 h-64 w-64 lg:h-128 lg:w-128 flex flex-col p-1">
@@ -117,6 +117,6 @@ export default function NotificationBar() {
           {/* </DropdownMenuItem> */}
         </DropdownMenuContent>
       </DropdownMenu>
-    </div>
+    </>
   );
 }

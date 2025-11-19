@@ -3,6 +3,9 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import Loading from "@/app/coursework/loading";
 import Coursework from "./coursework";
+import Link from "next/link";
+import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import { PlusIcon } from "lucide-react";
 
 type courseworkData = {
   id: string;
@@ -38,10 +41,21 @@ export default function CourseworkList() {
   if (loading) return <Loading />;
 
   return (
-    <section className="grid gap-4 grid-cols-1 lg:grid-cols-2">
+    <>
+      <Link href="/units/coursework">
+        <Card className="bg-muted/50 flex flex-row p-5 h-full items-center hover:bg-foreground/10">
+          <PlusIcon size={50}></PlusIcon>
+          <div className="flex flex-col">
+            <CardTitle className="text-xl font-medium">
+              Add new Coursework
+            </CardTitle>
+            <CardDescription>Create a new coursework here.</CardDescription>
+          </div>
+        </Card>
+      </Link>
       {data.map((unit) => (
         <Coursework key={unit.id} props={unit} />
       ))}
-    </section>
+    </>
   );
 }

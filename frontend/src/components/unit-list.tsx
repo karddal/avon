@@ -55,9 +55,7 @@ export default function UnitList({ currentYear, finished }: UnitListProps) {
   });
 
   return (
-    <section className="grid gap-4 grid-cols-1 lg:grid-cols-2">
-      {filtered.length > 0 &&
-        filtered.map((unit) => <Unit key={unit.id} props={unit} />)}
+    <>
       <Link href="/units/create">
         <Card className="bg-muted/50 flex flex-row p-5 h-full items-center hover:bg-foreground/10">
           <PlusIcon size={50}></PlusIcon>
@@ -67,6 +65,8 @@ export default function UnitList({ currentYear, finished }: UnitListProps) {
           </div>
         </Card>
       </Link>
-    </section>
+      {filtered.length > 0 &&
+        filtered.map((unit) => <Unit key={unit.id} props={unit} />)}
+    </>
   );
 }

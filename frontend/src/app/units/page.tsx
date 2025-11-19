@@ -26,17 +26,11 @@ export default function UnitPage() {
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as Status)}>
         <TabsList className="flex flex-row gap-4 bg-background my-4">
           <YearSelector value={year} setValue={setYear} />
-          <div className="bg-accent p-1 rounded-md flex gap-2">
-            <TabsTrigger
-              value="ongoing"
-              className="bg-accent px-4 py-2 rounded"
-            >
+          <div className="bg-accent p-1 flex gap-2">
+            <TabsTrigger value="ongoing" className="bg-accent px-4 py-2">
               Ongoing
             </TabsTrigger>
-            <TabsTrigger
-              value="finished"
-              className="bg-accent px-4 py-2 rounded"
-            >
+            <TabsTrigger value="finished" className="bg-accent px-4 py-2">
               Finished
             </TabsTrigger>
           </div>
@@ -44,12 +38,16 @@ export default function UnitPage() {
 
         <TabsContent value="ongoing">
           <Suspense fallback={<Loading></Loading>}>
-            <UnitList currentYear={year} finished={false} />
+            <section className="grid gap-4 grid-cols-1 lg:grid-cols-2">
+              <UnitList currentYear={year} finished={false} />
+            </section>
           </Suspense>
         </TabsContent>
         <TabsContent value="finished">
           <Suspense fallback={<Loading></Loading>}>
-            <UnitList currentYear={year} finished={true} />
+            <section className="grid gap-4 grid-cols-1 lg:grid-cols-2">
+              <UnitList currentYear={year} finished={true} />
+            </section>
           </Suspense>
         </TabsContent>
       </Tabs>

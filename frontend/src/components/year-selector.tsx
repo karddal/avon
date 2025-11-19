@@ -40,8 +40,7 @@ export default function YearSelector({ value, setValue }: YearSelectorProps) {
   const currentLabel = years.find((y) => y.value === value)?.label ?? "";
 
   return (
-    <div className="flex flex-row items-center">
-      <p className="mt-1 mr-1">Year:</p>
+    <div className="flex flex-row items-center h-full">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -71,7 +70,7 @@ export default function YearSelector({ value, setValue }: YearSelectorProps) {
                     <Check
                       className={cn(
                         "ml-auto",
-                        value === option.value ? "opacity-100" : "opacity-0",
+                        value === option.value ? "opacity-100" : "opacity-0"
                       )}
                     />
                   </CommandItem>
