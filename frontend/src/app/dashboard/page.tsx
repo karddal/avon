@@ -2,19 +2,19 @@
 
 import { Edit, Flag, Plus } from "lucide-react";
 import Link from "next/link";
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
+import CourseworkList from "@/components/coursework-list";
 import { StatsChart } from "@/components/stats-chart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import CourseworkList from "@/components/coursework-list";
 import UnitList from "@/components/unit-list";
 
 type Status = "ongoing" | "finished";
 
 export default function DashboardPage() {
   const [year, setYear] = useState<number | null>(null);
-  const [activeTab, setActiveTab] = useState<Status>("ongoing");
+  const [_activeTab, _setActiveTab] = useState<Status>("ongoing");
 
   // defer `new Date()` in useEffect to avoid pre-render errors
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function DashboardPage() {
 
   if (year === null) return null; // wait until client time is ready
 
-  const currentAcademicYear = `${year}/${year + 1}`;
+  const _currentAcademicYear = `${year}/${year + 1}`;
 
   return (
     <div className="space-y-6 mb-2">

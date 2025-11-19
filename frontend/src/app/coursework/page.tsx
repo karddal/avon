@@ -1,6 +1,5 @@
 import CourseworkList from "@/components/coursework-list";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import YearSelector from "@/components/year-selector";
 
 export default function courseworkListing() {
   return (
