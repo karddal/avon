@@ -24,7 +24,7 @@ export default function UnitPage() {
   return (
     <div className="space-y-6">
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as Status)}>
-        <TabsList className="flex flex-row gap-4 bg-background my-4">
+        <TabsList className="flex flex-col md:flex-row items-start md:items-center gap-4 bg-background my-8 md:my-4">
           <YearSelector value={year} setValue={setYear} />
           <div className="bg-accent p-1 flex gap-2">
             <TabsTrigger value="ongoing" className="bg-accent px-4 py-2">
