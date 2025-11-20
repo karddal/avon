@@ -133,16 +133,16 @@
   border-radius: 0px;
 }
 .react-colorful__hue {
-  border-radius: 0px !important;
+  border-radius: 0px;
 }
-.react-colorful__last_control{
-  border-radius: 0px !important;
+.react-colorful__last_control {
+  border-radius: 0px;
 }
-.react-colorful__interactive{
-  border-radius: 0px !important;
+.react-colorful__interactive {
+  border-radius: 0px;
 }
-.react-colorful__saturation{
-  border-radius: 0px !important;
+.react-colorful__saturation {
+  border-radius: 0px;
 }
 
 /*.your-component .react-colorful__hue {*/

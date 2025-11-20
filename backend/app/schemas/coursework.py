@@ -3,6 +3,7 @@ from typing import Annotated
 import datetime
 from pydantic import BaseModel, AfterValidator
 from uuid import UUID
+import re
 
 
 def is_valid_name(name: str) -> str:
