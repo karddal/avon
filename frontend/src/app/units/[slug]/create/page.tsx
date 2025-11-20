@@ -1,6 +1,6 @@
 "use client"
 
-import {multistep_coursework_flow} from "@/app/flows/multistep_coursework_flow";
+import {multistep_coursework_flow} from "@/app/units/[slug]/create/multistep_coursework_flow";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 
 import * as z from "zod"
@@ -19,9 +19,16 @@ import {Calendar} from "@/components/ui/calendar";
 import {Calendar29} from "@/components/calendar";
 import {Textarea} from "@/components/ui/textarea";
 import {useEffect, useState} from "react";
+import {redirect, useParams} from "next/navigation";
+import {Spinner} from "@/components/ui/spinner";
+import {Terminal} from "lucide-react";
+import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
+import {toast} from "sonner";
 
 const today = new Date();
 today.setHours(0, 0, 0, 0);
+
+today.setDate(today.getDate() + 1);
 const formSchema = z.object({
     name: z.string().min(2, {
         message: "Name must be at least 2 characters.",
@@ -31,12 +38,16 @@ const formSchema = z.object({
     }),
     color: z.string(),
     due_date: z.date().min(today, {
-        message: "Due date cannot be in the past."
+        message: "Due date must be at least tomorrow."
     })
 })
 
 export default function CreateCourseworkFlow() {
     "use client"
+    const slug = useParams<{slug: string}>();
+    const [submitState, setSubmitState] = useState<boolean>(false);
+    const [showAlert, setShowAlert] = useState<boolean>(false);
+    const [alertText, setAlertText] = useState<string>("");
     const {
         step,
         setStep,
@@ -80,6 +91,41 @@ export default function CreateCourseworkFlow() {
     function onSubmit(values: z.infer<typeof formSchema>) {
         // do something with values, submit here
         console.log(values)
+        setSubmitState(true)
+        let req ={
+            name: values.name,
+            description: values.description,
+            unit_id: slug.slug,
+            due_date: values.due_date.toISOString(),
+            colour: colour.substring(1)
+        }
+        console.log(req)
+        fetch("http://localhost:8000/coursework/create", {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(req),
+        }).then((r) => {
+            // console.log("status:", r.status);
+            // console.log("payload:", r.json());
+            if (!r.ok) {
+                r.json().then(data => {
+                    setAlertText(data.detail)
+                    setShowAlert(true)
+                    setSubmitState(false)
+                })
+            }
+            else {
+                toast.success("Coursework created. You will be redirected in 1 second.")
+                const delay = new Promise(resolve => setTimeout(resolve, 1000))
+                delay.then(() => {
+                    redirect(`/units/${slug.slug}`)
+                })
+                setSubmitState(false)
+            }
+        });
     }
 
     function onTest(values: z.infer<typeof formSchema>) {
@@ -90,6 +136,7 @@ export default function CreateCourseworkFlow() {
     const description = form.watch("description");
     const colour = form.watch("color");
     return (
+        <div className="flex flex-1 flex-row gap-4 px-4 sm:justify-center sm:align-center sm:items-center">
         <div className="flex flex-col sm:flex-row w-full lg:w-[70%] gap-4 min-h-150 h-fit mb-2">
             <Card className={"h-fit w-fit flex flex-row sm:flex-col items-center justify-center gap-4 px-4"}>
                 <CardContent className={"flex flex-row sm:flex-col justify-center gap-2 p-0"}>
@@ -275,9 +322,29 @@ export default function CreateCourseworkFlow() {
                                             </Item>
                                         </div>
 
-                                        <Button type={"submit"} variant={"outline"}>
-                                            Submit
-                                        </Button>
+
+                                        {submitState && (
+                                            <Button disabled={true}　type={"submit"} variant={"outline"}>
+                                                <Spinner/>
+                                                Submit
+                                            </Button>
+                                        )}
+                                        {!submitState && (
+                                            <Button type={"submit"} variant={"outline"}>
+                                                Submit
+                                            </Button>
+                                        )}
+
+                                        {showAlert && (
+                                            <Alert variant="destructive">
+                                                <Terminal />
+                                                <AlertTitle>Heads up!</AlertTitle>
+                                                <AlertDescription>
+                                                    {alertText}
+                                                </AlertDescription>
+                                            </Alert>
+                                        )}
+
                                     </FieldGroup>
                                 </motion.div>
                             )}
@@ -285,6 +352,7 @@ export default function CreateCourseworkFlow() {
                     </form>
                 </CardContent>
             </Card>
+        </div>
         </div>
     )
 }

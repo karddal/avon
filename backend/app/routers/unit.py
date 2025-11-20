@@ -111,7 +111,7 @@ async def get_courseworks(unit_id:UUID, session:session_dependency):
   print(courseworks)
   response = []
   for coursework in courseworks:
-      response_courswork = CourseworkRead(id=coursework.id, name=coursework.name, description=coursework.description, due_date=coursework.due_date, creation_date=coursework.creation_date)
+      response_courswork = CourseworkRead(id=coursework.id, name=coursework.name, description=coursework.description, due_date=coursework.due_date, creation_date=coursework.creation_date, colour=coursework.colour)
       response.append(response_courswork)
     
   return CourseworkAll(courseworks=response)
