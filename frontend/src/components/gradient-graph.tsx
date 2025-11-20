@@ -9,17 +9,22 @@ import {
 } from "@/components/ui/tooltip";
 
 interface gradientDataPoint {
-  [key: string]: string | number;
+    uuid: number;
+    name: string;
+    score: number;
+    [key: string]: string | number;
 }
 
 interface gradientData {
   studentData: gradientDataPoint[];
   className?: string;
+  onSelectStudent?: (student: gradientDataPoint) => void;
 }
 
 export default function GradientGraph({
-  studentData,
-  className,
+    studentData,
+    className,
+    onSelectStudent,
 }: gradientData) {
   const sortedByName = [...studentData].sort((a, b) =>
     String(a.name).localeCompare(String(b.name))
@@ -41,6 +46,11 @@ export default function GradientGraph({
                 className="aspect-square size-8 border cursor-pointer"
                 onMouseEnter={() => setHovered(Number(student.uuid))}
                 onMouseLeave={() => setHovered(null)}
+                onClick={() => {
+                    if (onSelectStudent) {
+                        onSelectStudent(student);
+                    }
+                }}
                 style={{
                   backgroundColor:
                     hovered === student.uuid ? hoverColour : colour,
