@@ -2,229 +2,37 @@
 
 import { Edit, Flag, Plus } from "lucide-react";
 import Link from "next/link";
-import { Suspense, useState } from "react";
-import Coursework from "@/components/coursework";
+import { Suspense, useEffect, useState } from "react";
+import CourseworkList from "@/components/coursework-list";
 import { StatsChart } from "@/components/stats-chart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Unit from "@/components/unit";
+import UnitList from "@/components/unit-list";
+
+type Status = "ongoing" | "finished";
 
 export default function DashboardPage() {
-  const apiCall = [
-    {
-      id: 0,
-      name: "Imperative and Functional Programming",
-      code: "COMS100016",
-      year: "2024/2025",
-      finished: true,
-      color: "blue",
-      mark: 76,
-      courseworkLive: false,
-    },
-    {
-      id: 1,
-      name: "Computer Architecure",
-      code: "COMS100015",
-      year: "2024/2025",
-      finished: true,
-      color: "amber",
-      mark: 69,
-      courseworkLive: false,
-    },
-    {
-      id: 2,
-      name: "Mathematics for Computer Science A",
-      code: "COMS100014",
-      year: "2024/2025",
-      finished: true,
-      color: "teal",
-      mark: 68,
-      courseworkLive: false,
-    },
-    {
-      id: 3,
-      name: "Object Oriented Programming and Algorithms",
-      code: "COMS100018",
-      year: "2024/2025",
-      finished: true,
-      color: "emerald",
-      mark: 77,
-      courseworkLive: false,
-    },
-    {
-      id: 4,
-      name: "Software Tools",
-      code: "COMS100012",
-      year: "2024/2025",
-      finished: true,
-      color: "rose",
-      mark: 65,
-      courseworkLive: false,
-    },
-    {
-      id: 5,
-      name: "Mathematics for Computer Science B",
-      code: "COMS100013",
-      year: "2024/2025",
-      finished: true,
-      color: "purple",
-      mark: 89,
-      courseworkLive: false,
-    },
-    {
-      id: 6,
-      name: "Programming Languages and Computation",
-      code: "COMS100016",
-      year: "2025/2026",
-      finished: true,
-      color: "blue",
-      mark: 70,
-      courseworkLive: false,
-    },
-    {
-      id: 7,
-      name: "Interaction and Society",
-      code: "COMS100015",
-      year: "2025/2026",
-      finished: false,
-      color: "amber",
-      mark: 0,
-      courseworkLive: false,
-    },
-    {
-      id: 8,
-      name: "Computer Systems A",
-      code: "COMS100014",
-      year: "2025/2026",
-      finished: true,
-      color: "teal",
-      mark: 70,
-      courseworkLive: false,
-    },
-    {
-      id: 9,
-      name: "Computer Systems B",
-      code: "COMS100018",
-      year: "2025/2026",
-      finished: false,
-      color: "emerald",
-      mark: 0,
-      courseworkLive: false,
-    },
-    {
-      id: 10,
-      name: "Algorithms and Data",
-      code: "COMS100012",
-      year: "2025/2026",
-      finished: false,
-      color: "rose",
-      mark: 0,
-      courseworkLive: true,
-    },
-    {
-      id: 11,
-      name: "Software Engineering Project",
-      code: "COMS100013",
-      year: "2025/2026",
-      finished: false,
-      color: "purple",
-      mark: 0,
-      courseworkLive: true,
-    },
-  ];
+  const [year, setYear] = useState<number | null>(null);
+  const [_activeTab, _setActiveTab] = useState<Status>("ongoing");
 
-  const latestYear = "2025";
-  const [year, _setYear] = useState(latestYear);
-  const nextYear = (parseInt(year, 10) + 1).toString();
-  const currentAcademicYear: string = `${parseInt(year, 10)}/${parseInt(
-    nextYear,
-    10,
-  )}`;
+  // defer `new Date()` in useEffect to avoid pre-render errors
+  useEffect(() => {
+    setYear(new Date().getFullYear());
+  }, []);
 
-  const byYear = apiCall.filter((unit) => unit.year === currentAcademicYear);
-  const ongoing = byYear.filter((unit) => unit.finished === false);
-  const ongoingSorted = ongoing.sort(
-    (a, b) => Number(b.courseworkLive) - Number(a.courseworkLive),
-  );
-  const ongoingUnits = ongoingSorted.map((unit) => (
-    <Unit key={unit.id} props={unit} />
-  ));
+  if (year === null) return null; // wait until client time is ready
 
-  const courseworkApiCall = [
-    {
-      courseworkId: "112354",
-      name: "List",
-      code: "100016",
-      year: 2025,
-      finished: true,
-      color: "blue",
-      dueDate: "20/9/2025",
-      testsPassed: 50,
-      totalTests: 50,
-    },
-    {
-      courseworkId: "347483",
-      name: "Sketch",
-      code: "100016",
-      year: 2025,
-      finished: true,
-      color: "amber",
-      dueDate: "20/12/2025",
-      testsPassed: 58,
-      totalTests: 58,
-    },
-    {
-      courseworkId: "566567",
-      name: "Power to the People",
-      code: "100016",
-      year: 2025,
-      finished: false,
-      color: "teal",
-      dueDate: "18/10/2025",
-      testsPassed: 13,
-      totalTests: 68,
-    },
-    {
-      courseworkId: "886567",
-      name: "Scotland Yard",
-      code: "100018",
-      year: 2025,
-      finished: false,
-      color: "emerald",
-      dueDate: "16/11/2025",
-      testsPassed: 21,
-      totalTests: 43,
-    },
-    {
-      courseworkId: "977557",
-      name: "Simplify",
-      code: "100016",
-      year: 2025,
-      finished: false,
-      color: "rose",
-      dueDate: "5/10/2025",
-      testsPassed: 46,
-      totalTests: 74,
-    },
-  ];
-  const ongoingCW = courseworkApiCall.filter((unit) => unit.finished === false);
-  const ongoingCourseworks = ongoingCW.map((unit) => (
-    <Coursework key={unit.courseworkId} props={unit} />
-  ));
+  const _currentAcademicYear = `${year}/${year + 1}`;
 
-  const finishedCW = courseworkApiCall.filter((unit) => unit.finished === true);
-  const _finishedCourseworks = finishedCW.map((unit) => (
-    <Coursework key={unit.courseworkId} props={unit} />
-  ));
   return (
     <div className="space-y-6 mb-2">
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Card className="col-span-3 gap-0">
+        <Card className="col-span-3 gap-0 shadow-none border-none bg-background">
           <CardContent className="grid xl:grid-cols-4 grid-cols-2 gap-4">
             <Card className="p-2 gap-0 bg-accent flex flex-col justify-between">
               <CardHeader className="p-0">
-                <CardTitle className="text-center text-normal lg:text-xl font-light py-2">
+                <CardTitle className="text-center lg:text-xl font-light p-2">
                   Commits
                 </CardTitle>
               </CardHeader>
@@ -335,9 +143,18 @@ export default function DashboardPage() {
         <Card className="flex flex-col col-span-3 xl:col-span-2">
           <CardContent>
             <Tabs defaultValue="coursework" className="">
-              <TabsList>
-                <TabsTrigger value="coursework">Coursework</TabsTrigger>
-                <TabsTrigger value="units">Units</TabsTrigger>
+              <TabsList className="flex flex-row gap-4 bg-background my-2">
+                <div className="bg-accent p-1">
+                  <TabsTrigger
+                    value="coursework"
+                    className="bg-accent px-4 py-2"
+                  >
+                    Coursework
+                  </TabsTrigger>
+                  <TabsTrigger value="units" className="bg-accent px-4 py-2">
+                    Units
+                  </TabsTrigger>
+                </div>
               </TabsList>
               <div className="gap-2 overflow-y-auto flex flex-col h-96">
                 <Suspense fallback={<Skeleton />}>
@@ -345,10 +162,10 @@ export default function DashboardPage() {
                     className="flex flex-col gap-2"
                     value="coursework"
                   >
-                    {ongoingCourseworks}
+                    <CourseworkList finished={false} />
                   </TabsContent>
                   <TabsContent className="flex flex-col gap-2" value="units">
-                    {ongoingUnits}
+                    <UnitList currentYear={year} finished={false} />
                   </TabsContent>
                 </Suspense>
               </div>
@@ -364,7 +181,7 @@ export default function DashboardPage() {
               <Card className="bg-green-400/10 p-2">
                 <CardContent className="flex flex-row p-0 items-center gap-4">
                   <Plus className="xl:size-12 p-0"></Plus>
-                  <p className="font-semibold xl:text-lg">Create coursework</p>
+                  <p className="font-medium xl:text-lg">Create coursework</p>
                 </CardContent>
               </Card>
             </Link>
@@ -372,7 +189,7 @@ export default function DashboardPage() {
               <Card className="bg-green-400/10 p-2">
                 <CardContent className="flex flex-row p-0 items-center gap-4">
                   <Plus className="xl:size-12 p-0"></Plus>
-                  <p className="font-semibold xl:text-lg">Create unit</p>
+                  <p className="font-medium xl:text-lg">Create unit</p>
                 </CardContent>
               </Card>
             </Link>
@@ -380,7 +197,7 @@ export default function DashboardPage() {
               <Card className="bg-amber-400/10 p-2">
                 <CardContent className="flex flex-row p-0 items-center gap-4">
                   <Edit className="xl:size-12 p-0"></Edit>
-                  <p className="font-semibold xl:text-lg">Edit Deadline</p>
+                  <p className="font-medium xl:text-lg">Edit Deadline</p>
                 </CardContent>
               </Card>
             </Link>
@@ -388,7 +205,7 @@ export default function DashboardPage() {
               <Card className="bg-red-400/10 p-2">
                 <CardContent className="flex flex-row p-0 items-center gap-4">
                   <Flag className="xl:size-12 p-0"></Flag>
-                  <p className="font-semibold xl:text-lg">End submissions</p>
+                  <p className="font-medium xl:text-lg">End submissions</p>
                 </CardContent>
               </Card>
             </Link>

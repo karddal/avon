@@ -53,9 +53,7 @@ export function StatsChart({
 
   return (
     <div>
-      <div className="text-center text-xl pb-4">
-        <strong>{total}</strong> this week
-      </div>
+      <div className="text-4xl text-center font-medium pb-4">{total}</div>
       <ChartContainer config={chartConfig} className={className}>
         <BarChart data={data}>
           <ChartTooltip content={<ChartTooltipContent />} />

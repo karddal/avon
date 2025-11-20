@@ -48,7 +48,9 @@ export default function Unit({ props }: { props: UnitData }) {
                     strokeWidth={3}
                     fill="#ff0000"
                   />
-                  <p className="-ml-2 text-red-600">Coursework Live</p>
+                  <p className="-ml-2 text-red-600 hidden sm:flex">
+                    Coursework Live
+                  </p>
                 </div>
               </div>
               <div className="flex flex-row items-center justify-between w-full gap-x-10 lg:text-lg">
