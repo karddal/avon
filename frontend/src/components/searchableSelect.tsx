@@ -62,7 +62,7 @@ export function SearchableSelect(props: SearchableSelectProps) {
     }
 
     return (
-        <div className="flex flex-col lg:flex-row gap-4">
+        <div className="shrink-0 w-56 sm:w-64 lg:w-auto lg:flex-[1_1_12rem] lg:min-w-[10rem]">
             <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                     <Button
