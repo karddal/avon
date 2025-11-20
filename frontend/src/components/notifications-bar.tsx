@@ -7,7 +7,6 @@ import {
 import NotificationMessage from "./notification-message";
 
 export default function NotificationBar() {
-  // Add a unit thingy asw
   const apiCall = [
     {
       id: 0,
@@ -106,17 +105,15 @@ export default function NotificationBar() {
   ));
 
   return (
-    <div>
-      <DropdownMenu>
-        <DropdownMenuTrigger className="mx-2 hover:cursor-pointer">
-          <Bell size={20} />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="mx-5 h-64 w-64 lg:h-128 lg:w-128 flex flex-col p-1">
-          {/* <DropdownMenuItem className="w-128 flex flex-col p-1"> */}
-          {notifications}
-          {/* </DropdownMenuItem> */}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger className="mx-2 hover:cursor-pointer p-2 hover:bg-accent hover:ease-in-out">
+        <Bell size={20} />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="mx-5 h-64 w-96 lg:h-128 lg:w-128 flex flex-col p-1">
+        {/* <DropdownMenuItem className="w-128 flex flex-col p-1"> */}
+        {notifications}
+        {/* </DropdownMenuItem> */}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

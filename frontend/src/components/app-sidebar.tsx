@@ -12,7 +12,6 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import type * as React from "react";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +19,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
 import {
   Sidebar,
   SidebarContent,
