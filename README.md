@@ -77,9 +77,13 @@ A modern, responsive Next.JS frontend designed to be fast and lightweight consum
 
 - I want a fast interface because other websites are often very slow and clunky, or hard to navigate.
 
+- I want a less confusing website layout and design, in order to more easily navigate to the required page, such as getting to the current state of my coursework.
+
 ### Lecturer
 
 - I want to speed up the process of marking and evaluating coursework, which currently involves manual zipping, unzipping and running of test suites.
+
+- I want an easier UI to digest and organise, in order for coursework and unit creation to be more straight foward.
 
 - I want a way to view the timeline of updates in a coursework, to see how organised each student is, and how they are getting along with their project. I would like to see the progression of a coursework, rather than just the end result.
 
