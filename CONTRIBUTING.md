@@ -14,17 +14,20 @@ This is a quick guide on how to contribute to Avon.
 ### Dev environment
 To set up a dev environment, follow these steps:
 
-#### Prerequisites
-##### Bun
+### Prerequisites
+#### Bun
 Bun is a package manager similar to npm, but a lot faster and more modern. Install it using the instructions [here](https://bun.com/).
-Before starting work, enter the `frontend` folder and execute `bun install` to fetch all dependencies.
 
-##### Java
-We use Java LTS 25. The exact JDK shouldn't matter, but we use either Amazon or Temurin.
-This can be installed by your IDE, or installed manually.
-Use `./gradlew build` inside the `backend/` folder before first starting work to make sure all dependencies are downloaded.
+#### NodeJS
+Node.js is required for Next.js. We are currently using Node version >=20.9. Download [here](https://nodejs.org/en/download)
 
-##### Just
+#### UV
+UV is a package manager built for Python, handling virtual environments and other important development features. Install it [here](https://github.com/astral-sh/uv).
+
+#### Python
+Python is used for the FastAPI backend. It can be downloaded [here](https://www.python.org/downloads/). For Avon, we recommend versions 3.14 or above.
+
+#### Just
 Just is a command runner that we use to simplify our workflow and make commits easier.
 To install it, follow the instructions on this page: [here](https://github.com/casey/just?tab=readme-ov-file#installation)
 
@@ -40,6 +43,7 @@ Here, you can use `just --list` to list all available commands.
 | `check-fe` and `check-be` | Runs either  frontend or backend checks, respectively. Does not fix.   |
 | `fixit`                   | Fixes things flagged up for both frontend and backend.                 |
 | `fix-fe` and `fix-be`    | Fixes either frontend or backend                                       |
+| `run-fe` and `run-be`   | Runs either frontend or backend.
 
 #### Development Flow
 1. Use `git pull` to make sure your local repo is up to date.
