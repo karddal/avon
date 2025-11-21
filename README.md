@@ -163,6 +163,68 @@ A modern, responsive Next.JS frontend designed to be fast and lightweight consum
 - `README.md` - you are here :)
 - `CONTRIBUTING.md` contains information on how to contribute to the project.
 
+## Developer Instructions
+Here is how to setup a local development version of Avon on your machine.
+
+### Prerequisites
+#### Bun
+Bun is a package manager similar to npm, but a lot faster and more modern. Install it using the instructions [here](https://bun.com/).
+
+#### NodeJS
+Node.js is required for Next.js. We are currently using Node version >=20.9. Download [here](https://nodejs.org/en/download)
+
+#### UV
+UV is a package manager built for Python, handling virtual environments and other important development features. Install it [here](https://github.com/astral-sh/uv).
+
+#### Python
+Python is used for the FastAPI backend. It can be downloaded [here](https://www.python.org/downloads/). For Avon, we recommend versions 3.14 or above.
+
+#### Just
+Just is a command runner that we use to simplify our workflow and make commits easier.
+To install it, follow the instructions on this page: [here](https://github.com/casey/just?tab=readme-ov-file#installation)
+
+Pay particular attention to the instructions if you are using **Windows** because in order to use Just you will need to add Git Bash to your PATH.
+There are instructions on the linked Just GitHub page.
+
+Once you have installed it, make sure you are in the root (i.e. the folder with README.md).
+Here, you can use `just --list` to list all available commands.
+
+| Command                   | Usecase                                                                |
+|---------------------------|------------------------------------------------------------------------|
+| `check`                   | Runs both frontend and backend checks, does not fix, just list issues. |
+| `check-fe` and `check-be` | Runs either  frontend or backend checks, respectively. Does not fix.   |
+| `fixit`                   | Fixes things flagged up for both frontend and backend.                 |
+| `fix-fe` and `fix-be`    | Fixes either frontend or backend                                       |
+| `run-fe` and `run-be`   | Runs either frontend or backend.
+
+### Setup / Installing Dependancies
+
+To begin, clone the repository.
+```sh
+git clone git@github.com:spe-uob/2025-ContinuousAssessment
+```
+
+Before starting work, you need to install all the required packages. 
+
+For the **frontend**, enter the `frontend` folder and execute `bun install` to fetch all dependencies.. 
+
+For the **backend**, enter the `backend` folder, create a virtual environment using `uv venv`, activate the environment, and then run `uv sync` to install all packages. 
+Other commands such as `uv add` can be used to add packages to the project.
+
+### Running
+
+To run the frontend, simply run `just run-fe` in the project root.
+
+Similarly, to run the backend, run `just run-be`.
+
+Now you should be able to visit `http://localhost:3000` and view the frontend Next.js app, with the backend running on`http://localhost:8000`.
+
+#### Contributing
+Thanks for being interesting in helping our project! 
+
+To contribute see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+
 ## Team Members
 
 | Members             | Email                                                   |
@@ -175,7 +237,4 @@ A modern, responsive Next.JS frontend designed to be fast and lightweight consum
 
 ## Architecture Diagram
 <img width="2743" height="4275" alt="Blank diagram" src="https://github.com/user-attachments/assets/eb254416-470f-4a1f-88cc-cac42fa51883" />
-
-## Contributing / Developer Instructions
-See [CONTRIBUTING.md](CONTRIBUTING.md)
 
