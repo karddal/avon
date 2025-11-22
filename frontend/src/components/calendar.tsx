@@ -1,10 +1,8 @@
 "use client";
 
 import { parseDate } from "chrono-node";
-import { setDate } from "date-fns";
-import { CalendarIcon, ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon } from "lucide-react";
 import * as React from "react";
-import { date } from "zod";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
@@ -14,7 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { FieldGroup, FieldSeparator } from "./ui/field";
+import { FieldGroup } from "./ui/field";
 import { Separator } from "./ui/separator";
 
 function formatDate(date: Date | undefined) {
@@ -37,7 +35,6 @@ type calendarProps = {
 };
 
 export function Calendar29({ props }: { props: calendarProps }) {
-  const [open, setOpen] = React.useState(false);
   const [openOne, setOpenOne] = React.useState(false);
   const [value, setValue] = React.useState("");
   return (
@@ -56,11 +53,13 @@ export function Calendar29({ props }: { props: calendarProps }) {
                   id="date-picker"
                   className="w-50 justify-between font-normal"
                 >
-                  {props.date ? props.date.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  }) : "Select date"}
+                  {props.date
+                    ? props.date.toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "long",
+                        year: "numeric",
+                      })
+                    : "Select date"}
                   <ChevronDownIcon />
                 </Button>
               </PopoverTrigger>
@@ -103,8 +102,8 @@ export function Calendar29({ props }: { props: calendarProps }) {
         <Separator />
         <div className="flex flex-col gap-4">
           <Label htmlFor="date" className="px-1 mb-0">
-          Or, use natural language
-        </Label>
+            Or, use natural language
+          </Label>
           <Input
             id="date"
             value={value}
