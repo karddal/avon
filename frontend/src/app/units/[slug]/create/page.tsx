@@ -60,8 +60,7 @@ export default function CreateCourseworkFlow() {
   const [submitState, setSubmitState] = useState<boolean>(false);
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [alertText, setAlertText] = useState<string>("");
-  const { step, setStep, submit, go_step, next, back } =
-    multistep_coursework_flow();
+  const { step, setStep, next } = multistep_coursework_flow();
 
   const formVariants = {
     hidden: {
@@ -114,8 +113,6 @@ export default function CreateCourseworkFlow() {
       },
       body: JSON.stringify(req),
     }).then((r) => {
-      // console.log("status:", r.status);
-      // console.log("payload:", r.json());
       if (!r.ok) {
         r.json().then((data) => {
           setAlertText(data.detail);
@@ -159,7 +156,11 @@ export default function CreateCourseworkFlow() {
                 e.key === "Enter" && setStep(0);
               }}
               onClick={() => setStep(0)}
-              className={`${step === 0 ? "underline decoration-line decoration-2 decoration-yellow-300" : ""} cursor-pointer`}
+              className={`${
+                step === 0
+                  ? "underline decoration-line decoration-2 decoration-yellow-300"
+                  : ""
+              } cursor-pointer`}
             >
               Step 1
             </p>
@@ -168,7 +169,11 @@ export default function CreateCourseworkFlow() {
                 e.key === "Enter" && setStep(1);
               }}
               onClick={() => setStep(1)}
-              className={`${step === 1 ? "underline decoration-line decoration-2 decoration-yellow-300" : ""} cursor-pointer`}
+              className={`${
+                step === 1
+                  ? "underline decoration-line decoration-2 decoration-yellow-300"
+                  : ""
+              } cursor-pointer`}
             >
               Step 2
             </p>
@@ -177,7 +182,11 @@ export default function CreateCourseworkFlow() {
                 e.key === "Enter" && setStep(2);
               }}
               onClick={() => setStep(2)}
-              className={`${step === 2 ? "underline decoration-line decoration-2 decoration-yellow-300" : ""} cursor-pointer`}
+              className={`${
+                step === 2
+                  ? "underline decoration-line decoration-2 decoration-yellow-300"
+                  : ""
+              } cursor-pointer`}
             >
               Step 3
             </p>
