@@ -38,7 +38,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 
 const today = new Date();
-today.setHours(0, 0, 0, 0);
+today.setHours(13, 0, 0, 0);
 
 today.setDate(today.getDate() + 1);
 const formSchema = z.object({
