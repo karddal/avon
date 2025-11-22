@@ -29,12 +29,12 @@
 
 | Category  | Tech |
 |-----------|------|
-| Frontend  | [Next.js](https://nextjs.org/), TailwindCSS  |
+| Frontend  | [Next.js](https://nextjs.org/), [TailwindCSS](https://tailwindcss.com/)  |
 | Backend   | [FastAPI](https://fastapi.tiangolo.com/) |
 | Database  | [PostgreSQL](https://www.postgresql.org/) |
-| Linters   | [Biome](https://biomejs.dev/), [Spotless](https://github.com/diffplug/spotless)
+| Linters   | [Biome](https://biomejs.dev/), [Ruff](https://github.com/astral-sh/ruff)
 | Tools     | [Just](https://github.com/casey/just), [Git](https://git-scm.com/), [Bun](https://bun.dev/) |
-| Infrastructure | [AWS](https://aws.amazon.com), [Vercel](https://vercel.com)
+| Infrastructure | [AWS](https://aws.amazon.com)
 
 ## Installation
 See [CONTRIBUTING.md](CONTRIBUTING.md)
