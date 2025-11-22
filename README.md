@@ -1,3 +1,5 @@
+<img width="1500" height="500" alt="Group 5" src="https://github.com/user-attachments/assets/ed6b6784-25ed-47b6-8be3-ff6390b33701" />
+
 # Continuous Assessment for Revision Control
 
 ![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white) ![AWS](https://img.shields.io/badge/aws-%23232f3e.svg?style=for-the-badge&logo=amazon&logoColor=white) ![GitLab](https://img.shields.io/badge/GitLab-FC6D26?style=for-the-badge&logo=gitlab&logoColor=white) ![Next.JS](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white) ![FastAPI](https://img.shields.io/badge/FastAPI-009485.svg?style=for-the-badge&logo=fastapi&logoColor=white)
@@ -77,13 +79,23 @@ A modern, responsive Next.JS frontend designed to be fast and lightweight consum
 
 - I want a fast interface because other websites are often very slow and clunky, or hard to navigate.
 
+- I would like to see all of my units as soon as I login, to easily access their content.
+
+- I would like to view all of my active courseworks, and be able to filter between finished ones and ongoing.
+
+- I would like to have a notification area so I can be informed of when new courseworks or content is added to a unit.
+
 ### Lecturer
 
 - I want to speed up the process of marking and evaluating coursework, which currently involves manual zipping, unzipping and running of test suites.
 
+- I want an easier UI to digest and organise, in order for coursework and unit creation to be more straight foward.
+
 - I want a way to view the timeline of updates in a coursework, to see how organised each student is, and how they are getting along with their project. I would like to see the progression of a coursework, rather than just the end result.
 
 - I would like to know where my students struggle the most, so that I can best support them, such as which tests were most difficult to pass.
+
+- I would like to have a dashboard where I can see statistics based on data from the last week or month, allowing me to check on my students and see how they are getting on.
 
 ## Flow Steps
 

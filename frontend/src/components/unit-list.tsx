@@ -1,6 +1,9 @@
 "use client";
 import axios from "axios";
+import { PlusIcon } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import Unit from "@/components/unit";
 
 type UnitData = {
@@ -52,15 +55,18 @@ export default function UnitList({ currentYear, finished }: UnitListProps) {
   });
 
   return (
-    <section className="grid gap-4 grid-cols-1 lg:grid-cols-2">
-      {filtered.length > 0 ? (
-        filtered.map((unit) => <Unit key={unit.id} props={unit} />)
-      ) : (
-        <p className="text-muted-foreground col-span-full text-center py-4">
-          No {finished ? "finished" : "ongoing"} units for {currentYear}/
-          {currentYear + 1}
-        </p>
-      )}
-    </section>
+    <>
+      <Link href="/units/create">
+        <Card className="bg-muted/50 flex flex-row p-5 h-full items-center hover:bg-foreground/10">
+          <PlusIcon size={50}></PlusIcon>
+          <div className="flex flex-col">
+            <CardTitle className="text-xl font-medium">Add new Unit</CardTitle>
+            <CardDescription>Create a new unit here.</CardDescription>
+          </div>
+        </Card>
+      </Link>
+      {filtered.length > 0 &&
+        filtered.map((unit) => <Unit key={unit.id} props={unit} />)}
+    </>
   );
 }
