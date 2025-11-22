@@ -133,35 +133,51 @@ A modern, responsive Next.JS frontend designed to be fast and lightweight consum
 2. These could include relative 'difficulty' scores based on previous years, average number of tests passed, etc.
 
 ## Project structure
-### Frontend
-`/frontend` contains the frontend code
-```
-└── frontend/
-    ├── public/
-    │   └── (assets)
-    ├── src/
-    │   ├── app/
-    │   │   ├── (page name)/
-    │   │   │   └── (sub page name)/
-    │   │   ├── .../
-    │   │   ├── page.tsx
-    │   │   ├── layout.tsx
-    │   │   ├── globals.css
-    │   │   └── favicon.ico 
-    │   ├── components/
-    │   │   ├── (our components)
-    │   │   └── ui/
-    │   │       └── (shadcn)
-    │   ├── hooks
-    │   └── lib
-    ├── .gitignore
-    └── bun.lock (dependency list)
-```
-- `/backend` contains the backend code
 - `/Agendas` contains agendas for meetings
 - `Justfile` is a configuration file for the Just command runner, containing custom scripts to make collaboration easier.
 - `README.md` - you are here :)
 - `CONTRIBUTING.md` contains information on how to contribute to the project.
+
+### Frontend
+```
+└── frontend/
+    ├── public/                   # Static assets (icons, images, etc.)
+    ├── src/                      # Main application source
+    │   ├── app/                  # Next.js app directory (routes + layouts)
+    │   │   ├── (page name)/      # Specific page routes
+    │   │   │   └── (sub page)/   # Nested routes if needed
+    │   │   ├── layout.tsx        # Root layout
+    │   │   ├── page.tsx          # Root page
+    │   │   ├── globals.css       # Global styles
+    │   │   └── favicon.ico       # App icon
+    │   ├── components/           # Reusable components
+    │   │   └── ui/               # ShadCN UI components
+    │   ├── hooks/                # Custom React hooks
+    │   └── lib/                  # Utility and helper functions
+    ├── .gitignore                # Git ignore rules
+    └── bun.lock                  # Dependency lock file (bun)
+```
+### Backend
+```
+└── backend/
+    ├── app/
+    │   ├── main.py               # Main FastAPI entrypoint
+    │   ├── core/                 # Core utilities (config, security, types)
+    │   ├── db/                   # Database session and connection setup
+    │   ├── models/               # SQLAlchemy ORM models
+    │   ├── routers/              # API route handlers (auth, user, unit, etc.)
+    │   ├── schemas/              # Pydantic schemas for request/response models
+    │   └── __init__.py
+    ├── tests/                    # Pytest test suite (unit + integration)
+    │   ├── model/                # Model tests  
+    │   ├── router/               # Endpoint tests  
+    │   ├── schemas/              # Schema validation tests  
+    │   └── security/             # Auth/security-related tests  
+    ├── database.db               # SQLite database (for local development)
+    ├── pyproject.toml            # Project metadata + dependencies
+    ├── pytest.ini                # Pytest config
+    └── uv.lock                   # Dependency lock file (uv)
+```
 
 ## Developer Instructions
 Here is how to setup a local development version of Avon on your machine.
