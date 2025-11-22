@@ -73,9 +73,16 @@ export function Calendar29({ props }: { props: calendarProps }) {
                   captionLayout="dropdown"
                   onSelect={(d) => {
                     if (d) {
-                      props.setDate(d);
+                      const day = d.getDate();
+                      const month = d.getMonth();
+                      const year = d.getFullYear();
+                      const currentDate = props.date;
+                      currentDate.setDate(day);
+                      currentDate.setMonth(month);
+                      currentDate.setFullYear(year);
+                      props.setDate(currentDate);
                     }
-                    setOpen(false);
+                    setOpenOne(false);
                   }}
                 />
               </PopoverContent>
@@ -86,7 +93,10 @@ export function Calendar29({ props }: { props: calendarProps }) {
               type="time"
               id="time-picker"
               step="60"
-              defaultValue="13:00"
+              value={props.date.toLocaleTimeString("en-GB", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
               onChange={(t) => {
                 const [hours, mins] = t.target.value.split(":").map(Number);
                 const oldDate = props.date;
@@ -114,12 +124,6 @@ export function Calendar29({ props }: { props: calendarProps }) {
               const date = parseDate(e.target.value);
               if (date) {
                 props.setDate(date);
-              }
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "ArrowDown") {
-                e.preventDefault();
-                setOpen(true);
               }
             }}
           />
