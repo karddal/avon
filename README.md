@@ -29,12 +29,12 @@
 
 | Category  | Tech |
 |-----------|------|
-| Frontend  | [Next.js](https://nextjs.org/), TailwindCSS  |
+| Frontend  | [Next.js](https://nextjs.org/), [TailwindCSS](https://tailwindcss.com/)  |
 | Backend   | [FastAPI](https://fastapi.tiangolo.com/) |
 | Database  | [PostgreSQL](https://www.postgresql.org/) |
-| Linters   | [Biome](https://biomejs.dev/), [Spotless](https://github.com/diffplug/spotless)
+| Linters   | [Biome](https://biomejs.dev/), [Ruff](https://github.com/astral-sh/ruff)
 | Tools     | [Just](https://github.com/casey/just), [Git](https://git-scm.com/), [Bun](https://bun.dev/) |
-| Infrastructure | [AWS](https://aws.amazon.com), [Vercel](https://vercel.com)
+| Infrastructure | [AWS](https://aws.amazon.com)
 
 ## Installation
 See [CONTRIBUTING.md](CONTRIBUTING.md)
@@ -133,35 +133,113 @@ A modern, responsive Next.JS frontend designed to be fast and lightweight consum
 2. These could include relative 'difficulty' scores based on previous years, average number of tests passed, etc.
 
 ## Project structure
-### Frontend
-`/frontend` contains the frontend code
-```
-└── frontend/
-    ├── public/
-    │   └── (assets)
-    ├── src/
-    │   ├── app/
-    │   │   ├── (page name)/
-    │   │   │   └── (sub page name)/
-    │   │   ├── .../
-    │   │   ├── page.tsx
-    │   │   ├── layout.tsx
-    │   │   ├── globals.css
-    │   │   └── favicon.ico 
-    │   ├── components/
-    │   │   ├── (our components)
-    │   │   └── ui/
-    │   │       └── (shadcn)
-    │   ├── hooks
-    │   └── lib
-    ├── .gitignore
-    └── bun.lock (dependency list)
-```
-- `/backend` contains the backend code
 - `/Agendas` contains agendas for meetings
 - `Justfile` is a configuration file for the Just command runner, containing custom scripts to make collaboration easier.
 - `README.md` - you are here :)
 - `CONTRIBUTING.md` contains information on how to contribute to the project.
+
+### Frontend
+```
+└── frontend/
+    ├── public/                   # Static assets (icons, images, etc.)
+    ├── src/                      # Main application source
+    │   ├── app/                  # Next.js app directory (routes + layouts)
+    │   │   ├── (page name)/      # Specific page routes
+    │   │   │   └── (sub page)/   # Nested routes if needed
+    │   │   ├── layout.tsx        # Root layout
+    │   │   ├── page.tsx          # Root page
+    │   │   ├── globals.css       # Global styles
+    │   │   └── favicon.ico       # App icon
+    │   ├── components/           # Reusable components
+    │   │   └── ui/               # ShadCN UI components
+    │   ├── hooks/                # Custom React hooks
+    │   └── lib/                  # Utility and helper functions
+    ├── .gitignore                # Git ignore rules
+    └── bun.lock                  # Dependency lock file (bun)
+```
+### Backend
+```
+└── backend/
+    ├── app/
+    │   ├── main.py               # Main FastAPI entrypoint
+    │   ├── core/                 # Core utilities (config, security, types)
+    │   ├── db/                   # Database session and connection setup
+    │   ├── models/               # SQLAlchemy ORM models
+    │   ├── routers/              # API route handlers (auth, user, unit, etc.)
+    │   ├── schemas/              # Pydantic schemas for request/response models
+    │   └── __init__.py
+    ├── tests/                    # Pytest test suite (unit + integration)
+    │   ├── model/                # Model tests  
+    │   ├── router/               # Endpoint tests  
+    │   ├── schemas/              # Schema validation tests  
+    │   └── security/             # Auth/security-related tests  
+    ├── database.db               # SQLite database (for local development)
+    ├── pyproject.toml            # Project metadata + dependencies
+    ├── pytest.ini                # Pytest config
+    └── uv.lock                   # Dependency lock file (uv)
+```
+
+## Developer Instructions
+Here is how to setup a local development version of Avon on your machine.
+
+### Prerequisites
+#### Bun
+Bun is a package manager similar to npm, but a lot faster and more modern. Install it using the instructions [here](https://bun.com/).
+
+#### NodeJS
+Node.js is required for Next.js. We are currently using Node version >=20.9. Download [here](https://nodejs.org/en/download)
+
+#### UV
+UV is a package manager built for Python, handling virtual environments and other important development features. Install it [here](https://github.com/astral-sh/uv).
+
+#### Python
+Python is used for the FastAPI backend. It can be downloaded [here](https://www.python.org/downloads/). For Avon, we recommend versions 3.14 or above.
+
+#### Just
+Just is a command runner that we use to simplify our workflow and make commits easier.
+To install it, follow the instructions on this page: [here](https://github.com/casey/just?tab=readme-ov-file#installation)
+
+Pay particular attention to the instructions if you are using **Windows** because in order to use Just you will need to add Git Bash to your PATH.
+There are instructions on the linked Just GitHub page.
+
+Once you have installed it, make sure you are in the root (i.e. the folder with README.md).
+Here, you can use `just --list` to list all available commands.
+
+| Command                   | Usecase                                                                |
+|---------------------------|------------------------------------------------------------------------|
+| `check`                   | Runs both frontend and backend checks, does not fix, just list issues. |
+| `check-fe` and `check-be` | Runs either  frontend or backend checks, respectively. Does not fix.   |
+| `fixit`                   | Fixes things flagged up for both frontend and backend.                 |
+| `fix-fe` and `fix-be`    | Fixes either frontend or backend                                       |
+| `run-fe` and `run-be`   | Runs either frontend or backend.
+
+### Setup / Installing Dependancies
+
+To begin, clone the repository.
+```sh
+git clone git@github.com:spe-uob/2025-ContinuousAssessment
+```
+
+Before starting work, you need to install all the required packages. 
+
+For the **frontend**, enter the `frontend` folder and execute `bun install` to fetch all dependencies.. 
+
+For the **backend**, enter the `backend` folder, create a virtual environment using `uv venv`, activate the environment, and then run `uv sync` to install all packages. 
+Other commands such as `uv add` can be used to add packages to the project.
+
+### Running
+
+To run the frontend, simply run `just run-fe` in the project root.
+
+Similarly, to run the backend, run `just run-be`.
+
+Now you should be able to visit `http://localhost:3000` and view the frontend Next.js app, with the backend running on`http://localhost:8000`.
+
+#### Contributing
+Thanks for being interesting in helping our project! 
+
+To contribute see [CONTRIBUTING.md](CONTRIBUTING.md).
+
 
 ## Team Members
 
@@ -175,7 +253,4 @@ A modern, responsive Next.JS frontend designed to be fast and lightweight consum
 
 ## Architecture Diagram
 <img width="2743" height="4275" alt="Blank diagram" src="https://github.com/user-attachments/assets/eb254416-470f-4a1f-88cc-cac42fa51883" />
-
-## Contributing / Developer Instructions
-See [CONTRIBUTING.md](CONTRIBUTING.md)
 

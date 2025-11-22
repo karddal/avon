@@ -11,36 +11,6 @@ This is a quick guide on how to contribute to Avon.
 4. Ensure that you fill out the metadata for the issue.
 5. Create a branch linked to the issue using GitHub's 'create a branch linked to this issue' feature.
 
-### Dev environment
-To set up a dev environment, follow these steps:
-
-#### Prerequisites
-##### Bun
-Bun is a package manager similar to npm, but a lot faster and more modern. Install it using the instructions [here](https://bun.com/).
-Before starting work, enter the `frontend` folder and execute `bun install` to fetch all dependencies.
-
-##### Java
-We use Java LTS 25. The exact JDK shouldn't matter, but we use either Amazon or Temurin.
-This can be installed by your IDE, or installed manually.
-Use `./gradlew build` inside the `backend/` folder before first starting work to make sure all dependencies are downloaded.
-
-##### Just
-Just is a command runner that we use to simplify our workflow and make commits easier.
-To install it, follow the instructions on this page: [here](https://github.com/casey/just?tab=readme-ov-file#installation)
-
-Pay particular attention to the instructions if you are using **Windows** because in order to use Just you will need to add Git Bash to your PATH.
-There are instructions on the linked Just GitHub page.
-
-Once you have installed it, make sure you are in the root (i.e. the folder with README.md).
-Here, you can use `just --list` to list all available commands.
-
-| Command                   | Usecase                                                                |
-|---------------------------|------------------------------------------------------------------------|
-| `check`                   | Runs both frontend and backend checks, does not fix, just list issues. |
-| `check-fe` and `check-be` | Runs either  frontend or backend checks, respectively. Does not fix.   |
-| `fixit`                   | Fixes things flagged up for both frontend and backend.                 |
-| `fix-fe` and `fix-be`    | Fixes either frontend or backend                                       |
-
 #### Development Flow
 1. Use `git pull` to make sure your local repo is up to date.
 2. Use `git branch -a` to list all branches.
@@ -51,7 +21,7 @@ Here, you can use `just --list` to list all available commands.
 To run the frontend, use `bun run dev` from within the `frontend/` folder, or `just run-fe` from the root.
 
 ##### Backend
-To run the backend, use `./gradlew bootRun` from within the `backend/` folder, or `just run-be` from the root.
+To run the backend, use `uv run fastapi dev` from within the `backend/` folder, or `just run-be` from the root.
 
 ##### Uploading your changes
 Once you have made your changes, you must make sure that your code matches the code style of the project.
