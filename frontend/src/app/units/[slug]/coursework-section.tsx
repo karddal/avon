@@ -27,9 +27,8 @@ export default function CourseworkSection() {
         const cwRes = await fetch(
           `http://localhost:8000/units/${slug}/courseworks`,
           {
-            cache: "force-cache",
             credentials: "include",
-          },
+          }
         );
         if (!cwRes.ok) throw new Error("Failed to fetch courseworks");
         const cwData = await cwRes.json();
