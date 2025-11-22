@@ -11,3 +11,4 @@ class Coursework(SQLModel, table = True):
     unit_id: UUID = Field(foreign_key="unit.id", index = True) #links to the unit table, uses a foreign key (unit_id) corresponding to the primary key of the unit table (unit_id)
     due_date: datetime.datetime = Field(index = True)
     creation_date: datetime.datetime = Field(default_factory = datetime.datetime.now) #note: this uses the timezome of the device, not a standard timezone like UTC (which we can't use as this is primarily a uk used program)
+    colour: str

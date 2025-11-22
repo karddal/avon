@@ -24,7 +24,7 @@ async def create_coursework(coursework: CourseworkCreate, session: session_depen
         if not unit_exists:
             raise HTTPException(status_code=404, detail='Corresponding unit not found')
 
-    db_coursework = Coursework(name=coursework.name,description=coursework.description,unit_id=coursework.unit_id, due_date=coursework.due_date)
+    db_coursework = Coursework(name=coursework.name,description=coursework.description,unit_id=coursework.unit_id, due_date=coursework.due_date, colour=coursework.colour)
     print("data base",db_coursework.due_date)
     session.add(db_coursework)
     session.commit()

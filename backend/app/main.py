@@ -12,7 +12,7 @@ app = FastAPI(lifespan=lifespan)
 
 origins = [
     "http://localhost:3000",
-    "https://avon.ac"
+    "https://avon.ac",
 ]
 
 app.add_middleware(

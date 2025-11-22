@@ -86,25 +86,29 @@ def seed_data():
                 name="Power to the People",
                 description="Easy Haskell 1",
                 unit_id=unit3.id,
-                due_date=datetime.datetime(2025, 12, 15, 23, 59)
+                due_date=datetime.datetime(2025, 12, 15, 23, 59),
+                colour="abcdef"
             )
             coursework2 = Coursework(
                 name="Double Linked List",
                 description="literally the title",
                 unit_id=unit3.id,
-                due_date=datetime.datetime(2025, 11, 30, 23, 59)
+                due_date=datetime.datetime(2025, 11, 30, 23, 59),
+                colour="b01c2e"
             )
             coursework3 = Coursework(
                 name="AI Bill Splitter",
                 description="Splitvise but with Vibes, should have been called splitvibes",
                 unit_id=unit2.id,
-                due_date=datetime.datetime(2025, 11, 20, 17, 00)
+                due_date=datetime.datetime(2025, 11, 20, 17, 00),
+                colour="f1d2c3"
             )
             coursework4 = Coursework(
                 name="Encrypt",
                 description="Did you know you can encrypt with binary?",
                 unit_id=unit4.id,
-                due_date=datetime.datetime(2025, 12, 10, 14, 00)
+                due_date=datetime.datetime(2025, 12, 10, 14, 00),
+                colour="1a2b3c"
             )
             session.add_all([coursework1, coursework2, coursework3, coursework4])
             session.commit()

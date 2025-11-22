@@ -3,6 +3,7 @@ from typing import Annotated
 import datetime
 from pydantic import BaseModel, AfterValidator
 from uuid import UUID
+import re
 
 
 def is_valid_name(name: str) -> str:
@@ -33,11 +34,18 @@ def is_valid_due_date(date: datetime.datetime) -> datetime.datetime:
     else:
         return date
 
+def is_valid_colour(c: str) -> str:
+    match = re.search(r'^(?:[0-9a-fA-F]{3}){1,2}$', c)
+    if match:
+        return c
+    else:
+        raise ValueError("Invalid colour")
 
 # Type aliases
 Name = Annotated[str, AfterValidator(is_valid_name)]
 Description = Annotated[str, AfterValidator(is_valid_description)]
 DueDate = Annotated[datetime.datetime, AfterValidator(is_valid_due_date)]  # Fixed
+Colour = Annotated[str, AfterValidator(is_valid_colour)]
 
 class CourseworkRead(BaseModel):
     id: UUID
@@ -46,12 +54,14 @@ class CourseworkRead(BaseModel):
     unit_id: UUID
     due_date: datetime.datetime
     creation_date: datetime.datetime
+    colour: str
 
 class CourseworkCreate(BaseModel):
     name: Name
     description: Description
     unit_id: UUID
     due_date: DueDate
+    colour: str
 
 
 class CourseworkUpdate(BaseModel):
@@ -59,6 +69,7 @@ class CourseworkUpdate(BaseModel):
     description: Description | None = None
     unit_id: UUID | None = None
     due_date: DueDate | None = None
+    colour: str | None = None
 
 class CourseworkDelete(BaseModel):
     id: UUID
