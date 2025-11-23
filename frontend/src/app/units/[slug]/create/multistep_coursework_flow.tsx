@@ -6,14 +6,10 @@ import { useState } from "react";
 export function multistep_coursework_flow() {
   const steps = 3;
   const [step, setStep] = useState<number>(0);
-  const [submit, setSubmit] = useState<boolean>(true);
 
   const next = () => {
     if (step < steps - 1) {
       setStep((i) => i + 1);
-    }
-    if (step === steps) {
-      setSubmit(true);
     }
   };
 
@@ -30,7 +26,6 @@ export function multistep_coursework_flow() {
   return {
     step,
     setStep,
-    submit,
     go_step,
     next,
     back,
