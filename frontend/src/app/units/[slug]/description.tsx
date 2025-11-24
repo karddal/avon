@@ -19,7 +19,7 @@ export default async function UnitDescription({
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-    }
+    },
   );
 
   if (!response.ok) {
