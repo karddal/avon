@@ -11,32 +11,10 @@ type UnitData = {
   colour: string;
 };
 
-// TODO: Make a more concrete type
-type colourMap = {
-  [key: string]: string;
-};
-
-const colourMap: colourMap = {
-  red: "bg-red-400",
-  blue: "bg-red-400",
-  green: "bg-green-400",
-  purple: "bg-purple-400",
-  amber: "bg-amber-400",
-  teal: "bg-teal-600",
-  emerald: "bg-emerald-400",
-  fuchsia: "bg-fuchsia-400",
-  rose: "bg-rose-700",
-};
-
-function getRandomColour(): string {
-  const colors = Object.keys(colourMap);
-  return colors[Math.floor(Math.random() * colors.length)];
-}
-
 export default function Unit({ props }: { props: UnitData }) {
   const colouring = {
-    backgroundColor: "#" + props.colour,
-  }
+    backgroundColor: `#${props.colour}`,
+  };
   return (
     <Link href={`/units/${props.id}`}>
       <div style={colouring} className="h-2"></div>
@@ -45,7 +23,9 @@ export default function Unit({ props }: { props: UnitData }) {
           <div className="flex flex-col w-full">
             <div className="flex flex-col">
               <div className="flex flex-row align-center items-center">
-                <p className="text-foreground/80">Unit Code: {props.unit_code}</p>
+                <p className="text-foreground/80">
+                  Unit Code: {props.unit_code}
+                </p>
                 <div className={`flex flex-row justify-center items-center`}>
                   <Dot
                     color="#ff0000"

@@ -15,28 +15,6 @@ type courseworkData = {
   totalTests: number;
 };
 
-// TODO: Make a more concrete type
-type colourMap = {
-  [key: string]: string;
-};
-
-const colourMap: colourMap = {
-  red: "bg-red-400",
-  blue: "bg-red-400",
-  green: "bg-green-400",
-  purple: "bg-purple-400",
-  amber: "bg-amber-400",
-  teal: "bg-teal-600",
-  emerald: "bg-emerald-400",
-  fuchsia: "bg-fuchsia-400",
-  rose: "bg-rose-700",
-};
-
-function getRandomColour(): string {
-  const colors = Object.keys(colourMap);
-  return colors[Math.floor(Math.random() * colors.length)];
-}
-
 function getRandomTestsPassed(): number {
   return Math.random() * 100;
 }
@@ -44,8 +22,8 @@ function getRandomTestsPassed(): number {
 export default function Coursework({ props }: { props: courseworkData }) {
   const testPassed = getRandomTestsPassed();
   const colouring = {
-    backgroundColor: "#" + props.colour,
-  }
+    backgroundColor: `#${props.colour}`,
+  };
   console.log("colouring", colouring);
   return (
     <Link href={`/coursework/${props.id}`}>
