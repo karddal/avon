@@ -24,7 +24,9 @@ export default function UnitList({ currentYear, finished }: UnitListProps) {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/me/units", { withCredentials: true })
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/me/units`, {
+        withCredentials: true,
+      })
       .then((response) => {
         console.log(response.data);
         const result = Array.isArray(response.data)

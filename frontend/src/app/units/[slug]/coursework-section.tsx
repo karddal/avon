@@ -26,10 +26,10 @@ export default function CourseworkSection() {
     const getData = async () => {
       try {
         const cwRes = await fetch(
-          `http://localhost:8000/units/${slug}/courseworks`,
+          `${process.env.NEXT_PUBLIC_API_URL}/units/${slug}/courseworks`,
           {
             credentials: "include",
-          },
+          }
         );
         if (!cwRes.ok) throw new Error("Failed to fetch courseworks");
         const cwData = await cwRes.json();

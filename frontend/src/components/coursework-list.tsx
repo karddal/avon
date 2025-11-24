@@ -29,7 +29,9 @@ export default function CourseworkList({ finished }: CourseworkListProps) {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/me/courseworks", { withCredentials: true })
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/me/courseworks`, {
+        withCredentials: true,
+      })
       .then((response) => {
         const result = Array.isArray(response.data)
           ? response.data

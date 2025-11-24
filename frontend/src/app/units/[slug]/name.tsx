@@ -18,10 +18,13 @@ export default function UnitName() {
   useEffect(() => {
     const getData = async () => {
       try {
-        const unitRes = await fetch(`http://localhost:8000/units/${slug}`, {
-          cache: "force-cache",
-          credentials: "include",
-        });
+        const unitRes = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/units/${slug}`,
+          {
+            cache: "force-cache",
+            credentials: "include",
+          }
+        );
         if (!unitRes.ok) throw new Error("Failed to fetch unit");
         const unitData: UnitData = await unitRes.json();
         setUnit(unitData);

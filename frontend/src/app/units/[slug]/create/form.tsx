@@ -115,7 +115,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
         colour: colour.substring(1),
       };
       console.log(req);
-      fetch("http://localhost:8000/coursework/create", {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/coursework/create`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -131,7 +131,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
           });
         } else {
           toast.success(
-            "Coursework created. You will be redirected in 1 second.",
+            "Coursework created. You will be redirected in 1 second."
           );
           const delay = new Promise((resolve) => setTimeout(resolve, 1000));
           delay.then(() => {
