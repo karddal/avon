@@ -1,5 +1,3 @@
-"use cache";
-
 type UnitData = {
   id: string;
   name: string;
@@ -21,7 +19,7 @@ export default async function UnitDescription({
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-    },
+    }
   );
 
   if (!response.ok) {
