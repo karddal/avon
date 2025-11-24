@@ -63,10 +63,10 @@ def seed_data():
         unit_result = session.exec(statement).first()
         # Populate the Units Page if empty
         if not unit_result:
-            unit1 = Unit(name="Algorithms and Data", description="hard unit", groups=[group1, group2, group3], users=[])
-            unit2 = Unit(name="Software Engineering Project", description="lots of work", groups=[group1, group2, group3], users=[])
-            unit3 = Unit(name="Imperative and Functional Programming", description="haskell was enlightening", groups=[group1, group2, group3], users=[])
-            unit4 = Unit(name="Computer Architecture", description="second part was very fun", groups=[group1, group2, group3], users=[])
+            unit1 = Unit(name="Algorithms and Data", description="hard unit", unit_code="COMS20017",colour="abcdef", groups=[group1, group2, group3], users=[])
+            unit2 = Unit(name="Software Engineering Project", description="lots of work", unit_code="COMS20006",colour="b01c2e", groups=[group1, group2, group3], users=[])
+            unit3 = Unit(name="Imperative and Functional Programming", description="haskell was enlightening",unit_code="COMS10016",colour="f1d2c3", groups=[group1, group2, group3], users=[])
+            unit4 = Unit(name="Computer Architecture", description="second part was very fun",unit_code="COMS10015",colour="1a2b3c", groups=[group1, group2, group3], users=[])
             session.add_all([unit1, unit2, unit3, unit4])
             session.commit()
             session.refresh(unit1)

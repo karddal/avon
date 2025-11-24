@@ -11,7 +11,7 @@ type courseworkData = {
   code: string;
   year: number;
   finished: boolean;
-  color: string;
+  colour: string;
   creation_date: string;
   due_date: string;
   testsPassed: number;

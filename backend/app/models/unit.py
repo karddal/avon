@@ -18,6 +18,7 @@ class Unit(SQLModel, table=True):
     description: str = Field(index = True)
     creation_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
     unit_code: str = Field(index=True)
+    colour: str
     groups: List["UnitGroup"] = Relationship(
         back_populates="units",
         link_model=UnitGroupMember

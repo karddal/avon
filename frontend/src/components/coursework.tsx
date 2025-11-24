@@ -8,7 +8,7 @@ type courseworkData = {
   code: string;
   year: number;
   finished: boolean;
-  color: string;
+  colour: string;
   creation_date: string;
   due_date: string;
   testsPassed: number;
@@ -42,11 +42,14 @@ function getRandomTestsPassed(): number {
 }
 
 export default function Coursework({ props }: { props: courseworkData }) {
-  const randomColor = getRandomColour();
   const testPassed = getRandomTestsPassed();
+  const colouring = {
+    backgroundColor: "#" + props.colour,
+  }
+  console.log("colouring", colouring);
   return (
     <Link href={`/coursework/${props.id}`}>
-      <div className={`${colourMap[randomColor]} w-full h-2`}></div>
+      <div style={colouring} className="w-full h-2"></div>
       <Card className="bg-muted flex flex-col p-2 hover:bg-foreground/10 ">
         <div className="flex flex-row justify-between">
           <div className="flex flex-col">

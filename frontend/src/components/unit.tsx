@@ -8,6 +8,7 @@ type UnitData = {
   description?: string;
   creation_date: string;
   unit_code: string;
+  colour: string;
 };
 
 // TODO: Make a more concrete type
@@ -33,9 +34,12 @@ function getRandomColour(): string {
 }
 
 export default function Unit({ props }: { props: UnitData }) {
+  const colouring = {
+    backgroundColor: "#" + props.colour,
+  }
   return (
     <Link href={`/units/${props.id}`}>
-      <div className={`${colourMap[getRandomColour()]} h-2`}></div>
+      <div style={colouring} className="h-2"></div>
       <Card className="bg-muted flex flex-row p-2 items-center hover:bg-foreground/10">
         <CardContent className="flex flex-row items-center justify-between w-full p-0">
           <div className="flex flex-col w-full">
