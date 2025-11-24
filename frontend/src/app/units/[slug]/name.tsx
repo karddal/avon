@@ -9,6 +9,7 @@ type UnitData = {
   name: string;
   description?: string;
   creation_date: string;
+  unit_code: string;
 };
 
 export default function UnitName() {
@@ -42,7 +43,7 @@ export default function UnitName() {
 
   return (
     <>
-      <span className="font-light">COMS00000</span> {unit.name}
+      <span className="font-light">{unit.unit_code}</span> {unit.name}
     </>
   );
 }

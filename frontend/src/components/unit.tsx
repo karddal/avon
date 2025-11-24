@@ -7,6 +7,7 @@ type UnitData = {
   name: string;
   description?: string;
   creation_date: string;
+  unit_code: string;
 };
 
 // TODO: Make a more concrete type
@@ -40,7 +41,7 @@ export default function Unit({ props }: { props: UnitData }) {
           <div className="flex flex-col w-full">
             <div className="flex flex-col">
               <div className="flex flex-row align-center items-center">
-                <p className="text-foreground/80">Unit Code: COMS00000</p>
+                <p className="text-foreground/80">Unit Code: {props.unit_code}</p>
                 <div className={`flex flex-row justify-center items-center`}>
                   <Dot
                     color="#ff0000"

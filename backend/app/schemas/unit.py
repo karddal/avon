@@ -16,15 +16,18 @@ class UnitRead(BaseModel):
   name: Name
   description: str
   creation_date: datetime
+  unit_code: str
 
 class UnitCreate(BaseModel):
     name: Name
     description: str
+    unit_code: str
     group_ids: Optional[List[uuid.UUID]] = None
 
 class UnitUpdate(BaseModel):
     name: Name
     description: str
+    unit_code: str
     group_ids: Optional[List[uuid.UUID]] = None
 
 class UnitAll(BaseModel):
