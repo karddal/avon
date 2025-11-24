@@ -21,7 +21,7 @@ export default async function UnitName({
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-    }
+    },
   );
 
   if (!response.ok) {

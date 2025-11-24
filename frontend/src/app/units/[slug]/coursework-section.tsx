@@ -28,7 +28,7 @@ export default async function CourseworkSection({
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-    }
+    },
   );
 
   if (!response.ok) {
