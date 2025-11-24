@@ -1,7 +1,6 @@
 import { Dot } from "lucide-react";
 
 type notificationData = {
-  key: number;
   title: string;
   day: string;
   time: string;
