@@ -6,15 +6,27 @@ import { DropdownCard } from "@/components/dropdown-card";
 import { Avatar } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cookies } from "next/headers";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default function UnitPage() {
+async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const cookieStore = await cookies();
+  const token = cookieStore.get("access_token")?.value;
+
   return (
     <>
       {/* Header */}
       <div className="flex flex-col col-span-3 min-h-0">
         <div className="font-semibold text-5xl text-shadow-2xs">
-          <Suspense>
-            <UnitName />
+          <Suspense
+            fallback={
+              <div className="h-16">
+                <Skeleton className="bg-foreground/10" />
+              </div>
+            }
+          >
+            <UnitName slug={slug} token={token} />
           </Suspense>
         </div>
         <div className="w-full bg-accent-foreground"></div>
@@ -34,7 +46,7 @@ export default function UnitPage() {
             </CardHeader>
             <CardContent>
               <Suspense>
-                <UnitDescription />
+                <UnitDescription slug={slug} token={token} />
               </Suspense>
             </CardContent>
           </Card>
@@ -58,7 +70,7 @@ export default function UnitPage() {
 
             <CardContent className="overflow-y-scroll h-96 flex flex-col gap-4">
               <Suspense>
-                <CourseworkSection />
+                <CourseworkSection slug={slug} token={token} />
               </Suspense>
             </CardContent>
           </Card>
@@ -113,5 +125,17 @@ export default function UnitPage() {
         </div>
       </section>
     </>
+  );
+}
+
+export default function UnitPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  return (
+    <Suspense>
+      <PageContent params={params} />
+    </Suspense>
   );
 }
