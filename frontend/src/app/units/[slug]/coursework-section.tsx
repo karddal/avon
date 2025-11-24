@@ -29,7 +29,7 @@ export default function CourseworkSection() {
           `${process.env.NEXT_PUBLIC_API_URL}/units/${slug}/courseworks`,
           {
             credentials: "include",
-          }
+          },
         );
         if (!cwRes.ok) throw new Error("Failed to fetch courseworks");
         const cwData = await cwRes.json();

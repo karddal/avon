@@ -23,7 +23,7 @@ export default function UnitDescription() {
           {
             cache: "force-cache",
             credentials: "include",
-          }
+          },
         );
         if (!unitRes.ok) throw new Error("Failed to fetch unit");
         const unitData: UnitData = await unitRes.json();

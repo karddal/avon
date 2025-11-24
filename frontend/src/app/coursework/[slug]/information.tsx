@@ -42,7 +42,7 @@ export default function CourseworkInformation() {
           {
             cache: "force-cache",
             credentials: "include",
-          }
+          },
         );
         if (!res.ok) throw new Error("Failed to fetch coursework");
         const courseWorkData: courseworkData = await res.json();

@@ -30,7 +30,7 @@ export default function CourseworkDescription() {
           {
             cache: "force-cache",
             credentials: "include",
-          }
+          },
         );
         if (!res.ok) throw new Error("Failed to fetch unit");
         const courseworkData: courseworkData = await res.json();
