@@ -18,7 +18,7 @@ session_dependency = Annotated[Session, Depends(get_session)]
 @router.post("/create", response_model=UnitCreate, status_code=status.HTTP_201_CREATED)
 async def create_unit(unit: UnitCreate, session: session_dependency):
 
-  db_unit = Unit(name=unit.name, description=unit.description)
+  db_unit = Unit(name=unit.name, description=unit.description, unit_code=unit.unit_code, colour=unit.colour)
 
   if unit.group_ids:
     groups = session.exec(
@@ -59,6 +59,10 @@ async def update_unit(unit_id: UUID, unit: UnitUpdate, session: session_dependen
      db_unit.name = unit.name
   if unit.description is not None:
      db_unit.description = unit.description
+  if unit.unit_code is not None:
+     db_unit.unit_code = unit.unit_code
+  if unit.colour is not None:
+     db_unit.colour = unit.colour
 
   if unit.group_ids is not None:
      groups = session.exec(
@@ -95,7 +99,7 @@ async def get_user_units(user_id:UUID, session: session_dependency):
     statement = select(Unit).where(Unit.id == enrollment.unit_id)
     units = session.exec(statement)
     for unit in units:
-      response_unit = UnitRead(name=unit.name, description=unit.description, creation_date=unit.creation_date)
+      response_unit = UnitRead(name=unit.name, description=unit.description, creation_date=unit.creation_date, unit_code=unit.unit_code, colour= unit.colour)
       response.append(response_unit)
   
   return UnitAll(units=response)
@@ -124,7 +128,7 @@ async def get_units(session:session_dependency):
   response = []
 
   for unit in units:
-    response_unit = UnitRead(name=unit.name, description=unit.description, creation_date=unit.creation_date)
+    response_unit = UnitRead(name=unit.name, description=unit.description, creation_date=unit.creation_date, unit_code=unit.unit_code, colour= unit.colour)
     response.append(response_unit)
 
   print("hi",response)

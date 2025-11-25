@@ -5,6 +5,7 @@ type UnitData = {
   name: string;
   description?: string;
   creation_date: string;
+  unit_code: string;
 };
 
 export default async function UnitName({
@@ -32,7 +33,7 @@ export default async function UnitName({
 
   return (
     <>
-      <span className="font-light">COMS00000</span> {unit.name}
+      <span className="font-light">{unit.unit_code}</span> {unit.name}
     </>
   );
 }
