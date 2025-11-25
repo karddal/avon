@@ -3,13 +3,14 @@ import { Card } from "./ui/card";
 import { Progress } from "./ui/progress";
 
 type courseworkData = {
-  courseworkId: string;
+  id: string;
   name: string;
   code: string;
   year: number;
   finished: boolean;
   color: string;
-  dueDate: string;
+  creation_date: string;
+  due_date: string;
   testsPassed: number;
   totalTests: number;
 };
@@ -31,25 +32,37 @@ const colourMap: colourMap = {
   rose: "bg-rose-700",
 };
 
+function getRandomColour(): string {
+  const colors = Object.keys(colourMap);
+  return colors[Math.floor(Math.random() * colors.length)];
+}
+
+function getRandomTestsPassed(): number {
+  return Math.random() * 100;
+}
+
 export default function Coursework({ props }: { props: courseworkData }) {
+  const randomColor = getRandomColour();
+  const testPassed = getRandomTestsPassed();
   return (
-    <Link href="/coursework">
-      <div className={`${colourMap[props.color]} w-full h-2`}></div>
+    <Link href={`/coursework/${props.id}`}>
+      <div className={`${colourMap[randomColor]} w-full h-2`}></div>
       <Card className="bg-muted flex flex-col p-2 hover:bg-foreground/10 ">
         <div className="flex flex-row justify-between">
           <div className="flex flex-col">
-            <p className="text-sm lg:text-xl">{props.name}</p>
-            <p className="text-sm text-muted-foreground">{props.code}</p>
+            <p className="text-lg lg:text-xl">{props.name}</p>
+            <p className="text-muted-foreground">{props.code}</p>
           </div>
           <div className="flex flex-row gap-2">
             <p className="text-sm lg:text-xl text-muted-foreground">
-              <span className="text-sm">Due: </span> {props.dueDate}
+              <span className="text-sm">Due: </span>
+              {new Date(props.due_date).toLocaleDateString()}
             </p>
           </div>
         </div>
         <div className="flex flex-row gap-4">
           <Progress
-            value={(props.testsPassed / props.totalTests) * 100}
+            value={(testPassed / 100) * 100}
             className="w-3/5 mt-2 opacity-90"
           />
           <p className="text-sm lg:text-l">
