@@ -1,9 +1,3 @@
-"use client";
-
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
-
 type courseworkData = {
   id: string;
   name: string;
@@ -18,37 +12,28 @@ type courseworkData = {
   totalTests: number;
 };
 
-export default function CourseworkName() {
-  const { slug } = useParams<{ slug: string }>();
-  const [coursework, setCoursework] = useState<courseworkData | null>(null);
+export default async function CourseworkName({
+  slug,
+  token,
+}: {
+  slug: string;
+  token?: string;
+}) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/coursework/${slug}`,
+    {
+      headers: {
+        Cookie: `access_token=${token}`,
+        "Content-Type": "application/json",
+      },
+    },
+  );
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/coursework/${slug}`,
-          {
-            cache: "force-cache",
-            credentials: "include",
-          },
-        );
-        if (!res.ok) throw new Error("Failed to fetch coursework");
-        const courseWorkData: courseworkData = await res.json();
-        setCoursework(courseWorkData);
-      } catch (err) {
-        console.error(err);
-      }
-    };
+  if (!res.ok) {
+    throw new Error("Failed to fetch coursework");
+  }
 
-    if (slug) getData();
-  }, [slug]);
-
-  if (!coursework)
-    return (
-      <div className="flex flex-row gap-1">
-        <Skeleton className="h-16 w-full bg-foreground/10"></Skeleton>
-      </div>
-    );
+  const coursework: courseworkData = await res.json();
 
   return (
     <>

@@ -1,9 +1,4 @@
-"use client";
-
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
 import { DropdownCard } from "@/components/dropdown-card";
-import { Skeleton } from "@/components/ui/skeleton";
 
 type courseworkData = {
   id: string;
@@ -30,37 +25,28 @@ function formatDateTimeString(dateStr: string): string {
   return `${day}/${month}/${year} at ${hours}:${minutes}`;
 }
 
-export default function CourseworkInformation() {
-  const { slug } = useParams<{ slug: string }>();
-  const [coursework, setCoursework] = useState<courseworkData | null>(null);
+export default async function CourseworkInformation({
+  slug,
+  token,
+}: {
+  slug: string;
+  token?: string;
+}) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/coursework/${slug}`,
+    {
+      headers: {
+        Cookie: `access_token=${token}`,
+        "Content-Type": "application/json",
+      },
+    },
+  );
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/coursework/${slug}`,
-          {
-            cache: "force-cache",
-            credentials: "include",
-          },
-        );
-        if (!res.ok) throw new Error("Failed to fetch coursework");
-        const courseWorkData: courseworkData = await res.json();
-        setCoursework(courseWorkData);
-      } catch (err) {
-        console.error(err);
-      }
-    };
+  if (!res.ok) {
+    throw new Error("Failed to fetch coursework");
+  }
 
-    if (slug) getData();
-  }, [slug]);
-
-  if (!coursework)
-    return (
-      <div className="flex flex-row gap-1">
-        <Skeleton className="h-20 w-full bg-foreground/10"></Skeleton>
-      </div>
-    );
+  const coursework: courseworkData = await res.json();
 
   const start_date = formatDateTimeString(coursework.creation_date);
   const end_date = formatDateTimeString(coursework.due_date);

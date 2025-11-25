@@ -3,7 +3,6 @@
 import { Edit, Flag, Plus } from "lucide-react";
 import Link from "next/link";
 import { Suspense, useEffect, useState } from "react";
-import CourseworkList from "@/components/coursework-list";
 import { StatsChart } from "@/components/stats-chart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -162,7 +161,7 @@ export default function DashboardPage() {
                     className="flex flex-col gap-2"
                     value="coursework"
                   >
-                    <CourseworkList finished={false} />
+                    {/* <CourseworkList finished={false} /> */}
                   </TabsContent>
                   <TabsContent className="flex flex-col gap-2" value="units">
                     <UnitList currentYear={year} finished={false} />

@@ -25,7 +25,7 @@ export default async function CourseworkSection({
     {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${token}`,
+        Cookie: `access_token=${token}`,
         "Content-Type": "application/json",
       },
     },

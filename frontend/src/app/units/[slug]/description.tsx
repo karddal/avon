@@ -16,7 +16,7 @@ export default async function UnitDescription({
     `${process.env.NEXT_PUBLIC_API_URL}/units/${slug}`,
     {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Cookie: `access_token=${token}`,
         "Content-Type": "application/json",
       },
     },
