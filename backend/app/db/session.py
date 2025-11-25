@@ -10,11 +10,16 @@ from app.models.unit import Unit
 from app.models.unit_enrollment import UnitEnrollment
 from app.models.unit_group import UnitGroup
 from app.models.user import User
+from dotenv import load_dotenv
+import os
 
-sqlite_file_name = "database.db"
-sqlite_url = f"sqlite:///{sqlite_file_name}"
+if os.getenv("ENV") == "dev":
+    env_file = ".env.dev"
+    load_dotenv(dotenv_path=env_file)
+
+db_url = os.getenv("DATABASE_URL")
 connect_args = {"check_same_thread": False}
-engine = create_engine(sqlite_url, connect_args=connect_args)
+engine = create_engine(db_url, connect_args=connect_args)
 
 # Create session dependency so that you use only one session per request
 def get_session():

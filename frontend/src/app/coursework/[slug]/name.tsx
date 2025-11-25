@@ -25,10 +25,13 @@ export default function CourseworkName() {
   useEffect(() => {
     const getData = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/coursework/${slug}`, {
-          cache: "force-cache",
-          credentials: "include",
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/coursework/${slug}`,
+          {
+            cache: "force-cache",
+            credentials: "include",
+          },
+        );
         if (!res.ok) throw new Error("Failed to fetch coursework");
         const courseWorkData: courseworkData = await res.json();
         setCoursework(courseWorkData);

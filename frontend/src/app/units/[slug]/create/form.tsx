@@ -115,7 +115,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
         colour: colour.substring(1),
       };
       console.log(req);
-      fetch("http://localhost:8000/coursework/create", {
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/coursework/create`, {
         method: "POST",
         credentials: "include",
         headers: {

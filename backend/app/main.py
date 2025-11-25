@@ -7,13 +7,16 @@ from app.routers import coursework
 from app.routers import unit
 from app.routers import check, me
 from app.routers import auth
+from dotenv import load_dotenv
+import os
+
+if os.getenv("ENV") == "dev":
+    env_file = ".env.dev"
+    load_dotenv(dotenv_path=env_file)
 
 app = FastAPI(lifespan=lifespan)
 
-origins = [
-    "http://localhost:3000",
-    "https://avon.ac",
-]
+origins = os.getenv("CORS_ORIGIN")
 
 app.add_middleware(
     CORSMiddleware,

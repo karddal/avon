@@ -92,14 +92,14 @@ export async function AppSidebar({
             >
               <div>
                 <Image
-                  src="/avon.png"
+                  src={`${process.env.NEXT_PUBLIC_CDN_URL}/avon-white-optimized.svg`}
                   alt="logo"
                   width={200}
                   height={200}
                   className="dark:block hidden p-4 md:p-0"
                 />
                 <Image
-                  src="/avonlight.png"
+                  src={`${process.env.NEXT_PUBLIC_CDN_URL}/avon-black-optimized.svg`}
                   alt="logo"
                   width={200}
                   height={200}

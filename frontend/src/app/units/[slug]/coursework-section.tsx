@@ -1,9 +1,4 @@
-"use client";
-
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
 import Coursework from "@/components/coursework";
-import { Skeleton } from "@/components/ui/skeleton";
 
 type courseworkData = {
   id: string;
@@ -18,47 +13,32 @@ type courseworkData = {
   totalTests: number;
 };
 
-export default function CourseworkSection() {
-  const { slug } = useParams<{ slug: string }>();
-  const [courseworks, setCourseworks] = useState<courseworkData[]>();
+export default async function CourseworkSection({
+  slug,
+  token,
+}: {
+  slug: string;
+  token?: string;
+}) {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/units/${slug}/courseworks`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    },
+  );
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const cwRes = await fetch(
-          `http://localhost:8000/units/${slug}/courseworks`,
-          {
-            credentials: "include",
-          },
-        );
-        if (!cwRes.ok) throw new Error("Failed to fetch courseworks");
-        const cwData = await cwRes.json();
-        const courseworkData = cwData.courseworks;
-        console.log("courseworkData", courseworkData);
-        // Ensure it’s an array before setting
-        setCourseworks(Array.isArray(courseworkData) ? courseworkData : []);
-      } catch (err) {
-        console.error(err);
-      }
-    };
+  if (!response.ok) {
+    throw new Error("Failed to fetch courseworks");
+  }
 
-    if (slug) getData();
-  }, [slug]);
-
-  if (!courseworks)
-    return (
-      <>
-        {Array.from({ length: 3 }).map(() => (
-          <div
-            key={crypto.randomUUID()}
-            className="flex-1 flex flex-col gap-2 h-full"
-          >
-            <Skeleton className="h-2 w-full bg-foreground/10" />
-            <Skeleton className="flex-1 w-full bg-foreground/10" />
-          </div>
-        ))}
-      </>
-    );
+  const data = await response.json();
+  const courseworks: courseworkData[] = Array.isArray(data.courseworks)
+    ? data.courseworks
+    : [];
 
   return (
     <>
