@@ -2,11 +2,12 @@ import { cookies } from "next/headers";
 import { Suspense } from "react";
 import CourseworkList from "@/components/coursework-list";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getUserFromToken } from "@/lib/auth";
 
 async function PageContent() {
   const cookieStore = await cookies();
   const token = cookieStore.get("access_token")?.value;
-
+  getUserFromToken()
   return (
     <div className="space-y-6">
       <Tabs defaultValue="ongoing">
