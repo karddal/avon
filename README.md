@@ -256,7 +256,7 @@ Here, you can use `just --list` to list all available commands.
 
 To begin, clone the repository.
 
-```sh
+```
 git clone git@github.com:spe-uob/2025-ContinuousAssessment
 ```
 
@@ -274,19 +274,19 @@ Other commands such as `uv add` can be used to add packages to the project.
 **Frontend:**
 in `.env.development`:
 
-```sh
-NEXT_PUBLIC_API_URL= (ip of your backend - local is http://localhost:8000)
-NEXT_PUBLIC_CDN_URL= (default is https://cdn.avon.ac)
+```
+NEXT_PUBLIC_API_URL         = # ip of your backend, local is http://localhost:8000
+NEXT_PUBLIC_CDN_URL         = # default is https://cdn.avon.ac
 ```
 
 **Backend:**
 in `.env.dev`
 
-```sh
-jwt_secret_key = (secret key of JWT token)
-access_token_expiry_minutes = (time until token expires - default is 600 (10 mins))
-DATABASE_URL = (url of database - local is sqlite:///database.db)
-CORS_ORIGIN = (url of frontend - local is https://localhost:3000)
+```
+jwt_secret_key              = # secret key of JWT token
+access_token_expiry_minutes = # time until token expires, default is 600 (10 mins)
+DATABASE_URL                = # url of database, local is sqlite:///database.db
+CORS_ORIGIN                 = # url of frontend, local is https://localhost:3000
 ```
 
 With the environment variables, you can either use the `.env.*` files, or you can run the corresponding just command with the environment variable inlined (UNIX only).
