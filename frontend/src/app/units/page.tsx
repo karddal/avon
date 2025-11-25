@@ -34,7 +34,7 @@ async function PageContent({ searchParams }: PageProps) {
   return (
     <div className="space-y-6">
       <Tabs value={activeTab}>
-        <TabsList className="flex flex-col md:flex-row items-start md:items-center gap-4 bg-background my-8 md:my-4">
+        <TabsList className="flex flex-col h-auto min-h-fit items-start justify-start md:flex-row md:align-center md:justify-center md:items-center gap-4 bg-background md:my-4">
           <YearSelector value={currentYear} />
           <TabSwitcher currentYear={currentYear} yearNow={yearNow} />
           {userRole === "lecturer" && (
