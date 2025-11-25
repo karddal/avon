@@ -18,7 +18,7 @@ export default async function CourseworkDescription({
 }: {
   slug: string;
   token?: string;
-}) {  
+}) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/coursework/${slug}`,
     {
@@ -26,9 +26,9 @@ export default async function CourseworkDescription({
         Cookie: `access_token=${token}`,
         "Content-Type": "application/json",
       },
-    }
+    },
   );
-        
+
   if (!res.ok) {
     throw new Error("Failed to fetch unit");
   }

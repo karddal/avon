@@ -39,10 +39,10 @@ export default async function CourseworkInformation({
         Cookie: `access_token=${token}`,
         "Content-Type": "application/json",
       },
-    }
+    },
   );
 
-  if (!res.ok){
+  if (!res.ok) {
     throw new Error("Failed to fetch coursework");
   }
 

@@ -16,8 +16,7 @@ type courseworkData = {
   totalTests: number;
 };
 
-
-export default async function CourseworkList({ 
+export default async function CourseworkList({
   finished,
   token,
 }: {
@@ -32,7 +31,7 @@ export default async function CourseworkList({
         Cookie: `access_token=${token}`,
         "Content-Type": "application/json",
       },
-    }
+    },
   );
 
   if (!response.ok) {

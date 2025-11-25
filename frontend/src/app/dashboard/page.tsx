@@ -3,7 +3,6 @@
 import { Edit, Flag, Plus } from "lucide-react";
 import Link from "next/link";
 import { Suspense, useEffect, useState } from "react";
-import CourseworkList from "@/components/coursework-list";
 import { StatsChart } from "@/components/stats-chart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";

@@ -1,5 +1,5 @@
-import { Suspense } from "react";
 import { cookies } from "next/headers";
+import { Suspense } from "react";
 
 import CourseworkDescription from "@/app/coursework/[slug]/description";
 import CourseworkInformation from "@/app/coursework/[slug]/information";
@@ -10,7 +10,11 @@ import TestPassedProgressBar from "@/components/tests-passed-progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
-async function CourseworkPageContent({ params }: { params: Promise<{ slug: string }> }) {
+async function CourseworkPageContent({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = await params;
   const cookieStore = await cookies();
   const token = cookieStore.get("access_token")?.value;
@@ -22,7 +26,7 @@ async function CourseworkPageContent({ params }: { params: Promise<{ slug: strin
         <div className="flex flex-col col-span-3">
           <div className="font-semibold text-5xl text-shadow-2xs">
             <Suspense>
-              <CourseworkName slug={slug} token={token}/>
+              <CourseworkName slug={slug} token={token} />
             </Suspense>
           </div>
           <div className="w-full bg-accent-foreground"></div>
@@ -41,7 +45,7 @@ async function CourseworkPageContent({ params }: { params: Promise<{ slug: strin
               </CardHeader>
               <CardContent>
                 <Suspense>
-                  <CourseworkDescription slug={slug} token={token}/>
+                  <CourseworkDescription slug={slug} token={token} />
                 </Suspense>
               </CardContent>
             </Card>
@@ -72,7 +76,9 @@ async function CourseworkPageContent({ params }: { params: Promise<{ slug: strin
                         colour="#59AC77"
                       />
                       <p className="text-sm">100/100 tests passed.</p>
-                      <p className="text-sm font-light">20 October 2025 15:00</p>
+                      <p className="text-sm font-light">
+                        20 October 2025 15:00
+                      </p>
                       {/*<div className="w-full h-1 bg-green-600"></div>*/}
                     </Card>
                     <Card className="gap-2 p-4 bg-accent w-full text-2xl font-normal">
@@ -83,7 +89,9 @@ async function CourseworkPageContent({ params }: { params: Promise<{ slug: strin
                         colour="#F4991A"
                       />
                       <p className="text-sm">35/100 tests passed.</p>
-                      <p className="text-sm font-light">20 October 2025 15:00</p>
+                      <p className="text-sm font-light">
+                        20 October 2025 15:00
+                      </p>
                       {/*<div className="w-full h-1 bg-green-600"></div>*/}
                     </Card>
                   </div>
@@ -93,7 +101,7 @@ async function CourseworkPageContent({ params }: { params: Promise<{ slug: strin
           </div>
           <div className="flex flex-col xl:col-span-1 lg:col-span-2 gap-4 min-h-0">
             <Suspense>
-              <CourseworkInformation slug={slug} token={token}/>
+              <CourseworkInformation slug={slug} token={token} />
             </Suspense>
             <DropdownCard
               title="Tools"
@@ -109,7 +117,7 @@ async function CourseworkPageContent({ params }: { params: Promise<{ slug: strin
   );
 }
 
-export default function CourseworkPage({ 
+export default function CourseworkPage({
   params,
 }: {
   params: Promise<{ slug: string }>;

@@ -26,7 +26,7 @@ export default async function CourseworkName({
         Cookie: `access_token=${token}`,
         "Content-Type": "application/json",
       },
-    }
+    },
   );
 
   if (!res.ok) {
