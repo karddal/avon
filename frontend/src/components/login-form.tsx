@@ -2,7 +2,8 @@
 
 import axios from "axios";
 import Image from "next/image";
-import {useEffect, useState} from "react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,8 +17,6 @@ import {
 import { Input } from "@/components/ui/input";
 import LoginButton from "@/components/ui/login-button";
 import { cn } from "@/lib/utils";
-import {redirect} from "next/navigation";
-import { useRouter } from "next/navigation";
 
 export function LoginForm({
   className,
@@ -42,7 +41,7 @@ export function LoginForm({
     setActionState(0);
     toast.success("Test run started successfully.");
   }*/
-      console.log("API URL =", process.env.NEXT_PUBLIC_API_URL);
+    console.log("API URL =", process.env.NEXT_PUBLIC_API_URL);
     setActionState(1);
     try {
       const form = new URLSearchParams();
@@ -60,21 +59,20 @@ export function LoginForm({
           throw error;
         });
 
-      const verifyResp = await axios
-            .get(
-                `${process.env.NEXT_PUBLIC_API_URL}/auth/verify`, {
-                    withCredentials: true,
-                }
-            );
+      const verifyResp = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/verify`,
+        {
+          withCredentials: true,
+        },
+      );
 
-        const isLecturer = verifyResp.data.is_lecturer;
+      const isLecturer = verifyResp.data.is_lecturer;
 
-        if (isLecturer) {
-            router.push("/dashboard");
-        } else {
-            router.push("/units");
-        }
-
+      if (isLecturer) {
+        router.push("/dashboard");
+      } else {
+        router.push("/units");
+      }
     } catch (error) {
       console.error("Login failed:", error);
       // alert("Login failed. Please check your credentials and try again.");
