@@ -18,6 +18,8 @@ app = FastAPI(lifespan=lifespan)
 
 origins = os.getenv("CORS_ORIGIN")
 
+print("CORS origins:", origins)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
