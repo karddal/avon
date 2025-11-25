@@ -1,4 +1,3 @@
-
 import { PlusIcon } from "lucide-react";
 import Link from "next/link";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
@@ -24,8 +23,6 @@ export default async function UnitList({
   finished,
   token,
 }: UnitListProps) {
-
-
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/me/units`, {
     method: "GET",
     headers: {

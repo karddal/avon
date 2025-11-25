@@ -33,7 +33,6 @@ export default function YearSelector({ value }: YearSelectorProps) {
     { value: current - 2, label: `${current - 2}/${current - 1}` },
   ];
 
-
   const handleYearChange = (newYear: number) => {
     setOpen(false);
     startTransition(() => {
