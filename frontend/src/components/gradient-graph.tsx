@@ -7,12 +7,14 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 interface gradientDataPoint {
-    uuid: number;
-    name: string;
-    score: number;
-    [key: string]: string | number;
+  uuid: number;
+  name: string;
+  score: number;
+
+  [key: string]: string | number;
 }
 
 interface gradientData {
@@ -22,18 +24,21 @@ interface gradientData {
 }
 
 export default function GradientGraph({
-    studentData,
-    className,
-    onSelectStudent,
+  studentData,
+  className,
+  onSelectStudent,
 }: gradientData) {
   const sortedByName = [...studentData].sort((a, b) =>
-    String(a.name).localeCompare(String(b.name))
+    String(a.name).localeCompare(String(b.name)),
   );
-  const [hovered, setHovered] = useState<number | null>();
+  const [hovered, setHovered] = useState<number | null>(null);
 
   return (
     <div
-      className={`border flex flex-row flex-wrap justify-center items-center gap-2 p-4 ${className}`}
+      className={cn(
+        "border flex flex-row flex-wrap justify-center items-center gap-2 p-4",
+        className,
+      )}
     >
       {sortedByName.map((student) => {
         const hue = (Number(student.score) * 120) / 100;
@@ -41,21 +46,19 @@ export default function GradientGraph({
         const hoverColour = `hsl(${hue}, 100%, 60%)`;
         return (
           <Tooltip key={student.uuid}>
-            <TooltipTrigger>
-              <div
+            <TooltipTrigger asChild>
+              <button
+                type="button"
                 className="aspect-square size-8 border cursor-pointer"
                 onMouseEnter={() => setHovered(Number(student.uuid))}
                 onMouseLeave={() => setHovered(null)}
-                onClick={() => {
-                    if (onSelectStudent) {
-                        onSelectStudent(student);
-                    }
-                }}
+                onClick={() => onSelectStudent?.(student)}
                 style={{
                   backgroundColor:
                     hovered === student.uuid ? hoverColour : colour,
                 }}
-              ></div>
+                aria-label={`choose student ${student.name}`}
+              />
             </TooltipTrigger>
             <TooltipContent>
               ID: {student.uuid}
