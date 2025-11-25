@@ -10,8 +10,8 @@ interface decodedPayload extends JwtPayload {
 
 export function proxy(request: NextRequest) {
     const token = request.cookies.get("access_token")?.value
-
     if (!token) {
+        console.log("reached here")
         return NextResponse.redirect(new URL("/login", request.url))
     }
 

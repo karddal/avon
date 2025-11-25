@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList } from "@/components/ui/tabs";
 import UnitList from "@/components/unit-list";
 import YearSelector from "@/components/year-selector";
 import { getCurrentUser } from "@/lib/auth";
+import Link from "next/link";
 
 type Status = "ongoing" | "finished";
 
@@ -36,6 +37,10 @@ async function PageContent({ searchParams }: PageProps) {
         <TabsList className="flex flex-col md:flex-row items-start md:items-center gap-4 bg-background my-8 md:my-4">
           <YearSelector value={currentYear} />
           <TabSwitcher currentYear={currentYear} yearNow={yearNow} />
+          {userRole === "lecturer" && (
+            <Link href="/create-unit" className="bg-accent text-black font-medium text-sm p-3 flex gap-2 border hover:cursor-pointer"> Create a New Unit + </Link>
+          )
+          }
         </TabsList>
 
         <TabsContent value="ongoing">
