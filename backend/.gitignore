@@ -1,4 +1,4 @@
-.env.dev
+.env*
 
 database.db
 backend.egg-info
