@@ -97,6 +97,3 @@ async def get_current_user(request: Request, session: SessionDep):
     if user is None:
         raise credentials_exception
     return user
-
-
-

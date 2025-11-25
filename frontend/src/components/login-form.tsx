@@ -2,6 +2,7 @@
 
 import axios from "axios";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ export function LoginForm({
   const [actionState, setActionState] = useState<number>(0);
 
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -39,13 +41,14 @@ export function LoginForm({
     setActionState(0);
     toast.success("Test run started successfully.");
   }*/
+    console.log("API URL =", process.env.NEXT_PUBLIC_API_URL);
     setActionState(1);
     try {
       const form = new URLSearchParams();
       form.append("username", email);
       form.append("password", password);
 
-      const _response = await axios
+      await axios
         .post(`${process.env.NEXT_PUBLIC_API_URL}/auth/token`, form, {
           withCredentials: true,
           headers: {
@@ -56,7 +59,20 @@ export function LoginForm({
           throw error;
         });
 
-      window.location.href = "/dashboard";
+      const verifyResp = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/verify`,
+        {
+          withCredentials: true,
+        },
+      );
+
+      const isLecturer = verifyResp.data.is_lecturer;
+
+      if (isLecturer) {
+        router.push("/dashboard");
+      } else {
+        router.push("/units");
+      }
     } catch (error) {
       console.error("Login failed:", error);
       // alert("Login failed. Please check your credentials and try again.");
