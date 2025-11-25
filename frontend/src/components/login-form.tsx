@@ -45,11 +45,6 @@ export function LoginForm({
       form.append("username", email);
       form.append("password", password);
 
-      console.log(
-        process.env.NEXT_PUBLIC_API_URL,
-        process.env.NEXT_PUBLIC_CDN_URL,
-      );
-
       const _response = await axios
         .post(`${process.env.NEXT_PUBLIC_API_URL}/auth/token`, form, {
           withCredentials: true,
