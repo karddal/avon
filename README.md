@@ -300,7 +300,7 @@ NEXT_PUBLIC_API_URL=http://localhost:8000 NEXT_PUBLIC_CDN_URL=https://cdn.avon.a
 
 To run the frontend, simply run `just run-fe` in the project root.
 
-Similarly, to run the backend, run `just run-be`.
+Similarly, to run the backend, run `ENV=dev just run-be` if using `.env.dev` or see above to run with inlined environment variables.
 
 Now you should be able to visit `http://localhost:3000` and view the frontend Next.js app, with the backend running on`http://localhost:8000`.
 
