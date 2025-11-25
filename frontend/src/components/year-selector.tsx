@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, ChevronsUpDown } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -15,14 +15,17 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 type YearSelectorProps = {
-  value: number | null;
-  setValue: (value: number) => void;
+  value: number;
+  currentTab: string;
 };
 
-export default function YearSelector({ value, setValue }: YearSelectorProps) {
+export default function YearSelector({ value, currentTab }: YearSelectorProps) {
   const [open, setOpen] = useState(false);
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition();
 
   // compute *numeric* year list around current year
   const current = new Date().getFullYear();
@@ -33,9 +36,16 @@ export default function YearSelector({ value, setValue }: YearSelectorProps) {
   ];
 
   // set default if empty on first mount
-  useEffect(() => {
-    if (value == null) setValue(current);
-  }, [value, current, setValue]);
+  // useEffect(() => {
+  //   if (value == null) setValue(current);
+  // }, [value, current, setValue]);
+
+  const handleYearChange = (newYear: number) => {
+    setOpen(false)
+    startTransition(() => {
+      router.push(`?year=${newYear}&tab=${currentTab}`)
+    })
+  }
 
   const currentLabel = years.find((y) => y.value === value)?.label ?? "";
 
@@ -61,10 +71,7 @@ export default function YearSelector({ value, setValue }: YearSelectorProps) {
                   <CommandItem
                     key={option.value}
                     value={String(option.value)}
-                    onSelect={() => {
-                      setValue(option.value);
-                      setOpen(false);
-                    }}
+                    onSelect={() => handleYearChange(option.value)}
                   >
                     {option.label}
                     <Check
@@ -83,3 +90,7 @@ export default function YearSelector({ value, setValue }: YearSelectorProps) {
     </div>
   );
 }
+// function setValue(current: number) {
+//   throw new Error("Function not implemented.");
+// }
+
