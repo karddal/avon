@@ -46,7 +46,7 @@ export function LoginForm({
       form.append("password", password);
 
       const _response = await axios
-        .post(`${process.env.NEXT_PUBLIC_API_URL}/auth/token`, form, {
+        .post(`${process.env.NEXT_PUBLIC_API_URL}auth/token`, form, {
           withCredentials: true,
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
@@ -73,14 +73,14 @@ export function LoginForm({
       <Card className="drop-shadow-2xl shadow-none border">
         <div className="flex justify-center">
           <Image
-            src={`${process.env.NEXT_PUBLIC_CDN_URL}/avon-white-optimized.svg`}
+            src={`${process.env.NEXT_PUBLIC_CDN_URL}avon-white-optimized.svg`}
             alt="logo"
             width={200}
             height={200}
             className="dark:block hidden"
           />
           <Image
-            src={`${process.env.NEXT_PUBLIC_CDN_URL}/avon-black-optimized.svg`}
+            src={`${process.env.NEXT_PUBLIC_CDN_URL}avon-black-optimized.svg`}
             alt="logo"
             width={200}
             height={200}
@@ -100,7 +100,7 @@ export function LoginForm({
                   <Image
                     width={15}
                     height={15}
-                    src={`${process.env.NEXT_PUBLIC_CDN_URL}/microsoft.svg`}
+                    src={`${process.env.NEXT_PUBLIC_CDN_URL}microsoft.svg`}
                     alt="microsoft logo"
                   />
                   Login with Microsoft

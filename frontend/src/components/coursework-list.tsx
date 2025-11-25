@@ -1,8 +1,5 @@
-"use client";
-import axios from "axios";
 import { PlusIcon } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import Coursework from "@/components/coursework";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 
@@ -19,37 +16,34 @@ type courseworkData = {
   totalTests: number;
 };
 
-type CourseworkListProps = {
+
+export default async function CourseworkList({ 
+  finished,
+  token,
+}: {
   finished: boolean;
-};
+  token?: string;
+}) {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}me/courseworks`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  
+  if (!response.ok) {
+    throw new Error("Failed to fetch courseworks");
+  }
 
-export default function CourseworkList({ finished }: CourseworkListProps) {
-  const [data, setData] = useState<courseworkData[]>([]);
-  const [loading, setLoading] = useState(true);
+  const courseworkListData: courseworkData[] = await response.json();
 
-  useEffect(() => {
-    axios
-      .get(`${process.env.NEXT_PUBLIC_API_URL}/me/courseworks`, {
-        withCredentials: true,
-      })
-      .then((response) => {
-        const result = Array.isArray(response.data)
-          ? response.data
-          : response.data.units;
-        setData(result || []);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch courseworks:", err);
-        setData([]);
-      })
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) return <div></div>;
 
   const now = new Date();
 
-  const filtered = data.filter((coursework) => {
+  const filtered = courseworkListData.filter((coursework) => {
     const created = new Date(coursework.creation_date);
     const due = new Date(coursework.due_date);
 
