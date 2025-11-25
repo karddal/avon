@@ -42,8 +42,6 @@ export function LoginForm({
     setActionState(0);
     toast.success("Test run started successfully.");
   }*/
-      //Hashedpassword1234!
-      //tilo@university.ac.uk
       console.log("API URL =", process.env.NEXT_PUBLIC_API_URL);
     setActionState(1);
     try {
