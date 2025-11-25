@@ -5,6 +5,7 @@ import TabSwitcher from "@/components/tab-switcher";
 import { Tabs, TabsContent, TabsList } from "@/components/ui/tabs";
 import UnitList from "@/components/unit-list";
 import YearSelector from "@/components/year-selector";
+import { getCurrentUser } from "@/lib/auth";
 
 type Status = "ongoing" | "finished";
 
@@ -15,6 +16,9 @@ interface PageProps {
 async function PageContent({ searchParams }: PageProps) {
   const cookieStore = await cookies();
   const token = cookieStore.get("access_token")?.value;
+  const userRole = await getCurrentUser()
+
+  console.log(userRole)
 
   const params = await searchParams;
   const yearNow = new Date().getFullYear();
@@ -24,6 +28,7 @@ async function PageContent({ searchParams }: PageProps) {
   const currentAcademicYear = `${currentYear}/${currentYear + 1}`;
 
   const activeTab = (params.tab || "ongoing") as Status;
+
 
   return (
     <div className="space-y-6">
