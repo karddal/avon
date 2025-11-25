@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { Suspense } from "react";
+import Loading from "@/app/coursework/loading";
 import CourseworkSection from "@/app/units/[slug]/coursework-section";
 import UnitDescription from "@/app/units/[slug]/description";
 import UnitName from "@/app/units/[slug]/name";
@@ -45,7 +46,14 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Suspense>
+              <Suspense
+                fallback={
+                  <div className="space-y-2">
+                    <Skeleton className="h-2 w-full" />
+                    <Skeleton className="h-20 w-full rounded-lg" />
+                  </div>
+                }
+              >
                 <UnitDescription slug={slug} token={token} />
               </Suspense>
             </CardContent>
@@ -69,7 +77,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
             </CardHeader>
 
             <CardContent className="overflow-y-scroll h-96 flex flex-col gap-4">
-              <Suspense>
+              <Suspense fallback={<Loading />}>
                 <CourseworkSection slug={slug} token={token} />
               </Suspense>
             </CardContent>
