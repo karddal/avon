@@ -36,27 +36,7 @@ export default async function CourseworkList({
   );
 
   if (!response.ok) {
-    const errorText = await response.text();
-    
-    // Use console.log for better visibility in server logs
-    console.log('=== API Error Details ===');
-    console.log('Status:', response.status);
-    console.log('Status Text:', response.statusText);
-    console.log('Response Body:', errorText);
-    console.log('Has Token:', !!token);
-    console.log('Token Preview:', token?.substring(0, 20) + '...');
-    console.log('========================');
-    
-    // Return error UI instead of throwing
-    return (
-      <Card className="p-5">
-        <CardTitle>Failed to Load Courseworks</CardTitle>
-        <CardDescription>
-          Error {response.status}: {response.statusText || 'Unknown error'}
-          {errorText && <div className="mt-2 text-xs">{errorText}</div>}
-        </CardDescription>
-      </Card>
-    );
+    throw new Error("Failed to fetch coursework list");
   }
 
   const courseworkListData: courseworkData[] = await response.json();
