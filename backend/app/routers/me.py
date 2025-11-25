@@ -15,6 +15,7 @@ async def me_units(session: session_dependency, me: User = Depends(get_current_u
 
 @router.get("/courseworks")
 async def me_courseworks(session: session_dependency, me: User = Depends(get_current_user)):
+  print("Fetching courseworks for user:", me)
   courseworks = []
   for unit in me.units:
     courseworks.extend(session.exec(select(Coursework).where(Coursework.unit_id == unit.id)))

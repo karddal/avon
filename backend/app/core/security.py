@@ -83,6 +83,7 @@ async def get_current_user(request: Request, session: SessionDep):
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail = "Could not validate creds",
     )
+    print(request.cookies)
     try:
         token = request.cookies.get("access_token")
         print(repr(token), repr(settings.jwt_secret_key))

@@ -25,21 +25,41 @@ export default async function CourseworkList({
   token?: string;
 }) {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}me/courseworks`,
+    `${process.env.NEXT_PUBLIC_API_URL}/me/courseworks`,
     {
+      method: "GET",
       headers: {
-        Authorization: `Bearer ${token}`,
+        Cookie: `access_token=${token}`,
         "Content-Type": "application/json",
       },
     }
   );
-  
+
   if (!response.ok) {
-    throw new Error("Failed to fetch courseworks");
+    const errorText = await response.text();
+    
+    // Use console.log for better visibility in server logs
+    console.log('=== API Error Details ===');
+    console.log('Status:', response.status);
+    console.log('Status Text:', response.statusText);
+    console.log('Response Body:', errorText);
+    console.log('Has Token:', !!token);
+    console.log('Token Preview:', token?.substring(0, 20) + '...');
+    console.log('========================');
+    
+    // Return error UI instead of throwing
+    return (
+      <Card className="p-5">
+        <CardTitle>Failed to Load Courseworks</CardTitle>
+        <CardDescription>
+          Error {response.status}: {response.statusText || 'Unknown error'}
+          {errorText && <div className="mt-2 text-xs">{errorText}</div>}
+        </CardDescription>
+      </Card>
+    );
   }
 
   const courseworkListData: courseworkData[] = await response.json();
-
 
   const now = new Date();
 

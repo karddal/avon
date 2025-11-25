@@ -13,10 +13,10 @@ export default async function UnitDescription({
   token?: string;
 }) {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}units/${slug}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/units/${slug}`,
     {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Cookie: `access_token=${token}`,
         "Content-Type": "application/json",
       },
     },

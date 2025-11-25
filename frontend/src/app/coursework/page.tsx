@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 async function PageContent() {
   const cookieStore = await cookies();
-  const token = cookieStore.get("access_token")?.value;
+  const token = cookieStore.get('access_token')?.value;
 
   return (
     <>
@@ -23,12 +23,16 @@ async function PageContent() {
           </TabsList>
           <TabsContent value="ongoing" className="w-full">
             <section className="grid gap-4 grid-cols-1 lg:grid-cols-2">
-              <CourseworkList token={token} finished={false} />
+              <Suspense>
+                <CourseworkList token={token} finished={false} />
+              </Suspense>
             </section>
           </TabsContent>
           <TabsContent value="finished">
             <section className="grid gap-4 grid-cols-1 lg:grid-cols-2">
-              <CourseworkList token={token} finished={true} />
+              <Suspense>
+                <CourseworkList token={token} finished={true} />
+              </Suspense>
             </section>
           </TabsContent>
         </Tabs>
@@ -37,11 +41,7 @@ async function PageContent() {
   );
 }
 
-export default function CourseworkPage({
-   params 
-  }: { 
-    params: Promise<{ slug: string }> 
-  }) {
+export default function CourseworkPage() {
     return (
       <Suspense>
         <PageContent/>

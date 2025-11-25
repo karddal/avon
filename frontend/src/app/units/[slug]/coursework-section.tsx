@@ -21,11 +21,11 @@ export default async function CourseworkSection({
   token?: string;
 }) {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}units/${slug}/courseworks`,
+    `${process.env.NEXT_PUBLIC_API_URL}/units/${slug}/courseworks`,
     {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${token}`,
+        Cookie: `access_token=${token}`,
         "Content-Type": "application/json",
       },
     },

@@ -33,10 +33,10 @@ export default async function CourseworkInformation({
   token?: string;
 }) {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}coursework/${slug}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/coursework/${slug}`,
     {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Cookie: `access_token=${token}`,
         "Content-Type": "application/json",
       },
     }

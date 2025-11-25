@@ -24,7 +24,7 @@ export default function UnitList({ currentYear, finished }: UnitListProps) {
 
   useEffect(() => {
     axios
-      .get(`${process.env.NEXT_PUBLIC_API_URL}me/units`, {
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/me/units`, {
         withCredentials: true,
       })
       .then((response) => {
