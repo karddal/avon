@@ -1,7 +1,6 @@
-// import axios from "axios";
+
 import { PlusIcon } from "lucide-react";
 import Link from "next/link";
-// import { useEffect, useState } from "react";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import Unit from "@/components/unit";
 
@@ -20,45 +19,26 @@ type UnitListProps = {
   token?: string;
 };
 
-export default async function UnitList({ currentYear, finished, token }: UnitListProps) {
-  // const [data, setData] = useState<UnitData[]>([]);
-  // const [loading, setLoading] = useState(true);
+export default async function UnitList({
+  currentYear,
+  finished,
+  token,
+}: UnitListProps) {
 
-  // useEffect(() => {
-  //   axios
-  //     .get(`${process.env.NEXT_PUBLIC_API_URL}/me/units`, {
-  //       withCredentials: true,
-  //     })
-  //     .then((response) => {
-  //       console.log(response.data);
-  //       const result = Array.isArray(response.data)
-  //         ? response.data
-  //         : response.data.units;
-  //       setData(result || []);
-  //     })
-  //     .catch((err) => {
-  //       console.error("Failed to fetch units:", err);
-  //       setData([]);
-  //     })
-  //     .finally(() => setLoading(false));
-  // }, []);
 
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/me/units`,
-    {
-      method: "GET",
-      headers: {
-        Cookie: `access_token=${token}`,
-        "Content-Type": "application/json",
-      }
-    }
-  )
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/me/units`, {
+    method: "GET",
+    headers: {
+      Cookie: `access_token=${token}`,
+      "Content-Type": "application/json",
+    },
+  });
 
   if (!response.ok) {
-    throw new Error("Failed to fetch units")
+    throw new Error("Failed to fetch units");
   }
 
-  const unitListData: UnitData[] = await response.json()
+  const unitListData: UnitData[] = await response.json();
 
   //  academic year window: Sept 1 -> Aug 31
   const start = new Date(currentYear, 8, 1); // Sept = month 8
@@ -68,9 +48,9 @@ export default async function UnitList({ currentYear, finished, token }: UnitLis
     const created = new Date(unit.creation_date);
     const inRange = created >= start && created <= end;
     if (finished) {
-      return created < start; // anything before this year
+      return created < start;
     }
-    return inRange; // ongoing = within this year
+    return inRange;
   });
 
   return (

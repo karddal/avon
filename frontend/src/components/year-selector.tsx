@@ -1,7 +1,8 @@
 "use client";
 
 import { Check, ChevronsUpDown } from "lucide-react";
-import { useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -15,19 +16,16 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { useRouter } from "next/navigation";
 
 type YearSelectorProps = {
   value: number;
-  currentTab: string;
 };
 
-export default function YearSelector({ value, currentTab }: YearSelectorProps) {
+export default function YearSelector({ value }: YearSelectorProps) {
   const [open, setOpen] = useState(false);
-  const router = useRouter()
-  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+  const [_isPending, startTransition] = useTransition();
 
-  // compute *numeric* year list around current year
   const current = new Date().getFullYear();
   const years = [
     { value: current, label: `${current}/${current + 1}` },
@@ -35,19 +33,15 @@ export default function YearSelector({ value, currentTab }: YearSelectorProps) {
     { value: current - 2, label: `${current - 2}/${current - 1}` },
   ];
 
-  // set default if empty on first mount
-  // useEffect(() => {
-  //   if (value == null) setValue(current);
-  // }, [value, current, setValue]);
 
   const handleYearChange = (newYear: number) => {
-    setOpen(false)
+    setOpen(false);
     startTransition(() => {
-      (newYear == current) ?
-        router.push(`?year=${newYear}&tab=${"ongoing"}`) :
-        router.push(`?year=${newYear}&tab=${"finished"}`)
-    })
-  }
+      newYear === current
+        ? router.push(`?year=${newYear}&tab=${"ongoing"}`)
+        : router.push(`?year=${newYear}&tab=${"finished"}`);
+    });
+  };
 
   const currentLabel = years.find((y) => y.value === value)?.label ?? "";
 
@@ -92,7 +86,3 @@ export default function YearSelector({ value, currentTab }: YearSelectorProps) {
     </div>
   );
 }
-// function setValue(current: number) {
-//   throw new Error("Function not implemented.");
-// }
-
