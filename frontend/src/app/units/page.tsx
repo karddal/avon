@@ -26,6 +26,7 @@ async function PageContent({ searchParams }: PageProps) {
 
   // if (year === null) return null; // wait until client time is ready
   const params = await searchParams;
+  const yearNow = new Date().getFullYear()
   const currentYear = params.year ? parseInt(params.year) : new Date().getFullYear()
   const currentAcademicYear = `${currentYear}/${currentYear + 1}`
 
@@ -36,7 +37,7 @@ async function PageContent({ searchParams }: PageProps) {
       <Tabs value={activeTab}>
         <TabsList className="flex flex-col md:flex-row items-start md:items-center gap-4 bg-background my-8 md:my-4">
           <YearSelector value={currentYear} currentTab={activeTab} />
-          <TabSwitcher currentYear={currentYear} activeTab={activeTab} />
+          <TabSwitcher currentYear={currentYear} activeTab={activeTab} yearNow={yearNow} />
           {/* <div className="bg-accent p-1 flex gap-2">
             <TabsTrigger value="ongoing" className="bg-accent px-4 py-2">
               Ongoing

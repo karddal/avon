@@ -43,7 +43,9 @@ export default function YearSelector({ value, currentTab }: YearSelectorProps) {
   const handleYearChange = (newYear: number) => {
     setOpen(false)
     startTransition(() => {
-      router.push(`?year=${newYear}&tab=${currentTab}`)
+      (newYear == current) ?
+        router.push(`?year=${newYear}&tab=${"ongoing"}`) :
+        router.push(`?year=${newYear}&tab=${"finished"}`)
     })
   }
 
