@@ -7,12 +7,12 @@ body:
   - type: markdown
     attributes:
       value: |
-        Please fill in the following information regarding your issue.
+        Please fill in the following information regarding your feature.
   - type: textarea
     id: feature-details
     attributes:
       label: "Feature Details"
-      description: "Describe the details of the feature you are adding."
+      description: "Describe the details of the proposed feature. If you can, include details of why the feature would be helpful, in what context it would be used, why it would be worth the time."
       placeholder: "The feature is..."
     validations:
       required: true
@@ -32,5 +32,5 @@ body:
       options:
         - label: "I have added a comprehensive description of my new feature."
           required: true
-        - label: "I have added all issue metadata, including: assignees, labels, priority, size, start date, milestone"
+        - label: "I have added all metadata, labels, assignees, project, milestones, dates etc."
           required: true

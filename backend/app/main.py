@@ -1,0 +1,45 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.db.session import create_db_and_tables, lifespan
+from app.routers import user 
+from app.routers import coursework
+from app.routers import unit
+from app.routers import check, me
+from app.routers import auth
+from dotenv import load_dotenv
+import os
+
+if os.getenv("ENV") == "dev":
+    env_file = ".env.dev"
+    load_dotenv(dotenv_path=env_file)
+
+app = FastAPI(lifespan=lifespan)
+
+origins = os.getenv("CORS_ORIGIN")
+
+print("CORS origins:", origins)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(user.router)
+app.include_router(unit.router)
+app.include_router(check.router)
+app.include_router(coursework.router)
+app.include_router(me.router)
+app.include_router(auth.router)
+
+create_db_and_tables()
+
+def main():
+    print("Hello from backend!")
+
+
+if __name__ == "__main__":
+    main()
