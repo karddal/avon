@@ -1,6 +1,3 @@
-import { PlusIcon } from "lucide-react";
-import Link from "next/link";
-import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import Unit from "@/components/unit";
 
 type UnitData = {
@@ -52,15 +49,6 @@ export default async function UnitList({
 
   return (
     <>
-      <Link href="/units/create">
-        <Card className="bg-muted/50 flex flex-row p-5 h-full items-center hover:bg-foreground/10">
-          <PlusIcon size={50}></PlusIcon>
-          <div className="flex flex-col">
-            <CardTitle className="text-xl font-medium">Add new Unit</CardTitle>
-            <CardDescription>Create a new unit here.</CardDescription>
-          </div>
-        </Card>
-      </Link>
       {filtered.length > 0 &&
         filtered.map((unit) => <Unit key={unit.id} props={unit} />)}
     </>

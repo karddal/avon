@@ -46,9 +46,11 @@ export default function Coursework({ props }: { props: courseworkData }) {
             value={(testPassed / 100) * 100}
             className="w-3/5 mt-2 opacity-90"
           />
-          <p className="text-sm lg:text-l">
-            {props.testsPassed}/{props.totalTests} Tests Passed
-          </p>
+          {
+            <p className="text-sm lg:text-l">
+              {props.testsPassed}/{props.totalTests} Tests Passed
+            </p>
+          }
         </div>
       </Card>
     </Link>

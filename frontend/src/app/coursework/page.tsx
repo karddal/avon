@@ -6,7 +6,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 async function PageContent() {
   const cookieStore = await cookies();
   const token = cookieStore.get("access_token")?.value;
-
   return (
     <div className="space-y-6">
       <Tabs defaultValue="ongoing">

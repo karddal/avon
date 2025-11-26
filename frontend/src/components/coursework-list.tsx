@@ -1,7 +1,4 @@
-import { PlusIcon } from "lucide-react";
-import Link from "next/link";
 import Coursework from "@/components/coursework";
-import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 
 type courseworkData = {
   id: string;
@@ -9,7 +6,7 @@ type courseworkData = {
   code: string;
   year: number;
   finished: boolean;
-  color: string;
+  colour: string;
   creation_date: string;
   due_date: string;
   testsPassed: number;
@@ -57,17 +54,10 @@ export default async function CourseworkList({
 
   return (
     <>
-      <Link href="/courseworks/create">
-        <Card className="bg-muted/50 flex flex-row p-5 h-full items-center hover:bg-foreground/10">
-          <PlusIcon size={50} />
-          <div className="flex flex-col">
-            <CardTitle className="text-xl font-medium">
-              Add new Coursework
-            </CardTitle>
-            <CardDescription>Create a new coursework here.</CardDescription>
-          </div>
-        </Card>
-      </Link>
+      {filtered.length === 0 && (
+        <div className="ml-2 border h-26 p-5">Nothing to see here!</div>
+      )}
+
       {filtered.length > 0 &&
         filtered.map((coursework) => (
           <Coursework key={coursework.id} props={coursework} />
