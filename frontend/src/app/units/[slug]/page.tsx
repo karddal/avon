@@ -10,9 +10,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
+import { getCurrentUser } from "@/lib/auth";
 
 async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const userRole = await getCurrentUser()
   console.log("The slug:", slug)
   const cookieStore = await cookies();
   const token = cookieStore.get("access_token")?.value;
@@ -89,17 +91,20 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
         {/* Right column */}
         <div className="flex flex-col xl:col-span-1 lg:col-span-2 gap-4 min-h-0">
           {/* Create a coursework*/}
-          <Card className={`flex flex-col gap-0 hover:cursor-pointer`}>
-            <CardHeader
-              className="flex flex-row items-center gap-4 select-none "
-            >
-              <CardTitle>
-                <Link href={`${slug}/create`} className="text-2xl">
-                  Create a Coursework
-                </Link>
-              </CardTitle>
-            </CardHeader>
-          </Card>
+          {userRole === "lecturer" && (
+            <Card className={`flex flex-col gap-0 hover:cursor-pointer`}>
+              <CardHeader
+                className="flex flex-row items-center gap-4 select-none "
+              >
+                <CardTitle>
+                  <Link href={`${slug}/create`} className="text-2xl">
+                    Create a Coursework
+                  </Link>
+                </CardTitle>
+              </CardHeader>
+            </Card>
+          )
+          }
 
           {/* Unit Staff */}
           <DropdownCard
