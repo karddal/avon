@@ -1,11 +1,8 @@
-import { cookies, headers } from "next/headers"
-import { jwtDecode } from "jwt-decode"
-
+import { headers } from "next/headers";
 
 export async function getCurrentUser() {
-    const headersList = await headers();
-    const userRole = headersList.get("x-user-role")
+  const headersList = await headers();
+  const userRole = headersList.get("x-user-role");
 
-    return userRole
+  return userRole;
 }
-

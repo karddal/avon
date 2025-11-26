@@ -1,7 +1,4 @@
-import { PlusIcon } from "lucide-react";
-import Link from "next/link";
 import Coursework from "@/components/coursework";
-import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 
 type courseworkData = {
   id: string;
@@ -57,12 +54,9 @@ export default async function CourseworkList({
 
   return (
     <>
-      {
-        filtered.length === 0 &&
-        <div className="ml-2 border h-26 p-5">
-          Nothing to see here!
-        </div>
-      }
+      {filtered.length === 0 && (
+        <div className="ml-2 border h-26 p-5">Nothing to see here!</div>
+      )}
 
       {filtered.length > 0 &&
         filtered.map((coursework) => (

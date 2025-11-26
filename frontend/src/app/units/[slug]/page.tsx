@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import Link from "next/link";
 import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
 import CourseworkSection from "@/app/units/[slug]/coursework-section";
@@ -9,13 +10,12 @@ import { Avatar } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
 
 async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const userRole = await getCurrentUser()
-  console.log("The slug:", slug)
+  const userRole = await getCurrentUser();
+  console.log("The slug:", slug);
   const cookieStore = await cookies();
   const token = cookieStore.get("access_token")?.value;
 
@@ -93,9 +93,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
           {/* Create a coursework*/}
           {userRole === "lecturer" && (
             <Card className={`flex flex-col gap-0 hover:cursor-pointer`}>
-              <CardHeader
-                className="flex flex-row items-center gap-4 select-none "
-              >
+              <CardHeader className="flex flex-row items-center gap-4 select-none ">
                 <CardTitle>
                   <Link href={`${slug}/create`} className="text-2xl">
                     Create a Coursework
@@ -103,8 +101,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
                 </CardTitle>
               </CardHeader>
             </Card>
-          )
-          }
+          )}
 
           {/* Unit Staff */}
           <DropdownCard
@@ -151,7 +148,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
             ))}
           </DropdownCard>
         </div>
-      </section >
+      </section>
     </>
   );
 }
