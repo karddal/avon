@@ -1,5 +1,3 @@
-"use cache";
-
 import {
   BookCheck,
   BookText,
@@ -9,9 +7,11 @@ import {
   SwatchBook,
   User,
 } from "lucide-react";
+import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import type * as React from "react";
+import { Suspense } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,59 +28,79 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { getCurrentUser } from "@/lib/auth";
 
-const items = [
+const adminItems = [
   {
     title: "Dashboard",
     url: "/dashboard",
     icon: LayoutDashboard,
-    admin: true,
+    bottom: false,
   },
   {
     title: "Analytics",
     url: "/analytics",
     icon: ChartLine,
-    admin: true,
+    bottom: false,
   },
   {
     title: "Markbook",
     url: "/markbook",
     icon: BookCheck,
-    admin: true,
     bottom: false,
+  },
+  {
+    title: "Settings",
+    url: "#",
+    icon: Settings,
+    bottom: true,
   },
   {
     title: "Units",
     url: "/units",
     icon: SwatchBook,
-    admin: false,
+    bottom: false,
   },
   {
     title: "Coursework",
     url: "/coursework",
     icon: BookText,
-    admin: false,
+    bottom: false,
   },
+];
 
+const studentItems = [
+  {
+    title: "Units",
+    url: "/units",
+    icon: SwatchBook,
+    bottom: false,
+  },
+  {
+    title: "Coursework",
+    url: "/coursework",
+    icon: BookText,
+    bottom: false,
+  },
   {
     title: "Settings",
     url: "#",
     icon: Settings,
-    admin: false,
     bottom: true,
   },
-  // {
-  //   title: "Log Out",
-  //   url: "/logout",
-  //   icon: LogOut,
-  //   admin: false,
-  //   bottom: true,
-  // },
 ];
 
-export async function AppSidebar({
+async function AppSidebarContent({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
+  const cookieStore = await cookies();
+  console.log(cookieStore);
+  const user = await getCurrentUser();
+  console.log(user);
+  const isLecturer = user === "lecturer";
+  console.log(isLecturer);
+  const items = isLecturer ? adminItems : studentItems;
+
   return (
     <Sidebar variant="floating" {...props}>
       <SidebarHeader>
@@ -180,7 +200,7 @@ export async function AppSidebar({
                       </Link>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent side="right">
-                      <DropdownMenuItem>[Username]</DropdownMenuItem>
+                      <DropdownMenuItem>{user?.username}</DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem>Logout</DropdownMenuItem>
                     </DropdownMenuContent>
@@ -192,5 +212,13 @@ export async function AppSidebar({
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>
+  );
+}
+
+export default function AppSidebar() {
+  return (
+    <Suspense>
+      <AppSidebarContent />
+    </Suspense>
   );
 }
