@@ -45,7 +45,7 @@ export function StudentListCard({
 
   return (
     <Card className={cn("flex-1", className)}>
-      <CardHeader className="flex flex-row items-center justify-between gap-2">
+      <CardHeader className="flex flex-row items-center justify-between gap-2 sticky">
         <div>
           <CardTitle className="text-2xl">Students</CardTitle>
           <CardDescription>
@@ -62,7 +62,7 @@ export function StudentListCard({
         </div>
       </CardHeader>
 
-      <CardContent className="p-0">
+      <CardContent className="px-4 overflow-y-scroll h-72">
         <Table>
           <TableHeader>
             <TableRow>
