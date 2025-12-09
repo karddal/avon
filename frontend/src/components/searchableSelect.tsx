@@ -61,7 +61,7 @@ export function SearchableSelect(props: SearchableSelectProps) {
       if (!query) return options;
       const lowerCasedQuery = query.toLowerCase();
       return options?.filter((option) =>
-        option.value.toLowerCase().includes(lowerCasedQuery),
+        option.value.toLowerCase().includes(lowerCasedQuery)
       );
     }, [options, query]) || [];
 
@@ -76,7 +76,7 @@ export function SearchableSelect(props: SearchableSelectProps) {
   };
 
   return (
-    <div className="shrink-0 w-56 sm:w-64 lg:w-auto lg:flex-[1_1_12rem] lg:min-w-[10rem]">
+    <div className="flex-1">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -84,14 +84,16 @@ export function SearchableSelect(props: SearchableSelectProps) {
             variant={"outline"}
             role={"combobox"}
             aria-expanded={open}
-            className="w-full justify-between"
+            className="flex w-full text-center justify-center"
           >
-            <div className={"flex min-w-0 gap-1 truncate"}>
+            <div className={"flex min-w-0 gap-1 truncate text-center"}>
               {prefix && (
                 <span className="text-muted-foreground">{prefix}：</span>
               )}
               <span
-                className={`${selectedValue ? "" : "text-muted-foreground"} truncate`}
+                className={`${
+                  selectedValue ? "" : "text-muted-foreground"
+                } truncate`}
               >
                 {selectedValue ?? placeholder}
               </span>

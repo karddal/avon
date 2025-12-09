@@ -27,7 +27,7 @@ export type StudentDataPoint = {
 
 export function AnalyticsPanel() {
   const [selectedStudentId, setSelectedStudentId] = useState<number | null>(
-    null,
+    null
   );
 
   const [students, setStudents] = useState<Student[]>([]);
@@ -51,11 +51,11 @@ export function AnalyticsPanel() {
             attempt: attemptIndex + 1,
             score: clamped,
           };
-        },
+        }
       );
 
       const averageScore = Math.round(
-        scores.reduce((sum, s) => sum + s.score, 0) / scores.length,
+        scores.reduce((sum, s) => sum + s.score, 0) / scores.length
       );
 
       return {
@@ -77,13 +77,13 @@ export function AnalyticsPanel() {
         name: s.name,
         score: s.averageScore,
       })),
-    [students],
+    [students]
   );
 
   const selectedStudent =
     selectedStudentId == null
       ? null
-      : (students.find((s) => s.id === selectedStudentId) ?? null);
+      : students.find((s) => s.id === selectedStudentId) ?? null;
 
   if (!students.length) {
     return (
@@ -103,7 +103,7 @@ export function AnalyticsPanel() {
   }
 
   return (
-    <div className="space-y-6">
+    <>
       <div className="flex flex-col lg:flex-row gap-4">
         <GraphCard>
           <GradientGraph
@@ -120,6 +120,6 @@ export function AnalyticsPanel() {
         students={students}
         onSelectStudent={(student) => setSelectedStudentId(student.id)}
       />
-    </div>
+    </>
   );
 }

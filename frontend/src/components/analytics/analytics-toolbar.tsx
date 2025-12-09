@@ -29,24 +29,13 @@ export function AnalyticsToolbar() {
   const teachingBlock = [{ value: "TB1" }, { value: "TB2" }, { value: "TB4" }];
 
   return (
-    <div className="w-full overflow-x-auto lg:overflow-x-visible">
-      <div className="flex w-max gap-2 border p-2 lg:w-full lg:flex-wrap">
-        <SearchableSelect
-          prefix={"academicYear"}
-          options={options} /*value={value} onChange={setValue}*/
-        />
-        {/*<div className="text-sm text-gray-500">*/}
-        {/*    CurrentValue: {value ?? "unselected"}*/}
-        {/*</div>*/}
-        <SearchableSelect
-          prefix={"Year of Study"}
-          options={yearOfStudyOptions}
-        />
-        <SearchableSelect prefix={"teachingBlock"} options={teachingBlock} />
-        <SearchableSelect prefix={"Faculty"} options={options} />
-        <SearchableSelect prefix={"course"} options={options} />
-        <SearchableSelect prefix={"teachingBlock"} options={options} />
-      </div>
+    <div className="flex gap-2 border p-2 flex-wrap">
+      {/*<div className="text-sm text-gray-500">*/}
+      {/*    CurrentValue: {value ?? "unselected"}*/}
+      {/*</div>*/}
+      <SearchableSelect prefix={"Academic Year"} options={yearOfStudyOptions} />
+      <SearchableSelect prefix={"Faculty"} options={options} />
+      <SearchableSelect prefix={"Course"} options={options} />
     </div>
   );
 }
