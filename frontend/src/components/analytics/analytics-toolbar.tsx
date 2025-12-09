@@ -26,7 +26,7 @@ export function AnalyticsToolbar() {
     { value: "PhD3" },
   ];
 
-  const teachingBlock = [{ value: "TB1" }, { value: "TB2" }, { value: "TB4" }];
+  const _teachingBlock = [{ value: "TB1" }, { value: "TB2" }, { value: "TB4" }];
 
   return (
     <div className="flex gap-2 border p-2 flex-wrap">

@@ -33,7 +33,6 @@ export function SearchableSelect(props: SearchableSelectProps) {
   const {
     value,
     defaultValue,
-    onChange,
     options,
     placeholder,
     searchPlaceholder,
@@ -61,7 +60,7 @@ export function SearchableSelect(props: SearchableSelectProps) {
       if (!query) return options;
       const lowerCasedQuery = query.toLowerCase();
       return options?.filter((option) =>
-        option.value.toLowerCase().includes(lowerCasedQuery)
+        option.value.toLowerCase().includes(lowerCasedQuery),
       );
     }, [options, query]) || [];
 

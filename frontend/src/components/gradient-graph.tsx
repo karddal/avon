@@ -29,7 +29,7 @@ export default function GradientGraph({
   onSelectStudent,
 }: gradientData) {
   const sortedByName = [...studentData].sort((a, b) =>
-    String(a.name).localeCompare(String(b.name))
+    String(a.name).localeCompare(String(b.name)),
   );
   const [hovered, setHovered] = useState<number | null>(null);
 
@@ -37,7 +37,7 @@ export default function GradientGraph({
     <div
       className={cn(
         "border flex flex-row flex-wrap justify-center items-center gap-2 p-4",
-        className
+        className,
       )}
     >
       {sortedByName.map((student) => {
