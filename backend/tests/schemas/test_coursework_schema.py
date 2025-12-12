@@ -1,6 +1,6 @@
 import pytest
 from pydantic import ValidationError
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 
 from app.schemas.coursework import CourseworkCreate
@@ -20,12 +20,11 @@ def test_too_long_name_raises_error():
         CourseworkCreate(name="A"*101, description="Coursework Description", unit_id=uuid4(), due_date=now, colour="abcdef")
 
 def test_valid_name_raises_no_error():
-    now = datetime.now()
+    now = datetime.now() + timedelta(minutes=1)
     CourseworkCreate(name="Haskell 2", description="Coursework Description", unit_id=uuid4(), due_date=now, colour="abcdef")
 
 # -------------- Description -------------
 # Validation Rules: 1 <= lenght <= 5000
-# Can maybe increase this if we need to? Don't know if teh 5000 limt is suitable, but we do need a limit either way.
 
 def test_empty_description_raises_error():
     now = datetime.now()
@@ -38,11 +37,10 @@ def test_too_long_description_raises_error():
         CourseworkCreate(name="Haskell 2", description="A"*5001, unit_id=uuid4(), due_date=now, colour="abcdef")
 
 def test_valid_description_raises_no_error():
-    now = datetime.now()
+    now = datetime.now() + timedelta(minutes=1)
     CourseworkCreate(name="Haskell 2", description="This is a test description for this unit", unit_id=uuid4(), due_date=now, colour="abcdef")
 
 # -------------- Unit Id -------------
-# Validation Rules: must be of type UUID
 
 def test_unit_id_not_uuid_raises_error():
     now = datetime.now()
@@ -50,17 +48,15 @@ def test_unit_id_not_uuid_raises_error():
         CourseworkCreate(name="Haskell 2", description="Coursework Description", unit_id="notUUID", due_date=now, colour="abcdef")
 
 def test_unit_id_valid_uuid_raises_no_error():
-    now = datetime.now()
+    now = datetime.now() + timedelta(minutes=1)
     CourseworkCreate(name="Haskell 2", description="Coursework Description", unit_id=uuid4(), due_date=now, colour="abcdef")
 
 # -------------- Due Date --------------
-# Validation Rules: must have a due date, must be in the future, must be within one year from now
 
 def test_empty_due_date_raises_error():
     with pytest.raises(ValidationError):
         CourseworkCreate(name="Haskell 2", description="Coursework Description", unit_id=uuid4(), colour="abcdef")
 
-# Ensuring that check for due date being of type datetime works
 def test_not_datetime_due_date_raises_error():
     with pytest.raises(ValidationError):
         CourseworkCreate(name="Haskell 2", description="Coursework Description", unit_id=uuid4(), due_date="tuctutycty", colour="abcdef")
@@ -75,16 +71,15 @@ def test_due_date_set_over_a_year_from_now_raises_error():
     with pytest.raises(ValidationError):
         CourseworkCreate(name="Haskell 2", description="Coursework Description", unit_id=uuid4(), due_date=overOneYear, colour="abcdef")
 
-# Check that the tests on the due dates works for both .utc and not .utc datetimes
 def test_due_date_utc_set_before_now_raises_error():
     one_minute_behind = datetime.now() - timedelta(minutes=1)
-    one_minute_behind = one_minute_behind.replace(tzinfo=datetime.timezone.utc)
+    one_minute_behind = one_minute_behind.replace(tzinfo=timezone.utc)
     with pytest.raises(ValidationError):
         CourseworkCreate(name="Haskell 2", description="Coursework Description", unit_id=uuid4(), due_date=one_minute_behind, colour="abcdef")
 
 def test_due_date_utc_set_over_a_year_from_now_raises_error():
     overOneYear = datetime.now() + timedelta(days=366)
-    overOneYear = overOneYear.replace(tzinfo=datetime.timezone.utc)
+    overOneYear = overOneYear.replace(tzinfo=timezone.utc)
     with pytest.raises(ValidationError):
         CourseworkCreate(name="Haskell 2", description="Coursework Description", unit_id=uuid4(), due_date=overOneYear, colour="abcdef")
 
@@ -94,11 +89,11 @@ def test_valid_due_date_raises_no_error():
 
 def test_valid_due_date_utc_raises_no_error():
     validDate = datetime.now() + timedelta(days=34)
-    validDate = validDate.replace(tzinfo=datetime.timezone.utc)
+    validDate = validDate.replace(tzinfo=timezone.utc)
     CourseworkCreate(name="Haskell 2", description="Coursework Description", unit_id=uuid4(), due_date=validDate, colour="abcdef")
 
 # -------------- colour --------------
-# Validation Rules:
+
 def test_too_short_colour_raises_error():
     now = datetime.now()
     with pytest.raises(ValidationError):
@@ -129,14 +124,13 @@ def test_invalid_characters_in_colour_raises_error():
         CourseworkCreate(name="Haskell 2", description="Coursework Description", unit_id=uuid4(), due_date=now, colour="a@cdef")
 
 def test_valid_3_hex_colour_raises_no_error():
-    now = datetime.now()
+    now = datetime.now() + timedelta(minutes=1)
     CourseworkCreate(name="Haskell 2", description="Coursework Description", unit_id=uuid4(), due_date=now, colour="abc")
     CourseworkCreate(name="Haskell 2", description="Coursework Description", unit_id=uuid4(), due_date=now, colour="aB6")
     CourseworkCreate(name="Haskell 2", description="Coursework Description", unit_id=uuid4(), due_date=now, colour="DEF")
 
-
 def test_valid_6_hex_colour_raises_no_error():
-    now = datetime.now()
+    now = datetime.now() + timedelta(minutes=1)
     CourseworkCreate(name="Haskell 2", description="Coursework Description", unit_id=uuid4(), due_date=now, colour="abcdef")
     CourseworkCreate(name="Haskell 2", description="Coursework Description", unit_id=uuid4(), due_date=now, colour="DE67CD")
     CourseworkCreate(name="Haskell 2", description="Coursework Description", unit_id=uuid4(), due_date=now, colour="A1CeDf")
