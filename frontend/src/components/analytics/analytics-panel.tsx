@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { CommitsBar } from "@/components/analytics/commits-bar";
 import { GraphCard } from "@/components/analytics/graph-card";
 import GradientGraph from "@/components/gradient-graph";
 import { StudentDetailCard } from "./student-details-card";
@@ -114,6 +115,11 @@ export function AnalyticsPanel() {
             }}
           />
         </GraphCard>
+        <div className={"flex flex-row gap-4"}>
+          <div className={"flex-1"}>
+            <CommitsBar />
+          </div>
+        </div>
       </div>
 
       <StudentListCard
