@@ -1,7 +1,8 @@
 import pytest
 from sqlmodel import SQLModel, Session, create_engine, select
 from uuid import uuid4, UUID
-from datetime import datetime, timedelta
+from typing import TYPE_CHECKING
+from datetime import datetime
 
 from app.models.coursework import Coursework
 from app.models.unit import Unit
