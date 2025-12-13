@@ -1,4 +1,5 @@
 # Introduction
+
 **Avon** is a virtual learning environment designed for Computer Science. It allows lecturers to track the progress of their students through coursework using the Git version control system.
 
 - Fast and intuitive interface
