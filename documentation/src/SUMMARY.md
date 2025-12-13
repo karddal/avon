@@ -2,6 +2,19 @@
 
 [Introduction](README.md)
 
+# User guide
+
+- [Welcome]()
+- [The Avon web interface]()
+  - [Dashboard]()
+  - [Analytics page]()
+  - [Units listing]()
+  - [Courseworks listing]()
+  - [Creating a coursework]()
+
+# Project management
+- [Meeting minutes]()
+
 # Developer documentation
 
 - [Setting up a local dev environment](dev_env/README.md)
