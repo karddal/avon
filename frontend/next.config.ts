@@ -1,16 +1,36 @@
 import type { NextConfig } from "next";
+import { PHASE_DEVELOPMENT_SERVER } from "next/dist/shared/lib/constants";
 
-const nextConfig: NextConfig = {
-  cacheComponents: true,
-  output: "standalone",
-  images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "cdn.avon.ac",
+module.exports = (phase, { defaultConfig }) => {
+  if (phase === PHASE_DEVELOPMENT_SERVER) {
+    return {
+      /* development only config options here */
+      cacheComponents: true,
+      output: "standalone",
+      images: {
+        remotePatterns: [
+          {
+            protocol: "https",
+            hostname: "cdn.avon.ac",
+          },
+        ],
       },
-    ],
-  },
-};
+      assetPrefix: undefined,
+    };
+  }
 
-export default nextConfig;
+  return {
+    /* config options for all phases except development here */
+    cacheComponents: true,
+    output: "standalone",
+    images: {
+      remotePatterns: [
+        {
+          protocol: "https",
+          hostname: "cdn.avon.ac",
+        },
+      ],
+    },
+    assetPrefix: "https://cdn.avon.ac",
+  };
+};
