@@ -15,6 +15,5 @@ In the `frontend` folder, create a `.env.development` file:
 
 ```
 NEXT_PUBLIC_API_URL=http://localhost:8000
-NEXT_PUBLIC_CDN_URL={redacted}
 ENV=development
 ```
