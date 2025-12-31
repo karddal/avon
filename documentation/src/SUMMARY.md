@@ -21,6 +21,7 @@
   - [Environment variables](dev_env/environment_variables.md)
   - [Frontend setup](dev_env/frontend.md)
   - [Backend setup](dev_env/backend.md)
+  - [mdBook setup](dev_env/mdbook.md)
 - [Dev workflow](dev_workflow/README.md)
   - [Making issues](dev_workflow/issues.md)
   - [Making branches](dev_workflow/branches.md)
