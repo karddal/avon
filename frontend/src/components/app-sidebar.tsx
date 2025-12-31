@@ -112,14 +112,14 @@ async function AppSidebarContent({
             >
               <div>
                 <Image
-                  src={`${process.env.NEXT_PUBLIC_CDN_URL}/avon-white-optimized.svg`}
+                  src={`/images/avon-white-optimized.svg`}
                   alt="logo"
                   width={200}
                   height={200}
                   className="dark:block hidden p-4 md:p-0"
                 />
                 <Image
-                  src={`${process.env.NEXT_PUBLIC_CDN_URL}/avon-black-optimized.svg`}
+                  src={`/images/avon-black-optimized.svg`}
                   alt="logo"
                   width={200}
                   height={200}
