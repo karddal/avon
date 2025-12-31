@@ -35,14 +35,12 @@ async function DashboardPageContent() {
                   </TabsTrigger>
                 </div>
               </TabsList>
-              <div className="gap-2 overflow-y-auto flex flex-col h-96">
+              <div className="gap-2 overflow-y-auto flex flex-col h-auto">
                 <TabsContent className="flex flex-col gap-2" value="coursework">
                   <Tabs defaultValue="ongoing">
-                    <section className="grid gap-4 grid-cols-1 lg:grid-cols-2">
-                      <Suspense fallback={<Loading />}>
-                        <CourseworkList token={token} finished={false} />
-                      </Suspense>
-                    </section>
+                    <Suspense fallback={<Loading />}>
+                      <CourseworkList token={token} finished={false} />
+                    </Suspense>
                   </Tabs>
                 </TabsContent>
                 <TabsContent className="flex flex-col gap-4" value="units">

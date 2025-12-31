@@ -1,4 +1,12 @@
 import Coursework from "@/components/coursework";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "./ui/empty";
+import { BookDashed } from "lucide-react";
 
 type courseworkData = {
   id: string;
@@ -55,13 +63,24 @@ export default async function CourseworkList({
   return (
     <>
       {filtered.length === 0 && (
-        <div className="ml-2 border h-26 p-5">Nothing to see here!</div>
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <BookDashed />
+            </EmptyMedia>
+            <EmptyTitle>No Units.</EmptyTitle>
+            <EmptyDescription>
+              No units were found that you are connected to.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
       )}
-
-      {filtered.length > 0 &&
-        filtered.map((coursework) => (
-          <Coursework key={coursework.id} props={coursework} />
-        ))}
+      <section className="grid gap-4 grid-cols-1 lg:grid-cols-2">
+        {filtered.length > 0 &&
+          filtered.map((coursework) => (
+            <Coursework key={coursework.id} props={coursework} />
+          ))}
+      </section>
     </>
   );
 }
