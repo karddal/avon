@@ -1,27 +1,18 @@
 import {createAuthClient} from "better-auth/react"
-import {auth} from "@/lib/auth";
-export const authClient = createAuthClient(
-)
+import {adminClient} from "better-auth/client/plugins";
+import {ac, admin, lecturer, user} from "@/lib/permissions";
 
-export interface SignInData {
-    email: string,
-    password: string,
-}
-
-export async function signIn(formData: SignInData) {
-    try {
-        await auth.api.signInEmail({
-            body: {
-                email: formData.email,
-                password: formData.password,
+export const authClient = createAuthClient({
+    plugins: [
+        adminClient({
+            ac,
+            roles: {
+                admin,
+                user,
+                lecturer
             }
         })
-
-        const session = await auth.api.getSession()
-        if (!session) {throw new Error ("No session")}
-    } catch (err: any) {
-        return {
-            error: "Authentication failed. Check your credentials."
-        }
+    ]
     }
-}
+)
+

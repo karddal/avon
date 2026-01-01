@@ -1,4 +1,5 @@
-import { cookies } from "next/headers";
+"use server"
+
 import Link from "next/link";
 import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
@@ -6,22 +7,35 @@ import TabSwitcher from "@/components/tab-switcher";
 import { Tabs, TabsContent, TabsList } from "@/components/ui/tabs";
 import UnitList from "@/components/unit-list";
 import YearSelector from "@/components/year-selector";
-import { getCurrentUser } from "@/lib/auth";
+import {headers} from "next/headers";
+import {redirect} from "next/navigation";
+import {auth} from "@/lib/auth";
 
 type Status = "ongoing" | "finished";
+
+interface ComponentProps {
+  searchParams: Promise<{ year?: string; tab?: Status }>;
+}
 
 interface PageProps {
   searchParams: Promise<{ year?: string; tab?: Status }>;
 }
 
-async function PageContent({ searchParams }: PageProps) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("access_token")?.value;
-  const userRole = await getCurrentUser();
-
-  console.log(userRole);
-
+async function PageContent({ searchParams }: ComponentProps) {
   const params = await searchParams;
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    redirect("/login")
+  }
+
+  const user = session.user;
+  let role = user.role;
+  if (!role) {
+    role = "user"
+  }
   const yearNow = new Date().getFullYear();
   const currentYear = params.year
     ? parseInt(params.year, 10)
@@ -36,7 +50,7 @@ async function PageContent({ searchParams }: PageProps) {
         <TabsList className="flex flex-col h-auto min-h-fit items-start justify-start md:flex-row md:align-center md:justify-center md:items-center gap-4 bg-background md:my-4">
           <YearSelector value={currentYear} />
           <TabSwitcher currentYear={currentYear} yearNow={yearNow} />
-          {userRole === "lecturer" && (
+          {role === "lecturer" && (
             <Link
               href="/create-unit"
               className="bg-accent text-black font-medium text-sm p-3 flex gap-2 border hover:cursor-pointer"
@@ -53,7 +67,6 @@ async function PageContent({ searchParams }: PageProps) {
               <UnitList
                 currentYear={currentYear}
                 finished={false}
-                token={token}
               />
             </section>
           </Suspense>
@@ -64,7 +77,6 @@ async function PageContent({ searchParams }: PageProps) {
               <UnitList
                 currentYear={currentYear}
                 finished={true}
-                token={token}
               />
             </section>
           </Suspense>
@@ -78,10 +90,10 @@ async function PageContent({ searchParams }: PageProps) {
   );
 }
 
-export default function UnitPage({ searchParams }: PageProps) {
+export default async function UnitPage({ searchParams }: PageProps) {
   return (
     <Suspense>
-      <PageContent searchParams={searchParams} />
+      <PageContent searchParams={searchParams}/>
     </Suspense>
   );
 }

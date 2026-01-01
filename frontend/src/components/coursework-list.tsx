@@ -68,9 +68,9 @@ export default async function CourseworkList({
             <EmptyMedia variant="icon">
               <BookDashed />
             </EmptyMedia>
-            <EmptyTitle>No Units.</EmptyTitle>
+            <EmptyTitle>No courseworks.</EmptyTitle>
             <EmptyDescription>
-              No units were found that you are connected to.
+              No courseworks were found that you are connected to.
             </EmptyDescription>
           </EmptyHeader>
         </Empty>

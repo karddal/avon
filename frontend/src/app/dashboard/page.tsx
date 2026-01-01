@@ -14,7 +14,6 @@ async function DashboardPageContent() {
   const currentYear = new Date().getFullYear();
   const _yearNow = currentYear;
   const currentAcademicYear = `${currentYear}/${currentYear + 1}`;
-
   return (
     <div className="space-y-6 mb-2">
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -51,7 +50,6 @@ async function DashboardPageContent() {
                         <UnitList
                           currentYear={currentYear}
                           finished={false}
-                          token={token}
                         />
                       </section>
                     </Suspense>

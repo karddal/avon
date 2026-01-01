@@ -1,3 +1,5 @@
+"use server"
+
 import {
   BookCheck,
   BookText,
@@ -7,7 +9,7 @@ import {
   SwatchBook,
   User,
 } from "lucide-react";
-import { cookies } from "next/headers";
+import {cookies, headers} from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import type * as React from "react";
@@ -28,7 +30,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { getCurrentUser } from "@/lib/auth";
+import {auth} from "@/lib/auth";
+import {redirect} from "next/navigation";
 
 const adminItems = [
   {
@@ -93,13 +96,21 @@ const studentItems = [
 async function AppSidebarContent({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
-  const cookieStore = await cookies();
-  console.log(cookieStore);
-  const user = await getCurrentUser();
-  console.log(user);
-  const isLecturer = user === "lecturer";
-  console.log(isLecturer);
-  const items = isLecturer ? adminItems : studentItems;
+  const state = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!state) {
+    redirect("/login")
+  }
+
+  const user = state.user;
+  let role = user.role;
+
+  if (!role) {
+    role = "user";
+  }
+  const items = (role === "lecturer") ? adminItems : studentItems;
 
   return (
     <Sidebar variant="floating" {...props}>
@@ -200,7 +211,7 @@ async function AppSidebarContent({
                       </Link>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent side="right">
-                      <DropdownMenuItem>{user?.username}</DropdownMenuItem>
+                      <DropdownMenuItem>{user.name}</DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem>Logout</DropdownMenuItem>
                     </DropdownMenuContent>
@@ -215,7 +226,7 @@ async function AppSidebarContent({
   );
 }
 
-export default function AppSidebar() {
+export default async function AppSidebar() {
   return (
     <Suspense>
       <AppSidebarContent />

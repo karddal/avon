@@ -1,6 +1,4 @@
 "use client";
-
-import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -17,8 +15,8 @@ import {
 import { Input } from "@/components/ui/input";
 import LoginButton from "@/components/ui/login-button";
 import { cn } from "@/lib/utils";
-import {signIn} from "@/lib/auth-client";
-import {SignInData} from "@/lib/auth-client";
+
+import {signIn, SignInData} from "@/lib/actions/login";
 
 export function LoginForm({
   className,
@@ -52,18 +50,19 @@ export function LoginForm({
         email: email,
         password: password,
       }
-      let error = await signIn(data);
-
-      if (error) {
+      try {
+        let response = await signIn(data);
+        router.push(response.redirect)
+      }
+      catch (error: any) {
         console.error("Login failed:", error);
         // alert("Login failed. Please check your credentials and try again.");
         setActionState(2);
-        toast.error(error.error);
+        toast.error(error);
         const delay = new Promise((r) => setTimeout(r, 2000));
         await delay;
         setActionState(0);
       }
-
       // if (isLecturer) {
       //   router.push("/dashboard");
       // } else {

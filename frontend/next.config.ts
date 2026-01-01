@@ -1,12 +1,13 @@
 import type { NextConfig } from "next";
 import { PHASE_DEVELOPMENT_SERVER } from "next/dist/shared/lib/constants";
 
-module.exports = (phase, { defaultConfig }) => {
+module.exports = (phase: string, {defaultConfig}: any) => {
   if (phase === PHASE_DEVELOPMENT_SERVER) {
     return {
       /* development only config options here */
       cacheComponents: true,
       output: "standalone",
+
       images: {
         remotePatterns: [
           {
