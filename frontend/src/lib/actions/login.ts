@@ -35,3 +35,9 @@ export async function signIn(formData: SignInData): Promise<SignInResponse> {
         throw new Error(err)
     }
 }
+
+export async function logout() {
+    await auth.api.signOut({
+        headers: await headers(),
+    });
+}

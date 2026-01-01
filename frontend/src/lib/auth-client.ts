@@ -1,5 +1,5 @@
 import {createAuthClient} from "better-auth/react"
-import {adminClient} from "better-auth/client/plugins";
+import {adminClient, jwtClient} from "better-auth/client/plugins";
 import {ac, admin, lecturer, user} from "@/lib/permissions";
 
 export const authClient = createAuthClient({
@@ -11,7 +11,8 @@ export const authClient = createAuthClient({
                 user,
                 lecturer
             }
-        })
+        }),
+        jwtClient()
     ]
     }
 )

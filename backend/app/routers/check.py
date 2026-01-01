@@ -1,8 +1,6 @@
 from fastapi import APIRouter
 from sqlmodel import select
-from app.core.security import create_access_token
 from app.db.session import SessionDep
-from app.models.user import User
 from app.models.unit import Unit
 from app.models.coursework import Coursework
 from app.models.unit_enrollment import UnitEnrollment
@@ -10,13 +8,6 @@ from app.models.unit_group import UnitGroup
 from app.models.unit_group_member import UnitGroupMember
 
 router = APIRouter(prefix="/check")
-
-@router.get("/users")
-async def get_users(session: SessionDep):
-    statement = select(User)
-    users = session.exec(statement).all()
-    print(create_access_token({"sub": "jwd@university.ac.uk"}))
-    return {"users": [user.model_dump() for user in users]}
 
 @router.get("/units")
 async def get_units(session: SessionDep):
@@ -53,7 +44,6 @@ async def get_counts(session: SessionDep):
     from sqlmodel import func
     
     units = session.exec(select(func.count(Unit.id))).one()
-    users = session.exec(select(func.count(User.id))).one()
     coursework = session.exec(select(func.count(Coursework.id))).one()
     enrollments = session.exec(select(func.count(UnitEnrollment.unit_id))).one()
     groups = session.exec(select(func.count(UnitGroup.id))).one()

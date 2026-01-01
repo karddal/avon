@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 import datetime
 from typing import Annotated
+from uuid import UUID
 
 from fastapi import Depends, FastAPI
 from sqlmodel import Session, SQLModel, create_engine, select
@@ -9,7 +10,6 @@ from app.models.coursework import Coursework
 from app.models.unit import Unit
 from app.models.unit_enrollment import UnitEnrollment
 from app.models.unit_group import UnitGroup
-from app.models.user import User
 from dotenv import load_dotenv
 import os
 
@@ -119,89 +119,25 @@ def seed_data():
             session.commit()
         
         # Get user
-        statement = select(User)
-        user_result = session.exec(statement).first()  # Changed from Session.exec
-        if not user_result:
-            user1 = User(
-                first_name="Hrushikesh",
-                last_name="Emkay",
-                email="rsh@bristol.ac.uk",
-                hashed_password="$argon2id$v=19$m=65536,t=3,p=4$YmEXd8OiqssP687E6GPWuQ$oPUtLJ8fr+4OTANWYlOl0UsmNeAcE6kRaNpoHSElYAY",
-                is_lecturer=False,
-                units=[unit1, unit2]
-            )
-            user2 = User(
-                first_name="Josh Jenkins",
-                last_name="Jenkins",
-                email="j.jenkins@bristol.ac.uk",
-                hashed_password="$argon2id$v=19$m=65536,t=3,p=4$YmEXd8OiqssP687E6GPWuQ$oPUtLJ8fr+4OTANWYlOl0UsmNeAcE6kRaNpoHSElYAY",
-                is_lecturer=False,
-                units=[unit1, unit2]
-            )
-            user3 = User(
-                first_name="Yuxuan",
-                last_name="Wang",
-                email="yuxuan.wang@university.ac.uk",
-                hashed_password="$argon2id$v=19$m=65536,t=3,p=4$YmEXd8OiqssP687E6GPWuQ$oPUtLJ8fr+4OTANWYlOl0UsmNeAcE6kRaNpoHSElYAY",
-                is_lecturer=False,
-                units=[unit3, unit2]
-            )
-            user4 = User(
-                first_name="Dempsey",
-                last_name="Jack",
-                email="jwd@university.ac.uk",
-                hashed_password="$argon2id$v=19$m=65536,t=3,p=4$YmEXd8OiqssP687E6GPWuQ$oPUtLJ8fr+4OTANWYlOl0UsmNeAcE6kRaNpoHSElYAY",
-                is_lecturer=False,
-                units=[unit3, unit2]
-            )
-            user5 = User(
-                first_name="Mihaly",
-                last_name="Toth-Tarsoly",
-                email="mihaly@university.ac.uk",  # Fixed duplicate email
-                hashed_password="$argon2id$v=19$m=65536,t=3,p=4$YmEXd8OiqssP687E6GPWuQ$oPUtLJ8fr+4OTANWYlOl0UsmNeAcE6kRaNpoHSElYAY",
-                is_lecturer=False,
-                units=[unit1, unit3]
-            )
-            user6 = User(
-                first_name="Tilo",
-                last_name="Burghardt",
-                email="tilo@university.ac.uk",
-                hashed_password="$argon2id$v=19$m=65536,t=3,p=4$YmEXd8OiqssP687E6GPWuQ$oPUtLJ8fr+4OTANWYlOl0UsmNeAcE6kRaNpoHSElYAY",  # Changed password hash
-                is_lecturer=True,
-                units=[unit3, unit4]
-            )
-            session.add_all([user1, user2, user3, user4, user5, user6])
-            session.commit()
-            session.refresh(user1)
-            session.refresh(user2)
-            session.refresh(user3)
-            session.refresh(user4)
-            session.refresh(user5)
-            session.refresh(user6)
-        else:
-            # If users already exist, fetch them
-            users = session.exec(select(User)).all()
-            user1, user2, user3, user4, user5, user6 = users[0], users[1], users[2], users[3], users[4], users[5]
-        
         statement = select(UnitEnrollment)
         unit_enrollment_data = session.exec(statement).first()
         if not unit_enrollment_data:
-            enrollment1 = UnitEnrollment(unit_id=unit1.id, user_id=user1.id)
-            enrollment2 = UnitEnrollment(unit_id=unit2.id, user_id=user1.id)
-            enrollment3 = UnitEnrollment(unit_id=unit3.id, user_id=user1.id)
-            enrollment4 = UnitEnrollment(unit_id=unit4.id, user_id=user1.id)
+            enrollment1 = UnitEnrollment(unit_id=unit1.id, user_id="Iu8NEUz0Q5DyhpeNAACCv397QYXEcxqd")
+            enrollment2 = UnitEnrollment(unit_id=unit2.id, user_id="Iu8NEUz0Q5DyhpeNAACCv397QYXEcxqd")
+            enrollment3 = UnitEnrollment(unit_id=unit3.id, user_id="Iu8NEUz0Q5DyhpeNAACCv397QYXEcxqd")
+            enrollment4 = UnitEnrollment(unit_id=unit4.id, user_id="Iu8NEUz0Q5DyhpeNAACCv397QYXEcxqd")
             
-            enrollment5 = UnitEnrollment(unit_id=unit1.id, user_id=user2.id)
-            enrollment6 = UnitEnrollment(unit_id=unit2.id, user_id=user2.id)
-            enrollment7 = UnitEnrollment(unit_id=unit3.id, user_id=user2.id)
+            enrollment5 = UnitEnrollment(unit_id=unit1.id, user_id="P4uY6u3aG68to2ePrOcC48XuwCs3vOHO")
+            enrollment6 = UnitEnrollment(unit_id=unit2.id, user_id="P4uY6u3aG68to2ePrOcC48XuwCs3vOHO")
+            enrollment7 = UnitEnrollment(unit_id=unit3.id, user_id="P4uY6u3aG68to2ePrOcC48XuwCs3vOHO")
             
-            enrollment8 = UnitEnrollment(unit_id=unit1.id, user_id=user3.id)
-            enrollment9 = UnitEnrollment(unit_id=unit4.id, user_id=user3.id)
+            enrollment8 = UnitEnrollment(unit_id=unit1.id, user_id="fRMZiXJl6xiEWz1PzJwUYHiSGG5dJlAW")
+            enrollment9 = UnitEnrollment(unit_id=unit4.id, user_id="fRMZiXJl6xiEWz1PzJwUYHiSGG5dJlAW")
             
-            enrollment10 = UnitEnrollment(unit_id=unit1.id, user_id=user6.id)
-            enrollment11 = UnitEnrollment(unit_id=unit2.id, user_id=user6.id)
-            enrollment12 = UnitEnrollment(unit_id=unit3.id, user_id=user6.id)
-            enrollment13 = UnitEnrollment(unit_id=unit4.id, user_id=user6.id)
+            enrollment10 = UnitEnrollment(unit_id=unit1.id, user_id="yH57Fn6QVfByFaEmBC15ydxpNBYz17D4")
+            enrollment11 = UnitEnrollment(unit_id=unit2.id, user_id="yH57Fn6QVfByFaEmBC15ydxpNBYz17D4")
+            enrollment12 = UnitEnrollment(unit_id=unit3.id, user_id="yH57Fn6QVfByFaEmBC15ydxpNBYz17D4")
+            enrollment13 = UnitEnrollment(unit_id=unit4.id, user_id="yH57Fn6QVfByFaEmBC15ydxpNBYz17D4")
             
             session.add_all([
                 enrollment1, enrollment2, enrollment3, enrollment4,

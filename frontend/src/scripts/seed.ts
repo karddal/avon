@@ -53,18 +53,21 @@ async function seed() {
             role: "lecturer"
         }
     ]
-
+    let createdUsers = [];
     for (const user of users) {
-        await auth.api.createUser(({
+
+        const u = await auth.api.createUser(({
             body: {
                 name: user.name,
                 email: user.email,
                 password: user.password,
                 role: user.role as "admin" | "user" | "lecturer" | ("admin" | "user" | "lecturer")[] | undefined,
             }
-        }))
+        }));
+        createdUsers.push(u);
     }
     console.log("Seeded DB")
+    console.log(JSON.stringify(createdUsers, null, 2));
 }
 
 seed()

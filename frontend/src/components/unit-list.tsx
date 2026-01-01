@@ -4,11 +4,10 @@ import Unit from "@/components/unit";
 import {auth} from "@/lib/auth";
 import {redirect} from "next/navigation";
 import {headers} from "next/headers";
-import {toast} from "sonner";
 import {Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty";
 import {BookDashed, CloudAlert, CloudAlertIcon} from "lucide-react";
 
-type UnitData = {
+export type UnitData = {
   id: string;
   name: string;
   description?: string;
@@ -23,23 +22,19 @@ type UnitListProps = {
 };
 
 async function getData(currentYear:number, finished: boolean) {
-  const session = await auth.api.getSession({
+  console.log("token:");
+  const token = await auth.api.getToken({
     headers: await headers(),
   });
-
-  if (!session) {
-    redirect("/login")
-  }
-
-  const token = session.session.token;
-
+  console.log(token.token);
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/me/units`, {
     method: "GET",
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token.token}`,
     },
     cache: "no-store"
   });
+  await new Promise(r => setTimeout(r, 2000));
   let unitListData: UnitData[];
   if (!response.ok) {
     throw new Error("Failed to fetch units");
@@ -59,20 +54,21 @@ async function getData(currentYear:number, finished: boolean) {
     }
     return inRange;
   });
+  console.log(filtered)
   return filtered
 }
 
-export default async function UnitList({
-  currentYear,
-  finished,
-}: UnitListProps) {
+export default async function UnitList({unitData
+}: { unitData: UnitData[] }) {
+  // place unit data into tabs based on year
+  console.log(unitData);
   try {
-    const filtered = await getData(currentYear, finished)
+    // const filtered = await getData(currentYear, finished)
     return (
         <>
-          {filtered.length > 0 &&
-              filtered.map((unit) => <Unit key={unit.id} props={unit} />)}
-          {filtered.length == 0 &&
+          {unitData.length > 0 &&
+              unitData.map((unit) => <Unit key={unit.id} props={unit} />)}
+          {unitData.length == 0 &&
               <Empty>
                 <EmptyHeader>
                   <EmptyMedia variant="icon">

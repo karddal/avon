@@ -6,11 +6,16 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import {auth} from "@/lib/auth";
+import {headers} from "next/headers";
+import {Suspense} from "react";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default async function Layout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <Suspense>
+        <AppSidebar/>
+      </Suspense>
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center justify-between gap-2 px-4">
           <div className="flex flex-row gap-2 items-center">

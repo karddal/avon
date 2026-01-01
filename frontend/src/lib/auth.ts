@@ -2,7 +2,7 @@ import {betterAuth} from "better-auth";
 import Database from "bun:sqlite";
 import { Pool } from "pg";
 import {nextCookies} from "better-auth/next-js";
-import {admin as adminPlugin} from "better-auth/plugins"
+import {admin as adminPlugin, jwt} from "better-auth/plugins"
 import {ac, user, admin, lecturer} from "@/lib/permissions";
 
 const isProd = process.env.NODE_ENV === "production";
@@ -27,6 +27,16 @@ export const auth = betterAuth({
       admin,
       user,
       lecturer
+    }
+  }),
+  jwt({
+    jwt: {
+      definePayload: ({user}) => {
+        return {
+          id: user.id,
+          role: user.role,
+        }
+    }
     }
   }),]
 })
