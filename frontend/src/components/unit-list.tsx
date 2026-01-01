@@ -6,6 +6,7 @@ import {redirect} from "next/navigation";
 import {headers} from "next/headers";
 import {Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty";
 import {BookDashed, CloudAlert, CloudAlertIcon} from "lucide-react";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 
 export type UnitData = {
   id: string;
@@ -14,6 +15,7 @@ export type UnitData = {
   creation_date: string;
   unit_code: string;
   colour: string;
+  academic_year: number;
 };
 
 type UnitListProps = {
@@ -62,43 +64,65 @@ export default async function UnitList({unitData
 }: { unitData: UnitData[] }) {
   // place unit data into tabs based on year
   console.log(unitData);
-  try {
+  const groupedUnits = Object.groupBy(unitData, (unit) => unit.academic_year);
     // const filtered = await getData(currentYear, finished)
+  if (groupedUnits != undefined) {
+    const d = Object.keys(groupedUnits).at(0) ?? "0";
     return (
+        // <>
+        //   {
+        //     Object.entries(groupedUnits).map(([year, units]) => (
+        //       <section key={year}>
+        //         <h3>{year}</h3>
+        //         {units?.map((unit) => (
+        //             <Unit key={unit.id} props={unit}/>
+        //         ))}
+        //       </section>
+        //     ))
+        //   }
+        // </>
         <>
-          {unitData.length > 0 &&
-              unitData.map((unit) => <Unit key={unit.id} props={unit} />)}
-          {unitData.length == 0 &&
-              <Empty>
-                <EmptyHeader>
-                  <EmptyMedia variant="icon">
-                    <BookDashed />
-                  </EmptyMedia>
-                  <EmptyTitle>No units.</EmptyTitle>
-                  <EmptyDescription>
-                    No units were found that you are connected to.
-                  </EmptyDescription>
-                </EmptyHeader>
-              </Empty>
-          }
+          <Tabs defaultValue={d} orientation={"vertical"} className={"flex flex-row"}>
+            <TabsList className={"flex flex-1/5 flex-col h-min w-full justify-start"}>
+              {
+                Object.entries(groupedUnits).map(([year, units]) => (
+                    // <section key={year}>
+                    //   <h3>{year}</h3>
+                    //   {units?.map((unit) => (
+                    //       <Unit key={unit.id} props={unit}/>
+                    //   ))}
+                    // </section>
+                  <TabsTrigger key={year} className={"text-lg p-4 w-full"} value={year}>{year}/{Number.parseInt(year) + 1}</TabsTrigger>
+                ))
+              }
+            </TabsList>
+            {
+              Object.entries(groupedUnits).map(([year, units]) => (
+                  <TabsContent key={year} className={"flex-2/5"} value={year}>
+                    {units?.map((unit) => (
+                        <div className={"mb-3"} key={unit.id}>
+                          <Unit key={unit.id} props={unit}/>
+                        </div>
+                    ))}
+                  </TabsContent>
+              ))
+            }
+          </Tabs>
         </>
     );
-  } catch (error) {
+  } else {
     return (
-        <>
-          <Empty>
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <CloudAlertIcon />
-              </EmptyMedia>
-              <EmptyTitle>Oops, something went wrong.</EmptyTitle>
-              <EmptyDescription>
-                Couldn't fetch units.
-              </EmptyDescription>
-            </EmptyHeader>
-          </Empty>
-        </>
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <BookDashed />
+            </EmptyMedia>
+            <EmptyTitle>No units.</EmptyTitle>
+            <EmptyDescription>
+              No units were found that you are connected to.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
     )
   }
-
 }

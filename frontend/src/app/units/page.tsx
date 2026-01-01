@@ -6,7 +6,7 @@ import {auth} from "@/lib/auth";
 import {Suspense} from "react";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {DynTab} from "@/app/units/tabs";
-import Loading from "@/app/coursework/loading";
+import Loading from "@/temporary/coursework/loading";
 import UnitList, {UnitData} from "@/components/unit-list";
 
 type Status = "ongoing" | "finished";

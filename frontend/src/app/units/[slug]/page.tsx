@@ -149,14 +149,16 @@
 //   );
 // }
 //
-// export default function UnitPage({
-//   params,
-// }: {
-//   params: Promise<{ slug: string }>;
-// }) {
-//   return (
-//     <Suspense>
-//       <PageContent params={params} />
-//     </Suspense>
-//   );
-// }
+export default function UnitPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  return (
+    // <Suspense>
+    //   <PageContent params={params} />
+    // </Suspense>
+      <></>
+  );
+}
+

@@ -27,15 +27,15 @@ export default function Unit({ props }: { props: UnitData }) {
                   Unit Code: {props.unit_code}
                 </p>
                 <div className={`flex flex-row justify-center items-center`}>
-                  <Dot
-                    color="#ff0000"
-                    size={30}
-                    strokeWidth={3}
-                    fill="#ff0000"
-                  />
-                  <p className="-ml-2 text-red-600 hidden sm:flex">
-                    Coursework Live
-                  </p>
+                  {/*<Dot*/}
+                  {/*  color="#ff0000"*/}
+                  {/*  size={30}*/}
+                  {/*  strokeWidth={3}*/}
+                  {/*  fill="#ff0000"*/}
+                  {/*/>*/}
+                  {/*<p className="-ml-2 text-red-600 hidden sm:flex">*/}
+                  {/*  Coursework Live*/}
+                  {/*</p>*/}
                 </div>
               </div>
               <div className="flex flex-row items-center justify-between w-full gap-x-10 lg:text-lg">

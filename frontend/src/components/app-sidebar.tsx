@@ -89,7 +89,7 @@ export default async function AppSidebar() {
         {headers: await headers()}
     );
     if (!s) {
-        throw new Error("No session")
+        return <></>
     }
     const type = s.user.role;
     const items = type === "lecturer" ? adminItems : studentItems;

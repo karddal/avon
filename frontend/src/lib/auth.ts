@@ -1,5 +1,5 @@
 import {betterAuth} from "better-auth";
-import Database from "bun:sqlite";
+import {DatabaseSync} from "node:sqlite";
 import { Pool } from "pg";
 import {nextCookies} from "better-auth/next-js";
 import {admin as adminPlugin, jwt} from "better-auth/plugins"
@@ -9,11 +9,13 @@ const isProd = process.env.NODE_ENV === "production";
 
 let db;
 if (!isProd) {
-  db = new Database("../sqlite.db")
+  db = new DatabaseSync("../sqlite.db")
 } else {
-  db = new Pool({
-    connectionString: process.env.BA_DATABASE_URL
-  })
+  // db = new Pool({
+  //   connectionString: process.env.BA_DATABASE_URL
+  // })
+  db = new DatabaseSync("../sqlite.db")
+
 }
 
 export const auth = betterAuth({

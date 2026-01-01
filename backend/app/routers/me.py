@@ -9,6 +9,8 @@ from typing import Annotated
 
 from app.models.unit import Unit
 from app.models.unit_enrollment import UnitEnrollment
+from app.models.unit_group import UnitGroup
+from app.models.unit_group_member import UnitGroupMember
 
 router = APIRouter(prefix = "/me", tags=["me"])
 session_dependency = Annotated[Session, Depends(get_session)]
@@ -16,7 +18,7 @@ session_dependency = Annotated[Session, Depends(get_session)]
 @router.get("/units")
 async def me_units(session: session_dependency, me: str = Depends(get_current_user)):
   print("userid: ", me)
-  results = session.exec(select(Unit).join(UnitEnrollment).where(UnitEnrollment.user_id == me)).all()
+  results = session.exec(select(Unit).join(UnitEnrollment).where(UnitEnrollment.user_id == me).order_by(Unit.academic_year)).all()
   print("results: ")
   print(results)
   return results

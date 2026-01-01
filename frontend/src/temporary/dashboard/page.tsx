@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { Suspense } from "react";
-import Loading from "@/app/coursework/loading";
+import Loading from "../coursework/loading";
 import CourseworkList from "@/components/coursework-list";
 import DashboardAnalysis from "@/components/dashboard/dashboard_analysis_card";
 import { Card, CardContent } from "@/components/ui/card";
@@ -47,10 +47,10 @@ async function DashboardPageContent() {
                   <Tabs defaultValue="ongoing">
                     <Suspense fallback={<Loading />}>
                       <section className="grid gap-4 grid-cols-1 lg:grid-cols-2">
-                        <UnitList
-                          currentYear={currentYear}
-                          finished={false}
-                        />
+                        {/*<UnitList*/}
+                        {/*  currentYear={currentYear}*/}
+                        {/*  finished={false}*/}
+                        {/*/>*/}
                       </section>
                     </Suspense>
                   </Tabs>

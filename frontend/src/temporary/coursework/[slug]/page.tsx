@@ -1,9 +1,9 @@
 import { cookies } from "next/headers";
 import { Suspense } from "react";
 
-import CourseworkDescription from "@/app/coursework/[slug]/description";
-import CourseworkInformation from "@/app/coursework/[slug]/information";
-import CourseworkName from "@/app/coursework/[slug]/name";
+import CourseworkDescription from "./description";
+import CourseworkInformation from "./information";
+import CourseworkName from "./name";
 import { DropdownCard } from "@/components/dropdown-card";
 import RunTestsItem from "@/components/run-tests-item";
 import TestPassedProgressBar from "@/components/tests-passed-progress";

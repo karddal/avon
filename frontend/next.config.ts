@@ -6,7 +6,6 @@ module.exports = (phase: string, {defaultConfig}: any) => {
     return {
       /* development only config options here */
       cacheComponents: true,
-      output: "standalone",
 
       images: {
         remotePatterns: [
@@ -23,7 +22,6 @@ module.exports = (phase: string, {defaultConfig}: any) => {
   return {
     /* config options for all phases except development here */
     cacheComponents: true,
-    output: "standalone",
     images: {
       remotePatterns: [
         {
@@ -32,6 +30,6 @@ module.exports = (phase: string, {defaultConfig}: any) => {
         },
       ],
     },
-    assetPrefix: "https://cdn.avon.ac",
+    assetPrefix: undefined,
   };
 };
