@@ -44,6 +44,7 @@ test-be-router:
 test-be-security:
     @echo "Testing backend security..."
     cd backend && uv run --active pytest -v tests/security
+    
 run-fe:
     cd frontend && bun run dev
 
