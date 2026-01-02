@@ -42,9 +42,14 @@ test-be-router:
 	uv run --active pytest -v tests/router
 
 test-be-security:
-    @echo "Testing backend security..."
-    cd backend && uv run --active pytest -v tests/security
-    
+	@echo "Testing backend security..."
+	cd backend && \
+	DATABASE_URL=sqlite:///:memory: \
+	JWT_SECRET_KEY=abhdvgdgv \
+	ACCESS_TOKEN_EXPIRY_MINUTES=60 \
+	CORS_ORIGIN=http://testserver \
+	uv run --active pytest -v tests/security
+
 run-fe:
     cd frontend && bun run dev
 
