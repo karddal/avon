@@ -14,18 +14,18 @@ from app.models.user import User
 
 
 
-# pytest.fixture stuff is done so we have a reusable database setup for testing
-@pytest.fixture
-def engine():
-    # Test via memory so no clean-up afterwards is needed (volatile DB)
-    engine = create_engine("sqlite:///:memory:", echo=False) # Echo is false so we don't geta load of SQL logs during testing
-    SQLModel.metadata.create_all(engine)
-    return engine
+# # pytest.fixture stuff is done so we have a reusable database setup for testing
+# @pytest.fixture
+# def engine():
+#     # Test via memory so no clean-up afterwards is needed (volatile DB)
+#     engine = create_engine("sqlite:///:memory:", echo=False) # Echo is false so we don't geta load of SQL logs during testing
+#     SQLModel.metadata.create_all(engine)
+#     return engine
 
-@pytest.fixture 
-def session(engine):
-    with Session(engine) as session:
-        yield session #yield not return so to clean up After the tests are done
+# @pytest.fixture 
+# def session(engine):
+#     with Session(engine) as session:
+#         yield session #yield not return so to clean up After the tests are done
 
 # Testing that the model auto Populates the id and creation_date fields
 def test_coursework_auto_fields(session):
