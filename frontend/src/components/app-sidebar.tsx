@@ -17,7 +17,17 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import {ArrowUpDown, BookCheck, BookText, ChartLine, LayoutDashboard, Settings, SwatchBook, User} from "lucide-react";
+import {
+    ArrowUpDown,
+    BookCheck,
+    BookText,
+    ChartLine,
+    LayoutDashboard,
+    NotepadText,
+    Settings,
+    SwatchBook,
+    User
+} from "lucide-react";
 import LogoutButton from "@/components/logout-button";
 import {requireSession} from "@/lib/auth-utils";
 
@@ -55,7 +65,7 @@ const adminItems = [
     {
         title: "Coursework",
         url: "/coursework",
-        icon: BookText,
+        icon: NotepadText,
         bottom: false,
     },
 ];
@@ -70,7 +80,7 @@ const studentItems = [
     {
         title: "Coursework",
         url: "/coursework",
-        icon: BookText,
+        icon: NotepadText,
         bottom: false,
     },
     {

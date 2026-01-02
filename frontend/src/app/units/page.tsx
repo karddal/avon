@@ -1,7 +1,7 @@
 "use server"
 
 import {Suspense} from "react";
-import Loading from "@/temporary/coursework/loading";
+import Loading from "@/app/coursework/loading";
 import UnitList from "@/components/unit-list";
 import {requireSession} from "@/lib/auth-utils";
 

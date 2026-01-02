@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { Suspense } from "react";
-import Loading from "../coursework/loading";
+import Loading from "@/app/coursework/loading";
 import CourseworkList from "@/components/coursework-list";
 import DashboardAnalysis from "@/components/dashboard/dashboard_analysis_card";
 import { Card, CardContent } from "@/components/ui/card";

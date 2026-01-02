@@ -12,19 +12,16 @@ export default async function UnitDescription({
   slug: string;
   token?: string;
 }) {
+  debugger;
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/units/${slug}`,
     {
       headers: {
-        Cookie: `access_token=${token}`,
+        "Authorization": `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     },
   );
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch unit");
-  }
 
   const unit: UnitData = await response.json();
 

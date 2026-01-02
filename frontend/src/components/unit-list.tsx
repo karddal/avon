@@ -21,7 +21,6 @@ export type UnitData = {
 
 export default async function UnitList() {
   // place unit data into tabs based on year
-  try {
     const token = await getRequestJWT();
 
     const data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/me/units`, {
@@ -93,17 +92,4 @@ export default async function UnitList() {
           </Empty>
       )
     }
-  } catch (e) {
-    return (
-        <Empty>
-          <EmptyHeader>
-            <EmptyMedia variant={"icon"}>
-              <CloudAlert/>
-            </EmptyMedia>
-            <EmptyTitle>Whoops, something went wrong.</EmptyTitle>
-            <EmptyDescription>We couldn't fetch your units. Please check the server status page.</EmptyDescription>
-          </EmptyHeader>
-        </Empty>
-    )
-  }
 }

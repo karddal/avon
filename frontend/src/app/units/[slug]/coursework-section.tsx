@@ -1,4 +1,6 @@
 import Coursework from "@/components/coursework";
+import {Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty";
+import {BookDashed, NotepadTextDashed} from "lucide-react";
 
 type courseworkData = {
   id: string;
@@ -25,21 +27,31 @@ export default async function CourseworkSection({
     {
       method: "GET",
       headers: {
-        Cookie: `access_token=${token}`,
+        "Authorization": `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     },
   );
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch courseworks");
-  }
-
   const data = await response.json();
   const courseworks: courseworkData[] = Array.isArray(data.courseworks)
     ? data.courseworks
     : [];
-
+  if (courseworks.length === 0) {
+    return (
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <NotepadTextDashed />
+            </EmptyMedia>
+            <EmptyTitle>No courseworks.</EmptyTitle>
+            <EmptyDescription>
+              No courseworks found.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+    )
+  }
   return (
     <>
       {courseworks.map((coursework) => (

@@ -6,10 +6,9 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import {auth} from "@/lib/auth";
-import {headers} from "next/headers";
+
 import {Suspense} from "react";
-import Loading from "@/temporary/coursework/loading";
+import Loading from "@/app/coursework/loading";
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
   return (
