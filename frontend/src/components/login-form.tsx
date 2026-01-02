@@ -30,22 +30,7 @@ export function LoginForm({
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    /*async function clicked() {
     setActionState(1);
-    console.log("Started mock api call");
-    const delay = new Promise((r) => setTimeout(r, 1000));
-    await delay;
-    setActionState(2);
-    const delay2 = new Promise((r) => setTimeout(r, 500));
-    await delay2;
-    setActionState(0);
-    toast.success("Test run started successfully.");
-  }*/
-    console.log("API URL =", process.env.NEXT_PUBLIC_API_URL);
-    setActionState(1);
-      // const form = new URLSearchParams();
-      // form.append("username", email);
-      // form.append("password", password);
       const data: SignInData = {
         email: email,
         password: password,
@@ -53,12 +38,9 @@ export function LoginForm({
       try {
         let response = await signIn(data);
         router.push(response.redirect)
-      }
-      catch (error: any) {
-        console.error("Login failed:", error);
-        // alert("Login failed. Please check your credentials and try again.");
+      } catch (error) {
         setActionState(2);
-        toast.error(error);
+        toast.error("Login failed, please check your credentials.");
         const delay = new Promise((r) => setTimeout(r, 2000));
         await delay;
         setActionState(0);

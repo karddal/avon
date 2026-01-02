@@ -2,6 +2,7 @@
 
 import {auth} from "@/lib/auth";
 import {headers} from "next/headers";
+import {APIError} from "better-auth";
 
 export interface SignInData {
     email: string,
@@ -31,8 +32,8 @@ export async function signIn(formData: SignInData): Promise<SignInResponse> {
         } else {
             return {redirect: "/dashboard"}
         }
-    } catch (err: any) {
-        throw new Error(err)
+    } catch (error) {
+        throw error
     }
 }
 
