@@ -2,8 +2,8 @@ import pytest
 from sqlmodel import SQLModel, Session, create_engine
 from fastapi.testclient import TestClient
 
-from app.main import app
-from app.db.session import get_session  # or get_db
+# from app.main import app
+# from app.db.session import get_session  # or get_db
 from app.models.coursework import Coursework
 from app.models.unit import Unit
 from app.models.unit_enrollment import UnitEnrollment
@@ -27,5 +27,4 @@ def engine():
 def session(engine):
     with Session(engine) as session:
         yield session # yield not return so to clean up After the tests are done
-
 
