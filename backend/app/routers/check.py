@@ -1,4 +1,7 @@
+from typing import Sequence
+
 from fastapi import APIRouter
+from sqlalchemy.orm import selectinload, joinedload, with_loader_criteria
 from sqlmodel import select
 
 from app.db.session import SessionDep
@@ -6,7 +9,7 @@ from app.models.coursework import Coursework
 from app.models.programme import Programme
 from app.models.unit import Unit
 from app.models.unit_enrollment import UnitEnrollment
-from app.schemas.unit import UnitRead
+from app.schemas.unit import UnitRead, UnitAllByGroup, ProgrammeWithUnits, UnitWithoutProgramme
 
 router = APIRouter(prefix="/check")
 
@@ -28,6 +31,12 @@ async def get_units(session: SessionDep):
         response.append(responseUnit)
     return {"units": response}
 
+@router.get("/units-by-programme", response_model=UnitAllByGroup)
+async def get_units_by_programme(session: SessionDep):
+    results = session.exec(
+        select(Programme).options(selectinload(Programme.units))
+    ).all()
+    return UnitAllByGroup(programmes=results)
 
 @router.get("/coursework")
 async def get_coursework(session: SessionDep):

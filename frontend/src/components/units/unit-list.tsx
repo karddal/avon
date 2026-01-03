@@ -15,42 +15,41 @@ import { getRequestJWT } from "@/lib/auth-utils";
 export type UnitData = {
   id: string;
   name: string;
-  description?: string;
+  description: string;
   creation_date: string;
   unit_code: string;
   colour: string;
-  academic_year: number;
 };
+
+type Programme = {
+  id: string,
+  name: string,
+  start_date: Date,
+  end_date: Date,
+  units: UnitData[],
+}
+
+type ProgrammesResponse = {
+  programmes: Programme[];
+}
 
 export default async function UnitList() {
   // place unit data into tabs based on year
   const token = await getRequestJWT();
 
-  const data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/me/units`, {
+  const data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/me/units-by-programme`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
     },
     cache: "no-store",
   });
-  const unitData: UnitData[] = await data.json();
-  const groupedUnits = Object.groupBy(unitData, (unit) => unit.academic_year);
+  const unitData: ProgrammesResponse = await data.json();
+  const programmes = unitData.programmes;
+  console.log(unitData);
   // const filtered = await getData(currentYear, finished)
-  if (groupedUnits !== undefined) {
-    const d = Object.keys(groupedUnits).at(0) ?? "0";
+    const d = programmes.at(0)?.id ?? "0";
     return (
-      // <>
-      //   {
-      //     Object.entries(groupedUnits).map(([year, units]) => (
-      //       <section key={year}>
-      //         <h3>{year}</h3>
-      //         {units?.map((unit) => (
-      //             <Unit key={unit.id} props={unit}/>
-      //         ))}
-      //       </section>
-      //     ))
-      //   }
-      // </>
       <Tabs
         defaultValue={d}
         orientation={"vertical"}
@@ -59,25 +58,19 @@ export default async function UnitList() {
         <TabsList
           className={"flex flex-1/5 flex-col h-min w-full justify-start"}
         >
-          {Object.entries(groupedUnits).map(([year, _units]) => (
-            // <section key={year}>
-            //   <h3>{year}</h3>
-            //   {units?.map((unit) => (
-            //       <Unit key={unit.id} props={unit}/>
-            //   ))}
-            // </section>
+          {programmes.map((programme) => (
             <TabsTrigger
-              key={year}
+              key={programme.id}
               className={"text-lg p-4 w-full"}
-              value={year}
+              value={programme.id}
             >
-              {year}/{Number.parseInt(year, 10) + 1}
+              {programme.name}
             </TabsTrigger>
           ))}
         </TabsList>
-        {Object.entries(groupedUnits).map(([year, units]) => (
-          <TabsContent key={year} className={"flex-2/5"} value={year}>
-            {units?.map((unit) => (
+        {programmes.map((programme) => (
+          <TabsContent key={programme.id} className={"flex-2/5"} value={programme.id}>
+            {programme.units.map((unit) => (
               <div className={"mb-3"} key={unit.id}>
                 <Unit key={unit.id} props={unit} />
               </div>
@@ -86,19 +79,17 @@ export default async function UnitList() {
         ))}
       </Tabs>
     );
-  } else {
-    return (
-      <Empty>
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <BookDashed />
-          </EmptyMedia>
-          <EmptyTitle>No units.</EmptyTitle>
-          <EmptyDescription>
-            No units were found that you are connected to.
-          </EmptyDescription>
-        </EmptyHeader>
-      </Empty>
-    );
-  }
+    // return (
+    //   <Empty>
+    //     <EmptyHeader>
+    //       <EmptyMedia variant="icon">
+    //         <BookDashed />
+    //       </EmptyMedia>
+    //       <EmptyTitle>No units.</EmptyTitle>
+    //       <EmptyDescription>
+    //         No units were found that you are connected to.
+    //       </EmptyDescription>
+    //     </EmptyHeader>
+    //   </Empty>
+    // );
 }

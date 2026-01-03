@@ -12,46 +12,76 @@ async function seed() {
   const users: User[] = [
     {
       name: "Foo Bar",
-      email: "admin@university.ac.uk",
+      email: "admin@bris.ac.uk",
       password: "changeme",
       role: "admin",
     },
     {
-      name: "Hrushikesh Emkay",
-      email: "rsh@bristol.ac.uk",
+      name: "Rohan Booth (Year 1)",
+      email: "rohan@bris.ac.uk",
       password: "changeme",
       role: "user",
     },
     {
-      name: "Josh Jenkins",
-      email: "j.jenkins@bristol.ac.uk",
+      name: "Charles Price (Year 1)",
+      email: "charles@bris.ac.uk",
       password: "changeme",
       role: "user",
     },
     {
-      name: "Yuxuan Wang",
-      email: "yuxuan.wang@university.ac.uk",
+      name: "Josh Jenkins (Year 2)",
+      email: "josh@bris.ac.uk",
       password: "changeme",
       role: "user",
     },
     {
-      name: "Jack Dempsey",
-      email: "jwd@university.ac.uk",
-      password: "changeme",
-      role: "user",
-    },
-    {
-      name: "Mihaly Toth-Tarsoly",
-      email: "mihaly@university.ac.uk",
+      name: "Jack Dempsey (Year 2)",
+      email: "jack@bris.ac.uk",
       password: "changeme",
       role: "user",
     },
     {
       name: "Tilo Burghardt",
-      email: "tilo@university.ac.uk",
+      email: "tilo@bris.ac.uk",
       password: "changeme",
       role: "lecturer",
     },
+    {
+      name: "David Bernhard",
+      email: "david@bris.ac.uk",
+      password: "changeme",
+      role: "lecturer",
+    },
+    {
+      name: "Eddie Jones",
+      email: "eddie@bris.ac.uk",
+      password: "changeme",
+      role: "lecturer",
+    },
+    {
+      name: "Dan Page",
+      email: "dan@bris.ac.uk",
+      password: "changeme",
+      role: "lecturer",
+    },
+    {
+      name: "Sarah Connolly",
+      email: "sarah@bris.ac.uk",
+      password: "changeme",
+      role: "lecturer",
+    },
+    {
+      name: "Steven Ramsay",
+      email: "steven@bris.ac.uk",
+      password: "changeme",
+      role: "lecturer",
+    },
+    {
+      name: "Sion Hannuna",
+      email: "sion@bris.ac.uk",
+      password: "changeme",
+      role: "lecturer",
+    }
   ];
   const createdUsers = [];
   for (const user of users) {

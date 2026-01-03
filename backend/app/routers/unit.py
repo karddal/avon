@@ -12,7 +12,6 @@ from app.models.unit_enrollment import UnitEnrollment
 from app.schemas.unit import (
     CourseworkAll,
     CourseworkRead,
-    StandaloneUnitCreate,
     UnitAll,
     UnitCreate,
     UnitRead,
@@ -24,41 +23,28 @@ session_dependency = Annotated[Session, Depends(get_session)]
 
 
 @router.post(
-    "/create/standalone",
-    response_model=StandaloneUnitCreate,
+    "/create",
+    response_model=UnitCreate,
     status_code=status.HTTP_201_CREATED,
 )
-async def create_standalone_unit(unit: UnitCreate, session: session_dependency):
-    if unit.type == "programme":
-        db_unit = Unit(
-            name=unit.name,
-            description=unit.description,
-            unit_code=unit.unit_code,
-            colour=unit.colour,
-            start_date=None,
-            end_date=None,
-            programme=unit.programme,
-        )
+async def create_unit(unit: UnitCreate, session: session_dependency):
+    db_unit = Unit(
+        name=unit.name,
+        description=unit.description,
+        unit_code=unit.unit_code,
+        colour=unit.colour,
+        start_date=None,
+        end_date=None,
+        programme=unit.programme,
+    )
 
-        if unit.programme:
-            programme = session.exec(
-                select(Programme).where(Programme.id == unit.programme)
-            ).all()
+    if unit.programme:
+        programme = session.exec(
+            select(Programme).where(Programme.id == unit.programme)
+        ).all()
 
-            if not programme:
-                raise HTTPException(status_code=400, detail="Programme id is invalid.")
-    elif unit.type == "standalone":
-        db_unit = Unit(
-            name=unit.name,
-            description=unit.description,
-            unit_code=unit.unit_code,
-            colour=unit.colour,
-            start_date=unit.start_date,
-            end_date=unit.end_date,
-            programme=None,
-        )
-    else:
-        return HTTPException(status_code=400, detail="Unknown unit type.")
+        if not programme:
+            raise HTTPException(status_code=400, detail="Programme id is invalid.")
 
     session.add(db_unit)
     session.commit()
@@ -75,11 +61,6 @@ async def get_unit_details(unit_id: UUID, session: session_dependency):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Unit not found"
         )
-    response = UnitRead(unit)
-    if unit.start_date is None:
-        # we have a programme unit, return the programme dates
-        response.start_date = unit.programme.start_date
-        response.end_date = unit.programme.end_date
 
     return unit
 
@@ -102,17 +83,9 @@ async def update_unit(unit_id: UUID, unit: UnitUpdate, session: session_dependen
         db_unit.unit_code = unit.unit_code
     if unit.colour is not None:
         db_unit.colour = unit.colour
+    if unit.programme is not None:
+        db_unit.programme_id = unit.programme
 
-    if unit.type == "programme":
-        if unit.programme is not None:
-            db_unit.programme_id = unit.programme
-    elif unit.type == "standalone":
-        if unit.start_date is not None:
-            db_unit.start_date = unit.start_date
-        if unit.end_date is not None:
-            db_unit.end_date = unit.end_date
-
-    session.add(db_unit)
     session.commit()
     session.refresh(db_unit)
 
@@ -147,20 +120,8 @@ async def get_user_units(user_id: UUID, session: session_dependency):
 async def get_courseworks(unit_id: UUID, session: session_dependency):
     statement = select(Coursework).where(Coursework.unit_id == unit_id)
     courseworks = session.exec(statement).all()
-    print(courseworks)
-    response = []
-    for coursework in courseworks:
-        response_courswork = CourseworkRead(
-            id=coursework.id,
-            name=coursework.name,
-            description=coursework.description,
-            due_date=coursework.due_date,
-            creation_date=coursework.creation_date,
-            colour=coursework.colour,
-        )
-        response.append(response_courswork)
 
-    return CourseworkAll(courseworks=response)
+    return courseworks
 
 
 @router.get("/", response_model=UnitAll)
