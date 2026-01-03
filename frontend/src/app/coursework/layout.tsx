@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import AppSidebar from "@/components/app-sidebar";
 import { ModeToggle } from "@/components/mode-toggle";
 import NotificationBar from "@/components/notifications-bar";
@@ -6,7 +7,6 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 
 export default async function Layout({

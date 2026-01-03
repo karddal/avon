@@ -1,3 +1,4 @@
+import { BookDashed, NotepadTextDashed } from "lucide-react";
 import Coursework from "@/components/coursework";
 import {
   Empty,
@@ -6,7 +7,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { BookDashed, NotepadTextDashed } from "lucide-react";
 
 type courseworkData = {
   id: string;

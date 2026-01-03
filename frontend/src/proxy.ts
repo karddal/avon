@@ -1,9 +1,9 @@
 import type { JwtPayload } from "jwt-decode";
 import { jwtDecode } from "jwt-decode";
+import { headers } from "next/headers";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
 
 interface decodedPayload extends JwtPayload {
   is_lecturer: boolean;

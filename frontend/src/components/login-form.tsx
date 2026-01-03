@@ -14,9 +14,8 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import LoginButton from "@/components/ui/login-button";
+import { type SignInData, signIn } from "@/lib/actions/login";
 import { cn } from "@/lib/utils";
-
-import { signIn, SignInData } from "@/lib/actions/login";
 
 export function LoginForm({
   className,
@@ -36,7 +35,7 @@ export function LoginForm({
       password: password,
     };
     try {
-      let response = await signIn(data);
+      const response = await signIn(data);
       router.push(response.redirect);
     } catch (error) {
       setActionState(2);

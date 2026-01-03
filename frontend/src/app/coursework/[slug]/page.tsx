@@ -1,14 +1,13 @@
 import { cookies } from "next/headers";
 import { Suspense } from "react";
-
-import CourseworkDescription from "./description";
-import CourseworkInformation from "./information";
-import CourseworkName from "./name";
 import { DropdownCard } from "@/components/dropdown-card";
 import RunTestsItem from "@/components/run-tests-item";
 import TestPassedProgressBar from "@/components/tests-passed-progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import CourseworkDescription from "./description";
+import CourseworkInformation from "./information";
+import CourseworkName from "./name";
 
 async function CourseworkPageContent({
   params,

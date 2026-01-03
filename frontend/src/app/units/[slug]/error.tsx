@@ -1,5 +1,7 @@
 "use client";
 
+import { CloudAlert } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { startTransition, useEffect } from "react";
 import {
   Empty,
@@ -9,8 +11,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { CloudAlert } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 export default function Error({
   error,

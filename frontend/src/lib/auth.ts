@@ -1,9 +1,9 @@
-import { betterAuth } from "better-auth";
 import { DatabaseSync } from "node:sqlite";
-import { Pool } from "pg";
+import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
 import { admin as adminPlugin, jwt } from "better-auth/plugins";
-import { ac, user, admin, lecturer } from "@/lib/permissions";
+import { Pool } from "pg";
+import { ac, admin, lecturer, user } from "@/lib/permissions";
 
 const isProd = process.env.NODE_ENV === "production";
 

@@ -1,8 +1,8 @@
 "use server";
 
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
 import { APIError } from "better-auth";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 
 export interface SignInData {
   email: string;

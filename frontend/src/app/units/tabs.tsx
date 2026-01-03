@@ -1,7 +1,7 @@
-import { useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTransition } from "react";
 import { Spinner } from "@/components/ui/spinner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function DynTab({ activeTab }: { activeTab: string }) {
   const router = useRouter();
