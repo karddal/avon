@@ -12,7 +12,6 @@ export default async function UnitDescription({
   slug: string;
   token?: string;
 }) {
-  debugger;
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/units/${slug}`,
     {

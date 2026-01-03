@@ -2,7 +2,7 @@
 
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { TransitionStartFunction, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -25,8 +25,8 @@ type YearSelectorProps = {
 
 export default function YearSelector({ value, setYear }: YearSelectorProps) {
   const [open, setOpen] = useState(false);
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const _router = useRouter();
+  const [isPending, _startTransition] = useTransition();
 
   const current = new Date().getFullYear();
   const years = [

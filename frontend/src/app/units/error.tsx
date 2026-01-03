@@ -12,6 +12,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 
+// biome-ignore lint/suspicious/noShadowRestrictedNames: this is how nextjs works
 export default function Error({
   error,
   reset,
@@ -48,6 +49,7 @@ export default function Error({
                 });
               }
             }
+            type={"button"}
           >
             Try again
           </button>

@@ -1,13 +1,7 @@
-import type { JwtPayload } from "jwt-decode";
-import { jwtDecode } from "jwt-decode";
 import { headers } from "next/headers";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-
-interface decodedPayload extends JwtPayload {
-  is_lecturer: boolean;
-}
 
 export async function proxy(request: NextRequest) {
   const session = await auth.api.getSession({

@@ -1,21 +1,17 @@
 
-from functools import lru_cache
 from typing import Annotated
 
-import httpx
-from fastapi import Request, HTTPException, Depends
+from fastapi import HTTPException, Depends
 from fastapi.security import HTTPAuthorizationCredentials
 
 from fastapi.security.http import HTTPBearer
 from pwdlib import PasswordHash
 from pydantic import BaseModel
-from sqlmodel import select
 from starlette import status
 import jwt
 from jwt import PyJWKClient
 
 from app.core.settings import settings
-from app.db.session import SessionDep
 
 ALGORITHM = "HS256"
 

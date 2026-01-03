@@ -37,7 +37,7 @@ export function LoginForm({
     try {
       const response = await signIn(data);
       router.push(response.redirect);
-    } catch (error) {
+    } catch (_error) {
       setActionState(2);
       toast.error("Login failed, please check your credentials.");
       const delay = new Promise((r) => setTimeout(r, 2000));

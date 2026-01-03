@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 import { PHASE_DEVELOPMENT_SERVER } from "next/dist/shared/lib/constants";
 
-module.exports = (phase: string, { defaultConfig }: any) => {
+module.exports = (phase: string, _defaultConfig: NextConfig) => {
   if (phase === PHASE_DEVELOPMENT_SERVER) {
     return {
       /* development only config options here */

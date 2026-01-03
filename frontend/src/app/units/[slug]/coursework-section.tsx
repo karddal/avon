@@ -1,4 +1,4 @@
-import { BookDashed, NotepadTextDashed } from "lucide-react";
+import { NotepadTextDashed } from "lucide-react";
 import Coursework from "@/components/coursework";
 import {
   Empty,

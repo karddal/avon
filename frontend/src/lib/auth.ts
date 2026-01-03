@@ -7,18 +7,12 @@ import { ac, admin, lecturer, user } from "@/lib/permissions";
 
 const isProd = process.env.NODE_ENV === "production";
 
-let db;
-if (!isProd) {
-  db = new DatabaseSync("../sqlite.db");
-} else {
-  // db = new Pool({
-  //   connectionString: process.env.BA_DATABASE_URL
-  // })
-  db = new DatabaseSync("../sqlite.db");
-}
-
 export const auth = betterAuth({
-  database: db,
+  database: !isProd
+    ? new DatabaseSync("../sqlite.db")
+    : new Pool({
+        connectionString: process.env.BA_DATABASE_URL,
+      }),
   emailAndPassword: {
     enabled: true,
   },

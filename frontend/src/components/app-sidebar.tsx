@@ -2,7 +2,6 @@
 import {
   ArrowUpDown,
   BookCheck,
-  BookText,
   ChartLine,
   LayoutDashboard,
   NotepadText,

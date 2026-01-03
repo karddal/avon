@@ -1,7 +1,6 @@
 from contextlib import asynccontextmanager
 import datetime
 from typing import Annotated
-from uuid import UUID
 
 from fastapi import Depends, FastAPI
 from sqlmodel import Session, SQLModel, create_engine, select

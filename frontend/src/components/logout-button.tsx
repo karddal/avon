@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { logout } from "@/lib/actions/login";
 

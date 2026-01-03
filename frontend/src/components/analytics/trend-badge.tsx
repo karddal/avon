@@ -49,7 +49,7 @@ export function TrendBadge({
     badge = (
       <Badge
         variant={"outline"}
-        className={"text-green-500 bg-green-500/10 border-none ml-2"}
+        className={`text-green-500 bg-green-500/10 border-none ml-2 ${className}`}
       >
         <TrendingUp className="h-4 w-4" />
         {trendValue.toFixed(2)}%

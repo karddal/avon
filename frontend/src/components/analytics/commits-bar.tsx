@@ -12,11 +12,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 "use client";
 
-import { TrendingUp } from "lucide-react";
 import * as React from "react";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import { TrendBadge } from "@/components/analytics/trend-badge";
-import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -139,7 +137,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function CommitsBar() {
-  const [activeChart, setActiveChart] =
+  const [activeChart, _setActiveChart] =
     React.useState<keyof typeof chartConfig>("desktop");
 
   const total = React.useMemo(

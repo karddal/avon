@@ -51,7 +51,6 @@ async def get_counts(session: SessionDep):
     
     return {
         "units": units,
-        "users": users,
         "coursework": coursework,
         "enrollments": enrollments,
         "groups": groups,

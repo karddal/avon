@@ -5,7 +5,6 @@ import CourseworkList from "@/components/coursework-list";
 import DashboardAnalysis from "@/components/dashboard/dashboard_analysis_card";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import UnitList from "@/components/unit-list";
 
 async function DashboardPageContent() {
   const cookieStore = await cookies();

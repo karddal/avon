@@ -1,4 +1,3 @@
-from uuid import UUID
 
 from fastapi import APIRouter, Depends
 from sqlmodel import Session, select
@@ -9,8 +8,6 @@ from typing import Annotated
 
 from app.models.unit import Unit
 from app.models.unit_enrollment import UnitEnrollment
-from app.models.unit_group import UnitGroup
-from app.models.unit_group_member import UnitGroupMember
 
 router = APIRouter(prefix = "/me", tags=["me"])
 session_dependency = Annotated[Session, Depends(get_session)]

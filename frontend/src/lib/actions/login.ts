@@ -1,6 +1,5 @@
 "use server";
 
-import { APIError } from "better-auth";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 
@@ -14,26 +13,22 @@ export interface SignInResponse {
 }
 
 export async function signIn(formData: SignInData): Promise<SignInResponse> {
-  try {
-    const data = await auth.api.signInEmail({
-      body: {
-        email: formData.email,
-        password: formData.password,
-      },
-      headers: await headers(),
-    });
+  const data = await auth.api.signInEmail({
+    body: {
+      email: formData.email,
+      password: formData.password,
+    },
+    headers: await headers(),
+  });
 
-    if (!data) {
-      throw new Error("No session");
-    }
+  if (!data) {
+    throw new Error("No session");
+  }
 
-    if (data.user.role === "user") {
-      return { redirect: "/units" };
-    } else {
-      return { redirect: "/dashboard" };
-    }
-  } catch (error) {
-    throw error;
+  if (data.user.role === "user") {
+    return { redirect: "/units" };
+  } else {
+    return { redirect: "/dashboard" };
   }
 }
 
