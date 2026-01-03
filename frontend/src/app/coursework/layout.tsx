@@ -1,36 +1,22 @@
 import { headers } from "next/headers";
+import { Suspense } from "react";
 import { ModeToggle } from "@/components/mode-toggle";
 import NotificationBar from "@/components/notifications-bar";
+import AppSidebar from "@/components/sidebar/app-sidebar-wrapper";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { auth } from "@/lib/auth";
 
 export default async function Layout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const state = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  if (!state) {
-    throw new Error("Not signed in");
-  }
-
-  const user = state.user;
-  let role = user.role;
-
-  if (!role) {
-    role = "user";
-  }
-
   return (
     <SidebarProvider>
-      {/*<AppSidebar type={role} userName={user.name}/>*/}
+      <AppSidebar />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center justify-between gap-2 px-4">
           <div className="flex flex-row gap-2 items-center">
