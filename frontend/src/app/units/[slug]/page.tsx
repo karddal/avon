@@ -1,4 +1,4 @@
-"use server"
+"use server";
 
 import Link from "next/link";
 import { Suspense } from "react";
@@ -11,7 +11,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {getRequestJWT, requireSession} from "@/lib/auth-utils";
+import { getRequestJWT, requireSession } from "@/lib/auth-utils";
 
 async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -161,9 +161,8 @@ export default async function UnitPage({
   params: Promise<{ slug: string }>;
 }) {
   return (
-    <Suspense fallback={<Loading/>}>
+    <Suspense fallback={<Loading />}>
       <PageContent params={params} />
     </Suspense>
   );
 }
-

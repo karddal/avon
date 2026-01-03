@@ -7,14 +7,18 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 
-import {Suspense} from "react";
+import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
 
-export default async function Layout({ children }: { children: React.ReactNode }) {
+export default async function Layout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <SidebarProvider>
-      <Suspense fallback={<Loading/>}>
-        <AppSidebar/>
+      <Suspense fallback={<Loading />}>
+        <AppSidebar />
       </Suspense>
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center justify-between gap-2 px-4">

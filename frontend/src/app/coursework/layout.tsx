@@ -6,15 +6,21 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import {headers} from "next/headers";
-import {auth} from "@/lib/auth";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 
-export default async function Layout({ children }: { children: React.ReactNode }) {
+export default async function Layout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const state = await auth.api.getSession({
     headers: await headers(),
   });
 
-  if (!state) {throw new Error("Not signed in")}
+  if (!state) {
+    throw new Error("Not signed in");
+  }
 
   const user = state.user;
   let role = user.role;

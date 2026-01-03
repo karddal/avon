@@ -2,7 +2,7 @@
 
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useRouter } from "next/navigation";
-import {TransitionStartFunction, useState, useTransition} from "react";
+import { TransitionStartFunction, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -16,7 +16,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import {Spinner} from "@/components/ui/spinner";
+import { Spinner } from "@/components/ui/spinner";
 
 type YearSelectorProps = {
   value: number;
@@ -42,7 +42,7 @@ export default function YearSelector({ value, setYear }: YearSelectorProps) {
     //     ? router.push(`?year=${newYear}&tab=${"ongoing"}`)
     //     : router.push(`?year=${newYear}&tab=${"finished"}`);
     // });
-    setYear(newYear)
+    setYear(newYear);
   };
 
   const currentLabel = years.find((y) => y.value === value)?.label ?? "";
@@ -85,7 +85,7 @@ export default function YearSelector({ value, setYear }: YearSelectorProps) {
           </Command>
         </PopoverContent>
       </Popover>
-      {isPending && <Spinner/>}
+      {isPending && <Spinner />}
     </div>
   );
 }

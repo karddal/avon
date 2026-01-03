@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import LoginButton from "@/components/ui/login-button";
 import { cn } from "@/lib/utils";
 
-import {signIn, SignInData} from "@/lib/actions/login";
+import { signIn, SignInData } from "@/lib/actions/login";
 
 export function LoginForm({
   className,
@@ -31,45 +31,45 @@ export function LoginForm({
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     setActionState(1);
-      const data: SignInData = {
-        email: email,
-        password: password,
-      }
-      try {
-        let response = await signIn(data);
-        router.push(response.redirect)
-      } catch (error) {
-        setActionState(2);
-        toast.error("Login failed, please check your credentials.");
-        const delay = new Promise((r) => setTimeout(r, 2000));
-        await delay;
-        setActionState(0);
-      }
-      // if (isLecturer) {
-      //   router.push("/dashboard");
-      // } else {
-      //   router.push("/units");
-      // }
+    const data: SignInData = {
+      email: email,
+      password: password,
+    };
+    try {
+      let response = await signIn(data);
+      router.push(response.redirect);
+    } catch (error) {
+      setActionState(2);
+      toast.error("Login failed, please check your credentials.");
+      const delay = new Promise((r) => setTimeout(r, 2000));
+      await delay;
+      setActionState(0);
+    }
+    // if (isLecturer) {
+    //   router.push("/dashboard");
+    // } else {
+    //   router.push("/units");
+    // }
 
-      // await axios
-      //   .post(`${process.env.NEXT_PUBLIC_API_URL}/auth/token`, form, {
-      //     withCredentials: true,
-      //     headers: {
-      //       "Content-Type": "application/x-www-form-urlencoded",
-      //     },
-      //   })
-      //   .catch((error) => {
-      //     throw error;
-      //   });
-      //
-      // const verifyResp = await axios.get(
-      //   `${process.env.NEXT_PUBLIC_API_URL}/auth/verify`,
-      //   {
-      //     withCredentials: true,
-      //   },
-      // );
-      //
-      // const isLecturer = verifyResp.data.is_lecturer;
+    // await axios
+    //   .post(`${process.env.NEXT_PUBLIC_API_URL}/auth/token`, form, {
+    //     withCredentials: true,
+    //     headers: {
+    //       "Content-Type": "application/x-www-form-urlencoded",
+    //     },
+    //   })
+    //   .catch((error) => {
+    //     throw error;
+    //   });
+    //
+    // const verifyResp = await axios.get(
+    //   `${process.env.NEXT_PUBLIC_API_URL}/auth/verify`,
+    //   {
+    //     withCredentials: true,
+    //   },
+    // );
+    //
+    // const isLecturer = verifyResp.data.is_lecturer;
   }
 
   return (

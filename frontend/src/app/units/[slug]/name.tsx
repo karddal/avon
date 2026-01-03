@@ -17,7 +17,7 @@ export default async function UnitName({
     `${process.env.NEXT_PUBLIC_API_URL}/units/${slug}`,
     {
       headers: {
-        "Authorization": `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       cache: "no-cache",
