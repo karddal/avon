@@ -1,5 +1,6 @@
 import { ModeToggle } from "@/components/mode-toggle";
 import NotificationBar from "@/components/notifications-bar";
+import AppSidebar from "@/components/sidebar/app-sidebar-wrapper";
 import {
   SidebarInset,
   SidebarProvider,
@@ -9,7 +10,7 @@ import {
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
-      {/*<AppSidebar />*/}
+      <AppSidebar />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center justify-between gap-2 px-4">
           <div className="flex flex-row gap-2 items-center">

@@ -17,10 +17,7 @@ session_dependency = Annotated[Session, Depends(get_session)]
 async def me_units(session: session_dependency, me: str = Depends(get_current_user)):
     print("userid: ", me)
     results = session.exec(
-        select(Unit)
-        .join(UnitEnrollment)
-        .where(UnitEnrollment.user_id == me)
-        .order_by(Unit.academic_year)
+        select(Unit).join(UnitEnrollment).where(UnitEnrollment.user_id == me)
     ).all()
     print("results: ")
     print(results)

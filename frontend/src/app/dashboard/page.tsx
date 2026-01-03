@@ -1,17 +1,15 @@
 import { cookies } from "next/headers";
 import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
-import CourseworkList from "@/components/coursework-list";
+import CourseworkList from "@/components/coursework/coursework-list";
 import DashboardAnalysis from "@/components/dashboard/dashboard_analysis_card";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import UnitList from "@/components/units/unit-list";
+import UnitListByYear from "@/components/dashboard/unit-list-by-year";
 
 async function DashboardPageContent() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("access_token")?.value;
-
   const currentYear = new Date().getFullYear();
-  const _yearNow = currentYear;
   const currentAcademicYear = `${currentYear}/${currentYear + 1}`;
   return (
     <div className="space-y-6 mb-2">
@@ -37,23 +35,17 @@ async function DashboardPageContent() {
                 <TabsContent className="flex flex-col gap-2" value="coursework">
                   <Tabs defaultValue="ongoing">
                     <Suspense fallback={<Loading />}>
-                      <CourseworkList token={token} finished={false} />
+                      <CourseworkList finished={false} />
                     </Suspense>
                   </Tabs>
                 </TabsContent>
                 <TabsContent className="flex flex-col gap-4" value="units">
                   {/*inner layer ongoing/finished Tab*/}
-                  <Tabs defaultValue="ongoing">
-                    <Suspense fallback={<Loading />}>
-                      <section className="grid gap-4 grid-cols-1 lg:grid-cols-2">
-                        {/*<UnitList*/}
-                        {/*  currentYear={currentYear}*/}
-                        {/*  finished={false}*/}
-                        {/*/>*/}
-                      </section>
-                    </Suspense>
-                  </Tabs>
-
+                  <Suspense fallback={<Loading />}>
+                    <UnitListByYear year={currentAcademicYear}></UnitListByYear>
+                    {/*  currentYear={currentYear}*/}
+                    {/*  finished={false}*/}
+                  </Suspense>
                   <div className="text-sm text-muted-foreground pl-2">
                     Academic Year: {currentAcademicYear}
                   </div>
