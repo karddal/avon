@@ -9,7 +9,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Unit from "@/components/unit";
+import Unit from "@/components/units/unit";
 import { getRequestJWT } from "@/lib/auth-utils";
 
 export type UnitData = {

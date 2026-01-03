@@ -1,5 +1,5 @@
 import { BookDashed } from "lucide-react";
-import Coursework from "@/components/coursework";
+import Coursework from "@/components/coursework/coursework";
 import { getRequestJWT } from "@/lib/auth-utils";
 import {
   Empty,
@@ -7,7 +7,7 @@ import {
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "./ui/empty";
+} from "../ui/empty";
 
 type courseworkData = {
   id: string;
@@ -36,6 +36,7 @@ export default async function CourseworkList({
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
+      cache: "no-cache",
     },
   );
 

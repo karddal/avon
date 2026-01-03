@@ -1,29 +1,8 @@
 "use server";
-import {
-  ArrowUpDown,
-  BookCheck,
-  ChartLine,
-  LayoutDashboard,
-  NotepadText,
-  Settings,
-  SwatchBook,
-  User,
-} from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { Suspense } from "react";
-import LogoutButton from "@/components/logout-button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Sidebar,
-  SidebarContent,
-  SidebarGroup,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,

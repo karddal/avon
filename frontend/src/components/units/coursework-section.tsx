@@ -1,5 +1,5 @@
 import { NotepadTextDashed } from "lucide-react";
-import Coursework from "@/components/coursework";
+import Coursework from "@/components/coursework/coursework";
 import {
   Empty,
   EmptyDescription,

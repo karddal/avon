@@ -2,7 +2,7 @@
 
 import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
-import UnitList from "@/components/unit-list";
+import UnitList from "@/components/units/unit-list";
 import { requireSession } from "@/lib/auth-utils";
 
 async function PageContent() {

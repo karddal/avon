@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
-import CourseworkSection from "@/app/units/[slug]/coursework-section";
 import UnitDescription from "@/app/units/[slug]/description";
 import UnitName from "@/app/units/[slug]/name";
 import { DropdownCard } from "@/components/dropdown-card";
@@ -11,6 +10,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import CourseworkSection from "@/components/units/coursework-section";
 import { getRequestJWT, requireSession } from "@/lib/auth-utils";
 
 async function PageContent({ params }: { params: Promise<{ slug: string }> }) {

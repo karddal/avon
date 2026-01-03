@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { Card } from "./ui/card";
-import { Progress } from "./ui/progress";
+import { Card } from "../ui/card";
+import { Progress } from "../ui/progress";
 
 type courseworkData = {
   id: string;
@@ -26,7 +26,7 @@ export default function Coursework({ props }: { props: courseworkData }) {
   };
   console.log("colouring", colouring);
   return (
-    <Link href={`/frontend/src/app/coursework/${props.id}`}>
+    <Link href={`/coursework/${props.id}`}>
       <div style={colouring} className="w-full h-2"></div>
       <Card className="bg-muted flex flex-col p-2 hover:bg-foreground/10 ">
         <div className="flex flex-row justify-between">

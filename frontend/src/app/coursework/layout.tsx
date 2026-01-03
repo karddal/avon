@@ -1,5 +1,3 @@
-import { headers } from "next/headers";
-import { Suspense } from "react";
 import { ModeToggle } from "@/components/mode-toggle";
 import NotificationBar from "@/components/notifications-bar";
 import AppSidebar from "@/components/sidebar/app-sidebar-wrapper";
