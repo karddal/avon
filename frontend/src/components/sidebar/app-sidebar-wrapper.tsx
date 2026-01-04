@@ -1,6 +1,7 @@
 "use server";
 import Image from "next/image";
 import { Suspense } from "react";
+import Jump from "@/components/navi/jump-wrapper";
 import {
   Sidebar,
   SidebarHeader,
@@ -45,6 +46,7 @@ export default async function AppSidebar() {
       <Suspense fallback={<SidebarLoading />}>
         <AppSideBarContent></AppSideBarContent>
       </Suspense>
+      <Jump />
     </Sidebar>
   );
 }
