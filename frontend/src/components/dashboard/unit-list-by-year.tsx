@@ -8,7 +8,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Unit from "@/components/units/unit";
 import { getRequestJWT } from "@/lib/auth-utils";
 
@@ -34,11 +33,9 @@ export default async function UnitListByYear({ year }: { year: number }) {
     cache: "no-store",
   });
   const unitData: UnitData[] = await data.json();
-  const filtered = unitData.filter(function (item) {
-    return item.academic_year == year;
-  });
+  const filtered = unitData.filter((item) => item.academic_year === year);
   const list = filtered.map((unit) => (
-    <div className="mb-3">
+    <div key={unit.id} className="mb-3">
       <Unit key={unit.id} props={unit} />
     </div>
   ));

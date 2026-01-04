@@ -13,7 +13,7 @@ interface DropdownCardProps {
 export function DropdownCard({
   title,
   desc,
-    openByDefault,
+  openByDefault,
   children,
   className,
 }: DropdownCardProps) {

@@ -72,10 +72,10 @@ export default async function CourseworkList({
           </EmptyHeader>
         </Empty>
       )}
-        {filtered.length > 0 &&
-          filtered.map((coursework) => (
-            <Coursework key={coursework.id} props={coursework} />
-          ))}
+      {filtered.length > 0 &&
+        filtered.map((coursework) => (
+          <Coursework key={coursework.id} props={coursework} />
+        ))}
     </>
   );
 }

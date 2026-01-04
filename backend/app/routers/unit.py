@@ -13,7 +13,7 @@ from app.schemas.unit import (
     UnitAll,
     UnitCreate,
     UnitRead,
-    UnitUpdate, UnitLecturers, CourseworkReadWithoutUnit,
+    UnitUpdate, UnitLecturers,
 )
 
 router = APIRouter(prefix="/units", tags=["units"])

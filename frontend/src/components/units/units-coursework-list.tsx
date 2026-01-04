@@ -23,15 +23,15 @@ type courseworkData = {
 };
 
 type courseworkResponse = {
-  courseworks: courseworkData[]
-}
+  courseworks: courseworkData[];
+};
 
 export default async function UnitsCourseworkList({
   finished,
-    unit_id
+  unit_id,
 }: {
-  finished: boolean,
-  unit_id: string
+  finished: boolean;
+  unit_id: string;
 }) {
   const token = await getRequestJWT();
   const response = await fetch(
@@ -77,10 +77,10 @@ export default async function UnitsCourseworkList({
           </EmptyHeader>
         </Empty>
       )}
-        {filtered.length > 0 &&
-          filtered.map((coursework) => (
-            <Coursework key={coursework.id} props={coursework} />
-          ))}
+      {filtered.length > 0 &&
+        filtered.map((coursework) => (
+          <Coursework key={coursework.id} props={coursework} />
+        ))}
     </>
   );
 }

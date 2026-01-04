@@ -1,12 +1,10 @@
-import { cookies } from "next/headers";
 import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
 import CourseworkList from "@/components/coursework/coursework-list";
 import DashboardAnalysis from "@/components/dashboard/dashboard_analysis_card";
+import UnitListByYear from "@/components/dashboard/unit-list-by-year";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import UnitList from "@/components/units/unit-list";
-import UnitListByYear from "@/components/dashboard/unit-list-by-year";
 
 async function DashboardPageContent() {
   const currentYear = new Date().getFullYear();

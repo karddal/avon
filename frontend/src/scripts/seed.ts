@@ -81,7 +81,7 @@ async function seed() {
       email: "sion@bris.ac.uk",
       password: "changeme",
       role: "lecturer",
-    }
+    },
   ];
   const createdUsers = [];
   for (const user of users) {
