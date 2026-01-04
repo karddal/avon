@@ -381,6 +381,6 @@ SessionDep = Annotated[Session, Depends(get_session)]
 async def lifespan(app: FastAPI):
     create_db_and_tables()
     print("yo yo")
-    seed_data()
+    #seed_data()
     print("beep beep")
     yield
