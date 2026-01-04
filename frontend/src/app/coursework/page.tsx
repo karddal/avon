@@ -19,14 +19,14 @@ async function PageContent() {
         </TabsList>
         <TabsContent value="ongoing" className="w-full">
           <section className="grid gap-4 grid-cols-1 lg:grid-cols-2">
-            <Suspense>
+            <Suspense fallback={<Loading/>}>
               <CourseworkList finished={false} />
             </Suspense>
           </section>
         </TabsContent>
         <TabsContent value="finished">
           <section className="grid gap-4 grid-cols-1 lg:grid-cols-2">
-            <Suspense>
+            <Suspense fallback={<Loading/>}>
               <CourseworkList finished={true} />
             </Suspense>
           </section>
