@@ -7,6 +7,7 @@ from sqlmodel import Field, SQLModel, Relationship
 if TYPE_CHECKING:
     from app.models.unit import Unit
 
+
 class Coursework(SQLModel, table=True):
     id: UUID = Field(primary_key=True, default_factory=uuid.uuid4)
     name: str = Field(index=True, nullable=False)

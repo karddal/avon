@@ -7,9 +7,8 @@ from sqlmodel import Session, select
 
 from app.core.security import get_current_user
 from app.db.session import get_session
-from app.models.coursework import Coursework
 from app.models.programme import Programme
-from app.models.unit import Unit
+from app.models.unit import Unit, UnitWithCourseworks
 from app.models.unit_enrollment import UnitEnrollment
 from app.schemas.unit import UnitAll, UnitAllByGroup
 
@@ -54,12 +53,8 @@ async def me_units_by_programme(session: session_dependency, me: str = Depends(g
 async def me_courseworks(
     session: session_dependency, me: str = Depends(get_current_user)
 ):
-    courseworks = []
-    units = session.exec(
-        select(Unit).join(UnitEnrollment).where(UnitEnrollment.user_id == me)
-    ).all()
-    for unit in units:
-        courseworks.extend(
-            session.exec(select(Coursework).where(Coursework.unit_id == unit.id))
-        )
-    return courseworks
+    statement = select(Unit).join(UnitEnrollment).where(UnitEnrollment.user_id == me)
+    units = list(session.exec(statement))
+    results = [UnitWithCourseworks.model_validate(unit).model_dump() for unit in units]
+    print(results)
+    return results

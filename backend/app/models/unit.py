@@ -4,6 +4,8 @@ from typing import TYPE_CHECKING, List
 
 from sqlmodel import Field, SQLModel, Relationship
 
+from app.schemas.unit import CourseworkReadWithoutUnit
+
 if TYPE_CHECKING:
     from programme import Programme
     from unit_enrollment import UnitEnrollment
@@ -20,3 +22,11 @@ class Unit(SQLModel, table=True):
     programme: "Programme" = Relationship(back_populates="units")
     enrollments: List["UnitEnrollment"] = Relationship(back_populates="unit")
     courseworks: List["Coursework"] = Relationship(back_populates="unit")
+
+class UnitWithCourseworks(SQLModel):
+    id: uuid.UUID
+    unit_code: str
+    courseworks: List["CourseworkReadWithoutUnit"]
+
+class UnitsWithCourseworks(SQLModel):
+    units: List[UnitWithCourseworks]

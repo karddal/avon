@@ -1,5 +1,6 @@
 import { BookDashed } from "lucide-react";
 import Coursework from "@/components/coursework/coursework";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getRequestJWT } from "@/lib/auth-utils";
 import {
   Empty,
@@ -9,17 +10,19 @@ import {
   EmptyTitle,
 } from "../ui/empty";
 
-type courseworkData = {
+type CourseworkData = {
   id: string;
   name: string;
-  code: string;
-  year: number;
-  finished: boolean;
-  colour: string;
-  creation_date: string;
+  description: string;
   due_date: string;
-  testsPassed: number;
-  totalTests: number;
+  creation_date: string;
+  colour: string;
+};
+
+type unit = {
+  id: string;
+  unit_code: string;
+  courseworks: CourseworkData[];
 };
 
 export default async function CourseworkList({
@@ -39,27 +42,36 @@ export default async function CourseworkList({
       cache: "no-cache",
     },
   );
-
-  const courseworkListData: courseworkData[] = await response.json();
+  const courseworkListData: unit[] = await response.json();
 
   const now = new Date();
 
-  const filtered = courseworkListData.filter((coursework) => {
-    const created = new Date(coursework.creation_date);
-    const due = new Date(coursework.due_date);
+  const filteredUnitsList = [];
+  for (const unit of courseworkListData) {
+    const filteredCourseworks = unit.courseworks.filter((coursework) => {
+      const created = new Date(coursework.creation_date);
+      const due = new Date(coursework.due_date);
 
-    const isActive = now >= created && now <= due;
+      const isActive = now >= created && now <= due;
 
-    if (finished) {
-      return now > due;
+      if (finished) {
+        return now > due;
+      }
+
+      return isActive;
+    });
+    if (filteredCourseworks.length > 0) {
+      filteredUnitsList.push({
+        id: unit.id,
+        unit_code: unit.unit_code,
+        courseworks: filteredCourseworks,
+      });
     }
-
-    return isActive;
-  });
+  }
 
   return (
     <>
-      {filtered.length === 0 && (
+      {filteredUnitsList.length === 0 && (
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant="icon">
@@ -72,10 +84,48 @@ export default async function CourseworkList({
           </EmptyHeader>
         </Empty>
       )}
-      {filtered.length > 0 &&
-        filtered.map((coursework) => (
-          <Coursework key={coursework.id} props={coursework} />
-        ))}
+      {filteredUnitsList.length > 0 && (
+        <Tabs
+          defaultValue={filteredUnitsList[0].id}
+          orientation={"vertical"}
+          className={"flex flex-row"}
+        >
+          <TabsList
+            className={"flex flex-1/5 flex-col h-min w-full justify-start"}
+          >
+            {filteredUnitsList.map((unit) => (
+              <TabsTrigger
+                key={unit.id}
+                className={"text-lg p-4 w-full"}
+                value={unit.id}
+              >
+                {unit.unit_code}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          {filteredUnitsList.map((unit) => (
+            <TabsContent key={unit.id} className={"flex-2/5"} value={unit.id}>
+              {unit.courseworks.map((coursework) => (
+                <div className={"mb-3"} key={coursework.id}>
+                  <Coursework
+                    key={coursework.id}
+                    props={{
+                      id: coursework.id,
+                      name: coursework.name,
+                      unit_id: unit.id,
+                      description: coursework.description,
+                      colour: coursework.colour,
+                      creation_date: coursework.creation_date,
+                      due_date: coursework.due_date,
+                      unit_code: unit.unit_code,
+                    }}
+                  />
+                </div>
+              ))}
+            </TabsContent>
+          ))}
+        </Tabs>
+      )}
     </>
   );
 }

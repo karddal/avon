@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.db.session import create_db_and_tables, lifespan
+from app.models.coursework import Coursework
+from app.models.unit import UnitWithCourseworks
 from app.routers import coursework
 from app.routers import unit
 from app.routers import check, me
@@ -30,6 +32,8 @@ app.include_router(unit.router)
 app.include_router(check.router)
 app.include_router(coursework.router)
 app.include_router(me.router)
+Coursework.model_rebuild()
+UnitWithCourseworks.model_rebuild()
 
 create_db_and_tables()
 
