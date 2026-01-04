@@ -12,14 +12,10 @@ import {
 type courseworkData = {
   id: string;
   name: string;
-  code: string;
-  year: number;
-  finished: boolean;
+  description: string;
   colour: string;
   creation_date: string;
   due_date: string;
-  testsPassed: number;
-  totalTests: number;
 };
 
 type courseworkResponse = {

@@ -26,6 +26,7 @@ class Unit(SQLModel, table=True):
 class UnitWithCourseworks(SQLModel):
     id: uuid.UUID
     unit_code: str
+    name: str
     courseworks: List["CourseworkReadWithoutUnit"]
 
 class UnitsWithCourseworks(SQLModel):

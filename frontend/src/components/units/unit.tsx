@@ -20,8 +20,8 @@ export default function Unit({ props }: { props: UnitData }) {
       <Card className="bg-muted flex flex-row p-2 items-center hover:bg-foreground/10">
         <CardContent className="flex flex-row items-center justify-between w-full p-0">
           <div className="flex flex-col w-full">
-            <div className="flex flex-col">
-              <div className="flex flex-row align-center items-center">
+            <div className="flex flex-col text-ellipsis">
+              <div className="flex flex-row align-center items-center ">
                 <p className="text-foreground/80">
                   Unit Code: {props.unit_code}
                 </p>

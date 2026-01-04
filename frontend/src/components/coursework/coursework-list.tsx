@@ -22,6 +22,7 @@ type CourseworkData = {
 type unit = {
   id: string;
   unit_code: string;
+  name: string;
   courseworks: CourseworkData[];
 };
 
@@ -65,6 +66,7 @@ export default async function CourseworkList({
         id: unit.id,
         unit_code: unit.unit_code,
         courseworks: filteredCourseworks,
+        name: unit.name,
       });
     }
   }
@@ -88,42 +90,44 @@ export default async function CourseworkList({
         <Tabs
           defaultValue={filteredUnitsList[0].id}
           orientation={"vertical"}
-          className={"flex flex-row"}
+          className={"flex flex-col md:flex-row w-full"}
         >
           <TabsList
-            className={"flex flex-1/5 flex-col h-min w-full justify-start"}
+            className={"basis-1/3 flex flex-col h-min w-full justify-start"}
           >
             {filteredUnitsList.map((unit) => (
               <TabsTrigger
                 key={unit.id}
-                className={"text-lg p-4 w-full"}
+                className={"text-lg p-4 w-full text-ellipsis"}
                 value={unit.id}
               >
-                {unit.unit_code}
+                {unit.name}
               </TabsTrigger>
             ))}
           </TabsList>
-          {filteredUnitsList.map((unit) => (
-            <TabsContent key={unit.id} className={"flex-2/5"} value={unit.id}>
-              {unit.courseworks.map((coursework) => (
-                <div className={"mb-3"} key={coursework.id}>
-                  <Coursework
-                    key={coursework.id}
-                    props={{
-                      id: coursework.id,
-                      name: coursework.name,
-                      unit_id: unit.id,
-                      description: coursework.description,
-                      colour: coursework.colour,
-                      creation_date: coursework.creation_date,
-                      due_date: coursework.due_date,
-                      unit_code: unit.unit_code,
-                    }}
-                  />
-                </div>
-              ))}
-            </TabsContent>
-          ))}
+          <div className={"basis-2/3"}>
+            {filteredUnitsList.map((unit) => (
+              <TabsContent key={unit.id} className={""} value={unit.id}>
+                {unit.courseworks.map((coursework) => (
+                  <div className={"mb-3"} key={coursework.id}>
+                    <Coursework
+                      key={coursework.id}
+                      props={{
+                        id: coursework.id,
+                        name: coursework.name,
+                        unit_id: unit.id,
+                        description: coursework.description,
+                        colour: coursework.colour,
+                        creation_date: coursework.creation_date,
+                        due_date: coursework.due_date,
+                        unit_code: unit.unit_code,
+                      }}
+                    />
+                  </div>
+                ))}
+              </TabsContent>
+            ))}
+          </div>
         </Tabs>
       )}
     </>

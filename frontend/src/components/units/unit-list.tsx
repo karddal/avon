@@ -45,31 +45,39 @@ export default async function UnitList() {
   // const filtered = await getData(currentYear, finished)
   const d = programmes.at(0)?.id ?? "0";
   return (
-    <Tabs defaultValue={d} orientation={"vertical"} className={"flex flex-row"}>
-      <TabsList className={"flex flex-1/5 flex-col h-min w-full justify-start"}>
+    <Tabs
+      defaultValue={d}
+      orientation={"vertical"}
+      className={"flex flex-col md:flex-row"}
+    >
+      <TabsList
+        className={"basis-1/3 flex flex-col h-min w-full justify-start"}
+      >
         {programmes.map((programme) => (
           <TabsTrigger
             key={programme.id}
-            className={"text-lg p-4 w-full"}
+            className={"text-lg p-4 w-full text-ellipsis"}
             value={programme.id}
           >
             {programme.name}
           </TabsTrigger>
         ))}
       </TabsList>
-      {programmes.map((programme) => (
-        <TabsContent
-          key={programme.id}
-          className={"flex-2/5"}
-          value={programme.id}
-        >
-          {programme.units.map((unit) => (
-            <div className={"mb-3"} key={unit.id}>
-              <Unit key={unit.id} props={unit} />
-            </div>
-          ))}
-        </TabsContent>
-      ))}
+      <div className={"basis-2/3"}>
+        {programmes.map((programme) => (
+          <TabsContent
+            key={programme.id}
+            className={"flex-2/5"}
+            value={programme.id}
+          >
+            {programme.units.map((unit) => (
+              <div className={"mb-3"} key={unit.id}>
+                <Unit key={unit.id} props={unit} />
+              </div>
+            ))}
+          </TabsContent>
+        ))}
+      </div>
     </Tabs>
   );
   // return (

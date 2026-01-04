@@ -4,12 +4,12 @@ import { Card } from "../ui/card";
 type courseworkData = {
   id: string;
   name: string;
-  unit_id: string;
+  unit_id?: string;
   description: string;
   colour: string;
   creation_date: string;
   due_date: string;
-  unit_code: string;
+  unit_code?: string;
 };
 
 function _getRandomTestsPassed(): number {
