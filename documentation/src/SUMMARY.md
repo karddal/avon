@@ -13,7 +13,8 @@
   - [Creating a coursework]()
 
 # Project management
-- [Meeting minutes]()
+- [Meeting minutes](meetings/README.md)
+  - [03-01-2025 Extraordinary team meeting](meetings/03-01-2025-team.md)
 
 # Developer documentation
 
