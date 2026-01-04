@@ -7,6 +7,7 @@ from sqlmodel import Field, SQLModel, Relationship
 if TYPE_CHECKING:
     from programme import Programme
     from unit_enrollment import UnitEnrollment
+    from coursework import Coursework
 
 class Unit(SQLModel, table=True):
     id: uuid.UUID = Field(primary_key=True, default_factory=uuid.uuid4)
@@ -18,3 +19,4 @@ class Unit(SQLModel, table=True):
     programme_id: uuid.UUID = Field(foreign_key="programme.id", ondelete="CASCADE")
     programme: "Programme" = Relationship(back_populates="units")
     enrollments: List["UnitEnrollment"] = Relationship(back_populates="unit")
+    courseworks: List["Coursework"] = Relationship(back_populates="unit")

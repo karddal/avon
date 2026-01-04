@@ -22,6 +22,10 @@ class UnitRead(BaseModel):
     colour: str
     programme_id: uuid.UUID
 
+class UnitLecturers(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    lecturers: List[str]
+
 class UnitCreate(BaseModel):
     name: Name
     description: str
@@ -63,7 +67,8 @@ class UnitAllByGroup(BaseModel):
 
 
 ## Maybe port the below to Jack's Coursework Schema
-class CourseworkRead(BaseModel):
+class CourseworkReadWithoutUnit(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: uuid.UUID
     name: str
     description: str
@@ -73,4 +78,4 @@ class CourseworkRead(BaseModel):
 
 
 class CourseworkAll(BaseModel):
-    courseworks: List[CourseworkRead]
+    courseworks: List[CourseworkReadWithoutUnit]

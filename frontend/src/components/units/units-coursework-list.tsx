@@ -22,14 +22,20 @@ type courseworkData = {
   totalTests: number;
 };
 
-export default async function CourseworkList({
+type courseworkResponse = {
+  courseworks: courseworkData[]
+}
+
+export default async function UnitsCourseworkList({
   finished,
+    unit_id
 }: {
-  finished: boolean;
+  finished: boolean,
+  unit_id: string
 }) {
   const token = await getRequestJWT();
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/me/courseworks`,
+    `${process.env.NEXT_PUBLIC_API_URL}/units/${unit_id}/courseworks`,
     {
       method: "GET",
       headers: {
@@ -40,10 +46,9 @@ export default async function CourseworkList({
     },
   );
 
-  const courseworkListData: courseworkData[] = await response.json();
-
+  const courseworkResponse: courseworkResponse = await response.json();
   const now = new Date();
-
+  const courseworkListData = courseworkResponse.courseworks;
   const filtered = courseworkListData.filter((coursework) => {
     const created = new Date(coursework.creation_date);
     const due = new Date(coursework.due_date);

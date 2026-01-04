@@ -9,9 +9,12 @@ import { DropdownCard } from "@/components/dropdown-card";
 import { Avatar } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import CourseworkSection from "@/components/units/coursework-section";
 import { getRequestJWT, requireSession } from "@/lib/auth-utils";
+import CourseworkList from "@/components/coursework/coursework-list";
+import UnitsCourseworkList from "@/components/units/units-coursework-list";
+import Lecturers from "@/components/units/lecturers";
 
 async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -74,18 +77,28 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
                   See your assigned courseworks here.
                 </div>
               </CardTitle>
+            </CardHeader>
+
+            <CardContent className="w-full">
               <Tabs defaultValue="ongoing">
                 <TabsList>
                   <TabsTrigger value="ongoing">Ongoing</TabsTrigger>
                   <TabsTrigger value="finished">Finished</TabsTrigger>
                 </TabsList>
+                <TabsList className={"w-full"}>
+                  <TabsContent value={"ongoing"}>
+                    <Suspense fallback={<Loading />}>
+                      <UnitsCourseworkList unit_id={slug} finished={false}></UnitsCourseworkList>
+                    </Suspense>
+                  </TabsContent>
+                  <TabsContent className={"w-full"} value={"finished"}>
+                    <Suspense fallback={<Loading />}>
+                      <UnitsCourseworkList unit_id={slug} finished={true}></UnitsCourseworkList>
+                    </Suspense>
+                  </TabsContent>
+                </TabsList>
               </Tabs>
-            </CardHeader>
 
-            <CardContent className="overflow-y-scroll max-h-80 flex flex-col gap-4">
-              <Suspense fallback={<Loading />}>
-                <CourseworkSection slug={slug} token={token} />
-              </Suspense>
             </CardContent>
           </Card>
         </div>
@@ -107,29 +120,20 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
 
           {/* Unit Staff */}
           <DropdownCard
+              openByDefault={true}
             title="Unit staff"
             desc="Lecturers and teachers appear here"
+              className={""}
           >
-            {[1, 2, 3].map((i) => (
-              <Card
-                key={i}
-                className="p-0 bg-accent flex flex-row items-center gap-4"
-              >
-                <Avatar className="bg-slate-300 size-16 rounded-none" />
-                <div className="flex flex-col">
-                  <div className="text-xl font-semibold">Sion Hannuna</div>
-                  <div className="font-light">
-                    Senior Lecturer, School of Computer Science
-                  </div>
-                </div>
-              </Card>
-            ))}
+          <Lecturers unit_id={slug}></Lecturers>
           </DropdownCard>
 
           {/* Announcements */}
           <DropdownCard
+              openByDefault={false}
             title="Announcements"
             desc="Recent announcements appear here."
+              className={"mb-16"}
           >
             {[1, 2, 3].map((i) => (
               <Card

@@ -5,17 +5,15 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 
 from app.db.session import get_session
-from app.models.coursework import Coursework
 from app.models.programme import Programme
 from app.models.unit import Unit
 from app.models.unit_enrollment import UnitEnrollment
 from app.schemas.unit import (
     CourseworkAll,
-    CourseworkRead,
     UnitAll,
     UnitCreate,
     UnitRead,
-    UnitUpdate,
+    UnitUpdate, UnitLecturers, CourseworkReadWithoutUnit,
 )
 
 router = APIRouter(prefix="/units", tags=["units"])
@@ -64,6 +62,17 @@ async def get_unit_details(unit_id: UUID, session: session_dependency):
 
     return unit
 
+@router.get("/{unit_id}/lecturers", response_model=UnitLecturers, status_code=status.HTTP_200_OK)
+async def get_unit_lecturers(unit_id: UUID, session: session_dependency):
+    lects = session.exec(
+        select(UnitEnrollment.user_id).join(Unit).where(Unit.id == unit_id).where(UnitEnrollment.type == "lecturer")
+    ).all()
+    print(lects)
+    if not lects:
+        raise HTTPException(status_code=404, detail="No lecturers found.")
+    return UnitLecturers(
+        lecturers=lects,
+    )
 
 @router.put("/{unit_id}", response_model=UnitUpdate, status_code=status.HTTP_200_OK)
 async def update_unit(unit_id: UUID, unit: UnitUpdate, session: session_dependency):
@@ -118,10 +127,14 @@ async def get_user_units(user_id: UUID, session: session_dependency):
 
 @router.get("/{unit_id}/courseworks", response_model=CourseworkAll)
 async def get_courseworks(unit_id: UUID, session: session_dependency):
-    statement = select(Coursework).where(Coursework.unit_id == unit_id)
-    courseworks = session.exec(statement).all()
-
-    return courseworks
+    unit = session.get(Unit, unit_id)
+    if not unit:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail = "Unit not found"
+        )
+    courseworks = unit.courseworks
+    print(courseworks)
+    return CourseworkAll(courseworks=courseworks)
 
 
 @router.get("/", response_model=UnitAll)

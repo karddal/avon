@@ -321,42 +321,52 @@ def seed_data():
             UnitEnrollment(
                 unit_id=imp_func_2024_2025.id,
                 user_id=tilo,
+                type="lecturer"
             ),
             UnitEnrollment(
                 unit_id=imp_func_2025_2026.id,
                 user_id=tilo,
+                type="lecturer"
             ),
             UnitEnrollment(
                 unit_id=maths_for_cs_a_2024_2025.id,
                 user_id=david,
+                type="lecturer"
             ),
             UnitEnrollment(
                 unit_id=maths_for_cs_a_2025_2026.id,
                 user_id=eddie,
+                type="lecturer"
             ),
             UnitEnrollment(
                 unit_id=plc_2025_2026.id,
                 user_id=eddie,
+                type="lecturer"
             ),
             UnitEnrollment(
                 unit_id=comp_arch_2024_2025.id,
                 user_id=dan,
+                type="lecturer"
             ),
             UnitEnrollment(
                 unit_id=comp_arch_2025_2026.id,
                 user_id=dan,
+                type="lecturer"
             ),
             UnitEnrollment(
                 unit_id=sep_2025_2026.id,
                 user_id=sarah,
+                type="lecturer"
             ),
             UnitEnrollment(
                 unit_id=plc_2025_2026.id,
                 user_id=steven,
+                type="lecturer"
             ),
             UnitEnrollment(
                 unit_id=csa_2025_2026.id,
                 user_id=sion,
+                type="lecturer"
             )
         ])
 
