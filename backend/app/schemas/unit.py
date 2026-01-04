@@ -14,6 +14,7 @@ def name_is_correct_length(name: str) -> str:
 Name = Annotated[str, AfterValidator(name_is_correct_length)]
 
 class UnitRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: uuid.UUID
     name: Name
     description: str

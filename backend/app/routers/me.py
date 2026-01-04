@@ -1,3 +1,4 @@
+import datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
@@ -24,7 +25,21 @@ async def me_units(session: session_dependency, me: str = Depends(get_current_us
     ).all()
     print("results: ")
     print(results)
-    return results
+    return UnitAll(
+        units=results
+    )
+
+@router.get("/units/active", response_model=UnitAll)
+async def me_active_units(session: session_dependency, me: str = Depends(get_current_user)):
+    print("userid: ", me)
+    results = session.exec(
+        select(Unit).join(UnitEnrollment).where(UnitEnrollment.user_id == me)
+    ).all()
+    today = datetime.date.today()
+    filtered = filter(lambda unit: unit.programme.start_date <= today <= unit.programme.end_date, results)
+    return UnitAll(
+        units=filtered
+    )
 
 @router.get("/units-by-programme", response_model=UnitAllByGroup)
 async def me_units_by_programme(session: session_dependency, me: str = Depends(get_current_user)):
@@ -58,3 +73,20 @@ async def me_courseworks(
     results = [UnitWithCourseworks.model_validate(unit).model_dump() for unit in units]
     print(results)
     return results
+
+@router.get("/courseworks/active")
+async def me_active_courseworks(
+    session: session_dependency, me: str = Depends(get_current_user)
+):
+    # statement = select(Unit).join(UnitEnrollment).where(UnitEnrollment.user_id == me)
+    # units = list(session.exec(statement))
+    # results = [UnitWithCourseworks.model_validate(unit).model_dump() for unit in units]
+    # print(results)
+    units = session.exec(
+        select(Unit).join(UnitEnrollment).where(UnitEnrollment.user_id == me)
+    ).all()
+    today = datetime.datetime.now()
+    courseworks = [coursework for unit in units for coursework in unit.courseworks]
+    filtered = list(filter(lambda coursework: coursework.due_date >= today, courseworks))
+    print(filtered)
+    return filtered
