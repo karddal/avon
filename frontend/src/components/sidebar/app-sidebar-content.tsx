@@ -9,6 +9,7 @@ import {
   User,
 } from "lucide-react";
 import Link from "next/link";
+import { Kbd, KbdGroup } from "@/components/ui/kbd";
 import { requireSession } from "@/lib/auth-utils";
 import LogoutButton from "../logout-button";
 import {
@@ -98,6 +99,17 @@ export default async function AppSideBarContent() {
       <SidebarGroup className="h-full">
         <SidebarMenu className="flex h-full flex-col md:justify-between">
           <div className="flex flex-col gap-4">
+            <p
+              className={
+                "sr-only md:not-sr-only text-muted-foreground self-center text-sm"
+              }
+            >
+              Use{" "}
+              <KbdGroup>
+                <Kbd>Ctrl</Kbd>+<Kbd>K</Kbd>
+              </KbdGroup>{" "}
+              to jump.
+            </p>
             {items
               .filter((item) => !item.bottom)
               .map((item) => (
