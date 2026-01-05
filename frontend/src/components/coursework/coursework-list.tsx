@@ -41,7 +41,7 @@ export default async function CourseworkList({
         "Content-Type": "application/json",
       },
       cache: "no-cache",
-    }
+    },
   );
   const courseworkListData: unit[] = await response.json();
 

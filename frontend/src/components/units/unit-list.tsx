@@ -37,7 +37,7 @@ export default async function UnitList() {
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store",
-    }
+    },
   );
   const unitData: ProgrammesResponse = await data.json();
   const programmes = unitData.programmes;
