@@ -48,7 +48,7 @@ export default async function UnitList() {
     <Tabs
       defaultValue={d}
       orientation={"vertical"}
-      className={"flex flex-col md:flex-row"}
+      className={"flex flex-col lg:flex-row"}
     >
       <TabsList
         className={"basis-1/3 flex flex-col h-min w-full justify-start"}
