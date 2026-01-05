@@ -25,6 +25,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "../ui/sidebar";
 
 const adminItems = [
@@ -168,7 +169,7 @@ export default async function AppSideBarContent() {
                       <ArrowUpDown strokeWidth={2} className={"self-center"} />
                     </Link>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent side="right">
+                  <DropdownMenuContent side="bottom" align="start">
                     <DropdownMenuItem>{s.user.name}</DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <LogoutButton />
