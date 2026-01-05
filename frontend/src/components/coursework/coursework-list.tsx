@@ -41,7 +41,7 @@ export default async function CourseworkList({
         "Content-Type": "application/json",
       },
       cache: "no-cache",
-    },
+    }
   );
   const courseworkListData: unit[] = await response.json();
 
@@ -90,7 +90,7 @@ export default async function CourseworkList({
         <Tabs
           defaultValue={filteredUnitsList[0].id}
           orientation={"vertical"}
-          className={"flex flex-col md:flex-row w-full"}
+          className={"flex flex-col lg:flex-row w-full"}
         >
           <TabsList
             className={"basis-1/3 flex flex-col h-min w-full justify-start"}
