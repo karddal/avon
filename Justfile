@@ -32,7 +32,7 @@ test-be:
 	JWKS_URL=http://testserver/jwks \
 	ACCESS_TOKEN_EXPIRY_MINUTES=60 \
 	CORS_ORIGIN=http://testserver \
-	uv run --active pytest -v tests/model
+	uv run --active pytest -v 
 
 
 run-fe:

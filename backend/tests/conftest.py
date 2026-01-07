@@ -1,0 +1,36 @@
+import pytest
+from fastapi.testclient import TestClient
+from sqlmodel import SQLModel, Session, create_engine
+
+from app.main import app
+from app.db.session import get_session
+
+
+# pytest.fixture stuff is done so we have a reusable database setup for testing
+# scope is set to function so that each test function gets a new database
+@pytest.fixture(scope="function")
+def engine():
+    # Test via memory so no clean-up afterwards is needed (volatile DB)
+    engine = create_engine("sqlite:///:memory:", echo=False, connect_args={"check_same_thread": False},) # connect_args Needed for Router tests with FastAPI
+    SQLModel.metadata.create_all(engine)
+    yield engine
+    SQLModel.metadata.drop_all(engine) # to clean up after each test file as each one creates a database instance
+
+
+@pytest.fixture(scope="function")
+def session(engine):
+    with Session(engine) as session:
+        yield session # yield not return so to clean up After the tests are done
+
+
+@pytest.fixture(scope="function")
+def client(engine): # Whenever our router tests request a client, they get this fixture
+    def override_get_session():
+        with Session(engine) as session:
+            yield session
+
+    app.dependency_overrides[get_session] = override_get_session # Whenever something requires get_session (from our main app.db.session file), use override_get_session instead
+    with TestClient(app) as client: # creates a TestClient instance using our FastAPI app
+        yield client # yield so that we get a clean shut down and successful clean up
+
+    app.dependency_overrides.clear() # Clean up after it's finished
