@@ -2,7 +2,7 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlmodel import SQLModel, Session, create_engine, select
-from app.models.user import User
+# from app.models.user import User
 from app.db.session import get_session
 from app.routers import user as user_router
 import app.core.security as security

@@ -4,9 +4,7 @@ from sqlmodel import SQLModel, Session, create_engine
 from app.models.coursework import Coursework
 from app.models.unit import Unit
 from app.models.unit_enrollment import UnitEnrollment
-from app.models.unit_group_member import UnitGroupMember
-from app.models.unit_group import UnitGroup
-from app.models.user import User
+from app.models.programme import Programme
 # Need teh imports of all the models
 
 # pytest.fixture stuff is done so we have a reusable database setup for testing

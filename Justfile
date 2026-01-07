@@ -27,9 +27,13 @@ test-be:
 	cd backend && \
 	DATABASE_URL=sqlite:///:memory: \
 	JWT_SECRET_KEY=abhdvgdgv \
+	JWT_AUDIENCE=test-audience \
+	JWT_ISSUER=test-issuer \
+	JWKS_URL=http://testserver/jwks \
 	ACCESS_TOKEN_EXPIRY_MINUTES=60 \
 	CORS_ORIGIN=http://testserver \
-	uv run --active pytest -v 
+	uv run --active pytest -v tests/model
+
 
 run-fe:
     cd frontend && npm run dev

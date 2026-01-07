@@ -1,38 +1,30 @@
 import pytest
 from sqlmodel import SQLModel, Session, create_engine, select
 from uuid import uuid4, UUID
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from app.models.coursework import Coursework
 from app.models.unit import Unit
 from app.models.unit_enrollment import UnitEnrollment
-from app.models.unit_group_member import UnitGroupMember
-from app.models.unit_group import UnitGroup
-from app.models.user import User   
+from app.models.programme import Programme
 # Need teh imports of all the models
 
 
+# Helper Func
+def create_unit_with_programme(session) -> UUID:
+    programme = Programme(id=uuid4(), name="Test Programme",start_date=datetime.now(), end_date=datetime.today() + timedelta(days=365))
+    session.add(programme)
+    session.commit()
+    unit_id = uuid4()
+    unit = Unit(id=unit_id, name="Test Unit", description="Test description", unit_code="COMS20017", colour="abcdef", programme_id=programme.id,)
+    session.add(unit)
+    session.commit()
 
-
-# # pytest.fixture stuff is done so we have a reusable database setup for testing
-# @pytest.fixture
-# def engine():
-#     # Test via memory so no clean-up afterwards is needed (volatile DB)
-#     engine = create_engine("sqlite:///:memory:", echo=False) # Echo is false so we don't geta load of SQL logs during testing
-#     SQLModel.metadata.create_all(engine)
-#     return engine
-
-# @pytest.fixture 
-# def session(engine):
-#     with Session(engine) as session:
-#         yield session #yield not return so to clean up After the tests are done
+    return unit_id
 
 # Testing that the model auto Populates the id and creation_date fields
 def test_coursework_auto_fields(session):
-    unit_id = uuid4()
-    unit = Unit(id=unit_id,name="Test Unit",description="Test description",unit_code="COMS20017",colour="abcdef")
-    session.add(unit)
-    session.commit()
+    unit_id = create_unit_with_programme(session)
 
     due = datetime.now()
     cw = Coursework(name="Haskell 2",description="Coursework Description",unit_id=unit_id,due_date=due,colour="abcdef")
@@ -47,10 +39,7 @@ def test_coursework_auto_fields(session):
 
 # Ensuring the data is availlable still
 def test_coursework_persists_properly(session):
-    unit_id = uuid4()
-    unit = Unit(id=unit_id,name="Test Unit",description="Test description",unit_code="COMS20017",colour="abcdef")
-    session.add(unit)
-    session.commit()
+    unit_id = create_unit_with_programme(session)
 
     due = datetime.now()
     cw = Coursework(name="Haskell 2", description="Coursework Description", unit_id=unit_id, due_date=due, colour="abcdef")
@@ -68,10 +57,7 @@ def test_coursework_persists_properly(session):
 
 # Testing that we can succseesfully query by unit_id
 def test_coursework_query_by_unit_id(session):
-    unit_id = uuid4()
-    unit = Unit(id=unit_id,name="Test Unit",description="Test description",unit_code="COMS20017",colour="abcdef")
-    session.add(unit)
-    session.commit()
+    unit_id = create_unit_with_programme(session)
 
     due = datetime.now()
     cw = Coursework(name="Haskell 2",description="Coursework Description",unit_id=unit_id,due_date=due,colour="abcdef")
@@ -86,10 +72,8 @@ def test_coursework_query_by_unit_id(session):
 
 # Testing we can update model correctly
 def test_coursework_update(session):
-    unit_id = uuid4()
-    unit = Unit(id=unit_id,name="Test Unit",description="Test description",unit_code="COMS20017",colour="abcdef")
-    session.add(unit)
-    session.commit()
+    unit_id = create_unit_with_programme(session)
+
     due = datetime.now()
     cw = Coursework(name="Haskell 2",description="Coursework Description",unit_id=unit_id,due_date=due,colour="abcdef")
 
@@ -107,10 +91,7 @@ def test_coursework_update(session):
 
 # Testing we can successfuly delete a coursework
 def test_coursework_delete(session):
-    unit_id = uuid4()
-    unit = Unit(id=unit_id,name="Test Unit",description="Test description",unit_code="COMS20017",colour="abcdef")
-    session.add(unit)
-    session.commit()
+    unit_id = create_unit_with_programme(session)
 
     due = datetime.now()
     cw = Coursework(name="Haskell 2",description="Coursework Description",unit_id=unit_id,due_date=due,colour="abcdef")
@@ -126,10 +107,7 @@ def test_coursework_delete(session):
 
 # Make sure field types are correct
 def test_coursework_field_types(session):
-    unit_id = uuid4()
-    unit = Unit(id=unit_id,name="Test Unit",description="Test description",unit_code="COMS20017",colour="abcdef")
-    session.add(unit)
-    session.commit()
+    unit_id = create_unit_with_programme(session)
     
     due = datetime.now()
     cw = Coursework(name="Haskell 2",description="Coursework Description",unit_id=unit_id,due_date=due,colour="abcdef")
