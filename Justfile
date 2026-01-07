@@ -4,7 +4,7 @@ default:
 
 check-fe:
     @echo "Formatting and linting frontend..."
-    cd frontend && bunx biome check
+    cd frontend && npx biome check
 
 check-be:
     @echo "Formatting and linting backend..."
@@ -14,7 +14,7 @@ check: check-fe check-be
 
 fix-fe:
     @echo "Fixing frontend..."
-    cd frontend && bunx biome check --fix
+    cd frontend && npx biome check --fix
 
 fix-be:
     @echo "Fixing backend..."
@@ -32,7 +32,7 @@ test-be:
 	uv run --active pytest -v 
 
 run-fe:
-    cd frontend && bun run dev
+    cd frontend && npm run dev
 
 run-be:
     cd backend && uv run fastapi dev

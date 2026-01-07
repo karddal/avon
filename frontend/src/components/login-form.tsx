@@ -1,6 +1,4 @@
 "use client";
-
-import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -16,6 +14,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import LoginButton from "@/components/ui/login-button";
+import { type SignInData, signIn } from "@/lib/actions/login";
 import { cn } from "@/lib/utils";
 
 export function LoginForm({
@@ -30,58 +29,46 @@ export function LoginForm({
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    /*async function clicked() {
     setActionState(1);
-    console.log("Started mock api call");
-    const delay = new Promise((r) => setTimeout(r, 1000));
-    await delay;
-    setActionState(2);
-    const delay2 = new Promise((r) => setTimeout(r, 500));
-    await delay2;
-    setActionState(0);
-    toast.success("Test run started successfully.");
-  }*/
-    console.log("API URL =", process.env.NEXT_PUBLIC_API_URL);
-    setActionState(1);
+    const data: SignInData = {
+      email: email,
+      password: password,
+    };
     try {
-      const form = new URLSearchParams();
-      form.append("username", email);
-      form.append("password", password);
-
-      await axios
-        .post(`${process.env.NEXT_PUBLIC_API_URL}/auth/token`, form, {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        })
-        .catch((error) => {
-          throw error;
-        });
-
-      const verifyResp = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/verify`,
-        {
-          withCredentials: true,
-        },
-      );
-
-      const isLecturer = verifyResp.data.is_lecturer;
-
-      if (isLecturer) {
-        router.push("/dashboard");
-      } else {
-        router.push("/units");
-      }
-    } catch (error) {
-      console.error("Login failed:", error);
-      // alert("Login failed. Please check your credentials and try again.");
+      const response = await signIn(data);
+      router.push(response.redirect);
+    } catch (_error) {
       setActionState(2);
-      toast.error("Login failed. Check your creds");
+      toast.error("Login failed, please check your credentials.");
       const delay = new Promise((r) => setTimeout(r, 2000));
       await delay;
       setActionState(0);
     }
+    // if (isLecturer) {
+    //   router.push("/dashboard");
+    // } else {
+    //   router.push("/units");
+    // }
+
+    // await axios
+    //   .post(`${process.env.NEXT_PUBLIC_API_URL}/auth/token`, form, {
+    //     withCredentials: true,
+    //     headers: {
+    //       "Content-Type": "application/x-www-form-urlencoded",
+    //     },
+    //   })
+    //   .catch((error) => {
+    //     throw error;
+    //   });
+    //
+    // const verifyResp = await axios.get(
+    //   `${process.env.NEXT_PUBLIC_API_URL}/auth/verify`,
+    //   {
+    //     withCredentials: true,
+    //   },
+    // );
+    //
+    // const isLecturer = verifyResp.data.is_lecturer;
   }
 
   return (
@@ -89,15 +76,17 @@ export function LoginForm({
       <Card className="drop-shadow-2xl shadow-none border">
         <div className="flex justify-center">
           <Image
-            src={`${process.env.NEXT_PUBLIC_CDN_URL}/avon-white-optimized.svg`}
+            src={`/images/avon-white-optimized.svg`}
             alt="logo"
+            loading="eager"
             width={200}
             height={200}
             className="dark:block hidden"
           />
           <Image
-            src={`${process.env.NEXT_PUBLIC_CDN_URL}/avon-black-optimized.svg`}
+            src={`/images/avon-black-optimized.svg`}
             alt="logo"
+            loading="eager"
             width={200}
             height={200}
             className="dark:hidden "
@@ -116,7 +105,7 @@ export function LoginForm({
                   <Image
                     width={15}
                     height={15}
-                    src={`${process.env.NEXT_PUBLIC_CDN_URL}/microsoft.svg`}
+                    src={`/images/microsoft.svg`}
                     alt="microsoft logo"
                   />
                   Login with Microsoft

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 interface DropdownCardProps {
   title: string;
   desc: string;
+  openByDefault: boolean;
   children: React.ReactNode;
   className?: string;
 }
@@ -12,10 +13,11 @@ interface DropdownCardProps {
 export function DropdownCard({
   title,
   desc,
+  openByDefault,
   children,
   className,
 }: DropdownCardProps) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(openByDefault);
   return (
     <Card className={`flex flex-col gap-0 ${className}`}>
       <CardHeader

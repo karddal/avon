@@ -217,13 +217,13 @@ Here is how to setup a local development version of Avon on your machine.
 
 ### Prerequisites
 
-#### Bun
+#### NPM
 
-Bun is a package manager similar to npm, but a lot faster and more modern. Install it using the instructions [here](https://bun.com/).
+NPM is a package manager for Nodejs. Install it using the instructions [here](https://npmjs.com/).
 
 #### NodeJS
 
-Node.js is required for Next.js. We are currently using Node version >=20.9. Download [here](https://nodejs.org/en/download)
+Node.js is required for Next.js. We are currently using Node version >=25. Download [here](https://nodejs.org/en/download)
 
 #### UV
 
