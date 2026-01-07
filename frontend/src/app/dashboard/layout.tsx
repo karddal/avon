@@ -1,6 +1,6 @@
-import AppSidebar from "@/components/app-sidebar";
 import { ModeToggle } from "@/components/mode-toggle";
 import NotificationBar from "@/components/notifications-bar";
+import AppSidebar from "@/components/sidebar/app-sidebar-wrapper";
 import {
   SidebarInset,
   SidebarProvider,

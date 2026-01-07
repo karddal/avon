@@ -1,24 +1,26 @@
-import { cookies } from "next/headers";
+"use server";
+
 import Link from "next/link";
 import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
-import CourseworkSection from "@/app/units/[slug]/coursework-section";
 import UnitDescription from "@/app/units/[slug]/description";
 import UnitName from "@/app/units/[slug]/name";
 import { DropdownCard } from "@/components/dropdown-card";
-import { Avatar } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getCurrentUser } from "@/lib/auth";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Lecturers from "@/components/units/lecturers";
+import UnitsCourseworkList from "@/components/units/units-coursework-list";
+import { getRequestJWT, requireSession } from "@/lib/auth-utils";
 
 async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const userRole = await getCurrentUser();
-  console.log("The slug:", slug);
-  const cookieStore = await cookies();
-  const token = cookieStore.get("access_token")?.value;
-
+  const s = await requireSession();
+  let userRole = s.user.role;
+  if (!userRole) {
+    userRole = "user";
+  }
+  const token = await getRequestJWT();
   return (
     <>
       {/* Header */}
@@ -64,7 +66,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
           </Card>
 
           {/* Coursework */}
-          <Card className="flex flex-col gap-4 min-h-0">
+          <Card>
             <CardHeader>
               <CardTitle>
                 <div className="text-2xl">Coursework</div>
@@ -72,18 +74,33 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
                   See your assigned courseworks here.
                 </div>
               </CardTitle>
+            </CardHeader>
+
+            <CardContent className="w-full">
               <Tabs defaultValue="ongoing">
                 <TabsList>
                   <TabsTrigger value="ongoing">Ongoing</TabsTrigger>
                   <TabsTrigger value="finished">Finished</TabsTrigger>
                 </TabsList>
+                <TabsList className={"w-full"}>
+                  <TabsContent value={"ongoing"}>
+                    <Suspense fallback={<Loading />}>
+                      <UnitsCourseworkList
+                        unit_id={slug}
+                        finished={false}
+                      ></UnitsCourseworkList>
+                    </Suspense>
+                  </TabsContent>
+                  <TabsContent className={"w-full"} value={"finished"}>
+                    <Suspense fallback={<Loading />}>
+                      <UnitsCourseworkList
+                        unit_id={slug}
+                        finished={true}
+                      ></UnitsCourseworkList>
+                    </Suspense>
+                  </TabsContent>
+                </TabsList>
               </Tabs>
-            </CardHeader>
-
-            <CardContent className="overflow-y-scroll h-96 flex flex-col gap-4">
-              <Suspense fallback={<Loading />}>
-                <CourseworkSection slug={slug} token={token} />
-              </Suspense>
             </CardContent>
           </Card>
         </div>
@@ -105,29 +122,20 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
 
           {/* Unit Staff */}
           <DropdownCard
+            openByDefault={true}
             title="Unit staff"
             desc="Lecturers and teachers appear here"
+            className={""}
           >
-            {[1, 2, 3].map((i) => (
-              <Card
-                key={i}
-                className="p-0 bg-accent flex flex-row items-center gap-4"
-              >
-                <Avatar className="bg-slate-300 size-16 rounded-none" />
-                <div className="flex flex-col">
-                  <div className="text-xl font-semibold">Sion Hannuna</div>
-                  <div className="font-light">
-                    Senior Lecturer, School of Computer Science
-                  </div>
-                </div>
-              </Card>
-            ))}
+            <Lecturers unit_id={slug}></Lecturers>
           </DropdownCard>
 
           {/* Announcements */}
           <DropdownCard
+            openByDefault={false}
             title="Announcements"
             desc="Recent announcements appear here."
+            className={"mb-16"}
           >
             {[1, 2, 3].map((i) => (
               <Card
@@ -153,13 +161,13 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
   );
 }
 
-export default function UnitPage({
+export default async function UnitPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   return (
-    <Suspense>
+    <Suspense fallback={<Loading />}>
       <PageContent params={params} />
     </Suspense>
   );

@@ -1,14 +1,14 @@
 import { cookies } from "next/headers";
 import { Suspense } from "react";
-
-import CourseworkDescription from "@/app/coursework/[slug]/description";
-import CourseworkInformation from "@/app/coursework/[slug]/information";
-import CourseworkName from "@/app/coursework/[slug]/name";
 import { DropdownCard } from "@/components/dropdown-card";
 import RunTestsItem from "@/components/run-tests-item";
 import TestPassedProgressBar from "@/components/tests-passed-progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import Loading from "../loading";
+import CourseworkDescription from "./description";
+import CourseworkInformation from "./information";
+import CourseworkName from "./name";
 
 async function CourseworkPageContent({
   params,
@@ -49,7 +49,7 @@ async function CourseworkPageContent({
                 </Suspense>
               </CardContent>
             </Card>
-            <Card className="flex flex-col gap-4 h-96 md:h-[32rem] lg:min-h-0 xl:h-auto xl:min-h-0">
+            <Card className="flex flex-col gap-4 h-96 md:h-128 lg:min-h-0 xl:h-auto xl:min-h-0">
               <CardHeader>
                 <CardTitle>
                   <div className="text-2xl">Activity</div>
@@ -123,7 +123,7 @@ export default function CourseworkPage({
   params: Promise<{ slug: string }>;
 }) {
   return (
-    <Suspense>
+    <Suspense fallback={<Loading />}>
       <CourseworkPageContent params={params} />
     </Suspense>
   );

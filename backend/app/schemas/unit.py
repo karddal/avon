@@ -1,43 +1,75 @@
-
-from pydantic import BaseModel, AfterValidator
-from datetime import datetime
-from typing import Annotated, Optional, List
 import uuid
+from datetime import date, datetime
+from typing import Annotated, List
+
+from pydantic import AfterValidator, BaseModel, ConfigDict
 
 def name_is_correct_length(name: str) -> str:
-    if 1<=len(name)<=72:
+    if 1 <= len(name) <= 72:
         return name
     else:
         raise ValueError("Name must be between 1 and 72 characters")
 
+
 Name = Annotated[str, AfterValidator(name_is_correct_length)]
 
 class UnitRead(BaseModel):
-  name: Name
-  description: str
-  creation_date: datetime
-  unit_code: str
-  colour: str
+    model_config = ConfigDict(from_attributes=True)
+    id: uuid.UUID
+    name: Name
+    description: str
+    creation_date: datetime
+    unit_code: str
+    colour: str
+    programme_id: uuid.UUID
+
+class UnitLecturers(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    lecturers: List[str]
 
 class UnitCreate(BaseModel):
     name: Name
     description: str
     unit_code: str
     colour: str
-    group_ids: Optional[List[uuid.UUID]] = None
+    programme_id: uuid.UUID
+
 
 class UnitUpdate(BaseModel):
     name: Name
     description: str
     unit_code: str
     colour: str
-    group_ids: Optional[List[uuid.UUID]] = None
+    programme_id: uuid.UUID
+
 
 class UnitAll(BaseModel):
     units: List[UnitRead]
 
+class UnitWithoutProgramme(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: uuid.UUID
+    name: Name
+    description: str
+    creation_date: datetime
+    unit_code: str
+    colour: str
+
+class ProgrammeWithUnits(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: uuid.UUID
+    name: str
+    start_date: date
+    end_date: date
+    units: List[UnitWithoutProgramme]
+
+class UnitAllByGroup(BaseModel):
+    programmes: List[ProgrammeWithUnits]
+
+
 ## Maybe port the below to Jack's Coursework Schema
-class CourseworkRead(BaseModel):
+class CourseworkReadWithoutUnit(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: uuid.UUID
     name: str
     description: str
@@ -45,5 +77,6 @@ class CourseworkRead(BaseModel):
     creation_date: datetime
     colour: str
 
+
 class CourseworkAll(BaseModel):
-    courseworks: List[CourseworkRead]
+    courseworks: List[CourseworkReadWithoutUnit]
