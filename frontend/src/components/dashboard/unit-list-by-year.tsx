@@ -1,6 +1,4 @@
-"use server";
-
-import { BookDashed } from "lucide-react";
+import { BookDashed, AlertCircle } from "lucide-react";
 import {
   Empty,
   EmptyDescription,
@@ -18,43 +16,77 @@ export type UnitData = {
   creation_date: string;
   unit_code: string;
   colour: string;
-  academic_year: number;
+  academic_year: string | number;
 };
 
-export default async function UnitListByYear({ year }: { year: number }) {
-  // place unit data into tabs based on year
+export default async function UnitListByYear({
+  year,
+}: {
+  year: string | number;
+}) {
   const token = await getRequestJWT();
 
-  const data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/me/units`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    cache: "no-store",
-  });
-  const unitData: UnitData[] = await data.json();
-  const filtered = unitData.filter((item) => item.academic_year === year);
-  const list = filtered.map((unit) => (
-    <div key={unit.id} className="mb-3">
-      <Unit key={unit.id} props={unit} />
-    </div>
-  ));
-  // const filtered = await getData(currentYear, finished)
-  if (filtered !== undefined) {
-    return <>{list}</>;
-  } else {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/me/units`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch: ${response.statusText}`);
+    }
+
+    const unitData = await response.json();
+
+    const unitsArray = Array.isArray(unitData)
+      ? unitData
+      : unitData.data && Array.isArray(unitData.data)
+      ? unitData.data
+      : [];
+
+    const filtered = unitsArray.filter((item: UnitData) => {
+      return item.academic_year.toString() === year.toString();
+    });
+
+    if (filtered.length === 0) {
+      return (
+        <Empty className="border-dashed border-2 bg-muted/20 py-12">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <BookDashed className="text-muted-foreground/50" />
+            </EmptyMedia>
+            <EmptyTitle>No units found</EmptyTitle>
+            <EmptyDescription>
+              We couldn't find any units for the {year} academic year.
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      );
+    }
+
     return (
-      <Empty>
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <BookDashed />
-          </EmptyMedia>
-          <EmptyTitle>No units.</EmptyTitle>
-          <EmptyDescription>
-            No units were found that you are connected to.
-          </EmptyDescription>
-        </EmptyHeader>
-      </Empty>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {filtered.map((unit: UnitData) => (
+          <Unit key={unit.id} props={unit} />
+        ))}
+      </div>
+    );
+  } catch (error) {
+    console.error("Dashboard Fetch Error:", error);
+    return (
+      <div className="flex items-center justify-center p-8 border-2 border-destructive/20 rounded-lg bg-destructive/5 text-destructive">
+        <AlertCircle className="mr-2 h-4 w-4" />
+        <p className="text-sm font-medium">
+          Failed to load units. Please try again later.
+        </p>
+      </div>
     );
   }
 }

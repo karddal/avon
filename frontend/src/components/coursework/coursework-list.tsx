@@ -41,7 +41,7 @@ export default async function CourseworkList({
         "Content-Type": "application/json",
       },
       cache: "no-cache",
-    },
+    }
   );
   const courseworkListData: unit[] = await response.json();
 
@@ -74,14 +74,14 @@ export default async function CourseworkList({
   return (
     <>
       {filteredUnitsList.length === 0 && (
-        <Empty>
+        <Empty className="border-dashed border-2 bg-muted/20 py-12">
           <EmptyHeader>
             <EmptyMedia variant="icon">
-              <BookDashed />
+              <BookDashed className="text-muted-foreground/50" />
             </EmptyMedia>
-            <EmptyTitle>No courseworks.</EmptyTitle>
+            <EmptyTitle>No coursework found</EmptyTitle>
             <EmptyDescription>
-              No courseworks were found that you are connected to.
+              We couldn't find any courseworks that you are connected to.
             </EmptyDescription>
           </EmptyHeader>
         </Empty>
