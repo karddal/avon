@@ -32,8 +32,7 @@ export default function Error({
           </EmptyMedia>
           <EmptyTitle>Whoops, something went wrong.</EmptyTitle>
           <EmptyDescription>
-            We couldn't fetch the page. Please check the server status
-            page.
+            We couldn't fetch the page. Please check the server status page.
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
