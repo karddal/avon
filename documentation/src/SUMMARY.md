@@ -13,8 +13,12 @@
   - [Creating a coursework]()
 
 # Project management
+
+- [Reflection on TB-1](management/tb-1-reflection.md)
+- [Agile workflows]()
 - [Meeting minutes](meetings/README.md)
   - [03-01-2025 Extraordinary team meeting](meetings/03-01-2025-team.md)
+  - [08-01-2025 Extraordinary team meeting](meetings/08-01-2025-team.md)
 
 # Developer documentation
 
