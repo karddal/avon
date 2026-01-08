@@ -14,35 +14,28 @@ jobs:
       - uses: astral-sh/ruff-action@v3
         with:
           src: "./backend"
-
-#  build:
-#    needs: ruff
-#    runs-on: ubuntu-latest
-#    defaults:
-#      run:
-#        working-directory: ./backend
-#    steps:
-#      - name: Checkout repo
-#        uses: actions/checkout@v5
-#      - name: Setup Java
-#        uses: actions/setup-java@v5
-#        with:
-#          distribution: "temurin"
-#          java-verson: 25
-#      - name: Caching
-#        uses: gradle/actions/setup-gradle@v5
-#      - name: Build
-#        run: ./gradlew build -x spotlessCheck
-#      - name: Publish Test Report
-#        uses: mikepenz/action-junit-report@v5
-#        if: success() || failure() # always run even if the previous step fails
-#        with:
-#          report_paths: '**/build/test-results/test/TEST-*.xml'
-#      - name: Upload build artifacts
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: Package
-#          path: build/libs
+  build:
+   needs: ruff
+   runs-on: ubuntu-latest
+   defaults:
+     run:
+       working-directory: ./backend
+   steps:
+     - uses: actions/checkout@v6
+     - name: "Set up Python"
+       uses: actions/setup-python@v6
+       with:
+         python-version-file: ".python-version"
+     - name: Install uv
+       uses: astral-sh/setup-uv@v7
+       with:
+         enable-cache: true
+     - name: Install the project
+       run: uv sync --locked --all-extras --dev
+     - name: Run tests
+       run: uv run pytest
+       
+       
 
 
       
