@@ -5,7 +5,7 @@ import DashboardAnalysis from "@/components/dashboard/dashboard_analysis_card";
 import UnitListByYear from "@/components/dashboard/unit-list-by-year";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { requireSession } from "@/lib/auth-utils";
+import { requireLecturerSession, requireSession } from "@/lib/auth-utils";
 
 export function getCurrentAcademicYear(): string {
   const now = new Date();
@@ -18,7 +18,7 @@ export function getCurrentAcademicYear(): string {
 }
 
 async function DashboardPageContent() {
-  await requireSession();
+  await requireLecturerSession();
   const currentAcademicYear = getCurrentAcademicYear();
   return (
     <div className="space-y-6 mb-2">
