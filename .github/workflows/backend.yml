@@ -14,7 +14,7 @@ jobs:
       - uses: astral-sh/ruff-action@v3
         with:
           src: "./backend"
-  build:
+  buildandtest:
    needs: ruff
    runs-on: ubuntu-latest
    defaults:
