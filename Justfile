@@ -24,16 +24,7 @@ fixit: fix-fe fix-be
 
 test-be:
 	@echo "Testing backend routers..."
-	cd backend && \
-	DATABASE_URL=sqlite:///:memory: \
-	JWT_SECRET_KEY=abhdvgdgv \
-	JWT_AUDIENCE=test-audience \
-	JWT_ISSUER=test-issuer \
-	JWKS_URL=http://testserver/jwks \
-	ACCESS_TOKEN_EXPIRY_MINUTES=60 \
-	CORS_ORIGIN=http://testserver \
-	uv run --active pytest -v 
-
+	cd backend && uv run --env-file .env.test pytest -v
 
 run-fe:
     cd frontend && npm run dev
