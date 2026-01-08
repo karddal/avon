@@ -12,8 +12,8 @@ def test_hash_and_verify_password():
     hashed = hash_password(password)
 
     assert hashed != password
-    assert verify_password(password, hashed) == True
-    assert verify_password("wrong", hashed) == False
+    assert verify_password(password, hashed)
+    assert not verify_password("wrong", hashed)
 
 @pytest.mark.asyncio
 async def test_create_access_token_and_get_current_user(session):
