@@ -16,21 +16,27 @@ def engine():
     yield engine
     SQLModel.metadata.drop_all(engine) # to clean up after each test file as each one creates a database instance
 
-
 @pytest.fixture(scope="function")
 def session(engine):
-    with Session(engine) as session:
-        yield session # yield not return so to clean up After the tests are done
-
+    connection = engine.connect() #connecting to the orgininal engine
+    transaction = connection.begin()
+    session = Session(bind=connection) # bind session to connection so we can control transactions
+    
+    yield session # yield not return so to clean up After the tests are done
+    
+    session.close()
+    transaction.rollback()
+    connection.close() 
 
 @pytest.fixture(scope="function")
-def client(engine): # Whenever our router tests request a client, they get this fixture
+def client(session):
     def override_get_session():
-        with Session(engine) as session:
-            yield session
+        yield session  # Use THE SAME session, not a new one
 
     app.dependency_overrides[get_session] = override_get_session # Whenever something requires get_session (from our main app.db.session file), use override_get_session instead
     with TestClient(app) as client: # creates a TestClient instance using our FastAPI app
         yield client # yield so that we get a clean shut down and successful clean up
 
     app.dependency_overrides.clear() # Clean up after it's finished
+
+

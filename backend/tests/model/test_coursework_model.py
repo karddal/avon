@@ -5,7 +5,6 @@ from datetime import datetime, timedelta
 
 from app.models.coursework import Coursework
 from app.models.unit import Unit
-from app.models.unit_enrollment import UnitEnrollment
 from app.models.programme import Programme
 # Need teh imports of all the models
 
