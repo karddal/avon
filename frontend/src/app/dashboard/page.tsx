@@ -5,10 +5,21 @@ import DashboardAnalysis from "@/components/dashboard/dashboard_analysis_card";
 import UnitListByYear from "@/components/dashboard/unit-list-by-year";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { requireLecturerSession } from "@/lib/auth-utils";
+
+export function getCurrentAcademicYear(): string {
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const calendarYear = now.getFullYear();
+
+  const startYear = currentMonth < 8 ? calendarYear - 1 : calendarYear;
+
+  return `${startYear}/${startYear + 1}`;
+}
 
 async function DashboardPageContent() {
-  const currentYear = new Date().getFullYear();
-  const currentAcademicYear = `${currentYear}/${currentYear + 1}`;
+  await requireLecturerSession();
+  const currentAcademicYear = getCurrentAcademicYear();
   return (
     <div className="space-y-6 mb-2">
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -44,9 +55,6 @@ async function DashboardPageContent() {
                     {/*  currentYear={currentYear}*/}
                     {/*  finished={false}*/}
                   </Suspense>
-                  <div className="text-sm text-muted-foreground pl-2">
-                    Academic Year: {currentAcademicYear}
-                  </div>
                 </TabsContent>
               </div>
             </Tabs>
