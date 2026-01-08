@@ -31,7 +31,8 @@ def coursework_payload(unit_id):
     }
 
 
-
+# Each test uses a fresh database, as we use the memory version of SQLite for testing
+# CREATE:
 def test_coursework_create_success(client, session):
     unit_id = create_unit_with_programme(session)
 
@@ -45,3 +46,94 @@ def test_coursework_create_success(client, session):
     assert data["name"] == payload["name"]
     assert data["unit_id"] == payload["unit_id"]
     assert "id" in data
+
+def test_coursework_create_duplicate(client, session):
+    unit_id = create_unit_with_programme(session)
+
+    payload = coursework_payload(str(unit_id))
+
+    client.post("/coursework/create", json=payload)
+    response = client.post("/coursework/create", json=payload)
+
+    assert response.status_code == 400 # Error code if there is more than one of the same coursework
+    assert "Coursework already made that belongs to the same unit and has the same name" == response.json()["detail"]
+
+def test_get_coursework_success(client, session):
+    unit_id = create_unit_with_programme(session)
+
+    payload = coursework_payload(str(unit_id))
+    createResponse = client.post("/coursework/create", json=payload)  # Need response to get the ID of the coursework
+
+    coursework_id = createResponse.json()["id"]
+    response = client.get(f"/coursework/{coursework_id}")
+
+    assert response.status_code == 200
+    assert response.json()["id"] == coursework_id
+
+# GET:
+def test_get_coursework_not_found(client):
+    response = client.get(f"/coursework/{uuid4()}")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Coursework not found"
+
+# UPDATE:
+def test_update_coursework_success(client, session):
+    unit_id = create_unit_with_programme(session)
+
+    payload = coursework_payload(str(unit_id))
+    createResponse = client.post("/coursework/create", json=payload)
+    coursework_id = createResponse.json()["id"]
+
+    updatedPayload = {"name": "Haskell 3", "description": "The better coursework"}
+
+    response = client.put(f"/coursework/{coursework_id}", json=updatedPayload)
+
+    assert response.status_code == 200
+    assert response.json()["name"] == "Haskell 3"
+    assert response.json()["description"] == "The better coursework"
+
+
+def test_update_coursework_not_found(client):
+    response = client.put(f"/coursework/{uuid4()}", json={"name": "Irrelevant stuffff"})
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Coursework not found"
+
+
+def test_update_coursework_unit_not_found(client, session):
+    unit_id = create_unit_with_programme(session)
+
+    payload = coursework_payload(str(unit_id))
+    createResponse = client.post("/coursework/create", json=payload)
+    coursework_id = createResponse.json()["id"]
+
+    response = client.put(f"/coursework/{coursework_id}", json={"unit_id": str(uuid4())})
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Corresponding unit not found"
+
+# DELETE:
+def test_delete_coursework_success(client, session):
+    unit_id = create_unit_with_programme(session)
+
+    payload = coursework_payload(str(unit_id))
+    createResponse = client.post("/coursework/create", json=payload)
+    coursework_id = createResponse.json()["id"]
+
+    response = client.delete(f"/coursework/{coursework_id}")
+
+    assert response.status_code == 200
+    assert response.json()["deletion_successful"] is True
+    assert response.json()["id"] == coursework_id
+
+    # verify it is actually deleted
+    get_resp = client.get(f"/coursework/{coursework_id}")
+    assert get_resp.status_code == 404
+
+
+def test_delete_coursework_not_found(client):
+    response = client.delete(f"/coursework/{uuid4()}")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Coursework not found"
