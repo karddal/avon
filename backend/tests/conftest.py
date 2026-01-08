@@ -1,3 +1,13 @@
+import os
+
+os.environ["DATABASE_URL"] = "sqlite:///:memory:"
+os.environ["JWT_SECRET_KEY"] = "testSecretKey"
+os.environ["JWT_AUDIENCE"] = "testAudience"
+os.environ["JWT_ISSUER"] = "testIssuer"
+os.environ["JWKS_URL"] = "http://testserver/jwks"
+os.environ["ACCESS_TOKEN_EXPIRY_MINUTES"] = "60"
+os.environ["CORS_ORIGIN"] = "http://testserver"
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import SQLModel, Session, create_engine

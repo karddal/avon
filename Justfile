@@ -24,7 +24,7 @@ fixit: fix-fe fix-be
 
 test-be:
 	@echo "Testing backend routers..."
-	cd backend && uv run --env-file .env.test pytest -v
+	cd backend && uv run pytest -v
 
 run-fe:
     cd frontend && npm run dev
