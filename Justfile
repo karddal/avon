@@ -23,14 +23,11 @@ fix-be:
 fixit: fix-fe fix-be
 
 test-be:
-    @echo "Testing backend..."
-    cd backend && ./gradlew test
-
-test: test-be
+	@echo "Testing backend routers..."
+	cd backend && uv run pytest -v
 
 run-fe:
     cd frontend && npm run dev
 
 run-be:
     cd backend && uv run fastapi dev
-
