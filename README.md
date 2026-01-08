@@ -1,4 +1,4 @@
-<img width="521" height="233" alt="image" src="https://github.com/user-attachments/assets/2f90f327-63be-414f-a275-8091d4f76e3e" />
+<img width="130.25" height="58.25" alt="image" src="https://github.com/user-attachments/assets/2f90f327-63be-414f-a275-8091d4f76e3e" />
 
 # Continuous Assessment for Revision Control
 
