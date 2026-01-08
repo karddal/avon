@@ -37,3 +37,6 @@ run-be:
 sync:
     cd frontend && npm i
     cd backend && uv sync
+
+serve-book:
+    cd documentation && mdbook serve --open
