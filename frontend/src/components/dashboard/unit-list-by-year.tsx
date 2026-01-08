@@ -16,7 +16,7 @@ export type UnitData = {
   creation_date: string;
   unit_code: string;
   colour: string;
-  academic_year: string | number;
+  academic_year: string | number; // Flexible type for comparison
 };
 
 export default async function UnitListByYear({
@@ -28,7 +28,7 @@ export default async function UnitListByYear({
 
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/me/units`,
+      `${process.env.NEXT_PUBLIC_API_URL}/me/units/active`,
       {
         method: "GET",
         headers: {
@@ -44,18 +44,9 @@ export default async function UnitListByYear({
     }
 
     const unitData = await response.json();
+    const unitsArray = unitData.units;
 
-    const unitsArray = Array.isArray(unitData)
-      ? unitData
-      : unitData.data && Array.isArray(unitData.data)
-      ? unitData.data
-      : [];
-
-    const filtered = unitsArray.filter((item: UnitData) => {
-      return item.academic_year.toString() === year.toString();
-    });
-
-    if (filtered.length === 0) {
+    if (unitsArray.length === 0) {
       return (
         <Empty className="border-dashed border-2 bg-muted/20 py-12">
           <EmptyHeader>
@@ -72,8 +63,8 @@ export default async function UnitListByYear({
     }
 
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filtered.map((unit: UnitData) => (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {unitsArray.map((unit: UnitData) => (
           <Unit key={unit.id} props={unit} />
         ))}
       </div>

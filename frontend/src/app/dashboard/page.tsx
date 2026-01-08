@@ -6,6 +6,7 @@ import UnitListByYear from "@/components/dashboard/unit-list-by-year";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { requireSession } from "@/lib/auth-utils";
+import UnitList from "@/components/units/unit-list";
 
 export function getCurrentAcademicYear(): string {
   const now = new Date();
