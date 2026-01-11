@@ -1,0 +1,7 @@
+[book]
+title = "Avon Documentation"
+authors = ["The Avon Team"]
+language = "en"
+
+[output.html]
+smart-punctuation = true
