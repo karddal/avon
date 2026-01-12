@@ -229,7 +229,7 @@ A modern, responsive Next.JS frontend designed to be fast and lightweight consum
 
 ## Developer Instructions
 
-Here is how to setup a local development version of Avon on your machine.
+Here is how to setup a local development version of Avon on your machine. More in-depth instructions can be seen in the Documentation Website.
 
 ### Prerequisites
 
