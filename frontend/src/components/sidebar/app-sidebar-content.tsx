@@ -96,9 +96,9 @@ export default async function AppSideBarContent() {
   const items = type === "lecturer" ? adminItems : studentItems;
   return (
     <SidebarContent>
-      <SidebarGroup className="h-full">
+      <SidebarGroup className="h-full p-0">
         <SidebarMenu className="flex h-full flex-col md:justify-between">
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 p-2">
             <p
               className={
                 "sr-only md:not-sr-only text-muted-foreground self-center text-sm"
@@ -114,7 +114,7 @@ export default async function AppSideBarContent() {
               .filter((item) => !item.bottom)
               .map((item) => (
                 <SidebarMenuItem key={item.title} className="w-full">
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton className="h-full" asChild>
                     <Link href={item.url} className="flex flex-row">
                       <item.icon strokeWidth={1} className="size-8!" />
                       <span className="text-accent-foreground">
@@ -127,7 +127,7 @@ export default async function AppSideBarContent() {
           </div>
 
           {/* bottom part of sidebar */}
-          <div className="flex flex-col gap-4 items-start">
+          <div className="flex flex-col gap-4 items-start p-2">
             {items
               .filter((item) => item.bottom)
               .map((item) => (
@@ -145,39 +145,36 @@ export default async function AppSideBarContent() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
-            <SidebarMenuItem
-              key={"Account"}
-              className="flex flex-col gap-4 items-start w-full"
-            >
-              <SidebarMenuButton className="h-full w-full" asChild>
-                <DropdownMenu>
-                  <DropdownMenuTrigger className="w-full hover:bg-accent-foreground/10">
-                    <Link
-                      href="#"
-                      className="flex flex-row w-full items-start h-full"
-                    >
-                      <User strokeWidth={1} className="size-10!" />
-                      <div className={"flex flex-col w-full items-start"}>
-                        <span className="text-accent-foreground text-sm">
-                          {s.user.name}
-                        </span>
-                        <span className="text-muted-foreground text-sm">
-                          {type.charAt(0).toUpperCase() + type.slice(1)}
-                        </span>
-                      </div>
-                      <ArrowUpDown strokeWidth={2} className={"self-center"} />
-                    </Link>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent side="bottom" align="start">
-                    <DropdownMenuItem>{s.user.name}</DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <LogoutButton />
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
           </div>
         </SidebarMenu>
+        <SidebarMenuItem key={"Account"} className="w-full border-t">
+          <SidebarMenuButton className="h-full" asChild>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="w-full">
+                <Link
+                  href="#"
+                  className="flex flex-row w-full items-start gap-2 h-full hover:bg-accent-foreground/10 p-2"
+                >
+                  <User strokeWidth={1} className="size-10!" />
+                  <div className={"flex flex-col w-full items-start"}>
+                    <span className="text-accent-foreground text-sm">
+                      {s.user.name}
+                    </span>
+                    <span className="text-muted-foreground text-sm">
+                      {type.charAt(0).toUpperCase() + type.slice(1)}
+                    </span>
+                  </div>
+                  {/* <ArrowUpDown strokeWidth={2} className={"self-center"} /> */}
+                </Link>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="bottom" align="start">
+                <DropdownMenuItem>{s.user.name}</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <LogoutButton />
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
       </SidebarGroup>
     </SidebarContent>
   );
