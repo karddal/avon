@@ -98,10 +98,10 @@ export default async function AppSideBarContent() {
     <SidebarContent>
       <SidebarGroup className="h-full p-0">
         <SidebarMenu className="flex h-full flex-col md:justify-between">
-          <div className="flex flex-col gap-4 p-2">
+          <div className="flex flex-col py-2">
             <p
               className={
-                "sr-only md:not-sr-only text-muted-foreground self-center text-sm"
+                "w-full text-center text-muted-foreground self-center text-sm pb-2"
               }
             >
               Use{" "}
@@ -114,7 +114,7 @@ export default async function AppSideBarContent() {
               .filter((item) => !item.bottom)
               .map((item) => (
                 <SidebarMenuItem key={item.title} className="w-full">
-                  <SidebarMenuButton className="h-full" asChild>
+                  <SidebarMenuButton className="h-full p-2" asChild>
                     <Link href={item.url} className="flex flex-row">
                       <item.icon strokeWidth={1} className="size-8!" />
                       <span className="text-accent-foreground">
@@ -127,7 +127,7 @@ export default async function AppSideBarContent() {
           </div>
 
           {/* bottom part of sidebar */}
-          <div className="flex flex-col gap-4 items-start p-2">
+          <div className="flex flex-col border-t">
             {items
               .filter((item) => item.bottom)
               .map((item) => (
@@ -147,7 +147,7 @@ export default async function AppSideBarContent() {
               ))}
           </div>
         </SidebarMenu>
-        <SidebarMenuItem key={"Account"} className="w-full border-t">
+        <SidebarMenuItem key={"Account"} className="w-full">
           <SidebarMenuButton className="h-full" asChild>
             <DropdownMenu>
               <DropdownMenuTrigger className="w-full">
