@@ -34,3 +34,20 @@ def test_programme_name_valid_string_raises_no_error():
     start = date.today()
     end = start + timedelta(days=365)
     ProgrammeWithUnits(id=programme_id, name="Year 2026/2027", start_date=start, end_date=end, units=[])
+
+# -------------- Start Date ----------------
+
+def test_programme_start_date_not_date_raises_error():
+    programme_id = uuid4()
+    end = date.today() + timedelta(days=365)
+    with pytest.raises(ValidationError):
+        ProgrammeWithUnits(id=programme_id, name="Year 2026/2027", start_date="notdate", end_date=end, units=[])
+
+# -------------- End Date ----------------
+
+def test_programme_end_date_not_date_raises_error():
+    programme_id = uuid4()
+    start = date.today()
+    with pytest.raises(ValidationError):
+        ProgrammeWithUnits(id=programme_id, name="Year 2026/2027", start_date=start, end_date="notdate", units=[])
+
