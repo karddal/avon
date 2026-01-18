@@ -63,7 +63,7 @@ def test_programme_end_date_valid_date_raises_no_error():
     end = start + timedelta(days=365)
     ProgrammeWithUnits(id=programme_id, name="Year 2026/2027", start_date=start, end_date=end, units=[])
 
-# -------------- Unit List ----------------
+# -------------- Unit List stuff ----------------
 def test_programme_units_not_list_raises_error():
     programme_id = uuid4()
     start = date.today()
@@ -71,3 +71,18 @@ def test_programme_units_not_list_raises_error():
     with pytest.raises(ValidationError):
         ProgrammeWithUnits(id=programme_id, name="Year 2026/2027", start_date=start, end_date=end, units="notalist")
 
+def test_units_invalid_item_raises_error():
+    programme_id = uuid4()
+    start = date.today()
+    end = start + timedelta(days=365)
+    with pytest.raises(ValidationError):
+        ProgrammeWithUnits(id=programme_id, name="Year 2026/2027", start_date=start, end_date=end, units=[45857847])
+
+def test_units_valid_list_raises_no_error():
+    creation_date=date.today()
+    unit = UnitWithoutProgramme(id=uuid4(), name="Imp and Func", description="2nd best first year unit", creation_date=creation_date, unit_code="COMS10016", colour="abcdef")
+
+    programme_id = uuid4()
+    start = date.today()
+    end = start + timedelta(days=365)
+    ProgrammeWithUnits(id=programme_id, name="Year 2026/2027", start_date=start, end_date=end, units=[unit])
