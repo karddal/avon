@@ -1,4 +1,4 @@
-<img width="1500" height="500" alt="Group 5" src="https://github.com/user-attachments/assets/ed6b6784-25ed-47b6-8be3-ff6390b33701" />
+<img width="130.25" height="58.25" alt="image" src="https://github.com/user-attachments/assets/2f90f327-63be-414f-a275-8091d4f76e3e" />
 
 # Continuous Assessment for Revision Control
 
@@ -28,16 +28,16 @@
       - [Marking coursework](#marking-coursework)
       - [Analytics](#analytics)
   - [Project structure](#project-structure)
-    - [Frontend](#frontend)
-    - [Backend](#backend)
+    - [Frontend](#frontend-tree)
+    - [Backend](#backend-tree)
   - [Developer Instructions](#developer-instructions)
     - [Prerequisites](#prerequisites)
-      - [Bun](#bun)
+      - [NPM](#npm)
       - [NodeJS](#nodejs)
       - [UV](#uv)
       - [Python](#python)
       - [Just](#just)
-    - [Setup / Installing Dependancies](#setup--installing-dependancies)
+    - [Setup / Installing Dependencies](#setup--installing-dependancies)
     - [Running](#running)
       - [Environment Variables](#environment-variables)
       - [Final Steps](#final-steps)
@@ -58,7 +58,7 @@
 | Backend        | [FastAPI](https://fastapi.tiangolo.com/)                                                    |
 | Database       | [PostgreSQL](https://www.postgresql.org/)                                                   |
 | Linters        | [Biome](https://biomejs.dev/), [Ruff](https://github.com/astral-sh/ruff)                    |
-| Tools          | [Just](https://github.com/casey/just), [Git](https://git-scm.com/), [Bun](https://bun.dev/) |
+| Tools          | [Just](https://github.com/casey/just), [Git](https://git-scm.com/), [NPM](https://npmjs.com/) |
 | Infrastructure | [AWS](https://aws.amazon.com)                                                               |
 
 ## Project Description
@@ -162,16 +162,21 @@ A modern, responsive Next.JS frontend designed to be fast and lightweight consum
 
 ## Project structure
 
-- `/Agendas` contains agendas for meetings
+- `/documentation` contains the source for the mdBook documentation website.
+- `/docs` contains miscellaneous documentation and agendas.
 - `Justfile` is a configuration file for the Just command runner, containing custom scripts to make collaboration easier.
 - `README.md` - you are here :)
 - `CONTRIBUTING.md` contains information on how to contribute to the project.
+- `/backend` contains the FastAPI backend code.
+- `/frontend` contains the NextJS frontend code.
 
-### Frontend
+
+### Frontend tree
 
 ```
 └── frontend/
     ├── public/                   # Static assets (icons, images, etc.)
+    ├── node_modules/             # Libraries
     ├── src/                      # Main application source
     │   ├── app/                  # Next.js app directory (routes + layouts)
     │   │   ├── (page name)/      # Specific page routes
@@ -183,12 +188,20 @@ A modern, responsive Next.JS frontend designed to be fast and lightweight consum
     │   ├── components/           # Reusable components
     │   │   └── ui/               # ShadCN UI components
     │   ├── hooks/                # Custom React hooks
+    │   ├── scripts/              # Custom dev scripts e.g. for seeding the database
+    │   ├── temporary/            # Temporarily removes pages that need to be refactored
     │   └── lib/                  # Utility and helper functions
     ├── .gitignore                # Git ignore rules
-    └── bun.lock                  # Dependency lock file (bun)
+    ├── biome.json                # Linter ignore rules
+    ├── components.json           # Shadcn configuration
+    ├── docker-compose.yaml       # Docker-compose for frontend
+    ├── Dockerfile                # Dockerfile for frontend
+    ├── next.config.ts            # Nextjs configuration
+    ├── package.json              # Dependency configuration and npm config
+    └── package.lock.json         # Dependency lock file (npm)
 ```
 
-### Backend
+### Backend tree
 
 ```
 └── backend/
@@ -204,10 +217,13 @@ A modern, responsive Next.JS frontend designed to be fast and lightweight consum
     │   ├── model/                # Model tests
     │   ├── router/               # Endpoint tests
     │   ├── schemas/              # Schema validation tests
-    │   └── security/             # Auth/security-related tests
-    ├── database.db               # SQLite database (for local development)
+    │   ├── security/             # Auth/security-related tests
+    │   └── conftest.py           # Test environment setup
+    ├── .gitignore                # Git ignore rules
     ├── pyproject.toml            # Project metadata + dependencies
     ├── pytest.ini                # Pytest config
+    ├── docker-compose.yaml       # Docker-compose for backend
+    ├── Dockerfile                # Dockerfile for backend
     └── uv.lock                   # Dependency lock file (uv)
 ```
 
@@ -262,7 +278,7 @@ git clone git@github.com:spe-uob/2025-ContinuousAssessment
 
 Before starting work, you need to install all the required packages.
 
-For the **frontend**, enter the `frontend` folder and execute `bun install` to fetch all dependencies..
+For the **frontend**, enter the `frontend` folder and execute `npm install` to fetch all dependencies..
 
 For the **backend**, enter the `backend` folder, create a virtual environment using `uv venv`, activate the environment, and then run `uv sync` to install all packages.
 Other commands such as `uv add` can be used to add packages to the project.
@@ -275,32 +291,29 @@ Other commands such as `uv add` can be used to add packages to the project.
 in `.env.development`:
 
 ```
-NEXT_PUBLIC_API_URL         = # ip of your backend, local is http://localhost:8000
-NEXT_PUBLIC_CDN_URL         = # default is https://cdn.avon.ac
+NEXT_PUBLIC_API_URL=http://localhost:8000       # the url of the backend api
+ENV=development                                 # environment type
+BETTER_AUTH_SECRET={RANDOM SECRET}              # better auth secret to use
+BETTER_AUTH_URL=https://localhost:3000          # better auth url to bind to
 ```
+
 
 **Backend:**
 in `.env.dev`
 
 ```
-jwt_secret_key              = # secret key of JWT token
-access_token_expiry_minutes = # time until token expires, default is 600 (10 mins)
-DATABASE_URL                = # url of database, local is sqlite:///database.db
-CORS_ORIGIN                 = # url of frontend, local is https://localhost:3000
-```
-
-With the environment variables, you can either use the `.env.*` files, or you can run the corresponding just command with the environment variable inlined (UNIX only).
-Example for **frontend** shown below:
-
-```sh
-NEXT_PUBLIC_API_URL=http://localhost:8000 NEXT_PUBLIC_CDN_URL=https://cdn.avon.ac just run-fe
+DATABASE_URL="sqlite:///../sqlite.db"           # the location of the database to access (for local dev, share with frontend)
+CORS_ORIGIN=["http://localhost:3000"]           # the cors origins to allow
+JWKS_URL="http://localhost:3000/api/auth/jwks"  # jwk url that can be fetched from (get from frontend)
+JWT_AUDIENCE="https://localhost:3000"           # jwt audience, set in frontend
+JWT_ISSUER="https://localhost:3000"             # jwt issuer, from frontend
 ```
 
 #### Final Steps
 
 To run the frontend, simply run `just run-fe` in the project root.
 
-Similarly, to run the backend, run `ENV=dev just run-be` if using `.env.dev` or see above to run with inlined environment variables.
+Similarly, to run the backend, run `ENV=dev just run-be` if using `.env.dev`.
 
 Now you should be able to visit `http://localhost:3000` and view the frontend Next.js app, with the backend running on`http://localhost:8000`.
 

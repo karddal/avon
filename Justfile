@@ -30,4 +30,11 @@ run-fe:
     cd frontend && npm run dev
 
 run-be:
-    cd backend && uv run fastapi dev
+    cd backend && ENV=dev uv run fastapi dev
+
+sync:
+    cd frontend && npm i
+    cd backend && uv sync
+
+serve-book:
+    cd documentation && mdbook serve --open
