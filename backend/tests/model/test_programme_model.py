@@ -35,3 +35,19 @@ def test_programme_persists_properly(session):
     assert retrieved.name == "Year 2026/2027"
     assert retrieved.start_date == start
     assert retrieved.end_date == end
+
+# Testing that we can successfully query by programme_id
+def test_programme_query_by_programme_id(session):
+    start = date.today()
+    end = start + timedelta(days=365)
+    programme_id = uuid4()
+
+    programme = Programme(id=programme_id, name="Year 2026/2027", start_date=start, end_date=end)
+
+    session.add(programme)
+    session.commit()
+    stmt = select(Programme).where(Programme.id == programme_id)
+    result = session.exec(stmt).first()
+
+    assert result is not None
+    assert result.id == programme_id
