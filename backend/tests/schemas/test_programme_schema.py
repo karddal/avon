@@ -43,6 +43,12 @@ def test_programme_start_date_not_date_raises_error():
     with pytest.raises(ValidationError):
         ProgrammeWithUnits(id=programme_id, name="Year 2026/2027", start_date="notdate", end_date=end, units=[])
 
+def test_programme_start_date_valid_date_raises_no_error():
+    programme_id = uuid4()
+    start = date.today()
+    end = start + timedelta(days=365)
+    ProgrammeWithUnits(id=programme_id, name="Year 2026/2027", start_date=start, end_date=end, units=[])
+
 # -------------- End Date ----------------
 
 def test_programme_end_date_not_date_raises_error():
@@ -50,4 +56,18 @@ def test_programme_end_date_not_date_raises_error():
     start = date.today()
     with pytest.raises(ValidationError):
         ProgrammeWithUnits(id=programme_id, name="Year 2026/2027", start_date=start, end_date="notdate", units=[])
+
+def test_programme_end_date_valid_date_raises_no_error():
+    programme_id = uuid4()
+    start = date.today()
+    end = start + timedelta(days=365)
+    ProgrammeWithUnits(id=programme_id, name="Year 2026/2027", start_date=start, end_date=end, units=[])
+
+# -------------- Unit List ----------------
+def test_programme_units_not_list_raises_error():
+    programme_id = uuid4()
+    start = date.today()
+    end = start + timedelta(days=365)
+    with pytest.raises(ValidationError):
+        ProgrammeWithUnits(id=programme_id, name="Year 2026/2027", start_date=start, end_date=end, units="notalist")
 
