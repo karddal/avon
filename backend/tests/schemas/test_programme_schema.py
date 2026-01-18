@@ -26,7 +26,8 @@ def test_programme_name_not_string_raises_error():
     programme_id = uuid4()
     start = date.today()
     end = start + timedelta(days=365)
-    ProgrammeWithUnits(id=programme_id, name=75667568, start_date=start, end_date=end, units=[])
+    with pytest.raises(ValidationError):
+        ProgrammeWithUnits(id=programme_id, name=75667568, start_date=start, end_date=end, units=[])
 
 def test_programme_name_valid_string_raises_no_error():
     programme_id = uuid4()
