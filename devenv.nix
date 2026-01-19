@@ -8,6 +8,7 @@
   packages = [
     pkgs.git
     pkgs.just
+    pkgs.mdbook
   ];
 
   # https://devenv.sh/languages/
