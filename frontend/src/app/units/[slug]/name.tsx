@@ -21,14 +21,14 @@ export default async function UnitName({
         "Content-Type": "application/json",
       },
       cache: "no-cache",
-    },
+    }
   );
 
   const unit: UnitData = await response.json();
 
   return (
-    <>
+    <div>
       <span className="font-light">{unit.unit_code}</span> {unit.name}
-    </>
+    </div>
   );
 }

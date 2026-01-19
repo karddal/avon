@@ -14,6 +14,8 @@ import UnitsCourseworkList from "@/components/units/units-coursework-list";
 import { getRequestJWT, requireSession } from "@/lib/auth-utils";
 import { ClipboardPlus } from "lucide-react";
 
+import LecturerDropdown from "@/components/units/lecturer-dropdown";
+
 async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const s = await requireSession();
@@ -34,7 +36,10 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
               </div>
             }
           >
-            <UnitName slug={slug} token={token} />
+            <div className="flex flex-row gap-4 justify-between">
+              <UnitName slug={slug} token={token} />
+              {userRole === "lecturer" && <LecturerDropdown></LecturerDropdown>}
+            </div>
           </Suspense>
         </div>
         <div className="w-full bg-accent-foreground"></div>
@@ -124,21 +129,6 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
 
         {/* Right column */}
         <div className="flex flex-col xl:col-span-1 lg:col-span-2 gap-4 min-h-0">
-          {/* Create a coursework*/}
-          {userRole === "lecturer" && (
-            <>
-              <Card className={`flex flex-col gap-0 hover:cursor-pointer`}>
-                <CardHeader className="flex flex-row items-center gap-4 select-none ">
-                  <CardTitle>
-                    <Link href={`${slug}/create`} className="text-2xl">
-                      List Students
-                    </Link>
-                  </CardTitle>
-                </CardHeader>
-              </Card>
-            </>
-          )}
-
           {/* Unit Staff */}
           <DropdownCard
             openByDefault={true}
