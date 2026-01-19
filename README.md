@@ -169,6 +169,8 @@ A modern, responsive Next.JS frontend designed to be fast and lightweight consum
 - `CONTRIBUTING.md` contains information on how to contribute to the project.
 - `/backend` contains the FastAPI backend code.
 - `/frontend` contains the NextJS frontend code.
+- `devenv` stuff - Nix stuff related to the `devenv` tool some team members use locally for nice local environments.
+- `.envrc` - used for devenv, automatically activates the devenv when you cd into folder if set up locally.
 
 
 ### Frontend tree
