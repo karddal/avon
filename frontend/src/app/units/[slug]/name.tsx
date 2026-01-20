@@ -21,7 +21,7 @@ export default async function UnitName({
         "Content-Type": "application/json",
       },
       cache: "no-cache",
-    }
+    },
   );
 
   const unit: UnitData = await response.json();

@@ -1,5 +1,6 @@
 "use server";
 
+import { ClipboardPlus } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
@@ -9,12 +10,10 @@ import { DropdownCard } from "@/components/dropdown-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import LecturerDropdown from "@/components/units/lecturer-dropdown";
 import Lecturers from "@/components/units/lecturers";
 import UnitsCourseworkList from "@/components/units/units-coursework-list";
 import { getRequestJWT, requireSession } from "@/lib/auth-utils";
-import { ClipboardPlus } from "lucide-react";
-
-import LecturerDropdown from "@/components/units/lecturer-dropdown";
 
 async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -38,7 +37,9 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
           >
             <div className="flex flex-row gap-4 justify-between">
               <UnitName slug={slug} token={token} />
-              {userRole === "lecturer" && <LecturerDropdown></LecturerDropdown>}
+              {userRole === "lecturer" && (
+                <LecturerDropdown slug={slug}></LecturerDropdown>
+              )}
             </div>
           </Suspense>
         </div>
