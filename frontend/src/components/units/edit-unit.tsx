@@ -11,17 +11,14 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AddMember from "@/components/units/add-member";
-import LecturerList from "@/components/units/lecturer-list";
 import StudentList from "@/components/units/student-list";
 
-export default function ListMembers({
+export default function EditUnit({
   unit_id,
-  me,
   openState,
   setOpenState,
 }: {
   unit_id: string;
-  me: string;
   openState: boolean;
   setOpenState: Dispatch<SetStateAction<boolean>>;
 }) {
@@ -43,7 +40,6 @@ export default function ListMembers({
               <DialogDescription>
                 Lecturers enrolled on this unit are listed below.
               </DialogDescription>
-              <LecturerList me={me} unit_id={unit_id} />
               <Separator className="my-4"></Separator>
               <DialogTitle>Students</DialogTitle>
               <DialogDescription>

@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import DeleteUnitButton from "@/components/units/delete-unit-button";
 import ListMembers from "@/components/units/list-members";
+import EditUnit from "@/components/units/edit-unit";
 
 export default function LecturerDropdown({
   slug,
@@ -31,6 +32,7 @@ export default function LecturerDropdown({
 }) {
   const [showMembers, setShowMembers] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
 
   return (
     <>
@@ -66,6 +68,12 @@ export default function LecturerDropdown({
         setOpenState={setShowMembers}
         unit_id={slug}
         me={me}
+      />
+
+      <EditUnit
+        unit_id={slug}
+        openState={showEdit}
+        setOpenState={setShowEdit}
       />
 
       <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
