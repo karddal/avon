@@ -4,10 +4,10 @@
 Each week of the term is split into sprints, led by a rotating project manager. A sprint comprises of:
 - An initial meeting to assign issues to developers and create issues for tasks that need to be completed. 
 - A mentor meeting to discuss the progress so far and discuss any challenges faced
-- A Sprint Review meeting to evaluate the undertaken work, and merge all remaining pull requests. As well as ensuring that any remaining tasks are assigned for extra work over the weekend.
+- A Sprint Review meeting to evaluate the undertaken work and merge all remaining pull requests. As well as ensuring that any remaining tasks are assigned for extra work over the weekend.
 ## Project manager responsibilities
 - Lead initial sprint and sprint review meetings
-- Document meeting summary 
+- Document meeting summary and add corresponding links to the schedule
 - Assign and create issues
 - Ensure equal workload is met
 - Create a sprint section in the documentation that summarizes the sprint and organizes all related meeting notes under it.

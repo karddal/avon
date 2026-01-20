@@ -18,8 +18,8 @@
 - [Agile workflows](management/agile_workflow_calender.md)
 - [Sprints](meetings/README.md)
   - [Pre-TB2](meetings/pre-TB2/README.md)
-    - [03-01-2026 Extraordinary team meeting](meetings/pre-TB2/03-01-2025-team.md)
-    - [08-01-2026 Extraordinary team meeting](meetings/pre-TB2/08-01-2025-team.md)
+    - [03-01-2026 Progress Update](meetings/pre-TB2/03-01-2025-team.md)
+    - [08-01-2026 Retrospective](meetings/pre-TB2/08-01-2025-team.md)
   - [Sprint 1](meetings/sprint1/README.md)
     - [19-01-2026 Sprint 1 initial meeting](meetings/sprint1/19-01-2025-team.md)
 
