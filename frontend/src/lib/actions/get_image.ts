@@ -1,3 +1,5 @@
+"use server";
+
 import { DatabaseSync } from "node:sqlite";
 import { Pool } from "pg";
 

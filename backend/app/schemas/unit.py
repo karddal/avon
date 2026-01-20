@@ -27,6 +27,10 @@ class UnitLecturers(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     lecturers: List[str]
 
+class UnitStudents(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    students: List[str]
+
 class UnitCreate(BaseModel):
     name: Name
     description: str

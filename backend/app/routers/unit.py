@@ -13,6 +13,7 @@ from app.schemas.unit import (
     UnitAll,
     UnitCreate,
     UnitRead,
+    UnitStudents,
     UnitUpdate, UnitLecturers,
 )
 
@@ -72,6 +73,17 @@ async def get_unit_lecturers(unit_id: UUID, session: session_dependency):
         raise HTTPException(status_code=404, detail="No lecturers found.")
     return UnitLecturers(
         lecturers=lects,
+    )
+
+@router.get("/{unit_id}/students", response_model=UnitStudents, status_code=status.HTTP_200_OK)
+async def get_unit_students(unit_id: UUID, session: session_dependency):
+    studs = session.exec(
+        select(UnitEnrollment.user_id).join(Unit).where(Unit.id == unit_id).where(UnitEnrollment.type == "student")
+    ).all()
+    if not studs:
+        raise HTTPException(status_code=404, detail="No students found.")
+    return UnitStudents(
+        students=studs,
     )
 
 @router.put("/{unit_id}", response_model=UnitUpdate, status_code=status.HTTP_200_OK)

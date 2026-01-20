@@ -32,15 +32,12 @@ export default async function Lecturers({ unit_id }: { unit_id: string }) {
   const lecturerResponse: Response = await response.json();
   console.log(lecturerResponse.lecturers);
   const lecturers = lecturerResponse.lecturers;
-  // filter to only those that are
-
-  // for each lecturer, we convert into their name
   const results: Lecturer[] = [];
   for (const lecturer of lecturers) {
     console.log(lecturer);
     results.push({
       id: lecturer,
-      name: (await get_username_from_id(lecturer)).name,
+      name: await get_username_from_id(lecturer),
       image: await get_user_image_from_id(lecturer),
     });
   }

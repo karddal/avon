@@ -1,4 +1,7 @@
+"use client";
+
 import { Menu, SquarePen, SquareX, Users } from "lucide-react";
+import { useState } from "react";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -7,7 +10,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
   DropdownMenu,
@@ -18,45 +20,62 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import DeleteUnitButton from "@/components/units/delete-unit-button";
+import ListMembers from "@/components/units/list-members";
 
 export default function LecturerDropdown({ slug }: { slug: string }) {
+  const [showMembers, setShowMembers] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
+
   return (
-    <AlertDialog>
+    <>
       <DropdownMenu>
         <DropdownMenuTrigger className="border hover:bg-accent hover:transition aspect-square p-2">
-          <Menu size={32}></Menu>
+          <Menu size={32} />
         </DropdownMenuTrigger>
         <DropdownMenuContent className="flex flex-col">
           <DropdownMenuLabel>Unit Options</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <Users></Users>Members
+
+          <DropdownMenuItem onSelect={() => setShowMembers(true)}>
+            <Users className="mr-2 h-4 w-4" /> Members
           </DropdownMenuItem>
+
           <DropdownMenuItem>
-            <SquarePen></SquarePen>Edit Unit
+            <SquarePen className="mr-2 h-4 w-4" /> Edit Unit
           </DropdownMenuItem>
+
           <DropdownMenuSeparator />
-          <AlertDialogTrigger>
-            <DropdownMenuItem className="text-destructive">
-              <SquareX className="text-destructive"></SquareX>Delete Unit
-            </DropdownMenuItem>
-          </AlertDialogTrigger>
+
+          <DropdownMenuItem
+            onSelect={() => setShowDelete(true)}
+            className="text-destructive focus:text-destructive"
+          >
+            <SquareX className="mr-2 h-4 w-4" /> Delete Unit
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete the unit
-            and all of its data.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
-          <DeleteUnitButton unitId={slug}></DeleteUnitButton>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+      <ListMembers
+        openState={showMembers}
+        setOpenState={setShowMembers}
+        unit_id={slug}
+      />
+
+      <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the
+              unit and all of its data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
+            <DeleteUnitButton unitId={slug} />
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

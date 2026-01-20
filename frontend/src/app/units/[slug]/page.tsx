@@ -1,7 +1,5 @@
 "use server";
 
-import { ClipboardPlus } from "lucide-react";
-import Link from "next/link";
 import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
 import UnitDescription from "@/app/units/[slug]/description";
@@ -90,20 +88,6 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
                     <TabsTrigger value="ongoing">Ongoing</TabsTrigger>
                     <TabsTrigger value="finished">Finished</TabsTrigger>
                   </div>
-                  {userRole === "lecturer" && (
-                    <Card
-                      className={`flex flex-col gap-0 p-1 bg-accent hover:cursor-pointer`}
-                    >
-                      <CardContent className="flex flex-row items-center justify-between gap-2 px-2">
-                        <ClipboardPlus strokeWidth={1}></ClipboardPlus>
-                        <Link href={`${slug}/create`}>
-                          <CardTitle className="text-sm font-normal">
-                            Create
-                          </CardTitle>
-                        </Link>
-                      </CardContent>
-                    </Card>
-                  )}
                 </TabsList>
                 <TabsList className={"w-full"}>
                   <TabsContent value={"ongoing"}>

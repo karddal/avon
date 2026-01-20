@@ -1,14 +1,10 @@
+"use server";
+
 import "node:sqlite";
 import { DatabaseSync } from "node:sqlite";
 import { Pool } from "pg";
 
-export type GetUsernameResult = {
-  name: string;
-};
-
-export async function get_username_from_id(
-  user_id: string,
-): Promise<GetUsernameResult> {
+export async function get_username_from_id(user_id: string): Promise<string> {
   const isProd = process.env.NODE_ENV === "production";
   if (isProd) {
     const db = new Pool({
@@ -22,9 +18,7 @@ export async function get_username_from_id(
     if (!out) {
       throw new Error("cannot find user in db");
     }
-    return {
-      name: out as string,
-    };
+    return out as string;
   } else {
     const db = new DatabaseSync("../sqlite.db");
     const _session = db.createSession();
@@ -35,6 +29,6 @@ export async function get_username_from_id(
       throw new Error("cannot find user in db");
     }
 
-    return result;
+    return result.name;
   }
 }
