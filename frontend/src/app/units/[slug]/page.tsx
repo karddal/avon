@@ -17,6 +17,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const s = await requireSession();
   let userRole = s.user.role;
+  const me = s.user.id;
   if (!userRole) {
     userRole = "user";
   }
@@ -36,7 +37,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
             <div className="flex flex-row gap-4 justify-between">
               <UnitName slug={slug} token={token} />
               {userRole === "lecturer" && (
-                <LecturerDropdown slug={slug}></LecturerDropdown>
+                <LecturerDropdown me={me} slug={slug}></LecturerDropdown>
               )}
             </div>
           </Suspense>

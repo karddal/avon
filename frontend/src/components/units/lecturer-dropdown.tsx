@@ -22,7 +22,13 @@ import {
 import DeleteUnitButton from "@/components/units/delete-unit-button";
 import ListMembers from "@/components/units/list-members";
 
-export default function LecturerDropdown({ slug }: { slug: string }) {
+export default function LecturerDropdown({
+  slug,
+  me,
+}: {
+  slug: string;
+  me: string;
+}) {
   const [showMembers, setShowMembers] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
 
@@ -59,6 +65,7 @@ export default function LecturerDropdown({ slug }: { slug: string }) {
         openState={showMembers}
         setOpenState={setShowMembers}
         unit_id={slug}
+        me={me}
       />
 
       <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
