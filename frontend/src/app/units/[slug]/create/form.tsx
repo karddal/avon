@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "framer-motion";
 import {ArrowLeft, ArrowRight, FileCheck, OctagonAlert, Send, Terminal} from "lucide-react";
 import { easeIn, easeOut } from "motion";
-import { redirect } from "next/navigation";
+import {redirect, useRouter} from "next/navigation";
 import {Dispatch, SetStateAction, useActionState, useState} from "react";
 import { HexColorInput, HexColorPicker } from "react-colorful";
 import { Controller, useForm } from "react-hook-form";
@@ -40,7 +40,6 @@ import {ButtonGroup} from "@/components/ui/button-group";
 import Link from "next/link";
 import {create_coursework} from "@/lib/actions/create_coursework";
 import {Progress} from "@/components/ui/progress";
-import {getRequestJWT} from "@/lib/auth-utils";
 
 type CreateCourseworkResponse = {
   success: boolean,
@@ -67,12 +66,17 @@ function prevStep(step: number, setStep: Dispatch<SetStateAction<number>>) {
   }
 }
 
+function resetStep(setStep: Dispatch<SetStateAction<number>>) {
+  setStep(0);
+}
+
 export const IntForm= ({ slug, unitCode, unitName, unitId, maxDueDate }:FormProps) => {
   const [submitState, setSubmitState] = useState<boolean>(false);
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [alertText, setAlertText] = useState<string>("");
   const [step, setStep] = useState<number>(0);
   const today = new Date();
+  const router = useRouter();
   const s = slug
   const formSchema = z.object({
     name: z.string().min(2, {
@@ -141,7 +145,7 @@ export const IntForm= ({ slug, unitCode, unitName, unitId, maxDueDate }:FormProp
           );
           const delay = new Promise((resolve) => setTimeout(resolve, 1000));
           delay.then(() => {
-            redirect(`/units/${s}`);
+            window.location.href = `/units/${s}`;
           });
           setSubmitState(false);
         }
