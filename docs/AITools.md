@@ -18,7 +18,7 @@ AI tools used
 
 ## Specifics per person
 ### Mihaly
-** Tools used**
+**Tools used**
 - ChatGPT
 - Claude
 - Gemini
@@ -28,7 +28,7 @@ Research and architecture best practices - this is one area where they have been
 
 Frontend - I mostly used AI here for debugging purposes - NextJS can be really complicated, and it often isn't clear why it isn't working. For example, why is this code not working, how do I fix this fetch, etc. AI can help to look and see things that I have missed. In addition, it also helped with telling me the best practices for the application, like when to use client components, how to fetch, etc, as well as debugging these. Also helped with CSS, how to do things like running SQL queries against the BA database, how to set up BetterAuth, how to set up typing for sql, etc. often I will see how it works, and then I have to refine what it gives into something that will work for our situation. It is useful to give me a rough idea though.
 
-Backend - used more rarely here, mostly for architecture deisions. One are where it helped was with debugging SQLModel and how to define relationships between tables, as well as how to fetch these. Helped with complicated SQL queries. Also at the very start, used to debug why pytest wasn't working.
+Backend - used more rarely here, mostly for architecture deisions. One area where it helped was with debugging SQLModel and how to define relationships between tables, as well as how to fetch these. Helped with complicated SQL queries. Also at the very start, used to debug why pytest wasn't working.
 
 Engine prototyping - For the initial prototype test runner (not merged), used to help design the initial prototype, such as doing research to help me work out the best practice way of doing the test running, due to the very complicated domain area, and implications including security, sandboxing etc. Using it I was able to discover technologies that I haven't heard of before. Because of how complicated Kubernetes is, and the complexity and verbosity of task definitions, as well as how the client libraries I was using are poorly documented, I used it to show me how to run a kubernetes task for the proof of concept, as well as how to use tooling like Dockerfiles and setting up a local kubernetes cluster, and debugging these. I used this, along with an example from Temporal, the scheduler stack I was using, to get a proof of concept working. Without it, I wouldn't have been able to get the proof of concept working because I had little knowledge of this area before. Now that I have a base, I will probably redesign this in a cleaner way for the final product, now that I know that it is feasible.
 
