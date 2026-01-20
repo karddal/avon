@@ -1,5 +1,17 @@
 # Agile workflows
 
+## Sprints
+Each week of the term is split into sprints, led by a rotating project manager. A sprint comprises of:
+- An initial meeting to assign issues to developers and create issues for tasks that need to be completed. 
+- A mentor meeting to discuss the progress so far and discuss any challenges faced
+- A Sprint Review meeting to evaluate the undertaken work, and merge all remaining pull requests. As well as ensuring that any remaining tasks are assigned for extra work over the weekend.
+## Project manager responsibilities
+- Lead initial sprint and sprint review meetings
+- Document meeting summary 
+- Assign and create issues
+- Ensure equal workload is met
+- Create a sprint section in the documentation that summarizes the sprint and organizes all related meeting notes under it.
+
 ## Schedule
 
 <div id="calendar"></div>
@@ -27,6 +39,21 @@
 
 .fc-bg-event {
   opacity: 0.35;
+}
+
+.fc .fc-button {
+  font-size: 1.2rem;
+}
+
+
+.fc-toolbar-chunk {
+  gap: 6px;
+}
+
+h2.fc-toolbar-title {
+  font-size: 2.3rem !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
 }
 </style>
 
@@ -68,6 +95,27 @@ document.addEventListener('DOMContentLoaded', function () {
             display: 'background',
             backgroundColor: '#fff3cd'
         },
+        {
+            title: 'Sprint 3',
+            start: '2026-02-02',
+            end: '2026-02-09',
+            display: 'background',
+            backgroundColor: '#e6d9f2'
+        },
+        {
+            title: 'Sprint 4',
+            start: '2026-02-09',
+            end: '2026-02-16',
+            display: 'background',
+            backgroundColor: '#cce5ff'
+        },
+        {
+            title: 'Sprint 5',
+            start: '2026-02-16',
+            end: '2026-02-23',
+            display: 'background',
+            backgroundColor: '#d4edda'
+        },
 
         {
             title: 'Progress Update',
@@ -85,12 +133,12 @@ document.addEventListener('DOMContentLoaded', function () {
             url: '/meetings/sprint1/19-01-2025-team.html'
         },
                 {
-            title: 'mentor Meeting',
+            title: 'Mentor Meeting',
             start: '2026-01-21',
             url: '/meetings/sprint1/21-01-2025-team.html'
         },
                 {
-            title: 'Retrospective',
+            title: 'Sprint Review',
             start: '2026-01-23',
             url: '/meetings/sprint1/23-01-2025-team.html'
         },
