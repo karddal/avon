@@ -69,7 +69,12 @@ export default function lecturerList({ unit_id }: { unit_id: string }) {
   if (loading)
     return (
       <div className="flex flex-col items-center gap-4 w-full">
-        <Input disabled className="w-full" placeholder="Loading lecturers..." />
+        <Input
+          disabled
+          className="w-full"
+          placeholder="Loading lecturers..."
+          value={searchQuery}
+        />
         <Spinner />
       </div>
     );
