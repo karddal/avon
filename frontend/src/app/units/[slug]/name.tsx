@@ -28,7 +28,7 @@ export default async function UnitName({
 
   return (
     <>
-      <span className="font-light">{unit.unit_code}</span> {unit.name}
+      <span className="font-mono font-light">{unit.unit_code}</span> {unit.name}
     </>
   );
 }
