@@ -28,6 +28,8 @@ class UnitWithCourseworks(SQLModel):
     id: uuid.UUID
     unit_code: str
     name: str
+    programme_start_date: datetime
+    programme_end_date: datetime
     courseworks: List["CourseworkReadWithoutUnit"]
 
 class UnitsWithCourseworks(SQLModel):

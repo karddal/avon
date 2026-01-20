@@ -74,9 +74,11 @@ export default async function UnitsCourseworkList({
         </Empty>
       )}
       {filtered.length > 0 &&
-        filtered.map((coursework) => (
-          <Coursework key={coursework.id} props={coursework} />
-        ))}
+          <div className={"flex flex-col gap-2"}>
+            {filtered.map((coursework) => (
+            <Coursework key={coursework.id} props={coursework} />))}
+          </div>
+        }
     </>
   );
 }
