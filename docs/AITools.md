@@ -71,13 +71,12 @@ Overall, I tried my best to limit the use of AI as I wanted to write code myself
 - Gemini
 
 **Where did you use AI tools and why**
-Research and architecture best practices - When we were discussing and evaluating the bets architecture for the backend, I found AI extremely helpful to gather a broad overview of the pros and cons of the feasible architectures in our case (this was mainly for Java before we switched). Whatsmore, it helped me to find articles on these specific architectures and evaluate whether our designs were industry standard. In terms of general research these tools allowed me to understand certain techniques much faster than just searching on the web.
+Research and architecture best practices - When we were discussing and evaluating the best architecture for the backend, I found AI extremely helpful to gather a broad overview of the pros and cons of the feasible architectures in our case (this was mainly for Java before we switched). Whatsmore, it helped me to find articles on these specific architectures and evaluate whether our designs were industry standard. In terms of general research these tools allowed me to understand certain techniques much faster than just searching on the web.
 
-Frontend - Ther main area I have used generative AI is when making small adjustments to CSS, as certain fields and tags I just don't know, so AI has helped me easily identify which tags and fields I need to add / change to get the desired design. It has also helped me with searching for the correct components for my situation, for example components provided by Shadcn, or which there is 100s, so I use generative AI to identify the needed one in my case.
+Frontend - The main area I have used generative AI is when making small adjustments to CSS, as certain fields and tags I just don't know, so AI has helped me easily identify which tags and fields I need to add / change to get the desired design. It has also helped me with searching for the correct components for my situation, for example components provided by Shadcn, of which there is 100s, so I use generative AI to identify the needed one in my case.
 
 Backend - When I need to write repetitive functions that do similar tasks with small differences, such as in model or schema testing I will often use AI to give me a base function in which I can copy and then adjust. Additionally, I will use it to make repetitive changes to a file, for example if I need to change the name of a variable in all functions within a file.
 
 Setup - Certain libraries and tools I'm not familiar with, in these cases I have mainly using their respective docs; however when there is a gap in the areas the docs cover, or I am running into an obscure error I will consult AI and google to learn about this gap that isn't covered and/or fix the error. 
 
 Overall, I mainly use AI as a tool for faster, more specific searches for my scenario as opposed to google. I also use it as a tool to do repetitive tasks that would take me an unnecessarily long time to complete.
-
