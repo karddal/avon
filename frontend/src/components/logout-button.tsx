@@ -2,6 +2,7 @@
 
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { logout } from "@/lib/actions/login";
+import {DoorOpen} from "lucide-react";
 
 export default function LogoutButton() {
   // const router = useRouter();
@@ -9,5 +10,5 @@ export default function LogoutButton() {
     await logout();
     window.location.href = "/login";
   }
-  return <DropdownMenuItem onClick={lo}>Logout</DropdownMenuItem>;
+  return <DropdownMenuItem onClick={lo}><DoorOpen />Logout</DropdownMenuItem>;
 }
