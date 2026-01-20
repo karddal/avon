@@ -23,7 +23,7 @@ export default function ListMembers({
 }) {
   return (
     <Dialog open={openState} onOpenChange={setOpenState}>
-      <DialogContent>
+      <DialogContent className="max-h-[80%] md:overflow-auto overflow-y-scroll ">
         <DialogHeader>
           <DialogTitle>Lecturers</DialogTitle>
           <DialogDescription>

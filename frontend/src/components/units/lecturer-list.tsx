@@ -50,7 +50,25 @@ export default function lecturerList({ unit_id }: { unit_id: string }) {
           }),
         );
 
-        setlecturers(enrichedlecturers);
+        setlecturers(
+          enrichedlecturers.concat(
+            enrichedlecturers.concat(
+              enrichedlecturers.concat(
+                enrichedlecturers.concat(
+                  enrichedlecturers.concat(
+                    enrichedlecturers.concat(
+                      enrichedlecturers.concat(
+                        enrichedlecturers.concat(
+                          enrichedlecturers.concat(enrichedlecturers),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
       } catch (error) {
         console.error("Failed to load lecturers", error);
       } finally {
@@ -88,12 +106,12 @@ export default function lecturerList({ unit_id }: { unit_id: string }) {
         onChange={(e) => setSearchQuery(e.target.value)}
       />
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 overflow-y-scroll max-h-48 bg-accent p-2">
         {filteredlecturers.length > 0 ? (
           filteredlecturers.map((lecturer) => (
             <Card
               key={lecturer.id}
-              className="hover:shadow-md transition-shadow p-0 overflow-hidden"
+              className="hover:shadow-md transition-shadow p-0"
             >
               <CardContent className="flex w-full gap-4 px-0 items-center">
                 <Avatar className="h-12 w-12 border rounded-none shrink-0">

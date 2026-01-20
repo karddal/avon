@@ -5,9 +5,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import { get_user_image_from_id } from "@/lib/actions/get_image";
+import { get_batch_user_info } from "@/lib/actions/get_batch_user_details";
 import { get_students } from "@/lib/actions/get_students";
-import { get_username_from_id } from "@/lib/actions/get_username";
 
 function getInitials(name: string) {
   if (!name || typeof name !== "string") return "?";
@@ -28,7 +27,7 @@ type studentInfo = {
 
 export default function StudentList({ unit_id }: { unit_id: string }) {
   const [students, setStudents] = useState<studentInfo[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,20 +36,10 @@ export default function StudentList({ unit_id }: { unit_id: string }) {
         const data = await get_students(unit_id);
         const studentIds = data.students;
 
-        const enrichedStudents = await Promise.all(
-          studentIds.map(async (id: string) => {
-            const name = await get_username_from_id(id);
-            const imageSrc = await get_user_image_from_id(id);
-
-            return {
-              id: id,
-              displayName: name || "Unknown Student",
-              src: imageSrc,
-            };
-          }),
-        );
-
-        setStudents(enrichedStudents);
+        if (studentIds && studentIds.length > 0) {
+          const enrichedStudents = await get_batch_user_info(studentIds);
+          setStudents(enrichedStudents);
+        }
       } catch (error) {
         console.error("Failed to load students", error);
       } finally {
@@ -69,7 +58,12 @@ export default function StudentList({ unit_id }: { unit_id: string }) {
   if (loading)
     return (
       <div className="flex flex-col items-center gap-4 w-full">
-        <Input disabled className="w-full" placeholder="Loading students..." />
+        <Input
+          disabled
+          className="w-full"
+          placeholder="Loading students..."
+          value={searchQuery}
+        />
         <Spinner />
       </div>
     );
@@ -83,7 +77,7 @@ export default function StudentList({ unit_id }: { unit_id: string }) {
         onChange={(e) => setSearchQuery(e.target.value)}
       />
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 overflow-y-scroll max-h-48 bg-accent p-2">
         {filteredStudents.length > 0 ? (
           filteredStudents.map((student) => (
             <Card

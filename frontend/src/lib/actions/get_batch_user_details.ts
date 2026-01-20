@@ -1,6 +1,6 @@
 "use server";
 
-import { DatabaseSync } from "node:sqlite";
+import { DatabaseSync, type SQLOutputValue } from "node:sqlite";
 import { Pool } from "pg";
 
 const pgPool =
@@ -33,7 +33,10 @@ export async function get_batch_user_info(user_ids: string[]) {
     const queryStr = `SELECT id, name, image FROM user WHERE id IN (${placeholders})`;
 
     const statement = db.prepare(queryStr);
-    const results = statement.all(...user_ids) as any[];
+    const results = statement.all(...user_ids) as Record<
+      string,
+      SQLOutputValue
+    >[];
 
     return results.map((row) => ({
       id: row.id,
