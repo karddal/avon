@@ -131,7 +131,7 @@ export function Calendar29({ props }: { props: calendarProps }) {
       </FieldGroup>
       <div className="text-muted-foreground px-1 text-sm">
         The coursework will be due on{" "}
-        <span className="font-medium">{formatDate(props.date)}</span>.
+        <span className="font-medium">{props.date.toString()}</span>.
       </div>
     </div>
   );

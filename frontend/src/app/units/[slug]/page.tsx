@@ -12,6 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Lecturers from "@/components/units/lecturers";
 import UnitsCourseworkList from "@/components/units/units-coursework-list";
 import { getRequestJWT, requireSession } from "@/lib/auth-utils";
+import { Button } from "@/components/ui/button";
+import {ClipboardPlus} from "lucide-react";
 
 async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -78,10 +80,19 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
 
             <CardContent className="w-full">
               <Tabs defaultValue="ongoing">
-                <TabsList>
-                  <TabsTrigger value="ongoing">Ongoing</TabsTrigger>
-                  <TabsTrigger value="finished">Finished</TabsTrigger>
-                </TabsList>
+                <div className={"flex flex-row justify-between items-center"}>
+                  <TabsList>
+                    <TabsTrigger value="ongoing">Ongoing</TabsTrigger>
+                    <TabsTrigger value="finished">Finished</TabsTrigger>
+                  </TabsList>
+                  {userRole === "lecturer" && (
+                      <Button asChild variant={"outline"} size={"sm"}>
+                        <Link href={{
+                          pathname: `/units/${slug}/create`,
+                        }}><ClipboardPlus />
+                          Assign new coursework</Link>
+                      </Button>)}
+                </div>
                 <TabsList className={"w-full"}>
                   <TabsContent value={"ongoing"}>
                     <Suspense fallback={<Loading />}>
@@ -108,17 +119,6 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
         {/* Right column */}
         <div className="flex flex-col xl:col-span-1 lg:col-span-2 gap-4 min-h-0">
           {/* Create a coursework*/}
-          {userRole === "lecturer" && (
-            <Card className={`flex flex-col gap-0 hover:cursor-pointer`}>
-              <CardHeader className="flex flex-row items-center gap-4 select-none ">
-                <CardTitle>
-                  <Link href={`${slug}/create`} className="text-2xl">
-                    Create a Coursework
-                  </Link>
-                </CardTitle>
-              </CardHeader>
-            </Card>
-          )}
 
           {/* Unit Staff */}
           <DropdownCard
