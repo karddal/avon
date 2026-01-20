@@ -17,3 +17,6 @@ out/
 .vscode/
 
 *.db
+
+# documentation
+/documentation/book
