@@ -39,7 +39,7 @@ export default function DeleteUnitButton({ unitId }: DeleteUnitButtonProps) {
   };
 
   return (
-    <div className="w-full">
+    <div className="h-full">
       {status === 1 && (
         <Button size="lg" variant="destructive" disabled className="w-full">
           <Spinner className="mr-2 h-4 w-4" />
@@ -49,7 +49,7 @@ export default function DeleteUnitButton({ unitId }: DeleteUnitButtonProps) {
 
       {status === 0 && (
         <Button
-          variant="outline"
+          variant="destructive"
           size="lg"
           className="w-full"
           onClick={handleDelete}

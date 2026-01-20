@@ -53,7 +53,7 @@ export default function LecturerDropdown({ slug }: { slug: string }) {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
           <DeleteUnitButton unitId={slug}></DeleteUnitButton>
         </AlertDialogFooter>
       </AlertDialogContent>
