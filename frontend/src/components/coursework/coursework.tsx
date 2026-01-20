@@ -35,7 +35,7 @@ function _getRandomTestsPassed(): number {
   return Math.random() * 100;
 }
 
-export default function Coursework({ props }: { props: courseworkData }) {
+export default function Coursework({ props, hasPermissions }: { props: courseworkData, hasPermissions: boolean }) {
   const colouring = {
     backgroundColor: `#${props.colour}`,
   };
@@ -60,38 +60,40 @@ export default function Coursework({ props }: { props: courseworkData }) {
               </div>
             </div>
           </Link>
-          <div className={"z-20 place-self-end"}>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant={"outline"} size={"icon"}>
-                  <Ellipsis/>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className={"w-56"}>
-                <DropdownMenuLabel>Coursework Options</DropdownMenuLabel>
-                <DropdownMenuSeparator/>
-                <DropdownMenuItem onSelect={() => setShowDelete(true)} className={"text-destructive focus:text-destructive flex flex-row"}>
-                  <SquareX size={4} className={"text-destructive"}></SquareX>
-                  Delete coursework
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete the
-                    coursework and all of its data.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
-                  <DeleteCourseworkButton courseworkId={props.id} setAlertState={setShowDelete}/>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
+          {hasPermissions && (
+              <div className={"z-20 place-self-end"}>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant={"outline"} size={"icon"}>
+                      <Ellipsis/>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className={"w-56"}>
+                    <DropdownMenuLabel>Coursework Options</DropdownMenuLabel>
+                    <DropdownMenuSeparator/>
+                    <DropdownMenuItem onSelect={() => setShowDelete(true)} className={"text-destructive focus:text-destructive flex flex-row"}>
+                      <SquareX size={4} className={"text-destructive"}></SquareX>
+                      Delete coursework
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete the
+                        coursework and all of its data.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
+                      <DeleteCourseworkButton courseworkId={props.id} setAlertState={setShowDelete}/>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+          )}
         </Card></div>
 );
 }
