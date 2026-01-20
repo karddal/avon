@@ -15,7 +15,7 @@ import {
 import { FieldGroup } from "./ui/field";
 import { Separator } from "./ui/separator";
 
-function formatDate(date: Date | undefined) {
+function _formatDate(date: Date | undefined) {
   if (!date) {
     return "";
   }

@@ -107,9 +107,9 @@ export default async function CourseworkList({
               >
                 {unit.name}
                 <span className={"font-light"}>
-                  {new Date(unit.programme_start_date).getFullYear()}-{new Date(unit.programme_end_date).getFullYear()}
-
-                    </span>
+                  {new Date(unit.programme_start_date).getFullYear()}-
+                  {new Date(unit.programme_end_date).getFullYear()}
+                </span>
               </TabsTrigger>
             ))}
           </TabsList>

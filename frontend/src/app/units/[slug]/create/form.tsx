@@ -2,18 +2,25 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "framer-motion";
-import {ArrowLeft, ArrowRight, FileCheck, OctagonAlert, Send, Terminal} from "lucide-react";
+import { ArrowLeft, ArrowRight, OctagonAlert, Send } from "lucide-react";
 import { easeIn, easeOut } from "motion";
-import {redirect, useRouter} from "next/navigation";
-import {Dispatch, SetStateAction, useActionState, useState} from "react";
+import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
+import { type Dispatch, type SetStateAction, useState } from "react";
 import { HexColorInput, HexColorPicker } from "react-colorful";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
-import dynamic from 'next/dynamic'
-const Calendar29 = dynamic(() => import('@/components/calendar').then((mod) => mod.Calendar29), { ssr: false })
+
+const Calendar29 = dynamic(
+  () => import("@/components/calendar").then((mod) => mod.Calendar29),
+  { ssr: false },
+);
+
+import Link from "next/link";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
 import {
   Card,
   CardContent,
@@ -34,24 +41,22 @@ import {
   ItemDescription,
   ItemTitle,
 } from "@/components/ui/item";
+import { Progress } from "@/components/ui/progress";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
-import {ButtonGroup} from "@/components/ui/button-group";
-import Link from "next/link";
-import {create_coursework} from "@/lib/actions/create_coursework";
-import {Progress} from "@/components/ui/progress";
+import { create_coursework } from "@/lib/actions/create_coursework";
 
 type CreateCourseworkResponse = {
-  success: boolean,
-  data: any
-}
+  success: boolean;
+  data: any;
+};
 
 interface FormProps {
-  slug: string,
-  unitCode: string,
-  unitName: string,
-  unitId: string,
-  maxDueDate: Date
+  slug: string;
+  unitCode: string;
+  unitName: string;
+  unitId: string;
+  maxDueDate: Date;
 }
 
 function nextStep(step: number, setStep: Dispatch<SetStateAction<number>>) {
@@ -66,18 +71,24 @@ function prevStep(step: number, setStep: Dispatch<SetStateAction<number>>) {
   }
 }
 
-function resetStep(setStep: Dispatch<SetStateAction<number>>) {
+function _resetStep(setStep: Dispatch<SetStateAction<number>>) {
   setStep(0);
 }
 
-export const IntForm= ({ slug, unitCode, unitName, unitId, maxDueDate }:FormProps) => {
+export const IntForm = ({
+  slug,
+  unitCode,
+  unitName,
+  unitId,
+  maxDueDate,
+}: FormProps) => {
   const [submitState, setSubmitState] = useState<boolean>(false);
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [alertText, setAlertText] = useState<string>("");
   const [step, setStep] = useState<number>(0);
   const today = new Date();
-  const router = useRouter();
-  const s = slug
+  const _router = useRouter();
+  const s = slug;
   const formSchema = z.object({
     name: z.string().min(2, {
       message: "Name must be at least 2 characters.",
@@ -86,9 +97,15 @@ export const IntForm= ({ slug, unitCode, unitName, unitId, maxDueDate }:FormProp
       message: "Description must be at least 2 characters.",
     }),
     color: z.string(),
-    due_date: z.date().min(today, {
-      message: `Due date must be in the future.`,
-    }).max(maxDueDate, `Due date cannot be after the unit ends (${maxDueDate.toISOString()})`),
+    due_date: z
+      .date()
+      .min(today, {
+        message: `Due date must be in the future.`,
+      })
+      .max(
+        maxDueDate,
+        `Due date cannot be after the unit ends (${maxDueDate.toISOString()})`,
+      ),
   });
 
   const formVariants = {
@@ -125,31 +142,29 @@ export const IntForm= ({ slug, unitCode, unitName, unitId, maxDueDate }:FormProp
   async function onSubmit(values: z.infer<typeof formSchema>) {
     // do something with values, submit here
     setSubmitState(true);
-      const req = {
-        name: values.name,
-        description: values.description,
-        unit_id: s,
-        due_date: values.due_date.toISOString(),
-        colour: colour.substring(1),
-      };
-      await create_coursework(req).then((r) => {
-        if (!r.success) {
-
-            setAlertText(r.data.detail);
-            setShowAlert(true);
-            setSubmitState(false);
-
-        } else {
-          toast.success(
-            "Coursework created. You will be redirected in 1 second.",
-          );
-          const delay = new Promise((resolve) => setTimeout(resolve, 1000));
-          delay.then(() => {
-            window.location.href = `/units/${s}`;
-          });
-          setSubmitState(false);
-        }
-      });
+    const req = {
+      name: values.name,
+      description: values.description,
+      unit_id: s,
+      due_date: values.due_date.toISOString(),
+      colour: colour.substring(1),
+    };
+    await create_coursework(req).then((r) => {
+      if (!r.success) {
+        setAlertText(r.data.detail);
+        setShowAlert(true);
+        setSubmitState(false);
+      } else {
+        toast.success(
+          "Coursework created. You will be redirected in 1 second.",
+        );
+        const delay = new Promise((resolve) => setTimeout(resolve, 1000));
+        delay.then(() => {
+          window.location.href = `/units/${s}`;
+        });
+        setSubmitState(false);
+      }
+    });
   }
 
   const name = form.watch("name");
@@ -159,7 +174,6 @@ export const IntForm= ({ slug, unitCode, unitName, unitId, maxDueDate }:FormProp
   return (
     <div className="flex flex-1 flex-row gap-4 px-4 sm:justify-center sm:align-center sm:items-center">
       <div className="flex sm:flex-row w-full lg:w-[70%] gap-4 mb-2 h-fit mb-2">
-
         <Card className={"flex-1"}>
           <Progress value={step * 50} className={"rounded-none"}></Progress>
           <CardHeader>
@@ -169,11 +183,18 @@ export const IntForm= ({ slug, unitCode, unitName, unitId, maxDueDate }:FormProp
                 Let's create a coursework! There's a couple of steps, but we'll
                 guide you through it.
               </p>
-              You are adding a coursework to <Link className={"text-foreground underline"} href={`/units/${unitId}`}>
-                <span className="font-mono">{unitCode}</span> {unitName}.</Link>
+              You are adding a coursework to{" "}
+              <Link
+                className={"text-foreground underline"}
+                href={`/units/${unitId}`}
+              >
+                <span className="font-mono">{unitCode}</span> {unitName}.
+              </Link>
             </CardDescription>
           </CardHeader>
-          <CardContent className={"flex h-full flex-col content-between justify-between"}>
+          <CardContent
+            className={"flex h-full flex-col content-between justify-between"}
+          >
             <form id={"form-flow"} onSubmit={form.handleSubmit(onSubmit)}>
               <AnimatePresence mode={"wait"}>
                 {step === 0 && (
@@ -259,7 +280,7 @@ export const IntForm= ({ slug, unitCode, unitName, unitId, maxDueDate }:FormProp
                             });
                         }}
                       >
-                        <ArrowRight/>
+                        <ArrowRight />
                         Next
                       </Button>
                     </FieldGroup>
@@ -292,7 +313,8 @@ export const IntForm= ({ slug, unitCode, unitName, unitId, maxDueDate }:FormProp
                                 tabIndex={0}
                                 role={"option"}
                                 onKeyDown={(e) => {
-                                  e.key === "Enter" && field.onChange("#ff6467");
+                                  e.key === "Enter" &&
+                                    field.onChange("#ff6467");
                                 }}
                                 onClick={() => {
                                   field.onChange("#ff6467");
@@ -303,7 +325,8 @@ export const IntForm= ({ slug, unitCode, unitName, unitId, maxDueDate }:FormProp
                                 tabIndex={0}
                                 role={"option"}
                                 onKeyDown={(e) => {
-                                  e.key === "Enter" && field.onChange("#e17100");
+                                  e.key === "Enter" &&
+                                    field.onChange("#e17100");
                                 }}
                                 onClick={() => {
                                   field.onChange("#e17100");
@@ -314,7 +337,8 @@ export const IntForm= ({ slug, unitCode, unitName, unitId, maxDueDate }:FormProp
                                 tabIndex={0}
                                 role={"option"}
                                 onKeyDown={(e) => {
-                                  e.key === "Enter" && field.onChange("#05df72");
+                                  e.key === "Enter" &&
+                                    field.onChange("#05df72");
                                 }}
                                 onClick={() => {
                                   field.onChange("#05df72");
@@ -325,7 +349,8 @@ export const IntForm= ({ slug, unitCode, unitName, unitId, maxDueDate }:FormProp
                                 tabIndex={0}
                                 role={"option"}
                                 onKeyDown={(e) => {
-                                  e.key === "Enter" && field.onChange("#51a2ff");
+                                  e.key === "Enter" &&
+                                    field.onChange("#51a2ff");
                                 }}
                                 onClick={() => {
                                   field.onChange("#51a2ff");
@@ -336,7 +361,8 @@ export const IntForm= ({ slug, unitCode, unitName, unitId, maxDueDate }:FormProp
                                 tabIndex={0}
                                 role={"option"}
                                 onKeyDown={(e) => {
-                                  e.key === "Enter" && field.onChange("#c27aff");
+                                  e.key === "Enter" &&
+                                    field.onChange("#c27aff");
                                 }}
                                 onClick={() => {
                                   field.onChange("#c27aff");
@@ -347,7 +373,8 @@ export const IntForm= ({ slug, unitCode, unitName, unitId, maxDueDate }:FormProp
                                 tabIndex={0}
                                 role={"option"}
                                 onKeyDown={(e) => {
-                                  e.key === "Enter" && field.onChange("#fb64b6");
+                                  e.key === "Enter" &&
+                                    field.onChange("#fb64b6");
                                 }}
                                 onClick={() => {
                                   field.onChange("#fb64b6");
@@ -378,38 +405,38 @@ export const IntForm= ({ slug, unitCode, unitName, unitId, maxDueDate }:FormProp
                               />
                             </div>
                             {fieldState.invalid && (
-                                <FieldError errors={[fieldState.error]}></FieldError>
+                              <FieldError
+                                errors={[fieldState.error]}
+                              ></FieldError>
                             )}
                           </Field>
                         )}
                       />
                       <ButtonGroup
-                          orientation={"vertical"}
-                          className={"gap-2 w-full"}
+                        orientation={"vertical"}
+                        className={"gap-2 w-full"}
                       >
                         <Button
-                            type={"button"}
-                            variant={"outline"}
-                            onClick={() => {
-                              prevStep(step, setStep)
-                            }}
+                          type={"button"}
+                          variant={"outline"}
+                          onClick={() => {
+                            prevStep(step, setStep);
+                          }}
                         >
-                          <ArrowLeft/>
+                          <ArrowLeft />
                           Back
                         </Button>
                         <Button
-                            type={"button"}
-                            onClick={() => {
-                              form
-                                  .trigger(["color"])
-                                  .then((_result) => {
-                                    if (form.formState.isValid) {
-                                      nextStep(step, setStep)
-                                    }
-                                  });
-                            }}
+                          type={"button"}
+                          onClick={() => {
+                            form.trigger(["color"]).then((_result) => {
+                              if (form.formState.isValid) {
+                                nextStep(step, setStep);
+                              }
+                            });
+                          }}
                         >
-                          <ArrowRight/>
+                          <ArrowRight />
                           Next
                         </Button>
                       </ButtonGroup>
@@ -460,49 +487,46 @@ export const IntForm= ({ slug, unitCode, unitName, unitId, maxDueDate }:FormProp
                         </Item>
                       </div>
                       <ButtonGroup
-                          orientation={"vertical"}
-                          className={"gap-2 w-full"}
+                        orientation={"vertical"}
+                        className={"gap-2 w-full"}
                       >
-                      {submitState && (
+                        {submitState && (
                           <>
-                          <Button
+                            <Button
                               disabled={true}
                               type={"button"}
                               variant={"outline"}
                               onClick={() => {
                                 prevStep(step, setStep);
                               }}
-                          >
-                            <ArrowLeft/>
-                            Back
-                          </Button>
-                        <Button
-                          disabled={true}
-                        >
-                          <Spinner />
-                          Submit
-                        </Button></>
-                      )}
-                      {!submitState && (
-                          <><Button
+                            >
+                              <ArrowLeft />
+                              Back
+                            </Button>
+                            <Button disabled={true}>
+                              <Spinner />
+                              Submit
+                            </Button>
+                          </>
+                        )}
+                        {!submitState && (
+                          <>
+                            <Button
                               type={"button"}
                               variant={"outline"}
                               onClick={() => {
                                 prevStep(step, setStep);
                               }}
-                          >
-                            <ArrowLeft/>
-                            Back
-                          </Button>
-                            <Button
-                                type={"submit"}
-
                             >
-                              <Send/>
+                              <ArrowLeft />
+                              Back
+                            </Button>
+                            <Button type={"submit"}>
+                              <Send />
                               Submit
                             </Button>
-                            </>
-                      )}
+                          </>
+                        )}
                       </ButtonGroup>
 
                       {showAlert && (

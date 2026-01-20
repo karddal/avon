@@ -1,19 +1,19 @@
 "use server";
 
+import { ClipboardPlus } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
 import UnitDescription from "@/app/units/[slug]/description";
 import UnitName from "@/app/units/[slug]/name";
 import { DropdownCard } from "@/components/dropdown-card";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Lecturers from "@/components/units/lecturers";
 import UnitsCourseworkList from "@/components/units/units-coursework-list";
 import { getRequestJWT, requireSession } from "@/lib/auth-utils";
-import { Button } from "@/components/ui/button";
-import {ClipboardPlus} from "lucide-react";
 
 async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -86,12 +86,17 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
                     <TabsTrigger value="finished">Finished</TabsTrigger>
                   </TabsList>
                   {userRole === "lecturer" && (
-                      <Button asChild variant={"outline"} size={"sm"}>
-                        <Link href={{
+                    <Button asChild variant={"outline"} size={"sm"}>
+                      <Link
+                        href={{
                           pathname: `/units/${slug}/create`,
-                        }}><ClipboardPlus />
-                          Assign new coursework</Link>
-                      </Button>)}
+                        }}
+                      >
+                        <ClipboardPlus />
+                        Assign new coursework
+                      </Link>
+                    </Button>
+                  )}
                 </div>
                 <TabsList className={"w-full"}>
                   <TabsContent value={"ongoing"}>

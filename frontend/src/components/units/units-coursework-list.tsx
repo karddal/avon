@@ -1,6 +1,6 @@
 import { BookDashed } from "lucide-react";
 import Coursework from "@/components/coursework/coursework";
-import {getRequestJWT, requireSession} from "@/lib/auth-utils";
+import { getRequestJWT, requireSession } from "@/lib/auth-utils";
 import {
   Empty,
   EmptyDescription,
@@ -32,7 +32,7 @@ export default async function UnitsCourseworkList({
   const token = await getRequestJWT();
   const s = await requireSession();
   const role = s.user.role;
-  const hasPermissions = role === "lecturer" || role === "admin"
+  const hasPermissions = role === "lecturer" || role === "admin";
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/units/${unit_id}/courseworks`,
     {
@@ -76,12 +76,17 @@ export default async function UnitsCourseworkList({
           </EmptyHeader>
         </Empty>
       )}
-      {filtered.length > 0 &&
-          <div className={"flex flex-col gap-2"}>
-            {filtered.map((coursework) => (
-            <Coursework key={coursework.id} props={coursework} hasPermissions={hasPermissions} />))}
-          </div>
-        }
+      {filtered.length > 0 && (
+        <div className={"flex flex-col gap-2"}>
+          {filtered.map((coursework) => (
+            <Coursework
+              key={coursework.id}
+              props={coursework}
+              hasPermissions={hasPermissions}
+            />
+          ))}
+        </div>
+      )}
     </>
   );
 }
