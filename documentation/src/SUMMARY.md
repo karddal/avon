@@ -15,10 +15,13 @@
 # Project management
 
 - [Reflection on TB-1](management/tb-1-reflection.md)
-- [Agile workflows]()
+- [Agile workflows](management/agile_workflow_calender.md)
 - [Meeting minutes](meetings/README.md)
-  - [03-01-2025 Extraordinary team meeting](meetings/03-01-2025-team.md)
-  - [08-01-2025 Extraordinary team meeting](meetings/08-01-2025-team.md)
+  - [Pre-TB2 Meetings](meetings/pre-TB2/README.md)
+    - [03-01-2026 Extraordinary team meeting](meetings/pre-TB2/03-01-2025-team.md)
+    - [08-01-2026 Extraordinary team meeting](meetings/pre-TB2/08-01-2025-team.md)
+  - [Sprint 1 Meetings](meetings/sprint1/README.md)
+    - [19-01-2026 Sprint 1 initial meeting](meetings/sprint1/19-01-2025-team.md)
 
 # Developer documentation
 
