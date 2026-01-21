@@ -1,13 +1,13 @@
 import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
 import UnitList from "@/components/units/unit-list";
-import { requireSession } from "@/lib/auth-utils";
+import { requireAdminSession, requireSession } from "@/lib/auth-utils";
 import Link from "next/dist/client/link";
 import { ClipboardPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 async function PageContent() {
-  const s = await requireSession();
+  const s = await requireAdminSession();
   let userRole = s.user.role;
 
   if (!userRole) {
@@ -16,7 +16,7 @@ async function PageContent() {
 
   return (
     <>
-      {userRole === "lecturer" && (
+      {userRole === "admin" && (
         <Button asChild variant="outline" size="sm" className="mt-2">
           <Link
             href={{

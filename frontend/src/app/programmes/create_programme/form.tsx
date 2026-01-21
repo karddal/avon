@@ -73,7 +73,15 @@ const slug = "dummy-slug";
         .max(100, { message: "Name must be at most 100 characters." }),
     start_date: z.date()
         .min(today, {message: `Start date must be in the future.`}),
-  });
+    end_date: z.date()
+        .min(today, {message: `End date must be in the future.`})
+  }).refine(
+    (data) => data.end_date > data.start_date,
+    {
+      // path: ["end_date"],
+      message: "End date must be after start date.",
+    }
+  );
 
   const formVariants = {
     hidden: {
@@ -101,6 +109,7 @@ const slug = "dummy-slug";
     defaultValues: {
       name: "",
       start_date: new Date(new Date(today).setDate(today.getDate() + 1)),
+      end_date: new Date(new Date(today).setDate(today.getDate() + 365)),
     },
   });
 
@@ -111,6 +120,7 @@ const slug = "dummy-slug";
     const req = {
       name: values.name,
       start_date: values.start_date.toISOString().split("T")[0],
+      end_date: values.end_date.toISOString().split("T")[0]
     };
     await create_programme(req).then((r) => {
       if (!r.success) {
@@ -123,7 +133,7 @@ const slug = "dummy-slug";
         );
         const delay = new Promise((resolve) => setTimeout(resolve, 1000));
         delay.then(() => {
-          window.location.href = `/units`;
+          window.location.href = `/programmes`;
         });
         setSubmitState(false);
       }
@@ -132,9 +142,7 @@ const slug = "dummy-slug";
 
   const name = form.watch("name");
   const start_date = form.watch("start_date");
-  const end_date = start_date
-  ? new Date(start_date.getFullYear() + 1, start_date.getMonth(), Math.min(start_date.getDate(), 28))
-  : null;
+  const end_date = form.watch("end_date");
   return (
     <div className="flex flex-1 flex-row gap-4 px-4 sm:justify-center sm:align-center sm:items-center">
       <div className="flex sm:flex-row w-full lg:w-[70%] gap-4 mb-2 h-fit mb-2">
@@ -184,31 +192,47 @@ const slug = "dummy-slug";
                           </Field>
                         )}
                       />
-                      <Controller
-                        name={"start_date"}
-                        control={form.control}
-                        render={({ field, fieldState }) => (
-                          <Field data-invalid={fieldState.invalid}>
-                            <FieldLabel htmlFor={"date"}>
-                              Choose the start date for the programme
-                            </FieldLabel>
-                            <Calendar29
-                              props={{
-                                date: field.value,
-                                setDate: field.onChange,
-                              }}
-                            />
-                            {fieldState.invalid && (
-                              <FieldError errors={[fieldState.error]} />
-                            )}
-                          </Field>
-                        )}
-                      ></Controller>
+                      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        <Controller
+                          name="start_date"
+                          control={form.control}
+                          render={({ field, fieldState }) => (
+                            <Field data-invalid={fieldState.invalid}>
+                              <FieldLabel>Start date</FieldLabel>
+                              <Calendar29
+                                props={{
+                                  date: field.value,
+                                  setDate: field.onChange,
+                                }}
+                              />
+                              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                            </Field>
+                          )}
+                        />
+
+                        <Controller
+                          name="end_date"
+                          control={form.control}
+                          render={({ field, fieldState }) => (
+                            <Field data-invalid={fieldState.invalid}>
+                              <FieldLabel>End date</FieldLabel>
+                              <Calendar29
+                                props={{
+                                  date: field.value,
+                                  setDate: field.onChange,
+                                }}
+                              />
+                              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                            </Field>
+                          )}
+                        />
+                      </div>
+
                       <Button
                         type={"button"}
                         onClick={() => {
                           form
-                            .trigger(["name", "start_date"])
+                            .trigger(["name", "start_date","end_date"])
                             .then((_result) => {
                               if (form.formState.isValid) {
                                 nextStep(step, setStep);

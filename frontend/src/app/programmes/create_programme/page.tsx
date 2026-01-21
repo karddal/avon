@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 import { ProgForm } from "@/app/programmes/create_programme/form";
 // import { IntForm } from "./form";
-import { requireLecturerSession } from "@/lib/auth-utils";
+import { requireAdminSession, requireLecturerSession } from "@/lib/auth-utils";
 
 async function Page() {
-  await requireLecturerSession();
+  await requireAdminSession();
   return (
     <ProgForm></ProgForm>
   );
