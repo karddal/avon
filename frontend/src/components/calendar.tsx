@@ -71,8 +71,6 @@ export function Calendar29({ props }: { props: calendarProps }) {
                   mode="single"
                   selected={props.date}
                   captionLayout="dropdown"
-                  fromYear={props.date.getFullYear() - 2}
-                  toYear={props.date.getFullYear() + 10}
                   onSelect={(d) => {
                     if (d) {
                       const day = d.getDate();
