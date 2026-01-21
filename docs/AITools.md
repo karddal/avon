@@ -80,3 +80,20 @@ Backend - When I need to write repetitive functions that do similar tasks with s
 Setup - Certain libraries and tools I'm not familiar with, in these cases I have mainly using their respective docs; however when there is a gap in the areas the docs cover, or I am running into an obscure error I will consult AI and google to learn about this gap that isn't covered and/or fix the error. 
 
 Overall, I mainly use AI as a tool for faster, more specific searches for my scenario as opposed to google. I also use it as a tool to do repetitive tasks that would take me an unnecessarily long time to complete.
+
+### Yuxuan
+
+**Tools used**
+- ChatGPT
+- Claude
+- Gemini
+
+**Where did you use AI tools and why**
+
+Preliminary study - When we first discussed the technical architecture that our project should use, I found that these AI tools can help me evaluate the advantages and disadvantages of different frameworks and tools more quickly so that we can choose the most suitable technical framework according to these advantages and disadvantages.
+
+Translation - As a student whose first language is not English, sometimes I have some words tha I don't know. I sometimes use these AI tools instead of traditional translators to help me understand and express these words.
+
+Research framework usage - Some technical framework documents are not easy to understand, while others break down the usage of a method into the more basic and advanced usage. If I miss some content, or sometimes I use search to find the content I need in the document, I will find some more simple introductions to the method I want to use. At those situations, AI can help me understand and use these frameworks more correctly.
+
+Bug fix - Sometimes the error message output by the framework we use is not only lengthy but also difficult to understand. At this time, I will use AI to help me analyze the error information, to better locate the cause and location cause the error. At the times without AI, I found difficult to find the specific location cause the error, and the emergence of AI really help me to faster locate bugs.
