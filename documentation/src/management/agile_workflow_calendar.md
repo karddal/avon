@@ -83,40 +83,53 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         {
             title: 'Sprint 1',
-            start: '2026-01-19',
-            end: '2026-01-26',
+            start: '2026-01-12',
+            end: '2026-01-18',
             display: 'background',
             backgroundColor: '#d4edda'
         },
         {
             title: 'Sprint 2',
+            start: '2026-01-19',
+            end: '2026-01-25',
+            display: 'background',
+            backgroundColor: '#d4edda'
+        },
+        {
+            title: 'Sprint 3',
             start: '2026-01-26',
-            end: '2026-02-02',
+            end: '2026-02-01',
             display: 'background',
             backgroundColor: '#fff3cd'
         },
         {
-            title: 'Sprint 3',
+            title: 'Sprint 4',
             start: '2026-02-02',
-            end: '2026-02-09',
+            end: '2026-02-08',
             display: 'background',
             backgroundColor: '#e6d9f2'
         },
         {
-            title: 'Sprint 4',
+            title: 'Sprint 5',
             start: '2026-02-09',
-            end: '2026-02-16',
+            end: '2026-02-15',
             display: 'background',
             backgroundColor: '#cce5ff'
         },
         {
-            title: 'Sprint 5',
+            title: 'Sprint 6',
             start: '2026-02-16',
-            end: '2026-02-23',
+            end: '2026-02-22',
             display: 'background',
             backgroundColor: '#d4edda'
         },
-
+        {
+            title: 'Sprint 7',
+            start: '2026-02-23',
+            end: '2026-03-01',
+            display: 'background',
+            backgroundColor: '#cce5ff'
+        },
         {
             title: 'Progress Update',
             start: '2026-01-03',
@@ -125,22 +138,22 @@ document.addEventListener('DOMContentLoaded', function () {
         {
             title: 'Retrospective',
             start: '2026-01-08',
-            url: '/meetings/pre-TB2/08-01-2025-team.html'
+            url: '/meetings/sprint1/08-01-2025-team.html'
         },
         {
             title: 'Initial Meeting',
             start: '2026-01-19',
-            url: '/meetings/sprint1/19-01-2025-team.html'
+            url: '/meetings/sprint2/19-01-2025-team.html'
         },
                 {
             title: 'Mentor Meeting',
             start: '2026-01-21',
-            url: '/meetings/sprint1/21-01-2025-team.html'
+            url: '/meetings/sprint2/21-01-2025-team.html'
         },
                 {
             title: 'Sprint Review',
             start: '2026-01-23',
-            url: '/meetings/sprint1/23-01-2025-team.html'
+            url: '/meetings/sprint2/23-01-2025-team.html'
         },
 
     ]
