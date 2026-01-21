@@ -6,7 +6,7 @@ from app.models.unit import Unit
 from app.models.unit_enrollment import UnitEnrollment, UserType
 from app.schemas.unit_enrollment import UnitEnrollmentCreate
 
-#missing a user model
+#create the unit enrollment
 def create(session: Session, payload: UnitEnrollmentCreate) -> UnitEnrollment:
     if not session.get(Unit, payload.unit_id):
         raise HTTPException(status_code=404, detail="Unit not found")

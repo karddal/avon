@@ -8,7 +8,7 @@ from sqlalchemy import Column, String
 if TYPE_CHECKING:
     from app.models.unit import Unit
 
-
+#type of user allowed
 class UserType(str, Enum):
     lecturer = "lecturer"
     student = "student"
