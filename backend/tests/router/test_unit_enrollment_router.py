@@ -1,7 +1,8 @@
-from sqlmodel import Session
+from sqlmodel import Session, select
+
+from app.models.unit_enrollment import UnitEnrollment
 from tests.helpers.identities import test_user
 from tests.helpers.factories import create_unit
-from app.models.unit_enrollment import UserType
 from uuid import uuid4
 
 def test_router_create_success(client, session: Session):
@@ -18,6 +19,12 @@ def test_router_create_success(client, session: Session):
     assert body["unit_id"] == str(unit_id)
     assert body["user_id"] == test_user
     assert body["user_type"] == "student"
+
+    db_enrollment = session.get(UnitEnrollment, (unit_id, test_user))
+    assert db_enrollment is not None
+    assert str(db_enrollment.unit_id) == str(unit_id)
+    assert db_enrollment.user_id == test_user
+    assert getattr(db_enrollment.user_type, "value", db_enrollment.user_type) == "student"
 
 def test_router_invalid_type_422(client, session: Session):
     unit_id = create_unit(session)
@@ -65,3 +72,9 @@ def test_router_duplicate_409(client, session: Session):
     response2 = client.post("/unit_enrollment", json=payload)
     assert response2.status_code == 409
     assert response2.json()["detail"] == "User already enrolled in this unit"
+
+    db_enrollment = session.exec(select(UnitEnrollment).where(
+        UnitEnrollment.unit_id == unit_id,
+        UnitEnrollment.user_id == test_user,
+    )).all()
+    assert len(db_enrollment) == 1

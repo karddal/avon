@@ -25,6 +25,9 @@ def test_unit_enrollment_get_by_composite_primary_key(session: Session):
     session.add(enrollment)
     session.commit()
 
+    #refresh database
+    session.expunge(enrollment)
+
     session_enrollment = session.get(UnitEnrollment, (unit_id, test_user))
     assert session_enrollment is not None
     assert session_enrollment.unit_id == unit_id
