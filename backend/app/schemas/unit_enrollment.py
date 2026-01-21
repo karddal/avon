@@ -1,14 +1,12 @@
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, AfterValidator
+from pydantic import BaseModel, AfterValidator, ConfigDict
 from uuid import UUID
 
 def is_valid_user_id(user_id: str) -> str:
     user_id = user_id.strip()
     if not user_id:
         raise ValueError("user_id can not be empty")
-    if 1 > len(user_id) > 100:
-        raise ValueError("user id must be between 1 and 100 characters")
 
     return user_id
 
@@ -22,17 +20,18 @@ UserId = Annotated[str, AfterValidator(is_valid_user_id)]
 EnrollmentType = Annotated[Literal["lecturer", "student"], AfterValidator(is_valid_enrollment_type)]
 
 class UnitEnrollmentRead(BaseModel):
-    unit : UUID
+    unit_id : UUID
     user_id : str
-    type : str
+    user_type : str
 
 class UnitEnrollmentCreate(BaseModel):
     unit_id: UUID
     user_id: UserId
-    type: EnrollmentType = "student"
+    user_type: EnrollmentType = "student"
+    model_config = ConfigDict(extra="forbid")
 
 class UnitEnrollmentUpdate(BaseModel):
-    type : EnrollmentType
+    user_type : EnrollmentType
 
 class UnitEnrollmentDelete(BaseModel):
     unit_id: UUID

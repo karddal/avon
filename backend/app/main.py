@@ -7,6 +7,7 @@ from app.models.unit import UnitWithCourseworks
 from app.routers import coursework
 from app.routers import unit
 from app.routers import check, me
+from app.routers import unit_enrollment
 from dotenv import load_dotenv
 import os
 
@@ -34,6 +35,8 @@ app.include_router(coursework.router)
 app.include_router(me.router)
 Coursework.model_rebuild()
 UnitWithCourseworks.model_rebuild()
+
+app.include_router(unit_enrollment.router)
 
 create_db_and_tables()
 
