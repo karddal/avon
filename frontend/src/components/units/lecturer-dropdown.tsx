@@ -71,7 +71,7 @@ export default function LecturerDropdown({
       />
 
       <EditUnit
-        unit_id={slug}
+        _unit_id={slug}
         openState={showEdit}
         setOpenState={setShowEdit}
       />
