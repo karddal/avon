@@ -58,7 +58,7 @@ export default function ListMembers({
               <DialogDescription>
                 Find someone using the search bar below.
               </DialogDescription>
-              <AddMember></AddMember>
+              <AddMember unit_id={unit_id}></AddMember>
             </DialogHeader>
           </TabsContent>
         </Tabs>

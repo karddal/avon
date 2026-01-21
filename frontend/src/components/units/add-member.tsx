@@ -10,9 +10,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Empty,
   EmptyDescription,
@@ -21,12 +19,13 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/spinner";
 import {
   type SearchResponse,
   search_by_name,
 } from "@/lib/actions/search_by_name";
 import { Checkbox } from "@/components/ui/checkbox";
+import UserCard from "@/components/user-card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function getInitials(name: string) {
   if (!name || typeof name !== "string") return "?";
@@ -39,7 +38,7 @@ function getInitials(name: string) {
   return (first + last).toUpperCase();
 }
 
-export default function AddMember() {
+export default function AddMember({ unit_id }: { unit_id: string }) {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<SearchResponse>({
@@ -51,6 +50,7 @@ export default function AddMember() {
   const [offset, setOffset] = useState<number>(0);
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
   const [length, setLength] = useState<number>(0);
+
   const limit = 5;
 
   async function handleSend() {
@@ -78,77 +78,85 @@ export default function AddMember() {
           }}
         />
       </div>
+      {loading && searchQuery.length === 0 ? (
+        <div className="flex flex-col items-center gap-4 w-full">
+          <Skeleton className="bg-accent w-full h-12" />
+          <Skeleton className="bg-accent w-full h-12" />
+          <Skeleton className="bg-accent w-full h-12" />
+        </div>
+      ) : (
+        <></>
+      )}
       {searchQuery.length === 0 ? (
         <></>
       ) : (
-        <div className="flex flex-col gap-2 overflow-y-scroll max-h-128 bg-accent py-0 p-2">
-          {loading ? (
-            <div className="flex flex-col items-center gap-4 w-full">
-              <Spinner />
-            </div>
-          ) : (
-            <div></div>
-          )}
+        <div className="flex flex-col gap-2 overflow-y-scroll max-h-128 bg-accent p-2">
           {response.users.length > 0 ? (
             response.users.map((user: User) => (
-              <Card
-                key={user.id}
-                className="hover:shadow-md transition-shadow p-0 overflow-hidden"
-              >
-                <CardContent className="flex w-full gap-4 p-0 items-center flex-row justify-between">
-                  <div className="flex flex-row gap-2 items-center">
-                    <Avatar className="h-12 w-12 border rounded-none shrink-0">
-                      <AvatarImage
-                        src={user.image ? user.image : ""}
-                        alt={user.name}
-                      />
-                      <AvatarFallback className="bg-primary/10 text-primary font-semibold rounded-none">
-                        {getInitials(user.name)}
-                      </AvatarFallback>
-                    </Avatar>
+              <div className="group relative w-full" key={user.id}>
+                <UserCard
+                  id={user.id}
+                  name={user.name}
+                  image={user.image}
+                  email={user.email}
+                />
 
-                    <div className="flex flex-col">
-                      <span className="font-medium text-sm md:text-base">
-                        {user.name}
-                      </span>
-                    </div>
-                  </div>
+                <div className="absolute top-2 right-2 w-8 h-8">
                   <Checkbox
-                    className="mx-4 aspect-square rounded-none scale-130 items-center text-center"
-                    onCheckedChange={() => {
-                      console.log(selectedUsers.length);
-                      if (selectedUsers.includes(user)) {
-                        const indexOfUser = selectedUsers.indexOf(user);
-                        const newList = selectedUsers;
-                        newList.splice(indexOfUser, 1);
-                        setLength(newList.length);
+                    checked={selectedUsers.some((u) => u.id === user.id)}
+                    onCheckedChange={(checked) => {
+                      if (!checked) {
+                        const newList = selectedUsers.filter(
+                          (u) => u.id !== user.id,
+                        );
                         setSelectedUsers(newList);
+                        setLength(newList.length);
                       } else {
-                        const newList = selectedUsers.concat(user);
-                        setLength(newList.length);
+                        const newList = [...selectedUsers, user];
                         setSelectedUsers(newList);
+                        setLength(newList.length);
                       }
                     }}
-                  ></Checkbox>
-                </CardContent>
-              </Card>
+                    className="peer w-full h-full z-10 bg-card/80 shadow rounded-none border data-[state=checked]:bg-primary"
+                  />
+                  <div
+                    className="
+      absolute inset-0 flex items-center justify-center 
+      pointer-events-none 
+      transition-all 
+      duration-400
+      ease-in-out
+      peer-data-[state=checked]:opacity-0 
+      peer-data-[state=checked]:scale-0
+      peer-data-[state=checked]:rotate-90
+    "
+                  >
+                    <Plus size={20} className="text-muted-foreground" />
+                  </div>
+                </div>
+              </div>
             ))
           ) : (
-            // <div className="text-center py-10 text-muted-foreground text-sm">
-            //   No users found matching "{searchQuery}"
-            // </div>
+            <></>
+          )}
+          {!loading && searchQuery.length > 0 && response.users.length === 0 ? (
             <Empty>
               <EmptyHeader>
                 <EmptyMedia variant="icon">
                   <UserIcon />
                 </EmptyMedia>
-                <EmptyTitle>No users</EmptyTitle>
-                <EmptyDescription>No users found</EmptyDescription>
+                <EmptyTitle>No users found</EmptyTitle>
+                <EmptyDescription className="flex flex-row">
+                  No users for search query "
+                  <div className="truncate max-w-20">{searchQuery}</div>"
+                </EmptyDescription>
               </EmptyHeader>
             </Empty>
+          ) : (
+            <></>
           )}
           {response.users.length > 0 ? (
-            <div className="flex flex-row items-center text-center">
+            <div className="flex flex-row items-center text-center my-2">
               <Button
                 size="icon"
                 variant="outline"
@@ -184,7 +192,7 @@ export default function AddMember() {
               </Button>
             </div>
           ) : (
-            <div></div>
+            <></>
           )}
         </div>
       )}
@@ -195,7 +203,7 @@ export default function AddMember() {
           </Button>
         </div>
       ) : (
-        <div></div>
+        <></>
       )}
     </div>
   );

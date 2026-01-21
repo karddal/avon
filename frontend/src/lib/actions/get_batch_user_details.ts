@@ -1,5 +1,7 @@
 "use server";
 
+// TODO: Probably WONT WORK ON PROD bc of SQLDB being directly checked
+
 import { DatabaseSync, type SQLOutputValue } from "node:sqlite";
 import { Pool } from "pg";
 

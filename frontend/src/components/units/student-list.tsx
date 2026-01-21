@@ -16,6 +16,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { delete_user } from "@/lib/actions/delete_user";
 import { get_batch_user_info } from "@/lib/actions/get_batch_user_details";
 import { get_students } from "@/lib/actions/get_students";
+import UserCard from "@/components/user-card";
 
 function getInitials(name: string) {
   if (!name || typeof name !== "string") return "?";
@@ -101,27 +102,16 @@ export default function StudentList({ unit_id }: { unit_id: string }) {
       <div className="flex flex-col gap-2 overflow-y-scroll max-h-48 bg-accent p-2">
         {filteredStudents.length > 0 ? (
           filteredStudents.map((student) => (
-            <Card
-              key={student.id}
-              className="hover:shadow-md transition-shadow p-0 overflow-hidden"
-            >
-              <CardContent className="flex w-full gap-4 p-0 items-center flex-row justify-between">
-                <div className="flex flex-row gap-2 items-center">
-                  <Avatar className="h-12 w-12 border rounded-none shrink-0">
-                    <AvatarImage src={student.src} alt={student.displayName} />
-                    <AvatarFallback className="bg-primary/10 text-primary font-semibold rounded-none">
-                      {getInitials(student.displayName)}
-                    </AvatarFallback>
-                  </Avatar>
+            <div className="group relative w-full" key={student.id}>
+              <UserCard
+                id={student.id}
+                name={student.displayName}
+                image={student.src}
+              />
 
-                  <div className="flex flex-col">
-                    <span className="font-medium text-sm md:text-base">
-                      {student.displayName}
-                    </span>
-                  </div>
-                </div>
+              <div className="absolute top-2 right-2 w-8 h-8">
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="border hover:bg-accent hover:transition mx-2 p-1">
+                  <DropdownMenuTrigger className="bg-card aspect-square! shadow border h-8 w-8 items-center justify-center flex hover:bg-card/50 hover:transition">
                     <Menu className="p-0"></Menu>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
@@ -140,8 +130,8 @@ export default function StudentList({ unit_id }: { unit_id: string }) {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))
         ) : (
           <div className="text-center py-10 text-muted-foreground text-sm">
