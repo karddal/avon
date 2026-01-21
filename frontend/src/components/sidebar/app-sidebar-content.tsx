@@ -7,6 +7,7 @@ import {
   Settings,
   SwatchBook,
   User,
+  Layers
 } from "lucide-react";
 import Link from "next/link";
 import { Kbd, KbdGroup } from "@/components/ui/kbd";
@@ -26,6 +27,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "../ui/sidebar";
+import { title } from "node:process";
 
 const adminItems = [
   {
@@ -64,6 +66,12 @@ const adminItems = [
     icon: NotepadText,
     bottom: false,
   },
+  {
+    title: "Programmes",
+    url: "/programmes",
+    icon: Layers,
+    bottom: false,
+  }
 ];
 
 const studentItems = [

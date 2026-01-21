@@ -6,7 +6,7 @@ import UnitList from "@/components/units/unit-list";
 import { requireSession } from "@/lib/auth-utils";
 
 async function PageContent() {
-  await requireSession(); // make sure logged in
+  await requireSession(); // make sure admin
 
   return <UnitList></UnitList>;
 }

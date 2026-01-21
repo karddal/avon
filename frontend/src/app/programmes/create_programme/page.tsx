@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { ProgForm } from "@/app/units/create_programme/form";
+import { ProgForm } from "@/app/programmes/create_programme/form";
 // import { IntForm } from "./form";
 import { requireLecturerSession } from "@/lib/auth-utils";
 
