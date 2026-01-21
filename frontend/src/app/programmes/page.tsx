@@ -1,10 +1,9 @@
+import { ClipboardPlus } from "lucide-react";
+import Link from "next/dist/client/link";
 import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
-import UnitList from "@/components/units/unit-list";
-import { requireAdminSession, requireSession } from "@/lib/auth-utils";
-import Link from "next/dist/client/link";
-import { ClipboardPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { requireAdminSession } from "@/lib/auth-utils";
 
 async function PageContent() {
   const s = await requireAdminSession();
@@ -31,7 +30,6 @@ async function PageContent() {
     </>
   );
 }
-
 
 export default function ProgrammesPage() {
   return (

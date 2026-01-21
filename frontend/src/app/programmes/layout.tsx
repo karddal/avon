@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { ModeToggle } from "@/components/mode-toggle";
 import NotificationBar from "@/components/notifications-bar";
 import AppSidebar from "@/components/sidebar/app-sidebar-wrapper";
@@ -8,11 +8,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 
-export default function Layout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function Layout({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -26,9 +22,7 @@ export default function Layout({
           <NotificationBar />
         </header>
 
-        <div className="flex flex-col gap-4 px-4">
-          {children}
-        </div>
+        <div className="flex flex-col gap-4 px-4">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   );

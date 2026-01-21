@@ -1,8 +1,7 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from app.db.session import get_session
 from sqlmodel import Session
-from datetime import date
 
 from app.models.programme import Programme
 from app.schemas.programme import ProgrammeCreate, ProgrammeRead

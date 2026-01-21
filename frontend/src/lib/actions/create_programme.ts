@@ -3,12 +3,12 @@ import { getRequestJWT } from "@/lib/auth-utils";
 
 type CreateProgrammeRequest = {
   name: string;
-  start_date: string; 
+  start_date: string;
 };
 
-type CreateProgrammeResponse = {
+type _CreateProgrammeResponse = {
   success: boolean;
-  data: any;
+  //data: any;
 };
 
 export async function create_programme(req: CreateProgrammeRequest) {

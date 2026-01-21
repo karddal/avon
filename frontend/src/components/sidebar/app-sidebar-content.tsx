@@ -2,12 +2,12 @@ import {
   ArrowUpDown,
   BookCheck,
   ChartLine,
+  Layers,
   LayoutDashboard,
   NotepadText,
   Settings,
   SwatchBook,
   User,
-  Layers
 } from "lucide-react";
 import Link from "next/link";
 import { Kbd, KbdGroup } from "@/components/ui/kbd";
@@ -27,7 +27,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "../ui/sidebar";
-import { title } from "node:process";
 
 const adminItems = [
   {
@@ -71,7 +70,7 @@ const adminItems = [
     url: "/programmes",
     icon: Layers,
     bottom: false,
-  }
+  },
 ];
 
 const lecturerItems = [
@@ -139,7 +138,12 @@ export default async function AppSideBarContent() {
   if (!type) {
     type = "user";
   }
-  const items = type === "admin" ? adminItems : type === "lecturer" ? lecturerItems : studentItems;
+  const items =
+    type === "admin"
+      ? adminItems
+      : type === "lecturer"
+        ? lecturerItems
+        : studentItems;
   return (
     <SidebarContent>
       <SidebarGroup className="h-full">

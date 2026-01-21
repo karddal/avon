@@ -3,9 +3,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Unit from "@/components/units/unit";
 import { getRequestJWT, requireSession } from "@/lib/auth-utils";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { ClipboardPlus } from "lucide-react";
 
 export type UnitData = {
   id: string;

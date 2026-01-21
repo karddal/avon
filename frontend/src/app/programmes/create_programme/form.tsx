@@ -44,7 +44,6 @@ import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { create_programme } from "@/lib/actions/create_programme";
 
-
 function nextStep(step: number, setStep: Dispatch<SetStateAction<number>>) {
   if (step <= 0) {
     setStep(step + 1);
@@ -57,9 +56,8 @@ function prevStep(step: number, setStep: Dispatch<SetStateAction<number>>) {
   }
 }
 
-
 export const ProgForm = () => {
-const slug = "dummy-slug";
+  const slug = "dummy-slug";
   const [submitState, setSubmitState] = useState<boolean>(false);
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [alertText, setAlertText] = useState<string>("");
@@ -67,21 +65,23 @@ const slug = "dummy-slug";
   const today = new Date();
   const _router = useRouter();
 
-  const formSchema = z.object({
-    name: z.string()
+  const formSchema = z
+    .object({
+      name: z
+        .string()
         .min(1, { message: "Name must be at least 1 character." })
         .max(100, { message: "Name must be at most 100 characters." }),
-    start_date: z.date()
-        .min(today, {message: `Start date must be in the future.`}),
-    end_date: z.date()
-        .min(today, {message: `End date must be in the future.`})
-  }).refine(
-    (data) => data.end_date > data.start_date,
-    {
+      start_date: z
+        .date()
+        .min(today, { message: `Start date must be in the future.` }),
+      end_date: z
+        .date()
+        .min(today, { message: `End date must be in the future.` }),
+    })
+    .refine((data) => data.end_date > data.start_date, {
       // path: ["end_date"],
       message: "End date must be after start date.",
-    }
-  );
+    });
 
   const formVariants = {
     hidden: {
@@ -120,7 +120,7 @@ const slug = "dummy-slug";
     const req = {
       name: values.name,
       start_date: values.start_date.toISOString().split("T")[0],
-      end_date: values.end_date.toISOString().split("T")[0]
+      end_date: values.end_date.toISOString().split("T")[0],
     };
     await create_programme(req).then((r) => {
       if (!r.success) {
@@ -128,9 +128,7 @@ const slug = "dummy-slug";
         setShowAlert(true);
         setSubmitState(false);
       } else {
-        toast.success(
-          "Programme created. You will be redirected in 1 second.",
-        );
+        toast.success("Programme created. You will be redirected in 1 second.");
         const delay = new Promise((resolve) => setTimeout(resolve, 1000));
         delay.then(() => {
           window.location.href = `/programmes`;
@@ -205,7 +203,9 @@ const slug = "dummy-slug";
                                   setDate: field.onChange,
                                 }}
                               />
-                              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              {fieldState.invalid && (
+                                <FieldError errors={[fieldState.error]} />
+                              )}
                             </Field>
                           )}
                         />
@@ -222,7 +222,9 @@ const slug = "dummy-slug";
                                   setDate: field.onChange,
                                 }}
                               />
-                              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                              {fieldState.invalid && (
+                                <FieldError errors={[fieldState.error]} />
+                              )}
                             </Field>
                           )}
                         />
@@ -232,7 +234,7 @@ const slug = "dummy-slug";
                         type={"button"}
                         onClick={() => {
                           form
-                            .trigger(["name", "start_date","end_date"])
+                            .trigger(["name", "start_date", "end_date"])
                             .then((_result) => {
                               if (form.formState.isValid) {
                                 nextStep(step, setStep);
@@ -274,7 +276,9 @@ const slug = "dummy-slug";
                             </ItemDescription>
                             <ItemTitle>Start date</ItemTitle>
                             <ItemDescription>
-                              {start_date ? start_date.toString() : "Not provided."}
+                              {start_date
+                                ? start_date.toString()
+                                : "Not provided."}
                             </ItemDescription>
                             <ItemTitle>End date</ItemTitle>
                             <ItemDescription>

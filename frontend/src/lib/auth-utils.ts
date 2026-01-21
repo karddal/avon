@@ -35,7 +35,6 @@ export async function requireAdminSession() {
   }
 }
 
-
 /**
  * This method returns the JWT token necessary to make API calls.
  */
