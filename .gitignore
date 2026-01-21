@@ -18,6 +18,8 @@ out/
 
 *.db
 
+# documentation
+/documentation/book
 # Devenv
 .devenv*
 devenv.local.nix
