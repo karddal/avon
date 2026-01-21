@@ -2,6 +2,11 @@
 
 To set up a local dev environment, you will need to  install a few tools. We use these to speed up development.
 
+There are two main options. If you have a Nix environment set up, you can use the instructions on the [devenv website](https://devenv.sh/getting-started/) to install `devenv`.
+Then, just cd into the folder, and all the dependencies will be set up and ready to go for you. You just need to look at the environment variable instructions.
+
+If not, then look at the instructions and install manually.
+
 ## Just
 
 The most important thing to use is [Just](https://just.systems/man/en/). Just is a _command runner_, that allows us to speed up common tasks and scripts.
