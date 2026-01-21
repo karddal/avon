@@ -2,14 +2,16 @@ import uuid
 from datetime import date, datetime
 from typing import Annotated, List
 
-from pydantic import AfterValidator, BaseModel, ConfigDict
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field
+
+from app.models.colour import Colour
+
 
 def name_is_correct_length(name: str) -> str:
     if 1 <= len(name) <= 72:
         return name
     else:
         raise ValueError("Name must be between 1 and 72 characters")
-
 
 Name = Annotated[str, AfterValidator(name_is_correct_length)]
 
@@ -29,9 +31,9 @@ class UnitLecturers(BaseModel):
 
 class UnitCreate(BaseModel):
     name: Name
-    description: str
-    unit_code: str
-    colour: str
+    description: str = Field(min_length=1, max_length=2000)
+    unit_code: str = Field(min_length=1, max_length=100)
+    colour: Colour
     programme_id: uuid.UUID
 
 

@@ -15,11 +15,11 @@ import SidebarLoading from "./sidebar-loading";
 export default async function AppSidebar() {
   return (
     <Sidebar variant="floating">
-      <SidebarHeader>
+      <SidebarHeader className="p-0">
         <SidebarMenu>
           <SidebarMenuItem className="md:py-0">
             <SidebarMenuButton
-              className="size-25 w-full justify-center md:justify-center"
+              className="size-25 w-full justify-center md:justify-center border-b"
               asChild
             >
               <div>
