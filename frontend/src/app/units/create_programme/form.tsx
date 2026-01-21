@@ -42,7 +42,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
-import { create_coursework } from "@/lib/actions/create_coursework";
+import { create_programme } from "@/lib/actions/create_programme";
 
 
 function nextStep(step: number, setStep: Dispatch<SetStateAction<number>>) {
@@ -66,18 +66,13 @@ const slug = "dummy-slug";
   const [step, setStep] = useState<number>(0);
   const today = new Date();
   const _router = useRouter();
-  const s = slug;
 
   const formSchema = z.object({
-    name: z.string().min(2, {
-      message: "Name must be at least 2 characters.",
-    }),
-    start_date: z
-          .date()
-          .min(today, {
-            message: `Start date must be in the future.`,
-    }),
-    end_date: z.date()
+    name: z.string()
+        .min(1, { message: "Name must be at least 1 character." })
+        .max(100, { message: "Name must be at most 100 characters." }),
+    start_date: z.date()
+        .min(today, {message: `Start date must be in the future.`}),
   });
 
   const formVariants = {
@@ -106,7 +101,6 @@ const slug = "dummy-slug";
     defaultValues: {
       name: "",
       start_date: new Date(new Date(today).setDate(today.getDate() + 1)),
-      end_date: new Date(new Date(today).setFullYear(today.getFullYear() + 1)),
     },
   });
 
@@ -116,21 +110,20 @@ const slug = "dummy-slug";
     setSubmitState(true);
     const req = {
       name: values.name,
-      start_date: values.start_date,
-      end_date: values.end_date,
+      start_date: values.start_date.toISOString().split("T")[0],
     };
-    await create_coursework(req).then((r) => {
+    await create_programme(req).then((r) => {
       if (!r.success) {
         setAlertText(r.data.detail);
         setShowAlert(true);
         setSubmitState(false);
       } else {
         toast.success(
-          "Coursework created. You will be redirected in 1 second.",
+          "Programme created. You will be redirected in 1 second.",
         );
         const delay = new Promise((resolve) => setTimeout(resolve, 1000));
         delay.then(() => {
-          window.location.href = `/units/${s}`;
+          window.location.href = `/units`;
         });
         setSubmitState(false);
       }
@@ -139,7 +132,9 @@ const slug = "dummy-slug";
 
   const name = form.watch("name");
   const start_date = form.watch("start_date");
-  const end_date = form.watch("end_date");
+  const end_date = start_date
+  ? new Date(start_date.getFullYear() + 1, start_date.getMonth(), Math.min(start_date.getDate(), 28))
+  : null;
   return (
     <div className="flex flex-1 flex-row gap-4 px-4 sm:justify-center sm:align-center sm:items-center">
       <div className="flex sm:flex-row w-full lg:w-[70%] gap-4 mb-2 h-fit mb-2">
