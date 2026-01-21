@@ -70,18 +70,6 @@ export default async function UnitList() {
             {programme.name}
           </TabsTrigger>
         ))}
-        {userRole === "lecturer" && (
-          <Button asChild variant={"outline"} size={"sm"} className="mt-2">
-            <Link
-              href={{
-                pathname: "/units/create_programme",
-              }}
-            >
-              <ClipboardPlus />
-              Add programme
-            </Link>
-          </Button>
-        )}
       </TabsList>
       <div className={"basis-2/3"}>
         {programmes.map((programme) => (

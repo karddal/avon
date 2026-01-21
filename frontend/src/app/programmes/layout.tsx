@@ -21,7 +21,7 @@ export default function Layout({
           <div className="flex flex-row gap-2 items-center">
             <ModeToggle />
             <SidebarTrigger className="-ml-1" />
-            <p className="font-normal text-xl">Units</p>
+            <p className="font-normal text-xl">Programmes</p>
           </div>
           <NotificationBar />
         </header>
