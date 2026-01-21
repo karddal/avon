@@ -31,10 +31,12 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
         description=unit.description,
         unit_code=unit.unit_code,
         colour=unit.colour,
-        start_date=None,
-        end_date=None,
-        programme_id=unit.programme_id,
+        start_year=None,
+        end_year=None,
+        programme=unit.programme,
     )
+    print("hi")
+    # Add validation for the start and end dates below
 
     if unit.programme_id:
         programme = session.exec(
@@ -47,7 +49,7 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
     session.add(db_unit)
     session.commit()
     session.refresh(db_unit)
-
+    print("here")
     return db_unit
 
 

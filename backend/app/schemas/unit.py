@@ -39,9 +39,11 @@ class UnitStudents(BaseModel):
 
 class UnitCreate(BaseModel):
     name: Name
-    description: str = Field(min_length=1, max_length=2000)
-    unit_code: str = Field(min_length=1, max_length=100)
-    colour: Colour
+    description: str
+    unit_code: str
+    colour: str
+    start_year: int
+    end_year: int
     programme_id: uuid.UUID
 
 
