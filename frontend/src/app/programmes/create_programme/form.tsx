@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import z from "zod";
 
 const Calendar29 = dynamic(
-  () => import("@/components/calendar").then((mod) => mod.Calendar29),
+  () => import("@/components/programmeCal").then((mod) => mod.Calendar29),
   { ssr: false },
 );
 
