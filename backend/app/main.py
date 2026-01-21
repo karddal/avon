@@ -7,6 +7,7 @@ from app.models.unit import UnitWithCourseworks
 from app.routers import coursework
 from app.routers import unit
 from app.routers import check, me
+from app.routers import programme
 from dotenv import load_dotenv
 import os
 
@@ -32,6 +33,7 @@ app.include_router(unit.router)
 app.include_router(check.router)
 app.include_router(coursework.router)
 app.include_router(me.router)
+app.include_router(programme.router)
 Coursework.model_rebuild()
 UnitWithCourseworks.model_rebuild()
 
