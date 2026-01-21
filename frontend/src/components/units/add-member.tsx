@@ -1,7 +1,13 @@
 "use client";
 
 import type { User } from "better-auth";
-import { ArrowLeft, ArrowRight, Plus, UserIcon } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Plus,
+  SendHorizonal,
+  UserIcon,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -20,6 +26,7 @@ import {
   type SearchResponse,
   search_by_name,
 } from "@/lib/actions/search_by_name";
+import { Checkbox } from "@/components/ui/checkbox";
 
 function getInitials(name: string) {
   if (!name || typeof name !== "string") return "?";
@@ -43,10 +50,11 @@ export default function AddMember() {
   });
   const [offset, setOffset] = useState<number>(0);
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
+  const [length, setLength] = useState<number>(0);
   const limit = 5;
 
-  async function handleBulk() {
-    toast.success("Bulk adding request sent!");
+  async function handleSend() {
+    toast.success("Adding user(s) to unit!");
   }
 
   async function showUsers(query: string, offset: number) {
@@ -73,7 +81,7 @@ export default function AddMember() {
       {searchQuery.length === 0 ? (
         <></>
       ) : (
-        <div className="flex flex-col gap-2 overflow-y-scroll max-h-128 bg-accent p-2">
+        <div className="flex flex-col gap-2 overflow-y-scroll max-h-128 bg-accent py-0 p-2">
           {loading ? (
             <div className="flex flex-col items-center gap-4 w-full">
               <Spinner />
@@ -105,16 +113,23 @@ export default function AddMember() {
                       </span>
                     </div>
                   </div>
-                  <Button
-                    size="icon-sm"
-                    variant="outline"
-                    className="mx-2"
-                    onClick={() => {
-                      setSelectedUsers(selectedUsers.concat(user));
+                  <Checkbox
+                    className="mx-4 aspect-square rounded-none scale-130 items-center text-center"
+                    onCheckedChange={() => {
+                      console.log(selectedUsers.length);
+                      if (selectedUsers.includes(user)) {
+                        const indexOfUser = selectedUsers.indexOf(user);
+                        const newList = selectedUsers;
+                        newList.splice(indexOfUser, 1);
+                        setLength(newList.length);
+                        setSelectedUsers(newList);
+                      } else {
+                        const newList = selectedUsers.concat(user);
+                        setLength(newList.length);
+                        setSelectedUsers(newList);
+                      }
                     }}
-                  >
-                    <Plus size={20}></Plus>
-                  </Button>
+                  ></Checkbox>
                 </CardContent>
               </Card>
             ))
@@ -172,6 +187,15 @@ export default function AddMember() {
             <div></div>
           )}
         </div>
+      )}
+      {length > 0 ? (
+        <div className="flex flex-row items-center text-center">
+          <Button className="w-full" variant="default">
+            <SendHorizonal></SendHorizonal> Add {length} users to unit
+          </Button>
+        </div>
+      ) : (
+        <div></div>
       )}
     </div>
   );

@@ -27,7 +27,7 @@ export default async function UnitName({
   const unit: UnitData = await response.json();
 
   return (
-    <div>
+    <div className="text-3xl lg:text-5xl">
       <span className="font-mono font-light">{unit.unit_code}</span> {unit.name}
     </div>
   );

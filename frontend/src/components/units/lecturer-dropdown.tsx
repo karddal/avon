@@ -35,9 +35,9 @@ export default function LecturerDropdown({
   const [showEdit, setShowEdit] = useState(false);
 
   return (
-    <>
+    <div className="aspect-square">
       <DropdownMenu>
-        <DropdownMenuTrigger className="border hover:bg-accent hover:transition aspect-square p-2">
+        <DropdownMenuTrigger className="border hover:bg-accent hover:transition p-2">
           <Menu size={32} />
         </DropdownMenuTrigger>
         <DropdownMenuContent className="flex flex-col">
@@ -91,6 +91,6 @@ export default function LecturerDropdown({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </div>
   );
 }
