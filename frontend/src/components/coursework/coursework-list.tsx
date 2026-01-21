@@ -1,7 +1,7 @@
 import { BookDashed } from "lucide-react";
 import Coursework from "@/components/coursework/coursework";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getRequestJWT } from "@/lib/auth-utils";
+import {getRequestJWT, requireSession} from "@/lib/auth-utils";
 import {
   Empty,
   EmptyDescription,
@@ -9,6 +9,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "../ui/empty";
+import {getSession} from "better-auth/api";
 
 type CourseworkData = {
   id: string;
@@ -34,6 +35,9 @@ export default async function CourseworkList({
   finished: boolean;
 }) {
   const token = await getRequestJWT();
+  const s = await requireSession();
+  const role = s.user.role;
+  const hasPermissions = role === "admin" || role === "lecturer";
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/me/courseworks`,
     {
@@ -120,6 +124,7 @@ export default async function CourseworkList({
                   <div className={"mb-3"} key={coursework.id}>
                     <Coursework
                       key={coursework.id}
+                      hasPermissions={hasPermissions}
                       props={{
                         id: coursework.id,
                         name: coursework.name,
