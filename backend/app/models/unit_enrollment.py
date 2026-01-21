@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 from uuid import UUID
 
 from sqlmodel import SQLModel, Field, Relationship

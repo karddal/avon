@@ -15,7 +15,7 @@ def create(session: Session, payload: UnitEnrollmentCreate) -> UnitEnrollment:
         raise HTTPException(status_code=409, detail="User already enrolled in this unit")
 
     try:
-        user_type = UserType(payload.user_type)
+        _ = UserType(payload.user_type)
     except ValueError:
         raise HTTPException(status_code=422, detail="Invalid user_type")
 
