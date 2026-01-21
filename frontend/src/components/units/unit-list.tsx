@@ -74,7 +74,7 @@ export default async function UnitList() {
           <Button asChild variant={"outline"} size={"sm"} className="mt-2">
             <Link
               href={{
-                pathname: "/create_programme",
+                pathname: "/units/create_programme",
               }}
             >
               <ClipboardPlus />
