@@ -201,6 +201,7 @@ export const ProgForm = () => {
                                 props={{
                                   date: field.value,
                                   setDate: field.onChange,
+                                  version: "start",
                                 }}
                               />
                               {fieldState.invalid && (
@@ -220,6 +221,7 @@ export const ProgForm = () => {
                                 props={{
                                   date: field.value,
                                   setDate: field.onChange,
+                                  version: "end",
                                 }}
                               />
                               {fieldState.invalid && (
@@ -276,13 +278,11 @@ export const ProgForm = () => {
                             </ItemDescription>
                             <ItemTitle>Start date</ItemTitle>
                             <ItemDescription>
-                              {start_date
-                                ? start_date.toString()
-                                : "Not provided."}
+                              {start_date ? start_date.toISOString().split("T")[0] : "Not provided."}
                             </ItemDescription>
                             <ItemTitle>End date</ItemTitle>
                             <ItemDescription>
-                              {end_date ? end_date.toString() : "Not provided."}
+                              {end_date ? end_date.toISOString().split("T")[0] : "Not provided."}
                             </ItemDescription>
                           </ItemContent>
                         </Item>

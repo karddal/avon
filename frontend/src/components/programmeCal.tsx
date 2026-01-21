@@ -15,23 +15,17 @@ import {
 import { FieldGroup } from "./ui/field";
 import { Separator } from "./ui/separator";
 
-function _formatDate(date: Date | undefined) {
-  if (!date) {
-    return "";
-  }
-
-  return date.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+function toDateOnly(date: Date) {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  return d;
 }
+
 
 type calendarProps = {
   date: Date;
   setDate: (date: Date) => void;
+  version: "start" | "end";
 };
 
 export function Calendar29({ props }: { props: calendarProps }) {
@@ -70,18 +64,13 @@ export function Calendar29({ props }: { props: calendarProps }) {
                   fromYear={props.date.getFullYear() - 2}
                   toYear={props.date.getFullYear() + 10}
                   onSelect={(d) => {
-                    if (d) {
-                      const day = d.getDate();
-                      const month = d.getMonth();
-                      const year = d.getFullYear();
-                      const currentDate = props.date;
-                      currentDate.setDate(day);
-                      currentDate.setMonth(month);
-                      currentDate.setFullYear(year);
-                      props.setDate(currentDate);
-                    }
+                    if (!d) return;
+
+                    const nextDate = new Date(d);
+                    props.setDate(toDateOnly(nextDate));
+
                     setOpenOne(false);
-                  }}
+                }}
                 />
               </PopoverContent>
             </Popover>
@@ -101,15 +90,15 @@ export function Calendar29({ props }: { props: calendarProps }) {
               setValue(e.target.value);
               const date = parseDate(e.target.value);
               if (date) {
-                props.setDate(date);
+                props.setDate(toDateOnly(date));
               }
             }}
           />
         </div>
       </FieldGroup>
       <div className="text-muted-foreground px-1 text-sm">
-        The coursework will be due on{" "}
-        <span className="font-medium">{props.date.toString()}</span>.
+        The Programme will {props.version} on{" "}
+        <span className="font-medium">{props.date.toDateString()}</span>.
       </div>
     </div>
   );
