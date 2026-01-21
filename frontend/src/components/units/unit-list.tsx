@@ -2,7 +2,10 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Unit from "@/components/units/unit";
-import { getRequestJWT } from "@/lib/auth-utils";
+import { getRequestJWT, requireSession } from "@/lib/auth-utils";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ClipboardPlus } from "lucide-react";
 
 export type UnitData = {
   id: string;
@@ -29,6 +32,11 @@ export default async function UnitList() {
   // place unit data into tabs based on year
   const token = await getRequestJWT();
 
+  const s = await requireSession();
+  let userRole = s.user.role;
+  if (!userRole) {
+    userRole = "user";
+  }
   const data = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/me/units-by-programme`,
     {
@@ -62,6 +70,18 @@ export default async function UnitList() {
             {programme.name}
           </TabsTrigger>
         ))}
+        {userRole === "lecturer" && (
+          <Button asChild variant={"outline"} size={"sm"} className="mt-2">
+            <Link
+              href={{
+                pathname: "/create_programme",
+              }}
+            >
+              <ClipboardPlus />
+              Add programme
+            </Link>
+          </Button>
+        )}
       </TabsList>
       <div className={"basis-2/3"}>
         {programmes.map((programme) => (

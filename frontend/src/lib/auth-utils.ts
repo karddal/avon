@@ -26,6 +26,16 @@ export async function requireLecturerSession() {
   }
 }
 
+export async function requireAdminSession() {
+  const s = await requireSession();
+  if (s.user.role === "admin") {
+    return s;
+  } else {
+    redirect("/units");
+  }
+}
+
+
 /**
  * This method returns the JWT token necessary to make API calls.
  */
