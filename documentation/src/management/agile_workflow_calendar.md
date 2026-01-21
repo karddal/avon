@@ -77,56 +77,56 @@ document.addEventListener('DOMContentLoaded', function () {
         {
             title: 'Pre-TB2',
             start: '2026-01-01',
-            end: '2026-01-19',
+            end: '2026-01-12',
             display: 'background',
             backgroundColor: '#cce5ff'
         },
         {
             title: 'Sprint 1',
             start: '2026-01-12',
-            end: '2026-01-18',
+            end: '2026-01-19',
             display: 'background',
             backgroundColor: '#d4edda'
         },
         {
             title: 'Sprint 2',
             start: '2026-01-19',
-            end: '2026-01-25',
+            end: '2026-01-26',
             display: 'background',
             backgroundColor: '#d4edda'
         },
         {
             title: 'Sprint 3',
             start: '2026-01-26',
-            end: '2026-02-01',
+            end: '2026-02-02',
             display: 'background',
             backgroundColor: '#fff3cd'
         },
         {
             title: 'Sprint 4',
             start: '2026-02-02',
-            end: '2026-02-08',
+            end: '2026-02-09',
             display: 'background',
             backgroundColor: '#e6d9f2'
         },
         {
             title: 'Sprint 5',
             start: '2026-02-09',
-            end: '2026-02-15',
+            end: '2026-02-16',
             display: 'background',
             backgroundColor: '#cce5ff'
         },
         {
             title: 'Sprint 6',
             start: '2026-02-16',
-            end: '2026-02-22',
+            end: '2026-02-23',
             display: 'background',
             backgroundColor: '#d4edda'
         },
         {
             title: 'Sprint 7',
             start: '2026-02-23',
-            end: '2026-03-01',
+            end: '2026-03-02',
             display: 'background',
             backgroundColor: '#cce5ff'
         },
