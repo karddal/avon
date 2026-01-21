@@ -7,23 +7,6 @@ from datetime import datetime, timedelta
 from app.models.programme import Programme
 from app.models.unit import Unit
 
-
-# pytest.fixture stuff is done so we have a reusable database setup for testing
-@pytest.fixture
-def engine():
-    # Test via memory so no clean-up afterwards is needed (volatile DB)
-    engine = create_engine(
-        "sqlite:///:memory:", echo=False
-    )  # Echo is false so we don't geta load of SQL logs during testing
-    SQLModel.metadata.create_all(engine)
-    return engine
-
-
-@pytest.fixture
-def session(engine):
-    with Session(engine) as session:
-        yield session  # yield not return so to clean up After the tests are done
-
 def create_programme(session) -> UUID:
     programme = Programme(id=uuid4(), name="Test Programme", start_date=datetime.now(),
                           end_date=datetime.today() + timedelta(days=365))
