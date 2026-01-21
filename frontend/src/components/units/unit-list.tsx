@@ -2,7 +2,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Unit from "@/components/units/unit";
-import { getRequestJWT, requireSession } from "@/lib/auth-utils";
+import { getRequestJWT } from "@/lib/auth-utils";
 
 export type UnitData = {
   id: string;
