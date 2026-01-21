@@ -11,7 +11,7 @@ def is_valid_name(name: str) -> str:
     raise ValueError("Name must be between 1 and 100 characters")
 
 
-def is_valid_start_date(value: date) -> date:
+def is_valid_date(value: date) -> date:
     today = date.today()
 
     if value <= today:
@@ -19,17 +19,20 @@ def is_valid_start_date(value: date) -> date:
 
     return value
 
+# Can't test for end_date > start_date here as we don't have access to both fields in teh validator, so check in route handler (and create form on frontend inforces it anyway)
 
 Name = Annotated[str, AfterValidator(is_valid_name)]
-StartDate = Annotated[date, AfterValidator(is_valid_start_date)]
+StartDate = Annotated[date, AfterValidator(is_valid_date)]
+EndDate = Annotated[date, AfterValidator(is_valid_date)]
 
 class ProgrammeCreate(BaseModel):
     name: Name
     start_date: StartDate
+    end_date: EndDate
 
 
 class ProgrammeRead(BaseModel):
     id: UUID
     name: Name
     start_date: StartDate
-    end_date: date
+    end_date: EndDate

@@ -13,16 +13,10 @@ session_dependency = Annotated[Session, Depends(get_session)]
 
 @router.post('/create', response_model = ProgrammeRead, status_code=status.HTTP_201_CREATED)
 async def create_programme(programme: ProgrammeCreate, session: session_dependency):
-    # Leap year stuff
-    try:
-        end_date = programme.start_date.replace(year=programme.start_date.year + 1)
-    except ValueError:
-        end_date = programme.start_date.replace(month=2, day=28, year=programme.start_date.year + 1)
-
     db_programme = Programme(
         name=programme.name,
         start_date=programme.start_date,
-        end_date=end_date,
+        end_date=programme.end_date,
     )
 
     session.add(db_programme)
