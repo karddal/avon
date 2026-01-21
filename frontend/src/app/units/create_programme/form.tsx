@@ -7,7 +7,6 @@ import { easeIn, easeOut } from "motion";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { type Dispatch, type SetStateAction, useState } from "react";
-import { HexColorInput, HexColorPicker } from "react-colorful";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
@@ -17,7 +16,6 @@ const Calendar29 = dynamic(
   { ssr: false },
 );
 
-import Link from "next/link";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
@@ -46,13 +44,9 @@ import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { create_coursework } from "@/lib/actions/create_coursework";
 
-type CreateCourseworkResponse = {
-  success: boolean;
-  data: any;
-};
 
 function nextStep(step: number, setStep: Dispatch<SetStateAction<number>>) {
-  if (step <= 1) {
+  if (step <= 0) {
     setStep(step + 1);
   }
 }
@@ -63,16 +57,9 @@ function prevStep(step: number, setStep: Dispatch<SetStateAction<number>>) {
   }
 }
 
-function _resetStep(setStep: Dispatch<SetStateAction<number>>) {
-  setStep(0);
-}
 
 export const ProgForm = () => {
 const slug = "dummy-slug";
-  const unitCode = "DUMMY101";
-  const unitName = "Dummy Unit";
-  const unitId = "00000000-0000-0000-0000-000000000000";
-  const maxDueDate = new Date("2099-12-31");
   const [submitState, setSubmitState] = useState<boolean>(false);
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [alertText, setAlertText] = useState<string>("");
@@ -157,7 +144,7 @@ const slug = "dummy-slug";
     <div className="flex flex-1 flex-row gap-4 px-4 sm:justify-center sm:align-center sm:items-center">
       <div className="flex sm:flex-row w-full lg:w-[70%] gap-4 mb-2 h-fit mb-2">
         <Card className={"flex-1"}>
-          <Progress value={step * 50} className={"rounded-none"}></Progress>
+          <Progress value={step * 100} className={"rounded-none"}></Progress>
           <CardHeader>
             <CardTitle>Create a Programme</CardTitle>
             <CardDescription>
