@@ -20,8 +20,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import DeleteUnitButton from "@/components/units/delete-unit-button";
-import ListMembers from "@/components/units/list-members";
 import EditUnit from "@/components/units/edit-unit";
+import ListMembers from "@/components/units/list-members";
 
 export default function LecturerDropdown({
   slug,
@@ -48,7 +48,7 @@ export default function LecturerDropdown({
             <Users className="mr-2 h-4 w-4" /> Members
           </DropdownMenuItem>
 
-          <DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => setShowEdit(true)}>
             <SquarePen className="mr-2 h-4 w-4" /> Edit Unit
           </DropdownMenuItem>
 
