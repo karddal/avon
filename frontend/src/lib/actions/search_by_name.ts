@@ -1,8 +1,8 @@
 "use server";
 
-import { auth } from "@/lib/auth";
-import { User } from "better-auth";
+import type { User } from "better-auth";
 import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 
 export type SearchResponse = {
   users: User[];

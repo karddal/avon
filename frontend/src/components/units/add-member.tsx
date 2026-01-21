@@ -1,40 +1,25 @@
 "use client";
 
-import {
-  ArrowLeft,
-  ArrowRight,
-  FileStack,
-  Icon,
-  Menu,
-  SendHorizonal,
-  TextSearch,
-  UserIcon,
-  X,
-} from "lucide-react";
+import type { User } from "better-auth";
+import { ArrowLeft, ArrowRight, Plus, UserIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/spinner";
-import { Textarea } from "@/components/ui/textarea";
-import { search_by_name, SearchResponse } from "@/lib/actions/search_by_name";
-import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
-import { User } from "better-auth";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Empty,
+  EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-  EmptyDescription,
-  EmptyContent,
 } from "@/components/ui/empty";
+import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
+import {
+  type SearchResponse,
+  search_by_name,
+} from "@/lib/actions/search_by_name";
 
 function getInitials(name: string) {
   if (!name || typeof name !== "string") return "?";
@@ -50,7 +35,6 @@ function getInitials(name: string) {
 export default function AddMember() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const [showBulk, setShowBulk] = useState(false);
   const [response, setResponse] = useState<SearchResponse>({
     users: [],
     total: 0,
@@ -58,6 +42,7 @@ export default function AddMember() {
     offset: 0,
   });
   const [offset, setOffset] = useState<number>(0);
+  const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
   const limit = 5;
 
   async function handleBulk() {
@@ -85,7 +70,7 @@ export default function AddMember() {
           }}
         />
       </div>
-      {searchQuery.length == 0 ? (
+      {searchQuery.length === 0 ? (
         <></>
       ) : (
         <div className="flex flex-col gap-2 overflow-y-scroll max-h-128 bg-accent p-2">
@@ -120,6 +105,16 @@ export default function AddMember() {
                       </span>
                     </div>
                   </div>
+                  <Button
+                    size="icon-sm"
+                    variant="outline"
+                    className="mx-2"
+                    onClick={() => {
+                      setSelectedUsers(selectedUsers.concat(user));
+                    }}
+                  >
+                    <Plus size={20}></Plus>
+                  </Button>
                 </CardContent>
               </Card>
             ))
