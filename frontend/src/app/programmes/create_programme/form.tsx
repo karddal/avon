@@ -5,7 +5,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, OctagonAlert, Send } from "lucide-react";
 import { easeIn, easeOut } from "motion";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -41,7 +40,6 @@ import {
 } from "@/components/ui/item";
 import { Progress } from "@/components/ui/progress";
 import { Spinner } from "@/components/ui/spinner";
-import { Textarea } from "@/components/ui/textarea";
 import { create_programme } from "@/lib/actions/create_programme";
 
 function nextStep(step: number, setStep: Dispatch<SetStateAction<number>>) {
@@ -57,13 +55,11 @@ function prevStep(step: number, setStep: Dispatch<SetStateAction<number>>) {
 }
 
 export const ProgForm = () => {
-  const slug = "dummy-slug";
   const [submitState, setSubmitState] = useState<boolean>(false);
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [alertText, setAlertText] = useState<string>("");
   const [step, setStep] = useState<number>(0);
   const today = new Date();
-  const _router = useRouter();
 
   const formSchema = z
     .object({
@@ -278,11 +274,15 @@ export const ProgForm = () => {
                             </ItemDescription>
                             <ItemTitle>Start date</ItemTitle>
                             <ItemDescription>
-                              {start_date ? start_date.toISOString().split("T")[0] : "Not provided."}
+                              {start_date
+                                ? start_date.toISOString().split("T")[0]
+                                : "Not provided."}
                             </ItemDescription>
                             <ItemTitle>End date</ItemTitle>
                             <ItemDescription>
-                              {end_date ? end_date.toISOString().split("T")[0] : "Not provided."}
+                              {end_date
+                                ? end_date.toISOString().split("T")[0]
+                                : "Not provided."}
                             </ItemDescription>
                           </ItemContent>
                         </Item>

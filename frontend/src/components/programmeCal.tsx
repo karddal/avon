@@ -21,7 +21,6 @@ function toDateOnly(date: Date) {
   return d;
 }
 
-
 type calendarProps = {
   date: Date;
   setDate: (date: Date) => void;
@@ -70,7 +69,7 @@ export function Calendar29({ props }: { props: calendarProps }) {
                     props.setDate(toDateOnly(nextDate));
 
                     setOpenOne(false);
-                }}
+                  }}
                 />
               </PopoverContent>
             </Popover>
