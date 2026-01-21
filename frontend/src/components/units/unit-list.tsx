@@ -29,11 +29,6 @@ export default async function UnitList() {
   // place unit data into tabs based on year
   const token = await getRequestJWT();
 
-  const s = await requireSession();
-  let userRole = s.user.role;
-  if (!userRole) {
-    userRole = "user";
-  }
   const data = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/me/units-by-programme`,
     {
