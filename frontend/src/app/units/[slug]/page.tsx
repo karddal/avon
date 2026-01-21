@@ -1,10 +1,13 @@
 "use server";
 
+import { ClipboardPlus } from "lucide-react";
+import Link from "next/link";
 import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
 import UnitDescription from "@/app/units/[slug]/description";
 import UnitName from "@/app/units/[slug]/name";
 import { DropdownCard } from "@/components/dropdown-card";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -84,12 +87,24 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
 
             <CardContent className="w-full flex flex-col">
               <Tabs defaultValue="ongoing">
-                <TabsList className="h-8 flex flex-row justify-between w-full bg-transparent">
-                  <div className="bg-accent">
+                <div className={"flex flex-row justify-between items-center"}>
+                  <TabsList>
                     <TabsTrigger value="ongoing">Ongoing</TabsTrigger>
                     <TabsTrigger value="finished">Finished</TabsTrigger>
-                  </div>
-                </TabsList>
+                  </TabsList>
+                  {userRole === "lecturer" && (
+                    <Button asChild variant={"outline"} size={"sm"}>
+                      <Link
+                        href={{
+                          pathname: `/units/${slug}/create`,
+                        }}
+                      >
+                        <ClipboardPlus />
+                        Assign new coursework
+                      </Link>
+                    </Button>
+                  )}
+                </div>
                 <TabsList className={"w-full"}>
                   <TabsContent value={"ongoing"}>
                     <Suspense fallback={<Loading />}>

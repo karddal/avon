@@ -13,8 +13,12 @@ from app.schemas.unit import (
     UnitAll,
     UnitCreate,
     UnitRead,
+<<<<<<< HEAD
     UnitStudents,
     UnitUpdate, UnitLecturers,
+=======
+    UnitUpdate, UnitLecturers, UnitReadWithDates
+>>>>>>> dev
 )
 
 router = APIRouter(prefix="/units", tags=["units"])
@@ -62,6 +66,28 @@ async def get_unit_details(unit_id: UUID, session: session_dependency):
         )
 
     return unit
+
+@router.get("/{unit_id}/with_dates", response_model=UnitReadWithDates, status_code=status.HTTP_200_OK)
+async def get_unit_with_dates(unit_id: UUID, session: session_dependency):
+    unit = session.get(Unit, unit_id)
+    start = unit.programme.start_date
+    end = unit.programme.end_date
+    if unit is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Unit not found"
+        )
+
+    return UnitReadWithDates(
+        id=unit.id,
+        name=unit.name,
+        description=unit.description,
+        creation_date=unit.creation_date,
+        unit_code=unit.unit_code,
+        colour=unit.colour,
+        programme_id=unit.programme_id,
+        start_date=start,
+        end_date=end,
+    )
 
 @router.get("/{unit_id}/lecturers", response_model=UnitLecturers, status_code=status.HTTP_200_OK)
 async def get_unit_lecturers(unit_id: UUID, session: session_dependency):

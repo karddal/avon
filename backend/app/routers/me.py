@@ -70,7 +70,14 @@ async def me_courseworks(
 ):
     statement = select(Unit).join(UnitEnrollment).where(UnitEnrollment.user_id == me)
     units = list(session.exec(statement))
-    results = [UnitWithCourseworks.model_validate(unit).model_dump() for unit in units]
+    results = [UnitWithCourseworks.model_validate(UnitWithCourseworks(
+        id=unit.id,
+        unit_code=unit.unit_code,
+        name=unit.name,
+        programme_start_date=unit.programme.start_date,
+        programme_end_date=unit.programme.end_date,
+        courseworks=unit.courseworks
+    )).model_dump() for unit in units]
     print(results)
     return results
 
