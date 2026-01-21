@@ -1,3 +1,5 @@
+import { getRequestJWT } from "@/lib/auth-utils";
+
 type UnitData = {
   id: string;
   name: string;
@@ -8,13 +10,13 @@ type UnitData = {
 
 export default async function UnitName({
   slug,
-  token,
 }: {
-  slug: string;
-  token?: string;
+  slug: Promise<{ slug: string }>;
 }) {
+  const token = await getRequestJWT();
+  const s = await slug;
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/units/${slug}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/units/${s.slug}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -24,11 +26,7 @@ export default async function UnitName({
     },
   );
 
-  const unit: UnitData = await response.json();
+  const _unit: UnitData = await response.json();
 
-  return (
-    <>
-      <span className="font-mono font-light">{unit.unit_code}</span> {unit.name}
-    </>
-  );
+  return <></>;
 }

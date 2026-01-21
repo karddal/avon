@@ -1,11 +1,13 @@
 "use server";
 
+import { ClipboardPlus } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
 import UnitDescription from "@/app/units/[slug]/description";
 import UnitName from "@/app/units/[slug]/name";
 import { DropdownCard } from "@/components/dropdown-card";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -78,10 +80,24 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
 
             <CardContent className="w-full">
               <Tabs defaultValue="ongoing">
-                <TabsList>
-                  <TabsTrigger value="ongoing">Ongoing</TabsTrigger>
-                  <TabsTrigger value="finished">Finished</TabsTrigger>
-                </TabsList>
+                <div className={"flex flex-row justify-between items-center"}>
+                  <TabsList>
+                    <TabsTrigger value="ongoing">Ongoing</TabsTrigger>
+                    <TabsTrigger value="finished">Finished</TabsTrigger>
+                  </TabsList>
+                  {userRole === "lecturer" && (
+                    <Button asChild variant={"outline"} size={"sm"}>
+                      <Link
+                        href={{
+                          pathname: `/units/${slug}/create`,
+                        }}
+                      >
+                        <ClipboardPlus />
+                        Assign new coursework
+                      </Link>
+                    </Button>
+                  )}
+                </div>
                 <TabsList className={"w-full"}>
                   <TabsContent value={"ongoing"}>
                     <Suspense fallback={<Loading />}>
@@ -108,17 +124,6 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
         {/* Right column */}
         <div className="flex flex-col xl:col-span-1 lg:col-span-2 gap-4 min-h-0">
           {/* Create a coursework*/}
-          {userRole === "lecturer" && (
-            <Card className={`flex flex-col gap-0 hover:cursor-pointer`}>
-              <CardHeader className="flex flex-row items-center gap-4 select-none ">
-                <CardTitle>
-                  <Link href={`${slug}/create`} className="text-2xl">
-                    Create a Coursework
-                  </Link>
-                </CardTitle>
-              </CardHeader>
-            </Card>
-          )}
 
           {/* Unit Staff */}
           <DropdownCard

@@ -25,6 +25,10 @@ class UnitRead(BaseModel):
     colour: str
     programme_id: uuid.UUID
 
+class UnitReadWithDates(UnitRead):
+    start_date: datetime
+    end_date: datetime
+
 class UnitLecturers(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     lecturers: List[str]
