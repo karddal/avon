@@ -6,37 +6,41 @@ default:
 
 check-fe:
     @echo "Formatting and linting frontend..."
-    just -f frontend/Justfile check
+    cd frontend && npx biome check
 
 check-be:
     @echo "Formatting and linting backend..."
-    just -f backend/Justfile check
+    cd backend && uv run ruff check
 
 check: check-fe check-be
 
 fix-fe:
     @echo "Fixing frontend..."
-    just -f frontend/Justfile fix
+    cd frontend && npx biome check --fix
+
+force-fix-fe:
+    @echo "Fixing frontend..."
+    cd frontend && npx biome check --write --unsafe
 
 fix-be:
     @echo "Fixing backend..."
-    just -f backend/Justfile fix
+    cd backend && uv run ruff check --fix
 
 fixit: fix-fe fix-be
 
 test-be:
 	@echo "Testing backend routers..."
-	just -f backend/Justfile test
+	cd backend && uv run pytest -v
 
 run-fe:
-    just -f frontend/Justfile run
+    cd frontend && npm run dev
 
-run-be env:
-    just -f backend/Justfile run {{env}}
+run-be:
+    cd backend && ENV=dev uv run fastapi dev
 
 sync:
-    just -f frontend/Justfile sync
-    just -f backend/Justfile sync
+    cd frontend && npm i
+    cd backend && uv sync
 
 serve-book:
-    just -f documentation/Justfile open
+    cd documentation && mdbook serve --open
