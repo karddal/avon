@@ -22,7 +22,6 @@ export async function batch_add_students_to_unit(
       }),
     },
   );
-  console.log("HERE", data);
   if (!data.ok) {
     const json = await data.json();
     return {

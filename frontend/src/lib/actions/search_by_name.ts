@@ -16,6 +16,7 @@ export async function search_by_name(
   search: string,
   offset: number,
   limit: number,
+  filterValue: string,
 ): Promise<SearchResponse> {
   const response = (await auth.api.listUsers({
     query: {
@@ -26,7 +27,7 @@ export async function search_by_name(
       sortBy: "name",
       searchOperator: "contains",
       filterField: "role",
-      filterValue: "user",
+      filterValue: filterValue,
       filterOperator: "eq",
     },
     headers: await headers(),

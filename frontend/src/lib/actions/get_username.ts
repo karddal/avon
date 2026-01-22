@@ -22,7 +22,6 @@ export async function get_username_from_id(user_id: string): Promise<string> {
   } else {
     const db = new DatabaseSync("../sqlite.db");
     const _session = db.createSession();
-    console.log("querying ", user_id);
     const query = db.prepare("SELECT name FROM user WHERE id = ?");
     const result = query.get(user_id) as { name: string } | undefined;
     if (!result) {

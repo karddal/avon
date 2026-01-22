@@ -70,11 +70,7 @@ export default function LecturerDropdown({
         me={me}
       />
 
-      <EditUnit
-        _unit_id={slug}
-        openState={showEdit}
-        setOpenState={setShowEdit}
-      />
+      <EditUnit openState={showEdit} setOpenState={setShowEdit} />
 
       <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
         <AlertDialogContent>

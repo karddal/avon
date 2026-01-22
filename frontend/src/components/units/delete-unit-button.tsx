@@ -28,11 +28,9 @@ export default function DeleteUnitButton({ unitId }: DeleteUnitButtonProps) {
       } else {
         throw new Error();
       }
-    } catch (error) {
+    } catch (_error) {
       setStatus(2);
       toast.error("Failed to delete the unit");
-      console.log(error);
-      console.log(unitId);
 
       setTimeout(() => setStatus(0), 3000);
     }

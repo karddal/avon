@@ -17,17 +17,6 @@ import { get_lecturers } from "@/lib/actions/get_lecturers";
 import { get_username_from_id } from "@/lib/actions/get_username";
 import { remove_user_enrollment } from "@/lib/actions/remove_user_enrollment";
 
-function _getInitials(name: string) {
-  if (!name || typeof name !== "string") return "?";
-  const allNames = name.trim().split(" ");
-  if (allNames.length === 0) return "?";
-
-  const first = allNames[0].charAt(0);
-  const last =
-    allNames.length > 1 ? allNames[allNames.length - 1].charAt(0) : "";
-  return (first + last).toUpperCase();
-}
-
 type lecturerInfo = {
   id: string;
   displayName: string;
@@ -44,11 +33,9 @@ export default function lecturerList({
   const [lecturers, setlecturers] = useState<lecturerInfo[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
-  console.log(me);
 
   async function handleDelete(id: string) {
     const result = await remove_user_enrollment(unit_id, id);
-    console.log(result);
     if (result) {
       toast.success("Lecturer unenrolled successfully");
     } else {
@@ -76,8 +63,6 @@ export default function lecturerList({
       );
 
       setlecturers(enrichedlecturers);
-    } catch (error) {
-      console.error("Failed to load lecturers", error);
     } finally {
       setLoading(false);
     }

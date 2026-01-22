@@ -17,8 +17,6 @@ type _CreateCourseworkResponse = {
 export async function create_coursework(req: CreateCourseworkRequest) {
   "use server";
   const token = await getRequestJWT();
-  console.log("current request");
-  console.log(req);
   const data = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/coursework/create`,
     {

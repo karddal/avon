@@ -60,17 +60,9 @@ export default function AddMember({ unit_id }: { unit_id: string }) {
   async function handleSend() {
     const userIds = selectedUsers.map((user) => user.id);
     const response = await batch_add_students_to_unit(unit_id, userIds);
-    console.log(
-      "HERE",
-      JSON.stringify({
-        unit_id: unit_id,
-        user_ids: userIds,
-      }),
-    );
     if (response.success) {
       toast.success("Adding student(s) to unit!");
     } else {
-      console.log(response);
       toast.error("Adding failed! ");
     }
   }
@@ -89,9 +81,7 @@ export default function AddMember({ unit_id }: { unit_id: string }) {
       ];
 
       setDisabledUsers(disabledU);
-    } catch (error) {
-      console.error("Failed to get disabled users", error);
-    }
+    } catch (_error) {}
   }, [unit_id]);
 
   useEffect(() => {
@@ -100,7 +90,12 @@ export default function AddMember({ unit_id }: { unit_id: string }) {
 
   async function showUsers(query: string, offset: number) {
     setLoading(true);
-    const response: SearchResponse = await search_by_name(query, offset, limit);
+    const response: SearchResponse = await search_by_name(
+      query,
+      offset,
+      limit,
+      "user",
+    );
     setLoading(false);
     setResponse(response);
   }

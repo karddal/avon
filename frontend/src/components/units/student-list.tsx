@@ -16,17 +16,6 @@ import { get_batch_user_info } from "@/lib/actions/get_batch_user_details";
 import { get_students } from "@/lib/actions/get_students";
 import { remove_user_enrollment } from "@/lib/actions/remove_user_enrollment";
 
-function _getInitials(name: string) {
-  if (!name || typeof name !== "string") return "?";
-  const allNames = name.trim().split(" ");
-  if (allNames.length === 0) return "?";
-
-  const first = allNames[0].charAt(0);
-  const last =
-    allNames.length > 1 ? allNames[allNames.length - 1].charAt(0) : "";
-  return (first + last).toUpperCase();
-}
-
 type studentInfo = {
   id: string;
   displayName: string;
@@ -40,7 +29,6 @@ export default function StudentList({ unit_id }: { unit_id: string }) {
 
   async function handleDelete(id: string) {
     const result = await remove_user_enrollment(unit_id, id);
-    console.log(result);
     if (result) {
       toast.success("Student unenrolled successfully");
     } else {
@@ -58,8 +46,6 @@ export default function StudentList({ unit_id }: { unit_id: string }) {
         const enrichedStudents = await get_batch_user_info(studentIds);
         setStudents(enrichedStudents);
       }
-    } catch (error) {
-      console.error("Failed to load students", error);
     } finally {
       setLoading(false);
     }

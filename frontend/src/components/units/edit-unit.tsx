@@ -11,11 +11,9 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function EditUnit({
-  _unit_id,
   openState,
   setOpenState,
 }: {
-  _unit_id: string;
   openState: boolean;
   setOpenState: Dispatch<SetStateAction<boolean>>;
 }) {

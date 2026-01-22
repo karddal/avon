@@ -19,7 +19,6 @@ export async function remove_user_enrollment(unit_id: string, user_id: string) {
       }),
     },
   );
-  console.log("HERE", data);
   if (!data.ok) {
     const json = await data.json();
     return {
