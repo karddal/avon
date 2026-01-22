@@ -58,7 +58,7 @@ export default function LecturerDropdown({
             onSelect={() => setShowDelete(true)}
             className="text-destructive focus:text-destructive"
           >
-            <SquareX className="mr-2 h-4 w-4" /> Delete Unit
+            <SquareX className="text-destructive mr-2 h-4 w-4" /> Delete Unit
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
