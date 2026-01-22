@@ -168,11 +168,11 @@ def test_update_coursework_works(client, session):
     g = session.get(Coursework, id)
     assert g.name == np["name"]
 
-def update_coursework_data(client, session):
+def test_update_coursework_data(client, session):
     unit_id = create_unit_with_programme(session)
 
     np = coursework_payload(str(unit_id))
-    createResponse = client.post("/coursework/create", json=payload)
+    createResponse = client.post("/coursework/create", json=np)
     coursework_id = createResponse.json()["id"]
 
     response = client.get(f"/coursework/{coursework_id}/update_form_data")
