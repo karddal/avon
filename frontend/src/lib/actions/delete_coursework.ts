@@ -5,10 +5,6 @@ type DeleteCourseworkRequest = {
   id: string;
 };
 
-type _CreateCourseworkResponse = {
-  success: boolean;
-};
-
 export async function delete_coursework(req: DeleteCourseworkRequest) {
   "use server";
   const token = await getRequestJWT();

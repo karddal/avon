@@ -1,19 +1,23 @@
 "use server";
 import { getRequestJWT } from "@/lib/auth-utils";
 
-type CreateCourseworkRequest = {
+type CreateProgrammeRequest = {
   name: string;
-  description: string;
-  unit_id: string;
-  due_date: string;
-  colour: string;
+  start_date: string;
 };
 
-export async function create_coursework(req: CreateCourseworkRequest) {
+type _CreateProgrammeResponse = {
+  success: boolean;
+  //data: any;
+};
+
+export async function create_programme(req: CreateProgrammeRequest) {
   "use server";
   const token = await getRequestJWT();
+  console.log("current request");
+  console.log(req);
   const data = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/coursework/create`,
+    `${process.env.NEXT_PUBLIC_API_URL}/programmes/create`,
     {
       method: "POST",
       headers: {

@@ -1,6 +1,3 @@
-set shell := ["bash", "-cu"]
-set windows-shell := ["powershell.exe", "-NoProfile", "-Command"]
-
 default:
     just --list
 
