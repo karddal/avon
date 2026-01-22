@@ -24,6 +24,9 @@ export async function search_by_name(
       offset: offset,
       sortBy: "name",
       searchOperator: "contains",
+      filterField: "role",
+      filterValue: "admin",
+      filterOperator: "ne",
     },
     headers: await headers(),
   })) as unknown;

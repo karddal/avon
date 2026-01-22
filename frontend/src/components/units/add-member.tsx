@@ -8,7 +8,7 @@ import {
   SendHorizonal,
   UserIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +26,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import UserCard from "@/components/user-card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { get_students } from "@/lib/actions/get_students";
+import { get_lecturers } from "@/lib/actions/get_lecturers";
 
 function getInitials(name: string) {
   if (!name || typeof name !== "string") return "?";
@@ -50,12 +52,27 @@ export default function AddMember({ unit_id }: { unit_id: string }) {
   const [offset, setOffset] = useState<number>(0);
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
   const [length, setLength] = useState<number>(0);
+  const [disabledUsers, setDisabledUsers] = useState<string[]>([]);
 
   const limit = 5;
 
   async function handleSend() {
     toast.success("Adding user(s) to unit!");
   }
+
+  useEffect(() => {
+    async function loadDisabled() {
+      try {
+        const disabledS = await get_students(unit_id);
+        const disabledL = await get_lecturers(unit_id);
+        const disabledU = disabledS.students.concat(disabledL.lecturers);
+        setDisabledUsers(disabledU);
+      } catch (error) {
+        console.error("Failed to get disabled users", error);
+      }
+    }
+    loadDisabled();
+  }, [unit_id]);
 
   async function showUsers(query: string, offset: number) {
     setLoading(true);
@@ -103,6 +120,7 @@ export default function AddMember({ unit_id }: { unit_id: string }) {
 
                 <div className="absolute top-2 right-2 w-8 h-8">
                   <Checkbox
+                    disabled={disabledUsers.includes(user.id)}
                     checked={selectedUsers.some((u) => u.id === user.id)}
                     onCheckedChange={(checked) => {
                       if (!checked) {
