@@ -31,6 +31,13 @@ def create_lecturers(session, unit_id) -> UnitEnrollment:
     session.commit()
     return unit_enrollment
 
+def create_students(session, unit_id) -> UnitEnrollment:
+    user_id = str(uuid4())
+    unit_enrollment = UnitEnrollment(unit_id=unit_id, user_id=user_id, type="student")
+    session.add(unit_enrollment)
+    session.commit()
+    return unit_enrollment
+
 def valid_unit_payload(programme_id):
     return {
         "name":"Imperative and Functional Programming",
@@ -190,7 +197,16 @@ def test_delete_non_existent_unit(client, session):
     response = client.delete("/units/"+"bec07dbc-08aa-4b26-b1c7-aed9e13496cb")
     assert response.status_code == 404
 
-# Tests to get units taken by a specific person
+# Tests to get units taken by a student 
+def test_get_units_taken_by_student(client, session):
+    programme = create_programme(session)
+    unit = create_unit(session, programme.id)
+    unit_enrollment = create_students(session, unit.id)
+    response = client.get("/units/u/"+str(unit_enrollment.user_id))
+    data =  response.json()
+
+    assert data["units"][0]["id"] == str(unit.id)
+
 
 # Tests to get courseworks from a unit
 
