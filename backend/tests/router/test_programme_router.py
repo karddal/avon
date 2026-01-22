@@ -97,3 +97,27 @@ def test_update_programme_not_found(client):
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Programme not found"
+
+# DELETE:
+# Test deletion of programme through response and database
+def test_delete_programme_success(client, session):
+    payload = programme_payload()
+    createResponse = client.post("/programmes/create", json=payload)
+    programme_id = createResponse.json()["id"]
+
+    response = client.delete(f"/programmes/{programme_id}")
+
+    assert response.status_code == 200
+    assert response.json()["deletion_successful"] is True
+    assert response.json()["id"] == programme_id
+
+    # verify it is actually deleted
+    get_resp = client.get(f"/programmes/{programme_id}") # Tests the database implicitly through as get is already verified
+    assert get_resp.status_code == 404
+
+# Tests through response when trying to delete programme that doesn't exist
+def test_delete_programme_not_found(client):
+    response = client.delete(f"/programmes/{uuid4()}")
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Programme not found"
