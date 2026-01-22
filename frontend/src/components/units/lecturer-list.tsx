@@ -18,6 +18,7 @@ import { get_user_image_from_id } from "@/lib/actions/get_image";
 import { get_lecturers } from "@/lib/actions/get_lecturers";
 import { get_username_from_id } from "@/lib/actions/get_username";
 import UserCard from "@/components/user-card";
+import { remove_user_enrollment } from "@/lib/actions/remove_user_enrollment";
 
 function getInitials(name: string) {
   if (!name || typeof name !== "string") return "?";
@@ -49,41 +50,43 @@ export default function lecturerList({
   console.log(me);
 
   async function handleDelete(id: string) {
-    const result = await delete_user(id);
+    const result = await remove_user_enrollment(unit_id, id);
     console.log(result);
     if (result) {
-      toast.success("Lecturer deleted successfully");
+      toast.success("Lecturer unenrolled successfully");
     } else {
       throw new Error();
+    }
+    loadlecturers();
+  }
+
+  async function loadlecturers() {
+    try {
+      const data = await get_lecturers(unit_id);
+      const lecturerIds = data.lecturers;
+
+      const enrichedlecturers = await Promise.all(
+        lecturerIds.map(async (id: string) => {
+          const name = await get_username_from_id(id);
+          const imageSrc = await get_user_image_from_id(id);
+
+          return {
+            id: id,
+            displayName: name || "Unknown lecturer",
+            src: imageSrc,
+          };
+        }),
+      );
+
+      setlecturers(enrichedlecturers);
+    } catch (error) {
+      console.error("Failed to load lecturers", error);
+    } finally {
+      setLoading(false);
     }
   }
 
   useEffect(() => {
-    async function loadlecturers() {
-      try {
-        const data = await get_lecturers(unit_id);
-        const lecturerIds = data.lecturers;
-
-        const enrichedlecturers = await Promise.all(
-          lecturerIds.map(async (id: string) => {
-            const name = await get_username_from_id(id);
-            const imageSrc = await get_user_image_from_id(id);
-
-            return {
-              id: id,
-              displayName: name || "Unknown lecturer",
-              src: imageSrc,
-            };
-          }),
-        );
-
-        setlecturers(enrichedlecturers);
-      } catch (error) {
-        console.error("Failed to load lecturers", error);
-      } finally {
-        setLoading(false);
-      }
-    }
     loadlecturers();
   }, [unit_id]);
 

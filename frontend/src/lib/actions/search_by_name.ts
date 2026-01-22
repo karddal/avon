@@ -11,6 +11,7 @@ export type SearchResponse = {
   offset: number | undefined;
 };
 
+// ONLY GETS STUDENTS
 export async function search_by_name(
   search: string,
   offset: number,
@@ -25,8 +26,8 @@ export async function search_by_name(
       sortBy: "name",
       searchOperator: "contains",
       filterField: "role",
-      filterValue: "admin",
-      filterOperator: "ne",
+      filterValue: "user",
+      filterOperator: "eq",
     },
     headers: await headers(),
   })) as unknown;

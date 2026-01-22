@@ -28,6 +28,7 @@ import UserCard from "@/components/user-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { get_students } from "@/lib/actions/get_students";
 import { get_lecturers } from "@/lib/actions/get_lecturers";
+import { batch_add_students_to_unit } from "@/lib/actions/batch_add_students_to_unit";
 
 function getInitials(name: string) {
   if (!name || typeof name !== "string") return "?";
@@ -57,20 +58,35 @@ export default function AddMember({ unit_id }: { unit_id: string }) {
   const limit = 5;
 
   async function handleSend() {
-    toast.success("Adding user(s) to unit!");
+    const userIds = selectedUsers.map((user) => user.id);
+    const response = await batch_add_students_to_unit(unit_id, userIds);
+    console.log(
+      "HERE",
+      JSON.stringify({
+        unit_id: unit_id,
+        user_ids: userIds,
+      }),
+    );
+    if (response.success) {
+      toast.success("Adding student(s) to unit!");
+    } else {
+      console.log(response);
+      toast.error("Adding failed! ");
+    }
+  }
+  async function loadDisabled() {
+    try {
+      setDisabledUsers([]);
+      const disabledS = await get_students(unit_id);
+      const disabledL = await get_lecturers(unit_id);
+      const disabledU = disabledS.students.concat(disabledL.lecturers);
+      setDisabledUsers(disabledU);
+    } catch (error) {
+      console.error("Failed to get disabled users", error);
+    }
   }
 
   useEffect(() => {
-    async function loadDisabled() {
-      try {
-        const disabledS = await get_students(unit_id);
-        const disabledL = await get_lecturers(unit_id);
-        const disabledU = disabledS.students.concat(disabledL.lecturers);
-        setDisabledUsers(disabledU);
-      } catch (error) {
-        console.error("Failed to get disabled users", error);
-      }
-    }
     loadDisabled();
   }, [unit_id]);
 
@@ -216,7 +232,14 @@ export default function AddMember({ unit_id }: { unit_id: string }) {
       )}
       {length > 0 ? (
         <div className="flex flex-row items-center text-center">
-          <Button className="w-full" variant="default">
+          <Button
+            className="w-full"
+            variant="default"
+            onClick={() => {
+              handleSend();
+              loadDisabled();
+            }}
+          >
             <SendHorizonal></SendHorizonal> Add {length} users to unit
           </Button>
         </div>
