@@ -1,6 +1,6 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from app.db.session import get_session
 from app.schemas.unit_enrollment import UnitEnrollmentRead, UnitEnrollmentCreate, UnitEnrollmentBatchCreate, UnitEnrollmentDelete
@@ -53,22 +53,30 @@ def delete_unit_enrollment(payload: UnitEnrollmentDelete, session: session_depen
 
 @router.post("/batch", status_code=201)
 def enroll_unit_batch(payload: UnitEnrollmentBatchCreate, session: session_dependency):
-    print(payload)
     if not session.get(Unit, payload.unit_id):
         raise HTTPException(status_code=404, detail="Unit not found")
-    
-    for user_id in payload.user_ids:
-        if session.get(UnitEnrollment, (payload.unit_id, user_id)):
-            raise HTTPException(status_code=409, detail="User already enrolled in this unit")
-        
-        enrollment = UnitEnrollment(
-            unit_id=payload.unit_id,
-            user_id=user_id,
-            type="student",
+
+    # find existing ones in bulk
+    statement = select(UnitEnrollment.user_id).where(
+        UnitEnrollment.unit_id == payload.unit_id,
+        UnitEnrollment.user_id.in_(payload.user_ids)
+    )
+    existing_user_ids = set(session.exec(statement).all())
+
+    if existing_user_ids:
+        raise HTTPException(
+            status_code=409, 
+            detail=f"Users {list(existing_user_ids)} already enrolled"
         )
 
-        session.add(enrollment)
-
+    # create new ones in bulk
+    new_enrollments = [
+        UnitEnrollment(unit_id=payload.unit_id, user_id=user_id, type="student")
+        for user_id in payload.user_ids
+    ]
+    
+    session.add_all(new_enrollments)
     session.commit()
-    return {"message": "Users enrolled successfully"}
+    
+    return {"message": f"{len(new_enrollments)} users enrolled successfully"}
         
