@@ -9,8 +9,21 @@ from app.models.programme import Programme
 from app.models.unit import Unit
 from app.schemas.unit import UnitCreate
 
+# programme_id = uuid4()
+# programme_name = "Test Programme"
+# start_date = datetime.now()
+# end_date = start_date + timedelta(days=365)
+# programme = Programme(id=programme_id, name=programme_name, start_date=start_date, end_date=end_date)
 
-def create_programme(session) -> UUID:
+# unit_id = uuid4()
+# unit_name = "Test Unit"
+# description="Test description"
+# unit_code="COMS20017"
+# colour="abcdef"
+# programme_id=programme_id
+# unit = Unit(id=unit_id, name=unit_name, description=description, unit_code=unit_code, colour=colour, programme_id=programme_id)
+
+def create_programme(session) -> Programme:
     programme = Programme(id=uuid4(), name="Test Programme",start_date=datetime.now(), end_date=datetime.today() + timedelta(days=365))
     session.add(programme)
     session.commit()
@@ -18,14 +31,14 @@ def create_programme(session) -> UUID:
     # unit = Unit(id=unit_id, name="Test Unit", description="Test description", unit_code="COMS20017", colour="abcdef", programme_id=programme.id,)
     # session.add(unit)
     # session.commit()
-    return programme.id
+    return programme
 
-def create_unit(session, programme_id) -> UUID:
+def create_unit(session, programme_id) -> Unit:
     unit_id = uuid4()
     unit = Unit(id=unit_id, name="Test Unit", description="Test description", unit_code="COMS20017", colour="abcdef", programme_id=programme_id,)
     session.add(unit)
     session.commit()
-    return unit_id
+    return unit
 
 def valid_unit_payload(programme_id):
     return {
@@ -57,8 +70,8 @@ def invalid_programme_id(programme_id):
 ## Tests to create units
 # Valid test
 def test_create_valid_unit(client, session):
-    programme_id = create_programme(session)
-    payload = valid_unit_payload(str(programme_id))
+    programme = create_programme(session)
+    payload = valid_unit_payload(str(programme.id))
 
     response = client.post("/units/create", json=payload)
     assert response.status_code == 201
@@ -78,16 +91,16 @@ def test_create_valid_unit(client, session):
 
 # Invalid test
 def test_invalid_unit_data(client, session):
-    programme_id = create_programme(session)
-    payload = incomplete_payload(str(programme_id))
+    programme = create_programme(session)
+    payload = incomplete_payload(str(programme.id))
 
     response = client.post("/units/create", json=payload)
     assert response.status_code == 422
 
 # Create same unit twice
 def test_create_same_unit_twice(client, session):
-    programme_id = create_programme(session)
-    payload = valid_unit_payload(str(programme_id))
+    programme = create_programme(session)
+    payload = valid_unit_payload(str(programme.id))
 
     response1 = client.post("/units/create", json=payload)
     response2 = client.post("/units/create", json=payload)
@@ -96,8 +109,8 @@ def test_create_same_unit_twice(client, session):
 
 # Invalid programme id doesn't make a unit
 def test_invalid_programme_id(client, session):
-    programme_id = create_programme(session)
-    payload = invalid_programme_id(str(programme_id))
+    programme = create_programme(session)
+    payload = invalid_programme_id(str(programme.id))
 
     response = client.post("/units/create", json=payload)
 
@@ -106,15 +119,15 @@ def test_invalid_programme_id(client, session):
 ## Tests to get unit details
 # Tests to get unit with valid details
 def test_get_valid_unit_details(client, session):
-    programme_id = create_programme(session)
-    unit_id = create_unit(session, programme_id)
-    response = client.get("/units/" + str(unit_id))
+    programme = create_programme(session)
+    unit = create_unit(session, programme.id)
+    response = client.get("/units/" + str(unit.id))
     data = response.json()
 
     assert response.status_code == 200
     assert data["name"] == "Test Unit"
     assert data["unit_code"] == "COMS20017"
-    assert data["programme_id"] == str(programme_id)
+    assert data["programme_id"] == str(programme.id)
 
 # Test to get unit with invalid details
 def test_get_invalid_unit_details(client, session):
@@ -124,6 +137,14 @@ def test_get_invalid_unit_details(client, session):
     assert response.status_code == 404
 
 # Tests to get units with dates
+def test_get_unit_details_dates(client, session):
+    programme = create_programme(session)
+    unit = create_unit(session, programme.id)
+    response = client.get("/units/" + str(unit.id)+"/with_dates")
+    data = response.json()
+
+    assert response.status_code == 200
+    assert data["start_date"] == programme.start_date.isoformat()
 
 
 # Tests to get the lecturers of the units
