@@ -37,9 +37,19 @@ def test_create_unit(client, session):
 
     response = client.post("/units/create", json=payload)
     assert response.status_code == 201
-    # data = response.json
+    data = response.json()
 
+    # response checks
+    assert data["name"] == payload["name"]
+    assert data["programme_id"] == payload["programme_id"]
+    
+    # Query the database and check if the object exists
+    statement = select(Unit).where(Unit.name == data["name"])
+    units = session.exec(statement).all()
 
+    assert len(units) == 1
+        
+    assert str(units[0].programme_id) == data["programme_id"]
 
 
 # Tests to get unit details
