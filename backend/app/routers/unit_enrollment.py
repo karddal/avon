@@ -29,7 +29,7 @@ def enroll_unit(payload: UnitEnrollmentCreate, session: session_dependency):
     enrollment = UnitEnrollment(
         unit_id=payload.unit_id,
         user_id=payload.user_id,
-        user_type=payload.user_type,
+        type=payload.type,
     )
 
     session.add(enrollment)

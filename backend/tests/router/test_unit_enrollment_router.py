@@ -11,20 +11,20 @@ def test_router_create_success(client, session: Session):
     response = client.post("/unit_enrollment", json={
         "unit_id": str(unit_id),
         "user_id": test_user,
-        "user_type": "student",
+        "type": "student",
     })
 
     assert response.status_code == 201
     body = response.json()
     assert body["unit_id"] == str(unit_id)
     assert body["user_id"] == test_user
-    assert body["user_type"] == "student"
+    assert body["type"] == "student"
 
     db_enrollment = session.get(UnitEnrollment, (unit_id, test_user))
     assert db_enrollment is not None
     assert str(db_enrollment.unit_id) == str(unit_id)
     assert db_enrollment.user_id == test_user
-    assert db_enrollment.user_type == "student"
+    assert db_enrollment.type == "student"
 
 def test_router_invalid_type_422(client, session: Session):
     unit_id = create_unit(session)
@@ -32,7 +32,7 @@ def test_router_invalid_type_422(client, session: Session):
     response = client.post("/unit_enrollment", json={
         "unit_id": str(unit_id),
         "user_id": test_user,
-        "user_type": "123",
+        "type": "123",
     })
 
     assert response.status_code == 422
@@ -43,7 +43,7 @@ def test_router_blank_user_id_422(client, session: Session):
     response = client.post("/unit_enrollment", json={
         "unit_id": str(unit_id),
         "user_id": "    ",
-        "user_type": "student",
+        "type": "student",
     })
 
     assert response.status_code == 422
@@ -63,7 +63,7 @@ def test_router_duplicate_409(client, session: Session):
     payload = {
         "unit_id": str(unit_id),
         "user_id": test_user,
-        "user_type": "student",
+        "type": "student",
     }
 
     response1 = client.post("/unit_enrollment", json=payload)

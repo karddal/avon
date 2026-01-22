@@ -16,12 +16,12 @@ def test_unit_enrollment_default_type(session: Session):
 
     assert isinstance(enrollment.unit_id, UUID)
     assert enrollment.user_id == test_user
-    assert enrollment.user_type == "student"
+    assert enrollment.type == "student"
 
 def test_unit_enrollment_get_by_composite_primary_key(session: Session):
     unit_id = create_unit(session)
 
-    enrollment = UnitEnrollment(unit_id = unit_id, user_id = test_user, user_type = "lecturer")
+    enrollment = UnitEnrollment(unit_id = unit_id, user_id = test_user, type = "lecturer")
     session.add(enrollment)
     session.commit()
 

@@ -22,16 +22,16 @@ EnrollmentType = Annotated[Literal["lecturer", "student"], AfterValidator(is_val
 class UnitEnrollmentRead(BaseModel):
     unit_id : UUID
     user_id : str
-    user_type : str
+    type : str
 
 class UnitEnrollmentCreate(BaseModel):
     unit_id: UUID
     user_id: UserId
-    user_type: EnrollmentType = "student"
+    type: EnrollmentType = "student"
     model_config = ConfigDict(extra="forbid")
 
 class UnitEnrollmentUpdate(BaseModel):
-    user_type : EnrollmentType
+    type : EnrollmentType
 
 class UnitEnrollmentDelete(BaseModel):
     unit_id: UUID
