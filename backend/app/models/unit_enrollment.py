@@ -16,5 +16,5 @@ class UserType(str, Enum):
 class UnitEnrollment(SQLModel, table = True):
     unit_id: UUID = Field(foreign_key="unit.id", primary_key=True)
     user_id: str = Field(primary_key=True)
-    user_type: UserType = Field(default=UserType.student, sa_column=Column(String, nullable=False))
+    type: Literal["lecturer", "student"] = Field(default="student", sa_type=String)
     unit: "Unit" = Relationship(back_populates="enrollments")
