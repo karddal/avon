@@ -5,6 +5,7 @@ from sqlmodel import SQLModel, Session, create_engine, select
 from uuid import uuid4, UUID
 from datetime import datetime, timedelta
 from contextlib import nullcontext as does_not_raise
+from app.models.coursework import Coursework
 from app.models.programme import Programme
 from app.models.unit import Unit
 from app.models.unit_enrollment import UnitEnrollment
@@ -37,6 +38,14 @@ def create_students(session, unit_id) -> UnitEnrollment:
     session.add(unit_enrollment)
     session.commit()
     return unit_enrollment
+
+def create_coursework(session, unit_id) -> Coursework:
+    coursework_id = uuid4()
+    coursework = Coursework(id=coursework_id, name="Test coursework", description="Test description", unit_id=unit_id, due_date=datetime.today() + timedelta(days=365), colour="abcdef")
+    session.add(coursework)
+    session.commit()
+    return coursework
+
 
 def valid_unit_payload(programme_id):
     return {
@@ -207,7 +216,22 @@ def test_get_units_taken_by_student(client, session):
 
     assert data["units"][0]["id"] == str(unit.id)
 
-
 # Tests to get courseworks from a unit
+def test_get_courseworks_in_a_unit(client, session):
+    programme = create_programme(session)
+    unit = create_unit(session, programme.id)
+    coursework = create_coursework(session, unit.id)
+    response = client.get("/units/"+str(unit.id)+"/courseworks")
+    data = response.json()
+
+    assert data["courseworks"][0]["name"] == "Test coursework"
 
 # Tests to get all units
+def test_get_all_units(client, session):
+    programme = create_programme(session)
+    unit = create_unit(session, programme.id)
+
+    response = client.get("/units/")
+    data = response.json()
+
+    assert data["units"][0]["id"] == str(unit.id)

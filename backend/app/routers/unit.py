@@ -169,4 +169,4 @@ async def get_courseworks(unit_id: UUID, session: session_dependency):
 async def get_units(session: session_dependency):
     statement = select(Unit)
     units = session.exec(statement).all()
-    return units
+    return {"units":units}
