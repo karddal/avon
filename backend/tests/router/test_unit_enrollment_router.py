@@ -24,7 +24,7 @@ def test_router_create_success(client, session: Session):
     assert db_enrollment is not None
     assert str(db_enrollment.unit_id) == str(unit_id)
     assert db_enrollment.user_id == test_user
-    assert getattr(db_enrollment.user_type, "value", db_enrollment.user_type) == "student"
+    assert db_enrollment.user_type == "student"
 
 def test_router_invalid_type_422(client, session: Session):
     unit_id = create_unit(session)

@@ -5,7 +5,7 @@ import pytest
 
 def test_schema_default_type_is_student():
     payload = UnitEnrollmentCreate(unit_id=uuid4(), user_id=test_user)
-    assert (getattr(payload.user_type, "value", payload.user_type) == "student")
+    assert payload.user_type == "student"
 
 def test_schema_invalid_type_raises():
     with pytest.raises(ValueError):

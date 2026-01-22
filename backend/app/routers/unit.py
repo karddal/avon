@@ -65,7 +65,7 @@ async def get_unit_details(unit_id: UUID, session: session_dependency):
 @router.get("/{unit_id}/lecturers", response_model=UnitLecturers, status_code=status.HTTP_200_OK)
 async def get_unit_lecturers(unit_id: UUID, session: session_dependency):
     lects = session.exec(
-        select(UnitEnrollment.user_id).join(Unit).where(Unit.id == unit_id).where(UnitEnrollment.type == "lecturer")
+        select(UnitEnrollment.user_id).join(Unit).where(Unit.id == unit_id).where(UnitEnrollment.user_type == "lecturer")
     ).all()
     print(lects)
     if not lects:

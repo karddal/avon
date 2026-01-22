@@ -4,7 +4,7 @@ from uuid import UUID
 from tests.helpers.identities import test_user
 from tests.helpers.factories import create_unit
 
-from app.models.unit_enrollment import UnitEnrollment, UserType
+from app.models.unit_enrollment import UnitEnrollment
 
 def test_unit_enrollment_default_type(session: Session):
     unit_id = create_unit(session)
@@ -16,12 +16,12 @@ def test_unit_enrollment_default_type(session: Session):
 
     assert isinstance(enrollment.unit_id, UUID)
     assert enrollment.user_id == test_user
-    assert getattr(enrollment.user_type, "value", enrollment.user_type) == "student"
+    assert enrollment.user_type == "student"
 
 def test_unit_enrollment_get_by_composite_primary_key(session: Session):
     unit_id = create_unit(session)
 
-    enrollment = UnitEnrollment(unit_id = unit_id, user_id = test_user, user_type = UserType.lecturer)
+    enrollment = UnitEnrollment(unit_id = unit_id, user_id = test_user, user_type = "lecturer")
     session.add(enrollment)
     session.commit()
 

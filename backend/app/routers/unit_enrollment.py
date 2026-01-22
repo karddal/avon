@@ -8,7 +8,7 @@ from fastapi import HTTPException
 
 from app.models.unit import Unit
 
-from app.models.unit_enrollment import UnitEnrollment, UserType
+from app.models.unit_enrollment import UnitEnrollment
 
 router = APIRouter(prefix="/unit_enrollment", tags=["unit_enrollment"])
 session_dependency = Annotated[Session, Depends(get_session)]
@@ -21,10 +21,10 @@ def enroll_unit(payload: UnitEnrollmentCreate, session: session_dependency):
     if session.get(UnitEnrollment, (payload.unit_id, payload.user_id)):
         raise HTTPException(status_code=409, detail="User already enrolled in this unit")
 
-    try:
-        _ = UserType(payload.user_type)
-    except ValueError:
-        raise HTTPException(status_code=422, detail="Invalid user_type")
+    # try:
+    #     _ = UserType(payload.user_type)
+    # except ValueError:
+    #     raise HTTPException(status_code=422, detail="Invalid user_type")
 
     enrollment = UnitEnrollment(
         unit_id=payload.unit_id,
