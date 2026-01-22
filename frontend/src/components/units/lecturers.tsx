@@ -1,6 +1,3 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card } from "@/components/ui/card";
-import { initials } from "@/components/units/unit_utils";
 import UserCard from "@/components/user-card";
 import { get_user_image_from_id } from "@/lib/actions/get_image";
 import { get_username_from_id } from "@/lib/actions/get_username";

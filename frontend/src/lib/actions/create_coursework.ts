@@ -9,9 +9,9 @@ type CreateCourseworkRequest = {
   colour: string;
 };
 
-type CreateCourseworkResponse = {
+type _CreateCourseworkResponse = {
   success: boolean;
-  data: any;
+  data: string[];
 };
 
 export async function create_coursework(req: CreateCourseworkRequest) {

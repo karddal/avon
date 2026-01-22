@@ -46,9 +46,9 @@ import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { create_coursework } from "@/lib/actions/create_coursework";
 
-type CreateCourseworkResponse = {
+type _CreateCourseworkResponse = {
   success: boolean;
-  data: any;
+  data: string[];
 };
 
 interface FormProps {

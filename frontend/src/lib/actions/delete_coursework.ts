@@ -5,7 +5,7 @@ type DeleteCourseworkRequest = {
   id: string;
 };
 
-type CreateCourseworkResponse = {
+type _CreateCourseworkResponse = {
   success: boolean;
 };
 

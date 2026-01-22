@@ -104,7 +104,7 @@ async function CourseworkPageContent({
               <CourseworkInformation slug={slug} token={token} />
             </Suspense>
             <DropdownCard
-                openByDefault={true}
+              openByDefault={true}
               title="Tools"
               desc="Tools you can use for this coursework appear here."
             >

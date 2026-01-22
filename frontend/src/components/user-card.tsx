@@ -1,8 +1,5 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { delete_user } from "@/lib/actions/delete_user";
-import { user } from "@/lib/permissions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
 
 type UserCardProps = {
   id: string;

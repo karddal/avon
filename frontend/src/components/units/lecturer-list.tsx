@@ -1,10 +1,8 @@
 "use client";
 
 import { Menu, TextSearch, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,14 +11,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import { delete_user } from "@/lib/actions/delete_user";
+import UserCard from "@/components/user-card";
 import { get_user_image_from_id } from "@/lib/actions/get_image";
 import { get_lecturers } from "@/lib/actions/get_lecturers";
 import { get_username_from_id } from "@/lib/actions/get_username";
-import UserCard from "@/components/user-card";
 import { remove_user_enrollment } from "@/lib/actions/remove_user_enrollment";
 
-function getInitials(name: string) {
+function _getInitials(name: string) {
   if (!name || typeof name !== "string") return "?";
   const allNames = name.trim().split(" ");
   if (allNames.length === 0) return "?";
@@ -60,7 +57,7 @@ export default function lecturerList({
     loadlecturers();
   }
 
-  async function loadlecturers() {
+  const loadlecturers = useCallback(async () => {
     try {
       const data = await get_lecturers(unit_id);
       const lecturerIds = data.lecturers;
@@ -84,11 +81,11 @@ export default function lecturerList({
     } finally {
       setLoading(false);
     }
-  }
+  }, [unit_id]);
 
   useEffect(() => {
     loadlecturers();
-  }, [unit_id]);
+  }, [loadlecturers]);
 
   const filteredlecturers = useMemo(() => {
     return lecturers.filter((lecturer) =>
