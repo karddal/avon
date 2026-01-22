@@ -11,6 +11,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Empty,
   EmptyDescription,
@@ -19,15 +20,14 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import UserCard from "@/components/user-card";
 import {
   type SearchResponse,
   search_by_name,
 } from "@/lib/actions/search_by_name";
-import { Checkbox } from "@/components/ui/checkbox";
-import UserCard from "@/components/user-card";
-import { Skeleton } from "@/components/ui/skeleton";
 
-function getInitials(name: string) {
+function _getInitials(name: string) {
   if (!name || typeof name !== "string") return "?";
   const allNames = name.trim().split(" ");
   if (allNames.length === 0) return "?";
@@ -53,7 +53,7 @@ export default function AddMember({ unit_id }: { unit_id: string }) {
 
   const limit = 5;
 
-  async function handleSend() {
+  async function _handleSend() {
     toast.success("Adding user(s) to unit!");
   }
 

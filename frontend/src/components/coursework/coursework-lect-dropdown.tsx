@@ -1,7 +1,8 @@
 "use client";
 
-import {BookCheck, Menu, ServerCog, SquarePen, SquareX, Users} from "lucide-react";
-import { SetStateAction, useState} from "react";
+import { BookCheck, Menu, ServerCog, SquarePen, SquareX } from "lucide-react";
+import { useState } from "react";
+import EditCoursework from "@/components/coursework/edit-coursework";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -20,8 +21,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import DeleteUnitButton from "@/components/units/delete-unit-button";
-import ListMembers from "@/components/units/list-members";
-import EditCoursework from "@/components/coursework/edit-coursework";
 
 type CourseworkUpdateData = {
   id: string;
@@ -37,53 +36,60 @@ type CourseworkUpdateData = {
 };
 
 export default function CourseworkLectDropdown({
-                                                 slug,
-                                                 me,
-                                                 coursework_update_data
-                                               }: {
+  slug,
+  me,
+  coursework_update_data,
+}: {
   slug: string;
   me: string;
   coursework_update_data: CourseworkUpdateData;
 }) {
-  const [showMembers, setShowMembers] = useState(false);
+  const [_showMembers, _setShowMembers] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
 
   return (
-      <div className="aspect-square">
-        <DropdownMenu>
-          <DropdownMenuTrigger className="border hover:bg-accent hover:transition p-2">
-            <Menu size={32}/>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="flex flex-col">
-            <DropdownMenuLabel>Courswork Options</DropdownMenuLabel>
-            <DropdownMenuSeparator/>
+    <div className="aspect-square">
+      <DropdownMenu>
+        <DropdownMenuTrigger className="border hover:bg-accent hover:transition p-2">
+          <Menu size={32} />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="flex flex-col">
+          <DropdownMenuLabel>Courswork Options</DropdownMenuLabel>
+          <DropdownMenuSeparator />
 
-            <DropdownMenuItem disabled={true}>
-              <ServerCog className="mr-2 h-4 w-4"/>Engine
-            </DropdownMenuItem>
+          <DropdownMenuItem disabled={true}>
+            <ServerCog className="mr-2 h-4 w-4" />
+            Engine
+          </DropdownMenuItem>
 
-            <DropdownMenuItem disabled={true}>
-              <BookCheck className="mr-2 h-4 w-4"/>Results
-            </DropdownMenuItem>
+          <DropdownMenuItem disabled={true}>
+            <BookCheck className="mr-2 h-4 w-4" />
+            Results
+          </DropdownMenuItem>
 
-            <DropdownMenuItem onSelect={() => setShowEdit(true)}>
-              <SquarePen className="mr-2 h-4 w-4"/>Edit coursework
-            </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => setShowEdit(true)}>
+            <SquarePen className="mr-2 h-4 w-4" />
+            Edit coursework
+          </DropdownMenuItem>
 
-            <DropdownMenuSeparator/>
+          <DropdownMenuSeparator />
 
-            <DropdownMenuItem
-                onSelect={() => setShowDelete(true)}
-                className="text-destructive focus:text-destructive"
-            >
-              <SquareX className="text-destructive mr-2 h-4 w-4"/> Delete coursework
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          <DropdownMenuItem
+            onSelect={() => setShowDelete(true)}
+            className="text-destructive focus:text-destructive"
+          >
+            <SquareX className="text-destructive mr-2 h-4 w-4" /> Delete
+            coursework
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-        <EditCoursework coursework_update_data={coursework_update_data}
-                        open_state={showEdit} set_open_state={setShowEdit}/>
+      <EditCoursework
+        coursework_update_data={coursework_update_data}
+        open_state={showEdit}
+        set_open_state={setShowEdit}
+      />
 
       <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
         <AlertDialogContent>
