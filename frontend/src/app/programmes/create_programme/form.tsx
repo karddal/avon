@@ -75,7 +75,7 @@ export const ProgForm = () => {
         .min(today, { message: `End date must be in the future.` }),
     })
     .refine((data) => data.end_date > data.start_date, {
-      // path: ["end_date"],
+      path: ["end_date"],
       message: "End date must be after start date.",
     });
 
