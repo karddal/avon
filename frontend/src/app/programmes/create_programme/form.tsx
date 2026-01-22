@@ -171,13 +171,13 @@ export const ProgForm = () => {
                         render={({ field, fieldState }) => (
                           <Field data-invalid={fieldState.invalid}>
                             <FieldLabel htmlFor={"form-flow-name"}>
-                              Name your coursework
+                              Name your programme
                             </FieldLabel>
                             <Input
                               {...field}
                               id={"form-flow-name"}
                               aria-invalid={fieldState.invalid}
-                              placeholder={"My amazing coursework"}
+                              placeholder={"e.g. Year 1 Computer Science 2025/2026"}
                               autoComplete={"off"}
                             />
                             {fieldState.invalid && (
