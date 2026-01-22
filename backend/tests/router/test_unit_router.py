@@ -38,6 +38,16 @@ def incomplete_payload(programme_id):
         "programme_id":programme_id
     }
 
+def invalid_programme_id(programme_id):
+    return {
+        "name":"Imperative and Functional Programming",
+        "description":"Intro to coding",
+        "unit_code":"COMS10015",
+        "colour":"abcdef",
+        "programme_id": "bec07dbc-08aa-4b26-b1c7-aed9e13496cb"
+    }
+
+
 ## Tests to create units
 # Valid test
 def test_create_valid_unit(client, session):
@@ -68,6 +78,7 @@ def test_invalid_unit_data(client, session):
     response = client.post("/units/create", json=payload)
     assert response.status_code == 422
 
+# Create same unit twice
 def test_create_same_unit_twice(client, session):
     programme_id = create_programme(session)
     payload = valid_unit_payload(str(programme_id))
@@ -76,6 +87,15 @@ def test_create_same_unit_twice(client, session):
     response2 = client.post("/units/create", json=payload)
     assert response2.status_code == 400
     # response2 = client.post("")
+
+# Invalid programme id doesn't make a unit
+def test_invalid_programme_id(client, session):
+    programme_id = create_programme(session)
+    payload = invalid_programme_id(str(programme_id))
+
+    response = client.post("/units/create", json=payload)
+
+    assert response.status_code == 400
 
 # Tests to get unit details
 # Tests to get units with dates
