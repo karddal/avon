@@ -21,7 +21,7 @@ def create_programme(session) -> UUID:
 
     return programme.id
 
-def unit_payload(programme_id):
+def valid_unit_payload(programme_id):
     return {
         "name":"Imperative and Functional Programming",
         "description":"Intro to coding",
@@ -30,10 +30,19 @@ def unit_payload(programme_id):
         "programme_id":programme_id
     }
 
-# Tests to create units
-def test_create_unit(client, session):
+def incomplete_payload(programme_id):
+    return {
+        "name":"Imperative and Functional Programming",
+        "description":"Intro to coding",
+        "colour":"abcdef",
+        "programme_id":programme_id
+    }
+
+## Tests to create units
+# Valid test
+def test_create_valid_unit(client, session):
     programme_id = create_programme(session)
-    payload = unit_payload(str(programme_id))
+    payload = valid_unit_payload(str(programme_id))
 
     response = client.post("/units/create", json=payload)
     assert response.status_code == 201
@@ -51,6 +60,13 @@ def test_create_unit(client, session):
         
     assert str(units[0].programme_id) == data["programme_id"]
 
+# Invalid test
+def test_invalid_unit_data(client, session):
+    programme_id = create_programme(session)
+    payload = incomplete_payload(str(programme_id))
+
+    response = client.post("/units/create", json=payload)
+    assert response.status_code == 422
 
 # Tests to get unit details
 # Tests to get units with dates
