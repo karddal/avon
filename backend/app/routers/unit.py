@@ -120,8 +120,8 @@ async def update_unit(unit_id: UUID, unit: UnitUpdate, session: session_dependen
         db_unit.unit_code = unit.unit_code
     if unit.colour is not None:
         db_unit.colour = unit.colour
-    if unit.programme is not None:
-        db_unit.programme_id = unit.programme
+    if unit.programme_id is not None:
+        db_unit.programme_id = unit.programme_id
 
     session.commit()
     session.refresh(db_unit)

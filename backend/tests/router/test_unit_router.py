@@ -40,6 +40,15 @@ def valid_unit_payload(programme_id):
         "programme_id":programme_id
     }
 
+def valid_update_payload(programme_id):
+    return {
+        "name":"Object Oriented Programming",
+        "description":"Intro to coding",
+        "unit_code":"COMS10015",
+        "colour":"abcdef",
+        "programme_id":programme_id 
+    }
+
 def incomplete_payload(programme_id):
     return {
         "name":"Imperative and Functional Programming",
@@ -139,7 +148,7 @@ def test_get_unit_details_dates(client, session):
 
 
 # Tests to get the lecturers of the units
-def tests_get_unit_lecturers(client, session):
+def test_get_unit_lecturers(client, session):
     programme = create_programme(session)
     unit = create_unit(session, programme.id)
     unit_enrollment = create_lecturers(session, unit.id)
@@ -150,7 +159,26 @@ def tests_get_unit_lecturers(client, session):
 
 
 # Tests to update units
+def test_update_units(client, session):
+    programme = create_programme(session)
+    unit = create_unit(session, programme.id)
+    update_payload = valid_update_payload(str(programme.id))
+    response = client.put("/units/"+str(unit.id), json=update_payload)
+
+    assert response.status_code == 200
+
+    statement = select(Unit).where(Unit.id == unit.id)
+    unit = session.exec(statement).first()
+
+    assert unit.name == "Object Oriented Programming"
+
+
+
+
 # Tests to delete units
+
 # Tests to get units taken by a specific person
+
 # Tests to get courseworks from a unit
+
 # Tests to get all units
