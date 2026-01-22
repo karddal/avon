@@ -68,6 +68,15 @@ def test_invalid_unit_data(client, session):
     response = client.post("/units/create", json=payload)
     assert response.status_code == 422
 
+def test_create_same_unit_twice(client, session):
+    programme_id = create_programme(session)
+    payload = valid_unit_payload(str(programme_id))
+
+    response1 = client.post("/units/create", json=payload)
+    response2 = client.post("/units/create", json=payload)
+    assert response2.status_code == 400
+    # response2 = client.post("")
+
 # Tests to get unit details
 # Tests to get units with dates
 # Tests to get the lecturers of the units
