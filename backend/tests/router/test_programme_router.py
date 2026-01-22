@@ -65,8 +65,6 @@ def test_get_programme_not_found(client):
 
 # UPDATE:
 # Testing through response and database that updating programme works
-from datetime import date, timedelta
-from uuid import UUID
 
 
 def test_update_programme_success(client, session):
