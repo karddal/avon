@@ -1,3 +1,5 @@
+import uuid
+
 import pytest
 from sqlmodel import SQLModel, Session, create_engine, select
 from uuid import uuid4, UUID
@@ -30,6 +32,14 @@ def coursework_payload(unit_id):
         "colour": "abcdef",
     }
 
+def coursework_updated_payload(unit_id):
+    return {
+        "name": "Updated",
+        "description": "updated",
+        "unit_id": str(unit_id),
+        "due_date": (datetime.now() + timedelta(days=12)).isoformat(),
+        "colour": "262626",
+    }
 
 # Each test uses a fresh database, as we use the memory version of SQLite for testing
 # CREATE:
@@ -137,3 +147,42 @@ def test_delete_coursework_not_found(client):
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Coursework not found"
+
+def test_update_coursework_works(client, session):
+    unit_id = create_unit_with_programme(session)
+
+    payload = coursework_payload(str(unit_id))
+    createResponse = client.post("/coursework/create", json=payload)
+    coursework_id = createResponse.json()["id"]
+
+    np = coursework_updated_payload(unit_id)
+    response = client.put(f"/coursework/{coursework_id}", json=np)
+    assert response.status_code == 200
+    assert response.json()["unit_id"] == str(unit_id)
+    assert response.json()["name"] == np["name"]
+    assert response.json()["description"] == np["description"]
+    assert response.json()["due_date"] == np["due_date"]
+    assert response.json()["colour"] == np["colour"]
+
+    id = uuid.UUID(response.json()["id"])
+    g = session.get(Coursework, id)
+    assert g.name == np["name"]
+
+def update_coursework_data(client, session):
+    unit_id = create_unit_with_programme(session)
+
+    np = coursework_payload(str(unit_id))
+    createResponse = client.post("/coursework/create", json=payload)
+    coursework_id = createResponse.json()["id"]
+
+    response = client.get(f"/coursework/{coursework_id}/update_form_data")
+    assert response.status_code == 200
+    assert response.json()["unit_id"] == str(unit_id)
+    assert response.json()["name"] == response.json()["name"]
+    assert response.json()["description"] == response.json()["description"]
+    assert response.json()["due_date"] == response.json()["due_date"]
+    assert response.json()["colour"] == response.json()["colour"]
+
+    id = uuid.UUID(response.json()["id"])
+    g = session.get(Coursework, id)
+    assert g.name == np["name"]
