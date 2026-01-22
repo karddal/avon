@@ -1,6 +1,7 @@
 import {
   BookCheck,
   ChartLine,
+  Layers,
   LayoutDashboard,
   NotepadText,
   Settings,
@@ -63,8 +64,52 @@ const adminItems = [
     icon: NotepadText,
     bottom: false,
   },
+  {
+    title: "Programmes",
+    url: "/programmes",
+    icon: Layers,
+    bottom: false,
+  },
 ];
 
+const lecturerItems = [
+  {
+    title: "Dashboard",
+    url: "/dashboard",
+    icon: LayoutDashboard,
+    bottom: false,
+  },
+  {
+    title: "Analytics",
+    url: "/analytics",
+    icon: ChartLine,
+    bottom: false,
+  },
+  {
+    title: "Markbook",
+    url: "/markbook",
+    icon: BookCheck,
+    bottom: false,
+  },
+  {
+    title: "Settings",
+    url: "#",
+    icon: Settings,
+    bottom: true,
+  },
+  {
+    title: "Units",
+    url: "/units",
+    icon: SwatchBook,
+    bottom: false,
+  },
+  {
+    title: "Coursework",
+    url: "/coursework",
+    icon: NotepadText,
+    bottom: false,
+  },
+];
 const studentItems = [
   {
     title: "Units",
@@ -92,7 +137,12 @@ export default async function AppSideBarContent() {
   if (!type) {
     type = "user";
   }
-  const items = type === "lecturer" ? adminItems : studentItems;
+  const items =
+    type === "admin"
+      ? adminItems
+      : type === "lecturer"
+        ? lecturerItems
+        : studentItems;
   return (
     <SidebarContent>
       <SidebarGroup className="h-full p-0">

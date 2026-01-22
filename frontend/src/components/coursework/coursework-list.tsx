@@ -1,4 +1,3 @@
-import { getSession } from "better-auth/api";
 import { BookDashed } from "lucide-react";
 import Coursework from "@/components/coursework/coursework";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

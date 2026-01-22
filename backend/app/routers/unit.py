@@ -33,12 +33,12 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
         colour=unit.colour,
         start_date=None,
         end_date=None,
-        programme=unit.programme,
+        programme_id=unit.programme_id,
     )
 
-    if unit.programme:
+    if unit.programme_id:
         programme = session.exec(
-            select(Programme).where(Programme.id == unit.programme)
+            select(Programme).where(Programme.id == unit.programme_id)
         ).all()
 
         if not programme:
