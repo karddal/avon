@@ -122,15 +122,20 @@ export default function EditCoursework({
   const due_date = form.watch("due_date");
 
   return (
-    <Sheet open={open_state} onOpenChange={set_open_state}>
-      <SheetContent side={b ? "top" : "right"}>
+
+      <Sheet open={open_state} onOpenChange={set_open_state}>
+
+        <SheetContent className={"h-full overflow-y-scroll"} side={b ? "top" : "right"}>
+
         <SheetHeader>
           <SheetTitle>Edit this coursework</SheetTitle>
           <SheetDescription>You can modify this coursework here. Please remember to save when you are done.</SheetDescription>
         </SheetHeader>
-        <form id={"form-flow"} onSubmit={form.handleSubmit(onSubmit)}>
-        <div className={"overflow-y-auto px-4"}>
-          <FieldGroup>
+
+        <div className={"h-full overflow-y-scroll px-4"}>
+          <form className={"h-full form-flow flex flex-col justify-between"} onSubmit={form.handleSubmit(onSubmit)}>
+
+          <FieldGroup className={""}>
             <Controller
                 name={"name"}
                 control={form.control}
@@ -287,7 +292,7 @@ export default function EditCoursework({
                           }
                       >
                         <HexColorPicker
-                            className={"w-full! border-2 border-input"}
+                            className={"w-full! border-none border-input"}
                             color={field.value}
                             onChange={(color) => {
                               field.onChange(color);
@@ -311,41 +316,47 @@ export default function EditCoursework({
                 )}
             />
           </FieldGroup>
-        </div>
-        <SheetFooter>
-          <ButtonGroup
-              orientation={"vertical"}
-              className={"gap-2 w-full"}
-          >
-            {submitState && (
-                <Button disabled={true}>
-                  <Spinner />
-                  Save changes
-                </Button>
-            )}
-            {!submitState && (
-                <Button type={"submit"}>
-                  <Save />
-                  Save changes
-                </Button>
-            )}
-          </ButtonGroup>
+            <div>
+              <SheetFooter>
+                <ButtonGroup
+                    orientation={"vertical"}
+                    className={"gap-2 w-full"}
+                >
+                  {submitState && (
+                      <Button disabled={true}>
+                        <Spinner />
+                        Save changes
+                      </Button>
+                  )}
+                  {!submitState && (
+                      <Button type={"submit"}>
+                        <Save />
+                        Save changes
+                      </Button>
+                  )}
+                </ButtonGroup>
 
-          {showAlert && (
-              <Alert variant="destructive">
-                <OctagonAlert />
-                <AlertTitle>Heads up!</AlertTitle>
-                <AlertDescription>
-                  {alertText}
-                </AlertDescription>
-              </Alert>
-          )}
-          <SheetClose asChild>
-            <Button variant={"outline"}>Cancel</Button>
-          </SheetClose>
-        </SheetFooter>
-        </form>
+                {showAlert && (
+                    <Alert variant="destructive">
+                      <OctagonAlert />
+                      <AlertTitle>Heads up!</AlertTitle>
+                      <AlertDescription>
+                        {alertText}
+                      </AlertDescription>
+                    </Alert>
+                )}
+
+                <SheetClose asChild>
+                  <Button variant={"outline"}>Cancel</Button>
+                </SheetClose>
+              </SheetFooter>
+            </div>
+          </form>
+
+        </div>
+
       </SheetContent>
-    </Sheet>
-  );
+      </Sheet>
+
+);
 }
