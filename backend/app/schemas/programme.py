@@ -15,7 +15,7 @@ def is_valid_date(value: date) -> date:
     today = date.today()
 
     if value <= today:
-        raise ValueError("Start date must be in the future")
+        raise ValueError("Date must be in the future")
 
     return value
 
