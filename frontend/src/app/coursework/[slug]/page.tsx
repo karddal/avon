@@ -9,6 +9,35 @@ import Loading from "../loading";
 import CourseworkDescription from "./description";
 import CourseworkInformation from "./information";
 import CourseworkName from "./name";
+import {getRequestJWT, requireSession} from "@/lib/auth-utils";
+import CourseworkLectDropdown from "@/components/coursework/coursework-lect-dropdown";
+
+type CourseworkUpdateReqResponse = {
+  id: string;
+  name: string;
+  description?: string;
+  unit_id: string;
+  due_date: string;
+  creation_date: string;
+  colour: string;
+  unit_name: string;
+  unit_code: string;
+  max_end_date: string;
+};
+
+type CourseworkUpdateData = {
+  id: string;
+  name: string;
+  description?: string;
+  unit_id: string;
+  due_date: string;
+  creation_date: string;
+  colour: string;
+  unit_name: string;
+  unit_code: string;
+  max_end_date: Date;
+};
+
 
 async function CourseworkPageContent({
   params,
@@ -16,17 +45,52 @@ async function CourseworkPageContent({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const cookieStore = await cookies();
-  const token = cookieStore.get("access_token")?.value;
+  const s = await requireSession();
+  const token = await getRequestJWT();
+  const me = s.user.role
+  const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/coursework/${slug}/update_form_data`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        cache: "no-cache",
+      },
+  );
+  console.log("GOT RESPONSE")
+  console.log(response);
+  const c: CourseworkUpdateReqResponse = await response.json();
+  const end = new Date(c.max_end_date);
+  const data = {
+    id: c.id,
+    name: c.name,
+    description: c.description,
+    unit_id: c.unit_id,
+    due_date: c.due_date,
+    creation_date: c.creation_date,
+    colour: c.colour,
+    unit_name: c.unit_name,
+    unit_code: c.unit_code,
+    max_end_date: end
+  }
 
   return (
     <>
       {/* Header */}
-      <div className="flex flex-col gap-4 min-h-0">
-        <div className="flex flex-col col-span-3">
+        <div className="flex flex-col col-span-3 min-h-0">
           <div className="font-semibold text-5xl text-shadow-2xs">
-            <Suspense>
-              <CourseworkName slug={slug} token={token} />
+            <Suspense fallback={
+              <div className={"h-16"}>
+                <Skeleton className={"bg-foreground/10"}/>
+              </div>
+            }>
+              <div className={"flex flex-row gap-4 justify-between items-center"}>
+                <CourseworkName slug={slug} token={token} />
+                {(me === "lecturer" || me === "admin") && (
+                    <CourseworkLectDropdown me={me} slug={slug} coursework_update_data={data}></CourseworkLectDropdown>
+                )}
+              </div>
             </Suspense>
           </div>
           <div className="w-full bg-accent-foreground"></div>
@@ -113,7 +177,6 @@ async function CourseworkPageContent({
             </DropdownCard>
           </div>
         </section>
-      </div>
     </>
   );
 }
