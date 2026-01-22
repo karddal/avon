@@ -7,30 +7,14 @@ from datetime import datetime, timedelta
 from contextlib import nullcontext as does_not_raise
 from app.models.programme import Programme
 from app.models.unit import Unit
+from app.models.unit_enrollment import UnitEnrollment
 from app.schemas.unit import UnitCreate
 
-# programme_id = uuid4()
-# programme_name = "Test Programme"
-# start_date = datetime.now()
-# end_date = start_date + timedelta(days=365)
-# programme = Programme(id=programme_id, name=programme_name, start_date=start_date, end_date=end_date)
-
-# unit_id = uuid4()
-# unit_name = "Test Unit"
-# description="Test description"
-# unit_code="COMS20017"
-# colour="abcdef"
-# programme_id=programme_id
-# unit = Unit(id=unit_id, name=unit_name, description=description, unit_code=unit_code, colour=colour, programme_id=programme_id)
 
 def create_programme(session) -> Programme:
     programme = Programme(id=uuid4(), name="Test Programme",start_date=datetime.now(), end_date=datetime.today() + timedelta(days=365))
     session.add(programme)
     session.commit()
-    # unit_id = uuid4()
-    # unit = Unit(id=unit_id, name="Test Unit", description="Test description", unit_code="COMS20017", colour="abcdef", programme_id=programme.id,)
-    # session.add(unit)
-    # session.commit()
     return programme
 
 def create_unit(session, programme_id) -> Unit:
@@ -39,6 +23,13 @@ def create_unit(session, programme_id) -> Unit:
     session.add(unit)
     session.commit()
     return unit
+
+def create_lecturers(session, unit_id) -> UnitEnrollment:
+    user_id = str(uuid4())
+    unit_enrollment = UnitEnrollment(unit_id=unit_id, user_id=user_id, type="lecturer")
+    session.add(unit_enrollment)
+    session.commit()
+    return unit_enrollment
 
 def valid_unit_payload(programme_id):
     return {
@@ -148,6 +139,16 @@ def test_get_unit_details_dates(client, session):
 
 
 # Tests to get the lecturers of the units
+def tests_get_unit_lecturers(client, session):
+    programme = create_programme(session)
+    unit = create_unit(session, programme.id)
+    unit_enrollment = create_lecturers(session, unit.id)
+    response = client.get("/units/"+str(unit.id)+"/lecturers/")
+    data =  response.json()
+
+    assert data["lecturers"] == [unit_enrollment.user_id]
+
+
 # Tests to update units
 # Tests to delete units
 # Tests to get units taken by a specific person
