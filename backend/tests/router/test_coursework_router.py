@@ -7,19 +7,7 @@ from app.models.coursework import Coursework
 from app.models.unit import Unit
 from app.models.programme import Programme
 from app.models.unit_enrollment import UnitEnrollment
-
-
-# Helper Funcs:
-def create_unit_with_programme(session) -> UUID:
-    programme = Programme(id=uuid4(), name="Test Programme",start_date=datetime.now(), end_date=datetime.today() + timedelta(days=365))
-    session.add(programme)
-    session.commit()
-    unit_id = uuid4()
-    unit = Unit(id=unit_id, name="Test Unit", description="Test description", unit_code="COMS20017", colour="abcdef", programme_id=programme.id,)
-    session.add(unit)
-    session.commit()
-
-    return unit_id
+from tests.helpers.factories import create_unit
 
 def coursework_payload(unit_id):
     return {
@@ -34,7 +22,7 @@ def coursework_payload(unit_id):
 # Each test uses a fresh database, as we use the memory version of SQLite for testing
 # CREATE:
 def test_coursework_create_success(client, session):
-    unit_id = create_unit_with_programme(session)
+    unit_id = create_unit(session)
 
     payload = coursework_payload(str(unit_id)) # For some reason wants it in string form
     response = client.post("/coursework/create", json=payload)
@@ -48,7 +36,7 @@ def test_coursework_create_success(client, session):
     assert "id" in data
 
 def test_coursework_create_duplicate(client, session):
-    unit_id = create_unit_with_programme(session)
+    unit_id = create_unit(session)
 
     payload = coursework_payload(str(unit_id))
 
@@ -59,7 +47,7 @@ def test_coursework_create_duplicate(client, session):
     assert "Coursework already made that belongs to the same unit and has the same name" == response.json()["detail"]
 
 def test_get_coursework_success(client, session):
-    unit_id = create_unit_with_programme(session)
+    unit_id = create_unit(session)
 
     payload = coursework_payload(str(unit_id))
     createResponse = client.post("/coursework/create", json=payload)  # Need response to get the ID of the coursework
@@ -79,7 +67,7 @@ def test_get_coursework_not_found(client):
 
 # UPDATE:
 def test_update_coursework_success(client, session):
-    unit_id = create_unit_with_programme(session)
+    unit_id = create_unit(session)
 
     payload = coursework_payload(str(unit_id))
     createResponse = client.post("/coursework/create", json=payload)
@@ -102,7 +90,7 @@ def test_update_coursework_not_found(client):
 
 
 def test_update_coursework_unit_not_found(client, session):
-    unit_id = create_unit_with_programme(session)
+    unit_id = create_unit(session)
 
     payload = coursework_payload(str(unit_id))
     createResponse = client.post("/coursework/create", json=payload)
@@ -115,7 +103,7 @@ def test_update_coursework_unit_not_found(client, session):
 
 # DELETE:
 def test_delete_coursework_success(client, session):
-    unit_id = create_unit_with_programme(session)
+    unit_id = create_unit(session)
 
     payload = coursework_payload(str(unit_id))
     createResponse = client.post("/coursework/create", json=payload)
