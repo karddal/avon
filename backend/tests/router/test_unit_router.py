@@ -173,9 +173,22 @@ def test_update_units(client, session):
     assert unit.name == "Object Oriented Programming"
 
 
-
-
 # Tests to delete units
+def test_delete_unit(client, session):
+    programme = create_programme(session)
+    unit = create_unit(session, programme.id)
+    response = client.delete("/units/"+str(unit.id))
+
+    assert response.status_code == 200
+
+    statement = select(Unit).where(Unit.id == unit.id)
+    deleted_unit = session.exec(statement).first()
+
+    assert  deleted_unit is None 
+
+def test_delete_non_existent_unit(client, session):
+    response = client.delete("/units/"+"bec07dbc-08aa-4b26-b1c7-aed9e13496cb")
+    assert response.status_code == 404
 
 # Tests to get units taken by a specific person
 
