@@ -177,7 +177,9 @@ export const ProgForm = () => {
                               {...field}
                               id={"form-flow-name"}
                               aria-invalid={fieldState.invalid}
-                              placeholder={"e.g. Year 1 Computer Science 2025/2026"}
+                              placeholder={
+                                "e.g. Year 1 Computer Science 2025/2026"
+                              }
                               autoComplete={"off"}
                             />
                             {fieldState.invalid && (
