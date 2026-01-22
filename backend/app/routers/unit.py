@@ -145,12 +145,12 @@ async def delete_unit(unit_id: UUID, session: session_dependency):
 
 
 @router.get("/u/{user_id}", response_model=UnitAll)
-async def get_user_units(user_id: UUID, session: session_dependency):
+async def get_user_units(user_id: str, session: session_dependency):
     response = session.exec(
         select(Unit).join(UnitEnrollment).where(UnitEnrollment.user_id == user_id)
     ).all()
 
-    return response
+    return {"units": response}
 
 
 @router.get("/{unit_id}/courseworks", response_model=CourseworkAll)
