@@ -1,4 +1,3 @@
-ROOT := justfile_directory()
 set shell := ["bash", "-cu"]
 set windows-shell := ["powershell.exe", "-NoProfile", "-Command"]
 
