@@ -64,9 +64,10 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
             message: "Description must be at least 2 characters.",
         }),
         color: z.string(),
-        startYear: z.number().int().gte(currentYear, { message: "Can't create units for previous years" }).lte(currentYear + 4, { message: "Can't create units for that far ahead" }),
-        endYear: z.number().int().gte(currentYear, { message: "End date can't be before creation date" }).lte(currentYear + 4, { message: "Can't create units for that far ahead" })
-    }).refine((data) => data.endYear >= data.startYear, { message: "End date can't be greater than start date", path: ["endYear"] });
+        // startYear: z.number().int().gte(currentYear, { message: "Can't create units for previous years" }).lte(currentYear + 4, { message: "Can't create units for that far ahead" }),
+        // endYear: z.number().int().gte(currentYear, { message: "End date can't be before creation date" }).lte(currentYear + 4, { message: "Can't create units for that far ahead" })
+        // }).refine((data) => data.endYear >= data.startYear, { message: "End date can't be greater than start date", path: ["endYear"] }
+    });
 
     const formVariants = {
         hidden: {
@@ -95,8 +96,6 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
             name: "",
             description: "",
             color: "#abcdef",
-            startYear: currentYear,
-            endYear: currentYear
         },
     });
 
@@ -111,8 +110,6 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                 description: values.description,
                 unit_id: s,
                 colour: colour.substring(1),
-                start_year: values.startYear,
-                end_year: values.endYear,
             };
             console.log(req);
             fetch(`${process.env.NEXT_PUBLIC_API_URL}/units/create`, {
@@ -258,59 +255,15 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                                                     </Field>
                                                 )}
                                             />
-                                            <Controller
-                                                name={"startYear"}
-                                                control={form.control}
-                                                render={({ field, fieldState }) => (
-                                                    <Field data-invalid={fieldState.invalid}>
-                                                        <FieldLabel htmlFor={"date"}>
-                                                            Choose the year that the Unit starts in
-                                                        </FieldLabel>
-                                                        {/* <Calendar29
-                                                            props={{
-                                                                date: field.value,
-                                                                setDate: field.onChange,
-                                                            }}
-                                                        /> */}
-                                                        <Textarea
-                                                            {...field}
-                                                            id={"start-year-description"}
-                                                            aria-invalid={fieldState.invalid}
-                                                            autoComplete="off"
-                                                        />
+                                            {/* Select the programme it's part off */}
 
-                                                        {fieldState.invalid && (
-                                                            <FieldError errors={[fieldState.error]} />
-                                                        )}
-                                                    </Field>
-                                                )}
-                                            ></Controller>
-                                            <Controller
-                                                name={"endYear"}
-                                                control={form.control}
-                                                render={({ field, fieldState }) => (
-                                                    <Field data-invalid={fieldState.invalid}>
-                                                        <FieldLabel htmlFor={"date"}>
-                                                            Choose the year that the Unit ends in
-                                                        </FieldLabel>
-                                                        <Textarea
-                                                            {...field}
-                                                            id={"start-year-description"}
-                                                            aria-invalid={fieldState.invalid}
-                                                            autoComplete="off"
-                                                        />
-                                                        {fieldState.invalid && (
-                                                            <FieldError errors={[fieldState.error]} />
-                                                        )}
-                                                    </Field>
-                                                )}
-                                            ></Controller>
+
                                             <Button
                                                 type={"button"}
                                                 variant={"outline"}
                                                 onClick={() => {
                                                     form
-                                                        .trigger(["name", "description", "startYear", "endYear"])
+                                                        .trigger(["name", "description"])
                                                         .then((_result) => {
                                                             if (form.formState.isValid) {
                                                                 next();
@@ -480,10 +433,6 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                                                         <ItemTitle>Unit description</ItemTitle>
                                                         <ItemDescription>
                                                             {description ? description : "Not provided."}
-                                                        </ItemDescription>
-                                                        <ItemTitle>Academic Year</ItemTitle>
-                                                        <ItemDescription>
-                                                            Year here
                                                         </ItemDescription>
                                                         <ItemTitle>Colour</ItemTitle>
                                                         <ItemDescription>{colour}</ItemDescription>
