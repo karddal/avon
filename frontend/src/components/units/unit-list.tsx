@@ -41,7 +41,6 @@ export default async function UnitList() {
   );
   const unitData: ProgrammesResponse = await data.json();
   const programmes = unitData.programmes;
-  console.log(unitData);
   // const filtered = await getData(currentYear, finished)
   const d = programmes.at(0)?.id ?? "0";
   return (
@@ -56,10 +55,12 @@ export default async function UnitList() {
         {programmes.map((programme) => (
           <TabsTrigger
             key={programme.id}
-            className={"text-lg p-4 w-full text-ellipsis"}
+            className={"p-4 w-full text-ellipsis"}
             value={programme.id}
           >
-            {programme.name}
+            <span className="text-sm text-wrap md:text-lg">
+              {programme.name}
+            </span>
           </TabsTrigger>
         ))}
       </TabsList>

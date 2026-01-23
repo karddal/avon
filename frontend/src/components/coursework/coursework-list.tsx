@@ -105,13 +105,15 @@ export default async function CourseworkList({
             {filteredUnitsList.map((unit) => (
               <TabsTrigger
                 key={unit.id}
-                className={"text-lg p-4 w-full text-ellipsis"}
+                className={"p-4 w-full text-ellipsis flex"}
                 value={unit.id}
               >
-                {unit.name}
-                <span className={"font-light"}>
-                  {new Date(unit.programme_start_date).getFullYear()}-
-                  {new Date(unit.programme_end_date).getFullYear()}
+                <span className="text-sm md:text-lg text-wrap ">
+                  {unit.name}{" "}
+                  <span className={"font-light text-sm md:text-lg"}>
+                    {new Date(unit.programme_start_date).getFullYear()}-
+                    {new Date(unit.programme_end_date).getFullYear()}
+                  </span>
                 </span>
               </TabsTrigger>
             ))}
