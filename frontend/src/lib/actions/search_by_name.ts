@@ -11,10 +11,12 @@ export type SearchResponse = {
   offset: number | undefined;
 };
 
+// ONLY GETS STUDENTS
 export async function search_by_name(
   search: string,
   offset: number,
   limit: number,
+  filterValue: string,
 ): Promise<SearchResponse> {
   const response = (await auth.api.listUsers({
     query: {
@@ -24,6 +26,9 @@ export async function search_by_name(
       offset: offset,
       sortBy: "name",
       searchOperator: "contains",
+      filterField: "role",
+      filterValue: filterValue,
+      filterOperator: "eq",
     },
     headers: await headers(),
   })) as unknown;

@@ -1,7 +1,7 @@
 "use client";
 
 import { Menu, TextSearch, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
   DropdownMenu,
@@ -12,20 +12,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import UserCard from "@/components/user-card";
-import { delete_user } from "@/lib/actions/delete_user";
 import { get_batch_user_info } from "@/lib/actions/get_batch_user_details";
 import { get_students } from "@/lib/actions/get_students";
-
-function _getInitials(name: string) {
-  if (!name || typeof name !== "string") return "?";
-  const allNames = name.trim().split(" ");
-  if (allNames.length === 0) return "?";
-
-  const first = allNames[0].charAt(0);
-  const last =
-    allNames.length > 1 ? allNames[allNames.length - 1].charAt(0) : "";
-  return (first + last).toUpperCase();
-}
+import { remove_user_enrollment } from "@/lib/actions/remove_user_enrollment";
 
 type studentInfo = {
   id: string;
@@ -39,33 +28,32 @@ export default function StudentList({ unit_id }: { unit_id: string }) {
   const [loading, setLoading] = useState(true);
 
   async function handleDelete(id: string) {
-    const result = await delete_user(id);
-    console.log(result);
+    const result = await remove_user_enrollment(unit_id, id);
     if (result) {
-      toast.success("Student deleted successfully");
+      toast.success("Student unenrolled successfully");
     } else {
       throw new Error();
     }
+    loadStudents();
   }
 
-  useEffect(() => {
-    async function loadStudents() {
-      try {
-        const data = await get_students(unit_id);
-        const studentIds = data.students;
+  const loadStudents = useCallback(async () => {
+    try {
+      const data = await get_students(unit_id);
+      const studentIds = data.students;
 
-        if (studentIds && studentIds.length > 0) {
-          const enrichedStudents = await get_batch_user_info(studentIds);
-          setStudents(enrichedStudents);
-        }
-      } catch (error) {
-        console.error("Failed to load students", error);
-      } finally {
-        setLoading(false);
+      if (studentIds && studentIds.length > 0) {
+        const enrichedStudents = await get_batch_user_info(studentIds);
+        setStudents(enrichedStudents);
       }
+    } finally {
+      setLoading(false);
     }
-    loadStudents();
   }, [unit_id]);
+
+  useEffect(() => {
+    loadStudents();
+  }, [loadStudents]);
 
   const filteredStudents = useMemo(() => {
     return students.filter((student) =>

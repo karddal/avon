@@ -22,7 +22,6 @@ export async function get_lecturers(
   );
 
   const lecturerData: lecturersResponse = await response.json();
-  console.log(lecturerData);
 
   return lecturerData;
 }

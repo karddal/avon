@@ -1,7 +1,7 @@
 "use client";
 
 import { Menu, TextSearch, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
   DropdownMenu,
@@ -12,21 +12,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import UserCard from "@/components/user-card";
-import { delete_user } from "@/lib/actions/delete_user";
 import { get_user_image_from_id } from "@/lib/actions/get_image";
 import { get_lecturers } from "@/lib/actions/get_lecturers";
 import { get_username_from_id } from "@/lib/actions/get_username";
-
-function _getInitials(name: string) {
-  if (!name || typeof name !== "string") return "?";
-  const allNames = name.trim().split(" ");
-  if (allNames.length === 0) return "?";
-
-  const first = allNames[0].charAt(0);
-  const last =
-    allNames.length > 1 ? allNames[allNames.length - 1].charAt(0) : "";
-  return (first + last).toUpperCase();
-}
+import { remove_user_enrollment } from "@/lib/actions/remove_user_enrollment";
 
 type lecturerInfo = {
   id: string;
@@ -44,46 +33,44 @@ export default function lecturerList({
   const [lecturers, setlecturers] = useState<lecturerInfo[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
-  console.log(me);
 
   async function handleDelete(id: string) {
-    const result = await delete_user(id);
-    console.log(result);
+    const result = await remove_user_enrollment(unit_id, id);
     if (result) {
-      toast.success("Lecturer deleted successfully");
+      toast.success("Lecturer unenrolled successfully");
     } else {
       throw new Error();
     }
+    loadlecturers();
   }
 
-  useEffect(() => {
-    async function loadlecturers() {
-      try {
-        const data = await get_lecturers(unit_id);
-        const lecturerIds = data.lecturers;
+  const loadlecturers = useCallback(async () => {
+    try {
+      const data = await get_lecturers(unit_id);
+      const lecturerIds = data.lecturers;
 
-        const enrichedlecturers = await Promise.all(
-          lecturerIds.map(async (id: string) => {
-            const name = await get_username_from_id(id);
-            const imageSrc = await get_user_image_from_id(id);
+      const enrichedlecturers = await Promise.all(
+        lecturerIds.map(async (id: string) => {
+          const name = await get_username_from_id(id);
+          const imageSrc = await get_user_image_from_id(id);
 
-            return {
-              id: id,
-              displayName: name || "Unknown lecturer",
-              src: imageSrc,
-            };
-          }),
-        );
+          return {
+            id: id,
+            displayName: name || "Unknown lecturer",
+            src: imageSrc,
+          };
+        }),
+      );
 
-        setlecturers(enrichedlecturers);
-      } catch (error) {
-        console.error("Failed to load lecturers", error);
-      } finally {
-        setLoading(false);
-      }
+      setlecturers(enrichedlecturers);
+    } finally {
+      setLoading(false);
     }
-    loadlecturers();
   }, [unit_id]);
+
+  useEffect(() => {
+    loadlecturers();
+  }, [loadlecturers]);
 
   const filteredlecturers = useMemo(() => {
     return lecturers.filter((lecturer) =>

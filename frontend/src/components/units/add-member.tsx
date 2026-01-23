@@ -8,7 +8,7 @@ import {
   SendHorizonal,
   UserIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -22,6 +22,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import UserCard from "@/components/user-card";
+import { batch_add_students_to_unit } from "@/lib/actions/batch_add_students_to_unit";
+import { get_lecturers } from "@/lib/actions/get_lecturers";
+import { get_students } from "@/lib/actions/get_students";
 import {
   type SearchResponse,
   search_by_name,
@@ -50,16 +53,49 @@ export default function AddMember({ unit_id }: { unit_id: string }) {
   const [offset, setOffset] = useState<number>(0);
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
   const [length, setLength] = useState<number>(0);
+  const [disabledUsers, setDisabledUsers] = useState<string[]>([]);
 
   const limit = 5;
 
-  async function _handleSend() {
-    toast.success("Adding user(s) to unit!");
+  async function handleSend() {
+    const userIds = selectedUsers.map((user) => user.id);
+    const response = await batch_add_students_to_unit(unit_id, userIds);
+    if (response.success) {
+      toast.success("Adding student(s) to unit!");
+    } else {
+      toast.error("Adding failed! ");
+    }
   }
+  const loadDisabled = useCallback(async () => {
+    try {
+      setDisabledUsers([]);
+
+      const [disabledS, disabledL] = await Promise.all([
+        get_students(unit_id),
+        get_lecturers(unit_id),
+      ]);
+
+      const disabledU = [
+        ...(disabledS?.students || []),
+        ...(disabledL?.lecturers || []),
+      ];
+
+      setDisabledUsers(disabledU);
+    } catch (_error) {}
+  }, [unit_id]);
+
+  useEffect(() => {
+    loadDisabled();
+  }, [loadDisabled]);
 
   async function showUsers(query: string, offset: number) {
     setLoading(true);
-    const response: SearchResponse = await search_by_name(query, offset, limit);
+    const response: SearchResponse = await search_by_name(
+      query,
+      offset,
+      limit,
+      "user",
+    );
     setLoading(false);
     setResponse(response);
   }
@@ -103,6 +139,7 @@ export default function AddMember({ unit_id }: { unit_id: string }) {
 
                 <div className="absolute top-2 right-2 w-8 h-8">
                   <Checkbox
+                    disabled={disabledUsers.includes(user.id)}
                     checked={selectedUsers.some((u) => u.id === user.id)}
                     onCheckedChange={(checked) => {
                       if (!checked) {
@@ -198,7 +235,14 @@ export default function AddMember({ unit_id }: { unit_id: string }) {
       )}
       {length > 0 ? (
         <div className="flex flex-row items-center text-center">
-          <Button className="w-full" variant="default">
+          <Button
+            className="w-full"
+            variant="default"
+            onClick={() => {
+              handleSend();
+              loadDisabled();
+            }}
+          >
             <SendHorizonal></SendHorizonal> Add {length} users to unit
           </Button>
         </div>

@@ -27,7 +27,8 @@
       "recommended": true,
       "suspicious": {
         "noUnknownAtRules": "off"
-      }
+      },
+      "complexity": { "noUselessFragments": "off" }
     },
     "domains": {
       "next": "recommended",

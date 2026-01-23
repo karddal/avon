@@ -1,4 +1,3 @@
-
 default:
     just --list
 
@@ -15,6 +14,10 @@ check: check-fe check-be
 fix-fe:
     @echo "Fixing frontend..."
     cd frontend && npx biome check --fix
+
+force-fix-fe:
+    @echo "Fixing frontend..."
+    cd frontend && npx biome check --write --unsafe
 
 fix-be:
     @echo "Fixing backend..."

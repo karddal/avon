@@ -20,7 +20,6 @@ export async function get_students(unit_id: string): Promise<studentsResponse> {
   );
 
   const studentData: studentsResponse = await response.json();
-  console.log(studentData);
 
   return studentData;
 }
