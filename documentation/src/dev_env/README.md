@@ -15,14 +15,67 @@ To install it, follow the relevant instructions for your platform. Once it is in
 
 Some of the most useful `just` commands are tabulated below, although all commands can be listed using `just --list`:
 
-|Command|Purpose|
-|--------|-------|
-|`just check`|Runs linters|
-|`just fixit`|Fixes issues|
-|`just run-fe`|Runs the frontend|
-|`just run-be`|Runs the backend|
-|`just test`|Runs tests|
-|`just sync`|Download and install dependencies|
+
+| Command      | Purpose                           |
+|--------------|-----------------------------------|
+| `just check` | Runs linters                      |
+| `just fixit` | Fixes issues                      |
+| `just sync`  | Download and install dependencies |
+
+---
+
+### Command Targets
+
+Different targets (frontend, backend, and docs) support different commands.
+
+- **Frontend:** `just fe <cmd>`
+- **Backend:** `just be <cmd>`
+- **Docs:** `just doc <cmd>`
+
+---
+
+### Available Commands
+The tables below list the available commands for each target.
+
+
+### Frontend Commands
+
+| Command         | Purpose                           |
+|-----------------|-----------------------------------|
+| `just fe run`   | Runs the frontend                 |
+| `just fe sync`  | Download and install dependencies |
+| `just fe fix`   | Fixes issues                      |
+| `just fe check` | Runs linter                       |
+
+---
+
+### Backend Commands
+
+| Command             | Purpose                                       |
+|---------------------|-----------------------------------------------|
+| `just be run <env>` | Runs the backend in the specified environment |
+| `just be test`      | Runs tests                                    |
+| `just be sync`      | Download and install dependencies             |
+| `just be fix`       | Fixes issues                                  |
+| `just be check`     | Runs linter                                   |
+
+#### Environment Options
+
+The `<env>` parameter specifies which environment to run the backend in.
+
+| Value     | Description               |
+|-----------|---------------------------|
+| `dev`     | Development environment   |
+
+---
+
+### Docs Commands
+
+| Command               | Purpose            |
+|-----------------------|--------------------|
+| `just doc serve-book` | open documentation |
+
+---
 
 Please follow the rest of the instructions in this chapter to setup the tools for running the frontend and the backend.
 

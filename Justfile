@@ -1,40 +1,69 @@
+ROOT := justfile_directory()
+set shell := ["bash", "-cu"]
+set windows-shell := ["powershell.exe", "-NoProfile", "-Command"]
 
+# helper
+@fe cmd *args:
+    just -f Justfile -d frontend {{cmd}}-fe {{args}}
+
+@be cmd *args:
+    just -f Justfile -d backend {{cmd}}-be {{args}}
+
+@doc cmd *args:
+    just -f Justfile -d documentation {{cmd}}-doc {{args}}
+
+# real command
 default:
     just --list
 
 check-fe:
     @echo "Formatting and linting frontend..."
-    just -f frontend/Justfile check
+    npx biome check
 
 check-be:
     @echo "Formatting and linting backend..."
-    just -f backend/Justfile check
+    uv run ruff check
 
-check: check-fe check-be
+check:
+    just fe check
+    just be check
 
 fix-fe:
     @echo "Fixing frontend..."
-    just -f frontend/Justfile fix
+    npx biome check --fix
 
 fix-be:
     @echo "Fixing backend..."
-    just -f backend/Justfile fix
+    uv run ruff check --fix
 
-fixit: fix-fe fix-be
+fixit:
+    just fe fix
+    just be fix
 
 test-be:
 	@echo "Testing backend routers..."
-	just -f backend/Justfile test
+	uv run pytest -v
 
 run-fe:
-    just -f frontend/Justfile run
+    npm run dev
 
+[windows]
 run-be env:
-    just -f backend/Justfile run {{env}}
+    $env:ENV="{{env}}"; uv run fastapi dev
+
+[unix]
+run-be env:
+    ENV={{env}} uv run fastapi dev
+
+sync-fe:
+    npm i
+
+sync-be:
+    uv sync
 
 sync:
-    just -f frontend/Justfile sync
-    just -f backend/Justfile sync
+    just fe sync
+    just be sync
 
-serve-book:
-    just -f documentation/Justfile open
+serve-book-doc:
+    mdbook serve --open
