@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, List
 from uuid import UUID
 from datetime import date
 
@@ -34,6 +34,7 @@ class ProgrammeCreate(BaseModel):
 class ProgrammeRead(BaseModel):
     id: UUID
     name: Name
+<<<<<<< HEAD
     start_date: StartDate
     end_date: EndDate
     units: list
@@ -46,3 +47,10 @@ class ProgrammeUpdate(BaseModel):
 class ProgrammeDelete(BaseModel):
     id: UUID
     deletion_successful: bool
+=======
+    start_date: date
+    end_date: date
+
+class ProgrammeAll(BaseModel):
+    programmes: List[ProgrammeRead]
+>>>>>>> f5c23ee (Created a route that gets all the current programmes, changed the schema slightly to allow myself to do that)
