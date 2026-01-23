@@ -68,4 +68,35 @@ def test_me_units(session, client):
     data = response.json()
     assert data["units"][0]["name"] == unit.name
 
+def test_me_active_units(session, client):
+    programme = create_programme(session)
+    unit = create_unit(session, programme.id)
+
+    user = create_students(session, unit.id)
+
+    app.dependency_overrides[get_current_user] = lambda: user.user_id
+
+    response = client.get("/me/units/active")
+    assert response.status_code == 200
+    
+    data = response.json()
+    assert data["units"][0]["name"] == unit.name
+
+def test_me_units_by_programme(session, client):
+    programme = create_programme(session)
+    unit = create_unit(session, programme.id)
+
+    user = create_students(session, unit.id)
+
+    app.dependency_overrides[get_current_user] = lambda: user.user_id
+
+    response = client.get("/me/units-by-programme")
+    assert response.status_code == 200
+    
+    data = response.json()
+    assert data["programmes"][0]["name"]  == programme.name
+
+
+    
+
 
