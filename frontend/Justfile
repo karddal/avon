@@ -1,0 +1,14 @@
+set shell := ["bash", "-cu"]
+set windows-shell := ["powershell.exe", "-NoProfile", "-Command"]
+
+run:
+    npm run dev
+
+check:
+    npx biome check
+
+fix:
+    npx biome check --fix
+
+sync:
+    npm i
