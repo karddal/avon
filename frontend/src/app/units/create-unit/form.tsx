@@ -37,9 +37,17 @@ import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { multistep_coursework_flow } from "./multistep_coursework_flow";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { UUID } from "node:crypto";
 
 interface FormProps {
     slug: Promise<{ slug: string }>;
+}
+
+interface Programme {
+    id: UUID
+    name: string
+    start_date: string
+    end_date: string
 }
 
 export const IntForm: React.FC<FormProps> = ({ slug }) => {
@@ -47,6 +55,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
     const [showAlert, setShowAlert] = useState<boolean>(false);
     const [alertText, setAlertText] = useState<string>("");
     const { step, setStep, next } = multistep_coursework_flow();
+    const [programmes, setProgrammes] = useState<Programme[]>([])
 
     useEffect(() => {
         async function loadProgrammes() {
@@ -57,6 +66,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                     "Content-Type": "application/json",
                 }
             })
+            const data = await r.json()
             if (r.ok) {
                 toast.success("Fetched programmes")
 
@@ -64,8 +74,8 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
             else {
                 toast.error("Could not fetch programmes")
             }
-            const data = await r.json()
-            console.log(data.programmes)
+            setProgrammes(data.programmes)
+            console.log()
         }
 
         loadProgrammes()
@@ -291,10 +301,9 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                                                             </SelectTrigger>
                                                             <SelectContent>
                                                                 <SelectGroup>
-                                                                    {/* <SelectLabel></SelectLabel> */}
-                                                                    <SelectItem value="programme1">Y1</SelectItem>
-                                                                    <SelectItem value="programme2">Y2</SelectItem>
-                                                                    <SelectItem value="programme3">Y3</SelectItem>
+                                                                    {
+                                                                        programmes.map((programme, key) => <SelectItem key={key} value={programme.id}>{programme.name}</SelectItem>)
+                                                                    }
                                                                 </SelectGroup>
                                                             </SelectContent>
                                                         </Select>
