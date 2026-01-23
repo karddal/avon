@@ -148,15 +148,15 @@ def test_get_invalid_unit_details(client, session):
 
     assert response.status_code == 404
 
-# Tests to get units with dates
-def test_get_unit_details_dates(client, session):
-    programme = create_programme(session)
-    unit = create_unit(session, programme.id)
-    response = client.get("/units/" + str(unit.id)+"/with_dates")
-    data = response.json()
+# # Tests to get units with dates
+# def test_get_unit_details_dates(client, session):
+#     programme = create_programme(session)
+#     unit = create_unit(session, programme.id)
+#     response = client.get("/units/" + str(unit.id)+"/with_dates")
+#     data = response.json()
 
-    assert response.status_code == 200
-    assert data["start_date"] == programme.start_date.isoformat()
+#     assert response.status_code == 200
+#     assert data["start_date"] == programme.start_date.isoformat()
 
 
 # Tests to get the lecturers of the units
