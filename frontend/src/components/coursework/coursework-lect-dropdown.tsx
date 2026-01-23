@@ -37,11 +37,11 @@ type CourseworkUpdateData = {
 
 export default function CourseworkLectDropdown({
   slug,
-  me,
+  _me,
   coursework_update_data,
 }: {
   slug: string;
-  me: string;
+  _me: string;
   coursework_update_data: CourseworkUpdateData;
 }) {
   const [_showMembers, _setShowMembers] = useState(false);

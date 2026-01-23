@@ -10,11 +10,6 @@ type UpdateCourseworkRequest = {
   colour: string;
 };
 
-type CreateCourseworkResponse = {
-  success: boolean;
-  data: any;
-};
-
 export async function update_coursework(req: UpdateCourseworkRequest) {
   "use server";
   const token = await getRequestJWT();
