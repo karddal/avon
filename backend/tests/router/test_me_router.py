@@ -6,6 +6,8 @@ from app.models.coursework import Coursework
 from app.models.programme import Programme
 from app.models.unit import Unit
 from app.models.unit_enrollment import UnitEnrollment
+from app.main import app
+from app.core.security import get_current_user
 
 def create_programme(session) -> Programme:
     programme = Programme(id=uuid4(), name="Test Programme",start_date=datetime.now(), end_date=datetime.today() + timedelta(days=365))
@@ -51,4 +53,19 @@ def create_unit_with_programme(session) -> UUID:
     session.commit()
 
     return unit_id
+
+def test_me_units(session, client):
+    programme = create_programme(session)
+    unit = create_unit(session, programme.id)
+
+    user = create_students(session, unit.id)
+
+    app.dependency_overrides[get_current_user] = lambda: user.user_id
+
+    response = client.get("/me/units")
+    assert response.status_code == 200
+
+    data = response.json()
+    assert data["units"][0]["name"] == unit.name
+
 
