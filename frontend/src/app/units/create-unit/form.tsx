@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Terminal } from "lucide-react";
 import { easeIn, easeOut } from "motion";
 import { redirect } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { HexColorInput, HexColorPicker } from "react-colorful";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -47,6 +47,29 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
     const [showAlert, setShowAlert] = useState<boolean>(false);
     const [alertText, setAlertText] = useState<string>("");
     const { step, setStep, next } = multistep_coursework_flow();
+
+    useEffect(() => {
+        async function loadProgrammes() {
+            const r = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/programmes/`, {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            })
+            if (r.ok) {
+                toast.success("Fetched programmes")
+
+            }
+            else {
+                toast.error("Could not fetch programmes")
+            }
+            const data = await r.json()
+            console.log(data.programmes)
+        }
+
+        loadProgrammes()
+    }, []);
 
     async function loadSlug(): Promise<string> {
         const s = await slug;
