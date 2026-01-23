@@ -1,14 +1,45 @@
 
 import pytest
-from pydantic import ValidationError
-from sqlmodel import SQLModel, Session, create_engine, select
 from uuid import uuid4, UUID
 from datetime import datetime, timedelta
-from contextlib import nullcontext as does_not_raise
+from app.models.coursework import Coursework
 from app.models.programme import Programme
 from app.models.unit import Unit
-from app.schemas.unit import UnitCreate
+from app.models.unit_enrollment import UnitEnrollment
 
+def create_programme(session) -> Programme:
+    programme = Programme(id=uuid4(), name="Test Programme",start_date=datetime.now(), end_date=datetime.today() + timedelta(days=365))
+    session.add(programme)
+    session.commit()
+    return programme
+
+def create_unit(session, programme_id) -> Unit:
+    unit_id = uuid4()
+    unit = Unit(id=unit_id, name="Test Unit", description="Test description", unit_code="COMS20017", colour="abcdef", programme_id=programme_id,)
+    session.add(unit)
+    session.commit()
+    return unit
+
+def create_lecturers(session, unit_id) -> UnitEnrollment:
+    user_id = str(uuid4())
+    unit_enrollment = UnitEnrollment(unit_id=unit_id, user_id=user_id, type="lecturer")
+    session.add(unit_enrollment)
+    session.commit()
+    return unit_enrollment
+
+def create_students(session, unit_id) -> UnitEnrollment:
+    user_id = str(uuid4())
+    unit_enrollment = UnitEnrollment(unit_id=unit_id, user_id=user_id, type="student")
+    session.add(unit_enrollment)
+    session.commit()
+    return unit_enrollment
+
+def create_coursework(session, unit_id) -> Coursework:
+    coursework_id = uuid4()
+    coursework = Coursework(id=coursework_id, name="Test coursework", description="Test description", unit_id=unit_id, due_date=datetime.today() + timedelta(days=365), colour="abcdef")
+    session.add(coursework)
+    session.commit()
+    return coursework
 
 def create_unit_with_programme(session) -> UUID:
     programme = Programme(id=uuid4(), name="Test Programme",start_date=datetime.now(), end_date=datetime.today() + timedelta(days=365))
@@ -21,61 +52,3 @@ def create_unit_with_programme(session) -> UUID:
 
     return unit_id
 
-
-
-# @pytest.fixture
-# def programme(session):
-#     programme = Programme(id=uuid4(), name="Test Programme", start_date=datetime.now(),
-#                          end_date=datetime.today() + timedelta(days=365))
-#     session.add(programme)
-#     session.commit()
-#     session.refresh(programme)
-#     return programme
-
-# @pytest.mark.parametrize("name,expected", [
-#     ("", pytest.raises(ValidationError)),
-#     ("a", does_not_raise()),
-#     ("a" * 10, does_not_raise()),
-#     ("b" * 72, does_not_raise()),
-#     ("a" * 2345, pytest.raises(ValidationError)),
-# ],
-#                          ids=["empty", "length 1", "length 10", "length 72", "length too high"])
-# def test_create_unit_with_name(name, expected, programme):
-#     with expected:
-#         UnitCreate(name=name, description="test", unit_code="aaaaa", colour="abcdef", programme_id=programme.id)
-
-# @pytest.mark.parametrize("description,expected", [
-#     ("", pytest.raises(ValidationError)),
-#     ("a", does_not_raise()),
-#     ("a" * 10, does_not_raise()),
-#     ("b" * 2000, does_not_raise()),
-#     ("a" * 2345, pytest.raises(ValidationError)),
-# ],
-#                          ids=["empty", "length 1", "length 10", "length 2000", "length too high"])
-# def test_create_unit_with_description(description, expected, programme):
-#     with expected:
-#         UnitCreate(name="name", description=description, unit_code="aaaaa", colour="abcdef", programme_id=programme.id)
-
-# @pytest.mark.parametrize("code,expected", [
-#     ("", pytest.raises(ValidationError)),
-#     ("a", does_not_raise()),
-#     ("a" * 10, does_not_raise()),
-#     ("b" * 100, does_not_raise()),
-#     ("a" * 2345, pytest.raises(ValidationError)),
-# ],
-#                          ids=["empty", "length 1", "length 10", "length 100", "length too high"])
-# def test_create_unit_with_code(code, expected, programme):
-#     with expected:
-#         UnitCreate(name="name", description="test", unit_code=code, colour="abcdef", programme_id=programme.id)
-
-# @pytest.mark.parametrize("colour,expected", [
-#     ("", pytest.raises(ValidationError)),
-#     ("a", pytest.raises(ValidationError)),
-#     ("12cc34", does_not_raise()),
-#     ("abcdef", does_not_raise()),
-#     ("afbadsf" * 100, pytest.raises(ValidationError))
-# ],
-#                          ids=["empty", "a", "12cc34", "abcdef", "length too high"])
-# def test_create_unit_with_colour(colour, expected, programme):
-#     with expected:
-#         UnitCreate(name="name", description="test", unit_code="abcdef", colour=colour, programme_id=programme.id)

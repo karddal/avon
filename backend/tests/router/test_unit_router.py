@@ -1,15 +1,11 @@
 
-import pytest
-from pydantic import ValidationError
-from sqlmodel import SQLModel, Session, create_engine, select
-from uuid import uuid4, UUID
+from uuid import uuid4
+from sqlmodel import select
 from datetime import datetime, timedelta
-from contextlib import nullcontext as does_not_raise
 from app.models.coursework import Coursework
 from app.models.programme import Programme
 from app.models.unit import Unit
 from app.models.unit_enrollment import UnitEnrollment
-from app.schemas.unit import UnitCreate
 
 
 def create_programme(session) -> Programme:
