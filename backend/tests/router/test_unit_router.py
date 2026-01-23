@@ -114,7 +114,7 @@ def test_create_same_unit_twice(client, session):
     programme = create_programme(session)
     payload = valid_unit_payload(str(programme.id))
 
-    response1 = client.post("/units/create", json=payload)
+    client.post("/units/create", json=payload)
     response2 = client.post("/units/create", json=payload)
     assert response2.status_code == 400
     # response2 = client.post("")
@@ -216,7 +216,7 @@ def test_get_units_taken_by_student(client, session):
 def test_get_courseworks_in_a_unit(client, session):
     programme = create_programme(session)
     unit = create_unit(session, programme.id)
-    coursework = create_coursework(session, unit.id)
+    create_coursework(session, unit.id)
     response = client.get("/units/"+str(unit.id)+"/courseworks")
     data = response.json()
 

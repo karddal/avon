@@ -111,7 +111,7 @@ def test_me_courseworks(session, client):
     data = response.json()
     assert data[0]["courseworks"][0]["name"] == coursework.name
     
-def test_me_courseworks(session, client):
+def test_me_active_courseworks(session, client):
     programme = create_programme(session)
     unit = create_unit(session, programme.id)
     coursework = create_coursework(session, unit.id)
@@ -124,7 +124,7 @@ def test_me_courseworks(session, client):
     assert response.status_code == 200
     
     data = response.json()
-    assert data[0]["courseworks"][0]["name"] == coursework.name
+    assert data[0]["name"] == coursework.name
     
 
 
