@@ -11,7 +11,6 @@ import { HexColorInput, HexColorPicker } from "react-colorful";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
-import { Calendar29 } from "@/components/calendar";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,6 +36,7 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { multistep_coursework_flow } from "./multistep_coursework_flow";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface FormProps {
     slug: Promise<{ slug: string }>;
@@ -47,8 +47,6 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
     const [showAlert, setShowAlert] = useState<boolean>(false);
     const [alertText, setAlertText] = useState<string>("");
     const { step, setStep, next } = multistep_coursework_flow();
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear()
 
     async function loadSlug(): Promise<string> {
         const s = await slug;
@@ -63,10 +61,8 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
         description: z.string().min(2, {
             message: "Description must be at least 2 characters.",
         }),
+        programme: z.string(),
         color: z.string(),
-        // startYear: z.number().int().gte(currentYear, { message: "Can't create units for previous years" }).lte(currentYear + 4, { message: "Can't create units for that far ahead" }),
-        // endYear: z.number().int().gte(currentYear, { message: "End date can't be before creation date" }).lte(currentYear + 4, { message: "Can't create units for that far ahead" })
-        // }).refine((data) => data.endYear >= data.startYear, { message: "End date can't be greater than start date", path: ["endYear"] }
     });
 
     const formVariants = {
@@ -95,6 +91,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
         defaultValues: {
             name: "",
             description: "",
+            programme: "",
             color: "#abcdef",
         },
     });
@@ -142,6 +139,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
 
     const name = form.watch("name");
     const description = form.watch("description");
+    const programme = form.watch("programme")
     const colour = form.watch("color");
     return (
         <div className="flex flex-1 flex-row gap-4 px-4 sm:justify-center sm:align-center sm:items-center">
@@ -256,7 +254,33 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                                                 )}
                                             />
                                             {/* Select the programme it's part off */}
-
+                                            <Controller
+                                                name={"programme"}
+                                                control={form.control}
+                                                render={({ field, fieldState }) => (
+                                                    <Field data-invalid={fieldState.invalid}>
+                                                        <FieldLabel htmlFor={"form-flow-description"}>
+                                                            Select the programme the unit is part off
+                                                        </FieldLabel>
+                                                        <Select>
+                                                            <SelectTrigger className="w-full max-w-48">
+                                                                <SelectValue placeholder="Select Programme" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectGroup>
+                                                                    {/* <SelectLabel></SelectLabel> */}
+                                                                    <SelectItem value="programme1">Y1</SelectItem>
+                                                                    <SelectItem value="programme2">Y2</SelectItem>
+                                                                    <SelectItem value="programme3">Y3</SelectItem>
+                                                                </SelectGroup>
+                                                            </SelectContent>
+                                                        </Select>
+                                                        {fieldState.invalid && (
+                                                            <FieldError errors={[fieldState.error]} />
+                                                        )}
+                                                    </Field>
+                                                )}
+                                            />
 
                                             <Button
                                                 type={"button"}
