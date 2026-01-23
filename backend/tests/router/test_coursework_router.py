@@ -11,6 +11,19 @@ from app.models.programme import Programme
 from app.models.unit_enrollment import UnitEnrollment
 from tests.helpers.factories import create_unit
 
+
+# Helper Funcs:
+def create_unit_with_programme(session) -> UUID:
+    programme = Programme(id=uuid4(), name="Test Programme",start_date=datetime.now(), end_date=datetime.today() + timedelta(days=365))
+    session.add(programme)
+    session.commit()
+    unit_id = uuid4()
+    unit = Unit(id=unit_id, name="Test Unit", description="Test description", unit_code="COMS20017", colour="abcdef", programme_id=programme.id,)
+    session.add(unit)
+    session.commit()
+
+    return unit_id
+
 def coursework_payload(unit_id):
     return {
         "name": "Haskell 2",
