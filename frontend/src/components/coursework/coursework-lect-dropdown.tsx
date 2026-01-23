@@ -44,7 +44,7 @@ export default function CourseworkLectDropdown({
   _me: string;
   coursework_update_data: CourseworkUpdateData;
 }) {
-  const [_showMembers, _setShowMembers] = useState(false);
+  // const [_showMembers, _setShowMembers] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
 

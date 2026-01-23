@@ -112,7 +112,7 @@ export default function EditCoursework({
     };
     await update_coursework(req).then((r) => {
       if (!r.success) {
-        console.log(r.data.detail);
+        // console.log(r.data.detail);
         setAlertText(
           "An unknown error occurred. Your changes haven't been saved.",
         );
@@ -125,10 +125,7 @@ export default function EditCoursework({
       }
     });
   }
-  const _name = form.watch("name");
-  const _description = form.watch("description");
   const colour = form.watch("color");
-  const _due_date = form.watch("due_date");
 
   return (
     <Sheet open={open_state} onOpenChange={set_open_state}>
