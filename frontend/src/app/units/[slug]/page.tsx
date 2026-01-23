@@ -97,7 +97,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
                     <Button asChild variant={"outline"} size={"sm"}>
                       <Link
                         href={{
-                          pathname: `/units/${slug}/create`,
+                          pathname: `/units/${slug}/create-coursework`,
                         }}
                       >
                         <ClipboardPlus />
@@ -131,6 +131,8 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
 
         {/* Right column */}
         <div className="flex flex-col xl:col-span-1 lg:col-span-2 gap-4 min-h-0">
+          {/* Create a coursework*/}
+
           {/* Unit Staff */}
           <DropdownCard
             openByDefault={true}
@@ -166,8 +168,8 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
               </Card>
             ))}
           </DropdownCard>
-        </div>
-      </section>
+        </div >
+      </section >
     </>
   );
 }
