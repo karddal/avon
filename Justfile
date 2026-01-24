@@ -46,15 +46,15 @@ test-be:
 	@echo "Testing backend routers..."
 	uv run pytest -v
 
-run-fe env := "dev":
+run-fe env = "dev":
     npm run {{env}}
 
 [windows]
-run-be env := "dev":
+run-be env = "dev":
     $env:ENV="{{env}}"; uv run fastapi dev
 
 [unix]
-run-be env := "dev":
+run-be env = "dev":
     ENV={{env}} uv run fastapi dev
 
 sync-fe:
