@@ -22,7 +22,9 @@
   - [Sprint 1](meetings/sprint1/README.md)
     - [08-01-2026 Sprint 1 initial meeting and retrospective](meetings/sprint1/08-01-2025-team.md)
   - [Sprint 2](meetings/sprint2/README.md)
-    - [19-01-2026 Sprint 2 initial meeting](meetings/sprint2/19-01-2025-team.md)
+    - [19-01-2026 Sprint 2 Initial meeting](meetings/sprint2/19-01-2025-team.md)
+    - [21-01-2026 Sprint 2 Mentor meeting](meetings/sprint2/21-01-2025-team.md)
+    - [23-01-2026 Sprint 2 Review](meetings/sprint2/23-01-2025-team.md)
 
 # Developer documentation
 
