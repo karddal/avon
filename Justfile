@@ -39,19 +39,22 @@ fixit:
     just fe fix
     just be fix
 
+build-fe:
+    npm run build
+
 test-be:
 	@echo "Testing backend routers..."
 	uv run pytest -v
 
-run-fe:
-    npm run dev
+run-fe env := "dev":
+    npm run {{env}}
 
 [windows]
-run-be env:
+run-be env := "dev":
     $env:ENV="{{env}}"; uv run fastapi dev
 
 [unix]
-run-be env:
+run-be env := "dev":
     ENV={{env}} uv run fastapi dev
 
 sync-fe:

@@ -40,12 +40,24 @@ The tables below list the available commands for each target.
 
 ### Frontend Commands
 
-| Command         | Purpose                           |
-|-----------------|-----------------------------------|
-| `just fe run`   | Runs the frontend                 |
-| `just fe sync`  | Download and install dependencies |
-| `just fe fix`   | Fixes issues                      |
-| `just fe check` | Runs linter                       |
+| Command             | Purpose                           |
+|---------------------|-----------------------------------|
+| `just fe run <env>` | Runs the frontend                 |
+| `just fe sync`      | Download and install dependencies |
+| `just fe fix`       | Fixes issues                      |
+| `just fe check`     | Runs linter                       |
+| `just fe build`     | Build for production              |
+
+#### Environment Options
+
+The `<env>` parameter specifies which environment to run the frontend in.
+
+If omitted, it defaults to `dev`.
+
+| Value   | Description             |
+|---------|-------------------------|
+| `dev`   | Development environment |
+| `start` | Production environment  |
 
 ---
 
@@ -62,6 +74,8 @@ The tables below list the available commands for each target.
 #### Environment Options
 
 The `<env>` parameter specifies which environment to run the backend in.
+
+If omitted, it defaults to `dev`.
 
 | Value     | Description               |
 |-----------|---------------------------|
