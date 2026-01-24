@@ -38,6 +38,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { multistep_coursework_flow } from "./multistep_coursework_flow";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UUID } from "node:crypto";
+import { fi } from "date-fns/locale";
 
 interface FormProps {
     slug: Promise<{ slug: string }>;
@@ -55,7 +56,8 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
     const [showAlert, setShowAlert] = useState<boolean>(false);
     const [alertText, setAlertText] = useState<string>("");
     const { step, setStep, next } = multistep_coursework_flow();
-    const [programmes, setProgrammes] = useState<Programme[]>([])
+    const [programmes, setProgrammes] = useState<Programme[]>([]);
+    const [programmeName, setProgrammeName] = useState<string>("");
 
     useEffect(() => {
         async function loadProgrammes() {
@@ -95,6 +97,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
             message: "Description must be at least 2 characters.",
         }),
         programme: z.string(),
+        unitCode: z.string(),
         color: z.string(),
     });
 
@@ -292,10 +295,21 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                                                 control={form.control}
                                                 render={({ field, fieldState }) => (
                                                     <Field data-invalid={fieldState.invalid}>
-                                                        <FieldLabel htmlFor={"form-flow-description"}>
+                                                        <FieldLabel htmlFor={"form-flow-programme"}>
                                                             Select the programme the unit is part off
                                                         </FieldLabel>
-                                                        <Select>
+
+                                                        <Select
+                                                            value={field.value}
+                                                            onValueChange={(value) => {
+                                                                field.onChange(value)
+                                                                const selectedProgramme = programmes.find(p => value === p.id)
+                                                                if (selectedProgramme) {
+                                                                    setProgrammeName(selectedProgramme.name)
+                                                                }
+                                                            }}
+                                                        >
+
                                                             <SelectTrigger className="w-full max-w-48">
                                                                 <SelectValue placeholder="Select Programme" />
                                                             </SelectTrigger>
@@ -303,8 +317,10 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                                                                 <SelectGroup>
                                                                     {
                                                                         programmes.map((programme, key) => <SelectItem key={key} value={programme.id}>{programme.name}</SelectItem>)
+
                                                                     }
                                                                 </SelectGroup>
+
                                                             </SelectContent>
                                                         </Select>
                                                         {fieldState.invalid && (
@@ -319,7 +335,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                                                 variant={"outline"}
                                                 onClick={() => {
                                                     form
-                                                        .trigger(["name", "description"])
+                                                        .trigger(["name", "description", "programme"])
                                                         .then((_result) => {
                                                             if (form.formState.isValid) {
                                                                 next();
@@ -489,6 +505,10 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                                                         <ItemTitle>Unit description</ItemTitle>
                                                         <ItemDescription>
                                                             {description ? description : "Not provided."}
+                                                        </ItemDescription>
+                                                        <ItemTitle>Programme</ItemTitle>
+                                                        <ItemDescription>
+                                                            {programme ? programmeName : "Not provided."}
                                                         </ItemDescription>
                                                         <ItemTitle>Colour</ItemTitle>
                                                         <ItemDescription>{colour}</ItemDescription>
