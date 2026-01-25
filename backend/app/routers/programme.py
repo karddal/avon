@@ -1,8 +1,7 @@
-from select import select
 from typing import Annotated
 from fastapi import APIRouter, Depends, status
 from app.db.session import SessionDep, get_session
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from app.models.programme import Programme
 from app.schemas.programme import ProgrammeCreate, ProgrammeRead
@@ -27,6 +26,8 @@ async def create_programme(programme: ProgrammeCreate, session: session_dependen
 
 @router.get("/all", response_model=list[ProgrammeRead])
 async def list_programmes(session: session_dependency):
-    programmes = session.exec(select(Programme)).all()
+    statement = select(Programme)
+    programmes = session.exec(statement).all()
     return programmes
+
 

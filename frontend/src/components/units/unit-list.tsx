@@ -2,7 +2,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Unit from "@/components/units/unit";
-import { getRequestJWT } from "@/lib/auth-utils";
+import { getRequestJWT, requireSession } from "@/lib/auth-utils";
 
 export type UnitData = {
   id: string;
@@ -29,8 +29,12 @@ export default async function UnitList() {
   // place unit data into tabs based on year
   const token = await getRequestJWT();
 
+  const s = await requireSession();
+  const role = s.user.role;
+  const hasPermissions = role === "admin";
+  const user = hasPermissions ? "units" : "me";
   const data = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/me/units-by-programme`,
+    `${process.env.NEXT_PUBLIC_API_URL}/${user}/units-by-programme`,
     {
       method: "GET",
       headers: {

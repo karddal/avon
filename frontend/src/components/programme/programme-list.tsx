@@ -18,10 +18,12 @@ type ProgrammeData = {
   end_date: string;
 };
 
-export default async function CourseworkList({
+export default async function ProgrammeList({
   finished,
+  upcoming,
 }: {
   finished: boolean;
+  upcoming: boolean;
 }) {
   const token = await getRequestJWT();
   const s = await requireAdminSession();
@@ -49,6 +51,9 @@ export default async function CourseworkList({
 
     const isActive = now >= created && now <= due;
 
+    if (upcoming) {
+        return now < created;
+    }
     if (finished) {
       return now > due;
     }
@@ -64,9 +69,9 @@ export default async function CourseworkList({
             <EmptyMedia variant="icon">
               <BookDashed className="text-muted-foreground/50" />
             </EmptyMedia>
-            <EmptyTitle>No coursework found</EmptyTitle>
+            <EmptyTitle>No Programmes found</EmptyTitle>
             <EmptyDescription>
-              We couldn't find any courseworks that you are connected to.
+              We couldn't find any programmes that you are connected to.
             </EmptyDescription>
           </EmptyHeader>
         </Empty>

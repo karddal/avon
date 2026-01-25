@@ -68,8 +68,7 @@ export const ProgForm = () => {
         .min(1, { message: "Name must be at least 1 character." })
         .max(100, { message: "Name must be at most 100 characters." }),
       start_date: z
-        .date()
-        .min(today, { message: `Start date must be in the future.` }),
+        .date(),
       end_date: z
         .date()
         .min(today, { message: `End date must be in the future.` }),
@@ -104,7 +103,7 @@ export const ProgForm = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      start_date: new Date(new Date(today).setDate(today.getDate() + 1)),
+      start_date: new Date(new Date(today).setDate(today.getDate())),
       end_date: new Date(new Date(today).setDate(today.getDate() + 365)),
     },
   });
