@@ -64,7 +64,7 @@ export default async function UnitListByYear({
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-1 gap-4 overflow-y-auto">
+    <div className="grid grid-cols-1 lg:grid-cols-1 gap-4 overflow-y-scroll h-48">
       {unitsArray.map((unit: UnitData) => (
         <Unit key={unit.id} props={unit} />
       ))}

@@ -41,8 +41,7 @@ export default function Coursework({
   console.log(props);
   return (
     <div>
-      <Card className="bg-muted h-full flex flex-row p-2 hover:bg-foreground/10">
-        <Link className={"flex-1 h-full"} href={`/coursework/${props.id}`}>
+      <Card className="bg-muted h-full justify-between flex-1 flex flex-row p-2 hover:bg-foreground/10">
           <div className="h-full flex-row justify-between">
             <div className="flex flex-col">
               <p className="text-lg lg:text-xl">{props.name}</p>
@@ -58,7 +57,6 @@ export default function Coursework({
               </p>
             </div>
           </div>
-        </Link>
         {hasPermissions && (
           <div className={"z-20 place-self-end"}>
             <DropdownMenu>
