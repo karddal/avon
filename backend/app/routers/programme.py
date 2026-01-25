@@ -6,6 +6,12 @@ from uuid import UUID
 
 from app.models.programme import Programme
 from app.schemas.programme import ProgrammeCreate, ProgrammeRead, ProgrammeDelete, ProgrammeUpdate
+from fastapi import APIRouter, Depends, status
+from app.db.session import get_session
+from sqlmodel import Session
+
+from app.models.programme import Programme
+from app.schemas.programme import ProgrammeCreate, ProgrammeRead
 
 router = APIRouter(prefix="/programmes", tags=["programmes"])
 session_dependency = Annotated[Session, Depends(get_session)]
