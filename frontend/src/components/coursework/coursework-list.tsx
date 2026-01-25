@@ -37,8 +37,9 @@ export default async function CourseworkList({
   const s = await requireSession();
   const role = s.user.role;
   const hasPermissions = role === "admin" || role === "lecturer";
+  const route = role === "admin" ? "coursework/all" : "me/courseworks";
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/me/courseworks`,
+    `${process.env.NEXT_PUBLIC_API_URL}/${route}`,
     {
       method: "GET",
       headers: {

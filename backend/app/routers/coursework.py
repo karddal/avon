@@ -1,3 +1,5 @@
+from sqlalchemy.orm import selectinload
+from app.models.unit_enrollment import UnitEnrollment
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 from app.db.session import get_session
@@ -5,7 +7,7 @@ from typing import Annotated
 from uuid import UUID
 
 from app.models.coursework import Coursework
-from app.models.unit import Unit
+from app.models.unit import Unit, UnitWithCourseworks
 from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkUpdate, CourseworkDelete
 
 router = APIRouter(prefix = "/coursework", tags=["coursework"])
@@ -30,6 +32,33 @@ async def create_coursework(coursework: CourseworkCreate, session: session_depen
     session.commit()
     session.refresh(db_coursework)
     return db_coursework
+
+@router.get("/all")
+async def all_courseworks(session: session_dependency):
+    statement = (
+        select(Unit)
+        .options(
+            selectinload(Unit.courseworks),
+            selectinload(Unit.programme),
+        )
+    )
+
+    units = session.exec(statement).all()
+
+    results = [
+        UnitWithCourseworks(
+            id=unit.id,
+            unit_code=unit.unit_code,
+            name=unit.name,
+            programme_start_date=unit.programme.start_date,
+            programme_end_date=unit.programme.end_date,
+            courseworks=unit.courseworks,
+        ).model_dump()
+        for unit in units
+    ]
+
+    return results
+
 
 @router.get('/{id}', response_model = CourseworkRead)
 async def get_coursework(id: UUID, session: session_dependency):
