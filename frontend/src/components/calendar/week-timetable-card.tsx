@@ -35,10 +35,18 @@ export function WeeklyTimeTableCard(
         setToday(format(new Date(), "yyyy-MM-dd"));
     }, []);
 
+    const isMobile = useMediaQuery("(max-width: 640px)");
+    const visibleDays = useMemo(() => {
+        if (!isMobile) return days;
+
+        const inWeek = days.find((d) => format(d, "yyyy-MM-dd") === today);
+        return [inWeek ?? days[0]];
+    }, [isMobile, days]);
+
     return (
         <Card className="w-full">
             <CardContent className="p-0">
-                <TimeGridBody days={days} events={events} today={today} />
+                <TimeGridBody days={visibleDays} events={events} today={today} />
             </CardContent>
         </Card>
     )
@@ -78,13 +86,29 @@ function TimeGridBody(
     const {now, top: nowTop} = useNowIndicator(pxPerMinute);
     const showNow = !!today && days.some((d) => format(d, "yyyy-MM-dd") === today);
     const scrollRef = useRef<HTMLDivElement>(null);
+    const gridRef = useRef<HTMLDivElement>(null);
     useScrollToNowCenter(scrollRef, nowTop, dayHeight, mounted && showNow && nowTop >= 0 && nowTop <= dayHeight)
+    const maxCols = useMaxCols({
+        gridRef,
+        gutterWidth,
+        daysCount: days.length,
+        minColPx: 160,
+        maxColsCap: 3,
+    });
+    const { getEventsForKey } = useWeeklyEvents({
+        days,
+        eventsByDay: events,
+        pxPerMinute,
+        minEventHeightPx: 44,
+        sort: true,
+        maxCols
+    })
 
     return (
         <ScrollArea ref={scrollRef} className={cn("h-[70vh]")}>
             <WeekHeader days={days} today={today} gutterWidth={gutterWidth} />
             <div className="relative">
-                <div className="grid" style={{gridTemplateColumns}}>
+                <div ref={gridRef} className="grid" style={{gridTemplateColumns}}>
                     <div className="relative border-r bg-background">
                         <div style={{height : dayHeight}}>
                             {Array.from({length: 24}, (_, h) => (
@@ -112,6 +136,32 @@ function TimeGridBody(
                                  style={{height: dayHeight}}
                             >
                                 <div className="absolute inset-0" style={gridBackgroundStyle}/>
+
+                                {/* event */}
+                                {dayEvents.map(({event, top, height, leftPct, widthPct}) => {
+                                    return (
+                                        <div
+                                            key={event.id}
+                                            className={cn(
+                                                "absolute rounded-md border bg-card shadow-sm min-w-0 overflow-hidden",
+                                                "px-2 py-1 text-xs",
+                                                "sm:px-2 sm:py-1 sm:text-xs",
+                                                "px-1.5 py-1 text-[11px]"
+                                            )}
+                                            style={{
+                                                top, height,
+                                                left: `calc(${leftPct}% + 4px)`,
+                                                width: `calc(${widthPct}% - 8px)`
+                                            }}
+                                            title={`${format(event.start, "HH:mm")} - ${format(event.end, "HH:mm")}`}
+                                        >
+                                            <div className="font-medium truncate leading-4">{event.title}</div>
+                                            <div className="text-muted-foreground truncate leading-4">
+                                                {format(event.start, "HH:mm")} - {format(event.end, "HH:mm")}
+                                            </div>
+                                        </div>
+                                    )
+                                })}
                             </div>
                         )
                     })}
@@ -164,6 +214,52 @@ function WeekHeader(
     )
 }
 
+function useMaxCols(opts: {
+    gridRef: RefObject<HTMLDivElement | null>;
+    gutterWidth: number;
+    daysCount: number;
+    minColPx?: number;
+    maxColsCap?: number;
+}) {
+    const { gridRef, gutterWidth, daysCount, minColPx = 160, maxColsCap = 3 } = opts;
+    const [dayColPx, setDayColPx] = useState<number | null>(null);
+
+    useEffect(() => {
+        const element = gridRef.current;
+        if (!element) return;
+
+        const update = () => {
+            const width = element.getBoundingClientRect().width;
+            const px = Math.max(1, (width - gutterWidth) / Math.max(1, daysCount));
+            setDayColPx(px);
+        };
+
+        update();
+        const observer = new ResizeObserver(update);
+        observer.observe(element);
+        return () => observer.disconnect();
+    }, [gridRef, gutterWidth, daysCount]);
+
+    return useMemo(() => {
+        // dayColPx / minColPx: how many readable columns can fit
+        const byWidth = dayColPx ? Math.floor(dayColPx / minColPx) : maxColsCap;
+        return Math.min(maxColsCap, Math.max(1, byWidth));
+    }, [dayColPx, minColPx, maxColsCap]);
+}
+
+function useMediaQuery(query: string) {
+    const [matches, setMatches] = useState(false);
+    useEffect(() => {
+        const media = window.matchMedia(query);
+        const onChange = () => setMatches(media.matches)
+        onChange()
+        media.addEventListener("change", onChange)
+        return () => media.removeEventListener?.("change", onChange)
+    }, [query])
+
+    return matches
+}
+
 function useScrollToNowCenter<T extends HTMLElement>(ref: RefObject<T | null>, y: number, dayHeight: number, enabled: boolean) {
     const done = useRef(false)
     useEffect(() => {
@@ -174,7 +270,7 @@ function useScrollToNowCenter<T extends HTMLElement>(ref: RefObject<T | null>, y
         const max = Math.max(0, dayHeight - viewport.clientHeight)
         viewport.scrollTop = Math.min(target, max)
         done.current = true;
-    }, [ref, y, enabled])
+    }, [ref, y, dayHeight, enabled])
 }
 
 function minutesSinceMidnight(date: Date) {
@@ -240,6 +336,152 @@ export function useNowIndicator(pxPerMinute: number) {
     }, [now, pxPerMinute])
 
     return { now, top };
+}
+
+type LayoutedEvent = {
+    event: CalendarEvent;
+    top: number; // Y position in pixels from top of the day column
+    height: number; // Event block height in pixels
+    colIndex: number; // Column index inside its overlap group
+    colCount: number; // Total columns in this overlap group
+    leftPct: number; // Left offset in % (0–100)
+    widthPct: number; // Width in % (0–100)
+    hidden?: boolean;
+};
+
+function useWeeklyEvents(
+    {
+        days,
+        eventsByDay,
+        pxPerMinute,
+        minEventHeightPx = 44,
+        sort = true,
+        maxCols,
+    } : {
+        days: Date[];
+        eventsByDay: Map<string, CalendarEvent[]> | null;
+        pxPerMinute: number;
+        minEventHeightPx?: number;
+        sort?: boolean;
+        maxCols: number;
+    }): { getEventsForKey: (key: string) => (LayoutedEvent[]) } {
+    return useMemo(() => {
+        const events = eventsByDay ?? new Map<string, CalendarEvent[]>()
+        const dayKeys = new Set(days.map((date) => format(date, "yyyy-MM-dd")))
+
+        // convert an event into pixel-based layout data
+        const getEventBox = (event: CalendarEvent) => {
+            const startM = minutesSinceMidnightNoSeconds(event.start);
+            const endM = minutesSinceMidnightNoSeconds(event.end);
+            const top = startM * pxPerMinute;
+            const height = Math.max(minEventHeightPx, (endM-startM) * pxPerMinute);
+            return { startM, endM, top, height };
+        }
+
+        // layout all events for a day
+        const layoutDay = (list: CalendarEvent[]): LayoutedEvent[] => {
+            if (!list.length) return [];
+
+            const base = sort
+                ? [...list].sort((a, b) => a.start.getTime() - b.start.getTime())
+                : [...list];
+
+            const items = base.map(
+                (event) => {
+                    const box = getEventBox(event);
+                    return {event, ...box}
+            })
+
+            // final output data
+            const layoutMap = new Map<string, LayoutedEvent>()
+
+            // currently active(possible overlapping) events
+            let active: Array<{event: CalendarEvent; endM: number; colIndex: number}> = []
+
+            let groupIds: string[] = []
+            let groupMaxCols = 0
+
+            // assign width or left percentage based on how many columns needed
+            const flushGroup = () => {
+                if (!groupIds.length) return
+
+                const realCols = Math.max(1, groupMaxCols)
+                const visibleCols = Math.min(realCols, maxCols)
+                const widthPct = 100 / visibleCols
+
+                for (const id of groupIds) {
+                    const layout = layoutMap.get(id)
+                    if (!layout) continue
+
+                    const hidden = layout.colIndex >= maxCols
+                    const cappedIndex = Math.min(layout.colIndex, maxCols - 1)
+                    layoutMap.set(id, {...layout, hidden, colCount: visibleCols, widthPct, leftPct: cappedIndex * widthPct})
+                }
+                groupIds = []
+                groupMaxCols = 0
+            }
+
+            // remove events that no longer overlap in the current start time
+            const removeEnded = (startM: number) => {
+                active = active.filter(
+                    (activeEvent) => activeEvent.endM > startM
+                )
+            }
+
+            const getUsedCols = () => new Set(active.map(
+                (activeEvent) => activeEvent.colIndex)
+            )
+
+            for (const item of items) {
+                if (active.length > 0) {
+                    const earliestEnd = Math.min(...active.map((activeEvent) => activeEvent.endM))
+                    if (item.startM >= earliestEnd) {
+                        removeEnded(item.startM)
+                        if (active.length === 0) flushGroup()
+                    }
+                }
+                removeEnded(item.startM)
+
+                const used = getUsedCols()
+                let colIndex = 0
+                while (used.has(colIndex)) colIndex++
+
+                if (active.length === 0) {
+                    groupIds = []
+                    groupMaxCols = 0
+                }
+
+                const base: LayoutedEvent = {
+                    event: item.event,
+                    top: item.top,
+                    height: item.height,
+                    colIndex,
+                    colCount: 1,
+                    leftPct: 0,
+                    widthPct: 100,
+                }
+
+                layoutMap.set(item.event.id, base)
+                active.push({event: item.event, endM: item.endM, colIndex})
+                groupIds.push(item.event.id)
+
+                groupMaxCols = Math.max(groupMaxCols, active.length)
+            }
+
+            flushGroup()
+
+            return items.map((candidate) => layoutMap.get(candidate.event.id)!).filter(Boolean)
+        }
+
+        const getEventsForKey = (key: string) => {
+            if (!dayKeys.has(key)) return [] as LayoutedEvent[];
+            const list = events.get(key) ?? []
+            return layoutDay(list)
+        }
+
+
+        return {getEventsForKey}
+    }, [days, eventsByDay, pxPerMinute, minEventHeightPx, sort]);
 }
 
 type TimeGridOptions = {
