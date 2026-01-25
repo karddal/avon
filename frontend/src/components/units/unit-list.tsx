@@ -25,7 +25,7 @@ type ProgrammesResponse = {
   programmes: Programme[];
 };
 
-export default async function UnitList() {
+export default async function UnitList({finished}: {finished: boolean}) {
   // place unit data into tabs based on year
   const token = await getRequestJWT();
 
@@ -44,7 +44,21 @@ export default async function UnitList() {
     },
   );
   const unitData: ProgrammesResponse = await data.json();
-  const programmes = unitData.programmes;
+  const programmeListData = unitData.programmes;
+  const now = new Date();
+
+  const programmes = programmeListData.filter((programme) => {
+    const created = new Date(programme.start_date);
+    const due = new Date(programme.end_date);
+
+    const isActive = now >= created && now <= due;
+
+    if (finished) {
+      return now > due;
+    }
+
+    return isActive;
+  });
   console.log(unitData);
   // const filtered = await getData(currentYear, finished)
   const d = programmes.at(0)?.id ?? "0";

@@ -45,7 +45,7 @@ export default async function ProgrammeList({
   const now = new Date();
 
 
-  const filteredCourseworks = programmeListData.filter((programme) => {
+  const filteredProgrammes = programmeListData.filter((programme) => {
     const created = new Date(programme.start_date);
     const due = new Date(programme.end_date);
 
@@ -63,7 +63,7 @@ export default async function ProgrammeList({
 
   return (
     <>
-      {filteredCourseworks.length === 0 && (
+      {filteredProgrammes.length === 0 && (
         <Empty className="border-dashed border-2 bg-muted/20 py-12">
           <EmptyHeader>
             <EmptyMedia variant="icon">
@@ -76,19 +76,21 @@ export default async function ProgrammeList({
           </EmptyHeader>
         </Empty>
       )}
-      {filteredCourseworks.length > 0 && (
+      {filteredProgrammes.length > 0 && (
         <>
-            {filteredCourseworks.map((programme) => (
-            <Programme
-                key={programme.id}
-                hasPermissions={hasPermissions}
-                props={{
-                id: programme.id,
-                name: programme.name,
-                start_date: programme.start_date,
-                end_date: programme.end_date,
-                }}
-            />
+            {filteredProgrammes.map((programme) => (
+              <div className={"mb-3"} key={programme.id}>
+                <Programme
+                  key={programme.id}
+                  hasPermissions={hasPermissions}
+                  props={{
+                  id: programme.id,
+                  name: programme.name,
+                  start_date: programme.start_date,
+                  end_date: programme.end_date,
+                  }}
+                />
+              </div>
             ))}
         </>
       )}
