@@ -16,6 +16,7 @@ import { get_user_image_from_id } from "@/lib/actions/get_image";
 import { get_lecturers } from "@/lib/actions/get_lecturers";
 import { get_username_from_id } from "@/lib/actions/get_username";
 import { remove_user_enrollment } from "@/lib/actions/remove_user_enrollment";
+import { requireSession } from "@/lib/auth-utils";
 
 type lecturerInfo = {
   id: string;
@@ -33,6 +34,7 @@ export default function lecturerList({
   const [lecturers, setlecturers] = useState<lecturerInfo[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState<string | null | undefined>();
 
   async function handleDelete(id: string) {
     const result = await remove_user_enrollment(unit_id, id);
@@ -45,6 +47,9 @@ export default function lecturerList({
   }
 
   const loadlecturers = useCallback(async () => {
+    const s = await requireSession();
+    const role = s.user.role;
+    setRole(role);
     try {
       const data = await get_lecturers(unit_id);
       const lecturerIds = data.lecturers;
@@ -125,7 +130,7 @@ export default function lecturerList({
                     <DropdownMenuItem
                       onClick={() => handleDelete(lecturer.id)}
                       className="text-destructive hover:text-destructive"
-                      disabled={lecturer.id === me}
+                      disabled={role !== "admin" || lecturer.id === me}
                     >
                       <X className="text-destructive hover:text-destructive"></X>
                       <p className="text-destructive hover:text-destructive">
