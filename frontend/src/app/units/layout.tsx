@@ -6,12 +6,16 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { requireSession } from "@/lib/auth-utils";
+import Link from "next/link";
 
 export default async function Layout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -26,6 +30,7 @@ export default async function Layout({
             <NotificationBar></NotificationBar>
           </div>
         </header>
+
         <div className="flex flex-1 flex-col gap-4 px-4 mt-4">{children}</div>
       </SidebarInset>
     </SidebarProvider>
