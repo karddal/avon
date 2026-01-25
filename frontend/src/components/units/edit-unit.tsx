@@ -25,7 +25,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-const Calendar29 = dynamic(
+const _Calendar29 = dynamic(
   () => import("@/components/calendar").then((mod) => mod.Calendar29),
   { ssr: false },
 );
