@@ -70,6 +70,12 @@ const adminItems = [
     icon: Layers,
     bottom: false,
   },
+    {
+        title: "Calendar",
+        url: "/calendar",
+        icon: Layers,
+        bottom: false,
+    },
 ];
 
 const lecturerItems = [
@@ -109,6 +115,12 @@ const lecturerItems = [
     icon: NotepadText,
     bottom: false,
   },
+    {
+        title: "Calendar",
+        url: "/calendar",
+        icon: Layers,
+        bottom: false,
+    },
 ];
 const studentItems = [
   {
@@ -129,6 +141,12 @@ const studentItems = [
     icon: Settings,
     bottom: true,
   },
+    {
+        title: "Calendar",
+        url: "/calendar",
+        icon: Layers,
+        bottom: false,
+    },
 ];
 
 export default async function AppSideBarContent() {
