@@ -1,3 +1,5 @@
+import uuid
+
 import pytest
 from sqlmodel import SQLModel, Session, create_engine, select
 from uuid import uuid4, UUID
@@ -9,6 +11,19 @@ from app.models.programme import Programme
 from app.models.unit_enrollment import UnitEnrollment
 from tests.helpers.factories import create_unit
 
+
+# Helper Funcs:
+def create_unit_with_programme(session) -> UUID:
+    programme = Programme(id=uuid4(), name="Test Programme",start_date=datetime.now(), end_date=datetime.today() + timedelta(days=365))
+    session.add(programme)
+    session.commit()
+    unit_id = uuid4()
+    unit = Unit(id=unit_id, name="Test Unit", description="Test description", unit_code="COMS20017", colour="abcdef", programme_id=programme.id,)
+    session.add(unit)
+    session.commit()
+
+    return unit_id
+
 def coursework_payload(unit_id):
     return {
         "name": "Haskell 2",
@@ -18,6 +33,14 @@ def coursework_payload(unit_id):
         "colour": "abcdef",
     }
 
+def coursework_updated_payload(unit_id):
+    return {
+        "name": "Updated",
+        "description": "updated",
+        "unit_id": str(unit_id),
+        "due_date": (datetime.now() + timedelta(days=12)).isoformat(),
+        "colour": "262626",
+    }
 
 # Each test uses a fresh database, as we use the memory version of SQLite for testing
 # CREATE:
@@ -166,3 +189,42 @@ def test_delete_coursework_not_found(client):
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Coursework not found"
+
+def test_update_coursework_works(client, session):
+    unit_id = create_unit_with_programme(session)
+
+    payload = coursework_payload(str(unit_id))
+    createResponse = client.post("/coursework/create", json=payload)
+    coursework_id = createResponse.json()["id"]
+
+    np = coursework_updated_payload(unit_id)
+    response = client.put(f"/coursework/{coursework_id}", json=np)
+    assert response.status_code == 200
+    assert response.json()["unit_id"] == str(unit_id)
+    assert response.json()["name"] == np["name"]
+    assert response.json()["description"] == np["description"]
+    assert response.json()["due_date"] == np["due_date"]
+    assert response.json()["colour"] == np["colour"]
+
+    id = uuid.UUID(response.json()["id"])
+    g = session.get(Coursework, id)
+    assert g.name == np["name"]
+
+def test_update_coursework_data(client, session):
+    unit_id = create_unit_with_programme(session)
+
+    np = coursework_payload(str(unit_id))
+    createResponse = client.post("/coursework/create", json=np)
+    coursework_id = createResponse.json()["id"]
+
+    response = client.get(f"/coursework/{coursework_id}/update_form_data")
+    assert response.status_code == 200
+    assert response.json()["unit_id"] == str(unit_id)
+    assert response.json()["name"] == response.json()["name"]
+    assert response.json()["description"] == response.json()["description"]
+    assert response.json()["due_date"] == response.json()["due_date"]
+    assert response.json()["colour"] == response.json()["colour"]
+
+    id = uuid.UUID(response.json()["id"])
+    g = session.get(Coursework, id)
+    assert g.name == np["name"]

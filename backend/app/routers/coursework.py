@@ -6,7 +6,8 @@ from uuid import UUID
 
 from app.models.coursework import Coursework
 from app.models.unit import Unit
-from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkUpdate, CourseworkDelete
+from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkUpdate, CourseworkDelete, \
+    CourseworkUpdateFormData
 
 router = APIRouter(prefix = "/coursework", tags=["coursework"])
 session_dependency = Annotated[Session, Depends(get_session)]
@@ -30,6 +31,25 @@ async def create_coursework(coursework: CourseworkCreate, session: session_depen
     session.commit()
     session.refresh(db_coursework)
     return db_coursework
+
+@router.get('/{id}/update_form_data', response_model=CourseworkUpdateFormData)
+async def get_coursework_update_form_data(id: UUID, session: session_dependency):
+    coursework = session.get(Coursework, id)
+    unit = coursework.unit
+
+    return CourseworkUpdateFormData(
+        id=coursework.id,
+        name=coursework.name,
+        description=coursework.description,
+        unit_id=unit.id,
+        due_date=coursework.due_date,
+        creation_date=coursework.creation_date,
+        colour=coursework.colour,
+        unit_name=unit.name,
+        unit_code=unit.unit_code,
+        max_end_date=unit.programme.end_date,
+    )
+
 
 @router.get('/{id}', response_model = CourseworkRead)
 async def get_coursework(id: UUID, session: session_dependency):
