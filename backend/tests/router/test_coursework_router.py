@@ -55,6 +55,20 @@ def test_coursework_create_duplicate(client, session):
     assert response.status_code == 400 # Error code if there is more than one of the same coursework
     assert "Coursework already made that belongs to the same unit and has the same name" == response.json()["detail"]
 
+def test_coursework_create_unit_empty_fields(client,session):
+    payload = {
+        "name": None,
+        "description": "Func language coursework in haskell",
+        "unit_id": None,  # Non-existent unit ID
+        "due_date": (datetime.now() + timedelta(days=11)).isoformat(),
+        "colour": None,
+    }
+
+    response = client.post("/coursework/create", json=payload)
+
+    assert response.status_code == 422
+
+    
 # GET:
 # Test getting coursework that exists, through response not database
 def test_get_coursework_success(client, session):
@@ -68,6 +82,16 @@ def test_get_coursework_success(client, session):
 
     assert response.status_code == 200
     assert response.json()["id"] == coursework_id
+
+def test_get_coursework_empty_fields(client, session):
+    unit_id = create_unit(session)
+
+    payload = coursework_payload(str(unit_id))
+    client.post("/coursework/create", json=payload)  # Need response to get the ID of the coursework
+
+    response = client.get("/coursework/")
+
+    assert response.status_code == 404
 
 # Test getting coursework that doesn't exist, through response not database
 def test_get_coursework_not_found(client):

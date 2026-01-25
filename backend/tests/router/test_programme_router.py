@@ -34,6 +34,26 @@ def test_programme_create_success(client, session):
     assert programme.start_date.isoformat() == payload["start_date"]
     assert programme.end_date.isoformat() == payload["end_date"]
 
+def test_programme_create_empty_name(client, session):
+    payload = {
+        "name": None,
+        "start_date": (date.today() + timedelta(days=1)).isoformat(),
+        "end_date": (date.today() + timedelta(days=365)).isoformat(),
+    }
+
+    response = client.post("/programmes/create", json=payload)
+
+    assert response.status_code == 422
+
+def test_programme_create_invalid_dates(client, session):
+    payload = {
+        "name": "Year 2 2025/2026",
+        "start_date": "invalid-date-format",
+        "end_date": (date.today() + timedelta(days=365)).isoformat(),
+    }
+    response = client.post("/programmes/create", json=payload)
+    assert response.status_code == 422
+
 # Test response when creating duplicate Programme with same name, not testing database
 def test_programme_create_duplicate(client, session):
     payload = programme_payload()

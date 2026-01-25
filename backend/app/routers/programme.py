@@ -50,7 +50,6 @@ async def delete_programme(id: UUID, session: session_dependency):
 @router.put('/{id}', response_model=ProgrammeRead)
 async def update_programme(id: UUID, programme: ProgrammeUpdate, session: session_dependency):
     programme_db = session.get(Programme, id)
-    print("beepbeep")
 
     if programme_db is None:
         raise HTTPException(status_code=404, detail='Programme not found')
