@@ -1,6 +1,6 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, status
-from app.db.session import SessionDep, get_session
+from app.db.session import get_session
 from sqlmodel import Session, select
 from uuid import UUID
 from fastapi import HTTPException

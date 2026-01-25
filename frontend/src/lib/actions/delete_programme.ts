@@ -5,17 +5,13 @@ type DeleteProgrammeRequest = {
   id: string;
 };
 
-type DeleteProgrammeResponse = {
-  success: boolean;
-};
-
 export async function delete_programme(req: DeleteProgrammeRequest) {
   "use server";
   const token = await getRequestJWT();
   console.log("current request");
   console.log(req);
   const data = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/programme/${req.id}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/programmes/${req.id}`,
     {
       method: "DELETE",
       headers: {

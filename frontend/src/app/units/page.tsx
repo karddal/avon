@@ -1,11 +1,9 @@
 "use server";
-
 import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UnitList from "@/components/units/unit-list";
 import { requireSession } from "@/lib/auth-utils";
-import { Tabs, TabsContent, TabsList, TabsTrigger, } from "@/components/ui/tabs";
-import { ClipboardPlus } from "lucide-react";
 
 async function PageContent() {
   await requireSession(); // make sure logged in
@@ -26,18 +24,18 @@ async function PageContent() {
 
         <TabsContent value="ongoing">
           <Suspense fallback={<Loading />}>
-            <UnitList finished={false}/>
+            <UnitList finished={false} />
           </Suspense>
         </TabsContent>
 
         <TabsContent value="finished">
           <Suspense fallback={<Loading />}>
-            <UnitList finished={true}/>
+            <UnitList finished={true} />
           </Suspense>
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
 
 export default async function UnitPage() {

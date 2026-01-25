@@ -1,7 +1,5 @@
 import { BookDashed } from "lucide-react";
-import Coursework from "@/components/coursework/coursework";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getRequestJWT, requireAdminSession, requireSession } from "@/lib/auth-utils";
+import { getRequestJWT, requireAdminSession } from "@/lib/auth-utils";
 import {
   Empty,
   EmptyDescription,
@@ -44,7 +42,6 @@ export default async function ProgrammeList({
 
   const now = new Date();
 
-
   const filteredProgrammes = programmeListData.filter((programme) => {
     const created = new Date(programme.start_date);
     const due = new Date(programme.end_date);
@@ -52,7 +49,7 @@ export default async function ProgrammeList({
     const isActive = now >= created && now <= due;
 
     if (upcoming) {
-        return now < created;
+      return now < created;
     }
     if (finished) {
       return now > due;
@@ -77,22 +74,22 @@ export default async function ProgrammeList({
         </Empty>
       )}
       {filteredProgrammes.length > 0 && (
-        <>
-            {filteredProgrammes.map((programme) => (
-              <div className={"mb-3"} key={programme.id}>
-                <Programme
-                  key={programme.id}
-                  hasPermissions={hasPermissions}
-                  props={{
+        <div>
+          {filteredProgrammes.map((programme) => (
+            <div className={"mb-3"} key={programme.id}>
+              <Programme
+                key={programme.id}
+                hasPermissions={hasPermissions}
+                props={{
                   id: programme.id,
                   name: programme.name,
                   start_date: programme.start_date,
                   end_date: programme.end_date,
-                  }}
-                />
-              </div>
-            ))}
-        </>
+                }}
+              />
+            </div>
+          ))}
+        </div>
       )}
     </>
   );

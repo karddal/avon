@@ -25,7 +25,7 @@ type ProgrammesResponse = {
   programmes: Programme[];
 };
 
-export default async function UnitList({finished}: {finished: boolean}) {
+export default async function UnitList({ finished }: { finished: boolean }) {
   // place unit data into tabs based on year
   const token = await getRequestJWT();
 

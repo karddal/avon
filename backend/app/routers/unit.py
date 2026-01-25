@@ -2,10 +2,8 @@ from datetime import date
 from typing import Annotated
 from uuid import UUID
 
-from app.core.security import get_current_user
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
-from sqlalchemy.orm import with_loader_criteria
 from sqlalchemy.orm.strategy_options import selectinload
 
 from app.db.session import get_session

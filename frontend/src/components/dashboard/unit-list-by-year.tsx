@@ -28,17 +28,14 @@ export default async function UnitListByYear({
   const s = await requireSession();
   const role = s.user.role;
   const route = role === "admin" ? "units/active" : "me/units/active";
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/${route}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      cache: "no-store",
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/${route}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
     },
-  );
+    cache: "no-store",
+  });
 
   if (!response.ok) {
     throw new Error(`Failed to fetch: ${response.statusText}`);

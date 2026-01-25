@@ -67,8 +67,7 @@ export const ProgForm = () => {
         .string()
         .min(1, { message: "Name must be at least 1 character." })
         .max(100, { message: "Name must be at most 100 characters." }),
-      start_date: z
-        .date(),
+      start_date: z.date(),
       end_date: z
         .date()
         .min(today, { message: `End date must be in the future.` }),

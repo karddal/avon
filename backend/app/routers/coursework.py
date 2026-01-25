@@ -1,5 +1,4 @@
 from sqlalchemy.orm import selectinload
-from app.models.unit_enrollment import UnitEnrollment
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 from app.db.session import get_session

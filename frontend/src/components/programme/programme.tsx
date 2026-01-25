@@ -1,8 +1,7 @@
 "use client";
 import { Ellipsis, SquareX } from "lucide-react";
-import Link from "next/link";
 import { useState } from "react";
-import DeleteCourseworkButton from "@/app/units/[slug]/delete_coursework_button";
+import DeleteProgrammeButton from "@/app/programmes/delete_programme_button";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -42,21 +41,21 @@ export default function Coursework({
   return (
     <div>
       <Card className="bg-muted h-full justify-between flex-1 flex flex-row p-2 hover:bg-foreground/10">
-          <div className="h-full flex-row justify-between">
-            <div className="flex flex-col">
-              <p className="text-lg lg:text-xl">{props.name}</p>
-            </div>
-            <div className="flex flex-row gap-2">
-              <p className="text-sm lg:text-xl text-muted-foreground">
-                <span className="text-sm">Start Date: </span>
-                {new Date(props.start_date).toLocaleDateString()}
-              </p>
-              <p className="text-sm lg:text-xl text-muted-foreground">
-                <span className="text-sm">End Date: </span>
-                {new Date(props.end_date).toLocaleDateString()}
-              </p>
-            </div>
+        <div className="h-full flex-row justify-between">
+          <div className="flex flex-col">
+            <p className="text-lg lg:text-xl">{props.name}</p>
           </div>
+          <div className="flex flex-row gap-2">
+            <p className="text-sm lg:text-xl text-muted-foreground">
+              <span className="text-sm">Start Date: </span>
+              {new Date(props.start_date).toLocaleDateString()}
+            </p>
+            <p className="text-sm lg:text-xl text-muted-foreground">
+              <span className="text-sm">End Date: </span>
+              {new Date(props.end_date).toLocaleDateString()}
+            </p>
+          </div>
+        </div>
         {hasPermissions && (
           <div className={"z-20 place-self-end"}>
             <DropdownMenu>
@@ -92,8 +91,8 @@ export default function Coursework({
                   <AlertDialogCancel className="h-full">
                     Cancel
                   </AlertDialogCancel>
-                  <DeleteCourseworkButton
-                    courseworkId={props.id}
+                  <DeleteProgrammeButton
+                    programmeId={props.id}
                     setAlertState={setShowDelete}
                   />
                 </AlertDialogFooter>

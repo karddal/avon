@@ -2,7 +2,7 @@ from typing import Annotated
 from uuid import UUID
 from datetime import date
 
-from pydantic import BaseModel, AfterValidator, ConfigDict
+from pydantic import BaseModel, AfterValidator
 
 def is_valid_name(name: str) -> str:
     name = name.strip()
