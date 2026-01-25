@@ -14,7 +14,6 @@ export async function update_coursework(req: UpdateCourseworkRequest) {
   "use server";
   const token = await getRequestJWT();
 
-  console.log(req);
   const data = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/coursework/${req.id}`,
     {

@@ -55,7 +55,6 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
     },
   );
   const c: UnitDataResponse = await response.json();
-  console.log("HERE", c, slug);
   const data: UnitUpdateData = {
     id: c.id,
     name: c.name,
