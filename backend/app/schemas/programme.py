@@ -15,7 +15,7 @@ def is_valid_date(value: date) -> date:
     today = date.today()
 
     if value <= today:
-        raise ValueError("Start date must be in the future")
+        raise ValueError("Date must be in the future")
 
     return value
 
@@ -36,3 +36,13 @@ class ProgrammeRead(BaseModel):
     name: Name
     start_date: StartDate
     end_date: EndDate
+    units: list
+
+class ProgrammeUpdate(BaseModel):
+    name: Name | None = None
+    start_date: StartDate | None = None
+    end_date: EndDate | None = None
+
+class ProgrammeDelete(BaseModel):
+    id: UUID
+    deletion_successful: bool
