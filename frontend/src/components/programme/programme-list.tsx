@@ -1,7 +1,7 @@
 import { BookDashed } from "lucide-react";
 import Coursework from "@/components/coursework/coursework";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getRequestJWT, requireSession } from "@/lib/auth-utils";
+import { getRequestJWT, requireAdminSession, requireSession } from "@/lib/auth-utils";
 import {
   Empty,
   EmptyDescription,
@@ -9,23 +9,13 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "../ui/empty";
+import Programme from "./programme";
 
-type CourseworkData = {
+type ProgrammeData = {
   id: string;
   name: string;
-  description: string;
-  due_date: string;
-  creation_date: string;
-  colour: string;
-};
-
-type unit = {
-  id: string;
-  unit_code: string;
-  name: string;
-  programme_start_date: string;
-  programme_end_date: string;
-  courseworks: CourseworkData[];
+  start_date: string;
+  end_date: string;
 };
 
 export default async function CourseworkList({
@@ -34,11 +24,11 @@ export default async function CourseworkList({
   finished: boolean;
 }) {
   const token = await getRequestJWT();
-  const s = await requireSession();
+  const s = await requireAdminSession();
   const role = s.user.role;
-  const hasPermissions = role === "admin" || role === "lecturer";
+  const hasPermissions = role === "admin";
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/me/courseworks`,
+    `${process.env.NEXT_PUBLIC_API_URL}/programmes/all`,
     {
       method: "GET",
       headers: {
@@ -48,39 +38,27 @@ export default async function CourseworkList({
       cache: "no-cache",
     },
   );
-  const courseworkListData: unit[] = await response.json();
+  const programmeListData: ProgrammeData[] = await response.json();
 
   const now = new Date();
 
-  const filteredUnitsList = [];
-  for (const unit of courseworkListData) {
-    const filteredCourseworks = unit.courseworks.filter((coursework) => {
-      const created = new Date(coursework.creation_date);
-      const due = new Date(coursework.due_date);
 
-      const isActive = now >= created && now <= due;
+  const filteredCourseworks = programmeListData.filter((programme) => {
+    const created = new Date(programme.start_date);
+    const due = new Date(programme.end_date);
 
-      if (finished) {
-        return now > due;
-      }
+    const isActive = now >= created && now <= due;
 
-      return isActive;
-    });
-    if (filteredCourseworks.length > 0) {
-      filteredUnitsList.push({
-        id: unit.id,
-        unit_code: unit.unit_code,
-        courseworks: filteredCourseworks,
-        name: unit.name,
-        programme_start_date: unit.programme_start_date,
-        programme_end_date: unit.programme_end_date,
-      });
+    if (finished) {
+      return now > due;
     }
-  }
+
+    return isActive;
+  });
 
   return (
     <>
-      {filteredUnitsList.length === 0 && (
+      {filteredCourseworks.length === 0 && (
         <Empty className="border-dashed border-2 bg-muted/20 py-12">
           <EmptyHeader>
             <EmptyMedia variant="icon">
@@ -93,54 +71,21 @@ export default async function CourseworkList({
           </EmptyHeader>
         </Empty>
       )}
-      {filteredUnitsList.length > 0 && (
-        <Tabs
-          defaultValue={filteredUnitsList[0].id}
-          orientation={"vertical"}
-          className={"flex flex-col lg:flex-row w-full"}
-        >
-          <TabsList
-            className={"basis-1/3 flex flex-col h-min w-full justify-start"}
-          >
-            {filteredUnitsList.map((unit) => (
-              <TabsTrigger
-                key={unit.id}
-                className={"text-lg p-4 w-full text-ellipsis"}
-                value={unit.id}
-              >
-                {unit.name}
-                <span className={"font-light"}>
-                  {new Date(unit.programme_start_date).getFullYear()}-
-                  {new Date(unit.programme_end_date).getFullYear()}
-                </span>
-              </TabsTrigger>
+      {filteredCourseworks.length > 0 && (
+        <>
+            {filteredCourseworks.map((programme) => (
+            <Programme
+                key={programme.id}
+                hasPermissions={hasPermissions}
+                props={{
+                id: programme.id,
+                name: programme.name,
+                start_date: programme.start_date,
+                end_date: programme.end_date,
+                }}
+            />
             ))}
-          </TabsList>
-          <div className={"basis-2/3"}>
-            {filteredUnitsList.map((unit) => (
-              <TabsContent key={unit.id} className={""} value={unit.id}>
-                {unit.courseworks.map((coursework) => (
-                  <div className={"mb-3"} key={coursework.id}>
-                    <Coursework
-                      key={coursework.id}
-                      hasPermissions={hasPermissions}
-                      props={{
-                        id: coursework.id,
-                        name: coursework.name,
-                        unit_id: unit.id,
-                        description: coursework.description,
-                        colour: coursework.colour,
-                        creation_date: coursework.creation_date,
-                        due_date: coursework.due_date,
-                        unit_code: unit.unit_code,
-                      }}
-                    />
-                  </div>
-                ))}
-              </TabsContent>
-            ))}
-          </div>
-        </Tabs>
+        </>
       )}
     </>
   );
