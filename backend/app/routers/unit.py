@@ -2,7 +2,7 @@ from datetime import date
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlmodel import Session, select
 from sqlalchemy.orm.strategy_options import selectinload
 
@@ -16,7 +16,7 @@ from app.schemas.unit import (
     UnitAllByGroup,
     UnitCreate,
     UnitRead,
-    UnitUpdate, UnitLecturers, UnitReadWithDates
+    UnitUpdate, UnitLecturers, UnitReadWithDates, UnitStudents
 )
 
 router = APIRouter(prefix="/units", tags=["units"])
@@ -115,6 +115,17 @@ async def get_unit_lecturers(unit_id: UUID, session: session_dependency):
         lecturers=lects,
     )
 
+@router.get("/{unit_id}/students", response_model=UnitStudents, status_code=status.HTTP_200_OK)
+async def get_unit_students(unit_id: UUID, session: session_dependency):
+    studs = session.exec(
+        select(UnitEnrollment.user_id).join(Unit).where(Unit.id == unit_id).where(UnitEnrollment.type == "student")
+    ).all()
+    if not studs:
+        raise HTTPException(status_code=404, detail="No students found.")
+    return UnitStudents(
+        students=studs,
+    )
+
 @router.put("/{unit_id}", response_model=UnitUpdate, status_code=status.HTTP_200_OK)
 async def update_unit(unit_id: UUID, unit: UnitUpdate, session: session_dependency):
     if not unit.name:
@@ -154,7 +165,7 @@ async def delete_unit(unit_id: UUID, session: session_dependency):
     session.delete(unit)
     session.commit()
 
-    return
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.get("/u/{user_id}", response_model=UnitAll)
