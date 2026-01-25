@@ -4,7 +4,7 @@ import { useState } from "react";
 
 // adapted from github.com/Marcosfitzsimons/multi-step-form
 
-export function multistep_coursework_flow() {
+export function multistep_unit_flow() {
     const steps = 3;
     const [step, setStep] = useState<number>(0);
 

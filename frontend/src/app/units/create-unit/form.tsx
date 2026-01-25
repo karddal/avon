@@ -35,7 +35,7 @@ import {
 } from "@/components/ui/item";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
-import { multistep_coursework_flow } from "./multistep_coursework_flow";
+import { multistep_unit_flow } from "./multistep_unit_flow";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UUID } from "node:crypto";
 import { fi } from "date-fns/locale";
@@ -55,7 +55,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
     const [submitState, setSubmitState] = useState<boolean>(false);
     const [showAlert, setShowAlert] = useState<boolean>(false);
     const [alertText, setAlertText] = useState<string>("");
-    const { step, setStep, next } = multistep_coursework_flow();
+    const { step, setStep, next } = multistep_unit_flow();
     const [programmes, setProgrammes] = useState<Programme[]>([]);
     const [programmeName, setProgrammeName] = useState<string>("");
 
@@ -128,6 +128,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
             name: "",
             description: "",
             programme: "",
+            unitCode: "",
             color: "#abcdef",
         },
     });
@@ -141,8 +142,9 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
             const req = {
                 name: values.name,
                 description: values.description,
-                unit_id: s,
-                colour: colour.substring(1),
+                unit_code: values.unitCode,
+                colour: values.color,
+                programme_id: values.programme
             };
             console.log(req);
             fetch(`${process.env.NEXT_PUBLIC_API_URL}/units/create`, {
@@ -175,6 +177,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
 
     const name = form.watch("name");
     const description = form.watch("description");
+    const unitCode = form.watch("unitCode")
     const programme = form.watch("programme")
     const colour = form.watch("color");
     return (
@@ -259,7 +262,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                                                             {...field}
                                                             id={"form-flow-name"}
                                                             aria-invalid={fieldState.invalid}
-                                                            placeholder={"My amazing coursework"}
+                                                            placeholder={"My amazing unit"}
                                                             autoComplete={"off"}
                                                         />
                                                         {fieldState.invalid && (
@@ -289,6 +292,29 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                                                     </Field>
                                                 )}
                                             />
+                                            {/* Select the Unit Code */}
+                                            <Controller
+                                                name={"unitCode"}
+                                                control={form.control}
+                                                render={({ field, fieldState }) => (
+                                                    <Field data-invalid={fieldState.invalid}>
+                                                        <FieldLabel htmlFor={"form-flow-unitCode"}>
+                                                            Give your Unit a code
+                                                        </FieldLabel>
+                                                        <Textarea
+                                                            {...field}
+                                                            id={"form-flow-unitCode"}
+                                                            aria-invalid={fieldState.invalid}
+                                                            placeholder={"A unit code"}
+                                                            autoComplete={"off"}
+                                                        />
+                                                        {fieldState.invalid && (
+                                                            <FieldError errors={[fieldState.error]} />
+                                                        )}
+                                                    </Field>
+                                                )}
+                                            />
+
                                             {/* Select the programme it's part off */}
                                             <Controller
                                                 name={"programme"}
@@ -505,6 +531,10 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                                                         <ItemTitle>Unit description</ItemTitle>
                                                         <ItemDescription>
                                                             {description ? description : "Not provided."}
+                                                        </ItemDescription>
+                                                        <ItemTitle>Unit code</ItemTitle>
+                                                        <ItemDescription>
+                                                            {unitCode ? unitCode : "Not provided."}
                                                         </ItemDescription>
                                                         <ItemTitle>Programme</ItemTitle>
                                                         <ItemDescription>
