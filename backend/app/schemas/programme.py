@@ -30,16 +30,16 @@ class ProgrammeCreate(BaseModel):
     end_date: EndDate
 
 
-class ProgrammeRead(BaseModel):
+class ProgrammeRead(BaseModel): # When reading, don't need to enforce any validation, just return what's in the DB
     id: UUID
-    name: Name
-    start_date: StartDate
-    end_date: EndDate
+    name: str
+    start_date: date
+    end_date: date
     units: list
 
 class ProgrammeUpdate(BaseModel):
     name: Name | None = None
-    start_date: StartDate | None = None
+    start_date: date | None = None
     end_date: EndDate | None = None
 
 class ProgrammeDelete(BaseModel):

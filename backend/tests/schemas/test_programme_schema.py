@@ -62,12 +62,7 @@ def test_programme_start_date_empty():
     end = date.today() + timedelta(days=365)
     with pytest.raises(ValidationError):
         ProgrammeCreate(name="Year 2026/2027", start_date=None, end_date=end)
-
-def test_programme_start_date_in_past_raises_error():
-    end = date.today() + timedelta(days=365)
-    past_date = date.today() - timedelta(days=10)
-    with pytest.raises(ValidationError):
-        ProgrammeCreate(name="Year 2026/2027", start_date=past_date, end_date=end)
+# Start date can be in past, just not end date as per current validation rules, and beacuse it gives the admin a bit more leaniency if they forget to create the programme before it starts
 
 # -------------- End Date ----------------
 
@@ -90,7 +85,7 @@ def test_programme_end_date_in_past_raises_error():
     end = date.today() + timedelta(days=365)
     past_date = date.today() - timedelta(days=10)
     with pytest.raises(ValidationError):
-        ProgrammeCreate(name="Year 2026/2027", start_date=past_date, end_date=end)
+        ProgrammeCreate(name="Year 2026/2027", start_date=date.today(), end_date=past_date)
 
 # -------------- Unit List stuff ----------------
 def test_programme_units_not_list_raises_error():
