@@ -5,6 +5,8 @@ import {addDays, format, startOfWeek} from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {cn} from "@/lib/utils";
 import {RefObject, useEffect, useMemo, useRef, useState} from "react";
+import {group} from "d3-array";
+import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 
 export type CalendarEvent = {
     id: string;
@@ -43,10 +45,40 @@ export function WeeklyTimeTableCard(
         return [inWeek ?? days[0]];
     }, [isMobile, days]);
 
+    const testEvents = useMemo(() => {
+        // 用本周周一作为测试日，确保一定在 days 范围内
+        const mondayKey = format(days[0], "yyyy-MM-dd");
+
+        const mk = (id: string, title: string, start: string, end: string): CalendarEvent => ({
+            id,
+            title,
+            start: new Date(`${mondayKey}T${start}:00`),
+            end: new Date(`${mondayKey}T${end}:00`),
+        });
+
+        return new Map<string, CalendarEvent[]>([
+            [mondayKey, [
+                // 1) A/B/D 三重重叠 -> 应出现 3 列
+                mk("a", "A 09:00–10:00", "09:00", "10:00"),
+                mk("b", "B 09:30–11:00", "09:30", "11:00"),
+                mk("d", "D 09:45–10:15", "09:45", "10:15"),
+
+                // 2) C 与 A 边界相接（10:00 开始）-> 不应与 A 并排
+                mk("c", "C 10:00–10:30", "10:00", "10:30"),
+
+                // 3) 完全不重叠 -> 应恢复全宽
+                mk("e", "E 12:00–13:00", "12:00", "13:00"),
+
+                // 4) 很短 -> 测 minEventHeightPx
+                mk("f", "F 14:00–14:05", "14:00", "14:05"),
+            ]],
+        ]);
+    }, [days]);
+
     return (
         <Card className="w-full">
             <CardContent className="p-0">
-                <TimeGridBody days={visibleDays} events={events} today={today} />
+                <TimeGridBody days={visibleDays} events={testEvents} today={today} />
             </CardContent>
         </Card>
     )
@@ -92,7 +124,7 @@ function TimeGridBody(
         gridRef,
         gutterWidth,
         daysCount: days.length,
-        minColPx: 160,
+        minColPx: 140, // minim length for one event in a column
         maxColsCap: 3,
     });
     const { getEventsForKey } = useWeeklyEvents({
@@ -130,6 +162,20 @@ function TimeGridBody(
                         const dayEvents = getEventsForKey(key);
                         const isToday = today && format(day, "yyyy-MM-dd") === today;
 
+                        const groups = new Map<string, {visible: LayoutedEvent[]; hidden: LayoutedEvent[]}>();
+
+                        for (const event of dayEvents) {
+                            const group = groups.get(event.groupId) ?? { visible: [], hidden: [] };
+                            (event.hidden ? group.hidden : group.visible).push(event);
+                            groups.set(event.groupId, group);
+                        }
+
+                        const visibleEvents = Array.from(groups.values().flatMap((group) => group.visible))
+
+                        const badgeLeftPct = (maxCols - 1) * (100 / maxCols)
+                        const badgeWidthPct = 100 / maxCols
+                        const badgeH = 18
+
                         return (
                             <div key={key}
                                  className = {cn("relative border-r last:border-r-0", isToday && "bg-muted/10")}
@@ -138,15 +184,14 @@ function TimeGridBody(
                                 <div className="absolute inset-0" style={gridBackgroundStyle}/>
 
                                 {/* event */}
-                                {dayEvents.map(({event, top, height, leftPct, widthPct}) => {
+                                {visibleEvents.map(({event, top, height, leftPct, widthPct}) => {
                                     return (
                                         <div
                                             key={event.id}
                                             className={cn(
                                                 "absolute rounded-md border bg-card shadow-sm min-w-0 overflow-hidden",
                                                 "px-2 py-1 text-xs",
-                                                "sm:px-2 sm:py-1 sm:text-xs",
-                                                "px-1.5 py-1 text-[11px]"
+                                                "max-sm:px-1.5 max-sm:py-1 max-sm:text-[11px]",
                                             )}
                                             style={{
                                                 top, height,
@@ -160,6 +205,53 @@ function TimeGridBody(
                                                 {format(event.start, "HH:mm")} - {format(event.end, "HH:mm")}
                                             </div>
                                         </div>
+                                    )
+                                })}
+
+                                {/* + more popover */}
+                                {Array.from(groups.entries()).map(([groupId, group]) => {
+                                    if (group.hidden.length === 0) return null
+
+                                    const groupBottom = Math.max(...[...group.visible, ...group.hidden].map((event) => event.top + event.height))
+                                    const badgeTop = Math.max(0, groupBottom - badgeH - 2)
+
+                                    return (
+                                        <Popover key={`more-${key}-${groupId}`}>
+                                            <PopoverTrigger asChild>
+                                                <button
+                                                    type="button"
+                                                    className="absolute z-20 rounded-md border bg-background/90 px-2 py-0.5 text-[11px] text-muted-foreground shadow-sm backdrop-blur hover:bg-muted"
+                                                    style={{
+                                                        top: badgeTop,
+                                                        left: `calc(${badgeLeftPct}% + 4px)`,
+                                                        width: `calc(${badgeWidthPct}% - 8px)`,
+                                                    }}
+                                                >
+                                                    +{group.hidden.length} more
+                                                </button>
+                                            </PopoverTrigger>
+
+                                            <PopoverContent className="w-64 p-2" align="start">
+                                                <div className="mb-2 text-xs font-medium">
+                                                    Hidden events ({group.hidden.length})
+                                                </div>
+
+                                                <div className="space-y-1">
+                                                    {group.hidden.map(({event}) => (
+                                                        <div
+                                                            key={event.id}
+                                                            className="rounded-md border bg-card px-2 py-1 text-xs"
+                                                            title={`${format(event.start, "HH:mm")} - ${format(event.end, "HH:mm")}`}
+                                                        >
+                                                            <div className="font-medium truncate">{event.title}</div>
+                                                            <div className="text-muted-foreground">
+                                                                {format(event.start, "HH:mm")}–{format(event.end, "HH:mm")}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </PopoverContent>
+                                        </Popover>
                                     )
                                 })}
                             </div>
@@ -346,7 +438,9 @@ type LayoutedEvent = {
     colCount: number; // Total columns in this overlap group
     leftPct: number; // Left offset in % (0–100)
     widthPct: number; // Width in % (0–100)
+
     hidden?: boolean;
+    groupId: string;
 };
 
 function useWeeklyEvents(
@@ -400,10 +494,13 @@ function useWeeklyEvents(
 
             let groupIds: string[] = []
             let groupMaxCols = 0
+            let groupSeq = 0
 
             // assign width or left percentage based on how many columns needed
             const flushGroup = () => {
                 if (!groupIds.length) return
+
+                const groupId = `g${groupSeq++}`
 
                 const realCols = Math.max(1, groupMaxCols)
                 const visibleCols = Math.min(realCols, maxCols)
@@ -415,7 +512,7 @@ function useWeeklyEvents(
 
                     const hidden = layout.colIndex >= maxCols
                     const cappedIndex = Math.min(layout.colIndex, maxCols - 1)
-                    layoutMap.set(id, {...layout, hidden, colCount: visibleCols, widthPct, leftPct: cappedIndex * widthPct})
+                    layoutMap.set(id, {...layout, groupId, hidden, colCount: visibleCols, widthPct, leftPct: cappedIndex * widthPct})
                 }
                 groupIds = []
                 groupMaxCols = 0
@@ -459,6 +556,7 @@ function useWeeklyEvents(
                     colCount: 1,
                     leftPct: 0,
                     widthPct: 100,
+                    groupId: "",
                 }
 
                 layoutMap.set(item.event.id, base)
@@ -481,7 +579,7 @@ function useWeeklyEvents(
 
 
         return {getEventsForKey}
-    }, [days, eventsByDay, pxPerMinute, minEventHeightPx, sort]);
+    }, [days, eventsByDay, pxPerMinute, minEventHeightPx, sort, maxCols]);
 }
 
 type TimeGridOptions = {
