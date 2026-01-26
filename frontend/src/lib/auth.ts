@@ -12,6 +12,9 @@ export const auth = betterAuth({
     ? new DatabaseSync("../sqlite.db")
     : new Pool({
         connectionString: process.env.BA_DATABASE_URL,
+        ssl: {
+          rejectUnauthorized: false,
+        }
       }),
   emailAndPassword: {
     enabled: true,

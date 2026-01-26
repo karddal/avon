@@ -9,6 +9,9 @@ export async function get_username_from_id(user_id: string): Promise<string> {
   if (isProd) {
     const db = new Pool({
       connectionString: process.env.BA_DATABASE_URL,
+      ssl: {
+        rejectUnauthorized: false
+      }
     });
 
     const result = await db.query("SELECT name from user WHERE id = ?", [

@@ -7,7 +7,7 @@ import { Pool } from "pg";
 
 const pgPool =
   process.env.NODE_ENV === "production"
-    ? new Pool({ connectionString: process.env.BA_DATABASE_URL })
+    ? new Pool({ connectionString: process.env.BA_DATABASE_URL, ssl: {rejectUnauthorized: false}})
     : null;
 
 export async function get_batch_user_info(user_ids: string[]) {
