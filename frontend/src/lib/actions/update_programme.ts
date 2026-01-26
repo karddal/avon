@@ -2,7 +2,7 @@
 import { getRequestJWT } from "@/lib/auth-utils";
 
 type UpdateProgrammeRequest = {
-  id : string;
+  id: string;
   name: string;
   start_date: string;
   end_date: string;

@@ -22,7 +22,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Textarea } from "@/components/ui/textarea";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const Calendar29 = dynamic(
@@ -113,9 +112,6 @@ export default function EditProgramme({
     });
   }
 
-  const name = form.watch("name");
-  const start_date = form.watch("start_date");
-  const end_date = form.watch("end_date");
   return (
     <Sheet open={open_state} onOpenChange={set_open_state}>
       <SheetContent
@@ -125,8 +121,8 @@ export default function EditProgramme({
         <SheetHeader>
           <SheetTitle>Edit this programme</SheetTitle>
           <SheetDescription>
-            You can modify this programme here. Please remember to save when
-            you are done.
+            You can modify this programme here. Please remember to save when you
+            are done.
           </SheetDescription>
         </SheetHeader>
 

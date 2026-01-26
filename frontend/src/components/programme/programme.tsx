@@ -1,5 +1,5 @@
 "use client";
-import { Edit, Ellipsis, SquarePen, SquareX } from "lucide-react";
+import { Ellipsis, SquarePen, SquareX } from "lucide-react";
 import { useState } from "react";
 import DeleteProgrammeButton from "@/app/programmes/delete_programme_button";
 import {
@@ -69,9 +69,10 @@ export default function Coursework({
               <DropdownMenuContent className={"w-56"}>
                 <DropdownMenuLabel>Programme Options</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   onSelect={() => setShowEdit(true)}
-                  className={"flex flex-row"}>
+                  className={"flex flex-row"}
+                >
                   <SquarePen className="mr-2 h-4 w-4" />
                   Edit Programme
                 </DropdownMenuItem>
