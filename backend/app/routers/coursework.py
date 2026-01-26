@@ -35,13 +35,7 @@ async def create_coursework(coursework: CourseworkCreate, session: session_depen
 
 @router.get("/all")
 async def all_courseworks(session: session_dependency):
-    statement = (
-        select(Unit)
-        .options(
-            selectinload(Unit.courseworks),
-            selectinload(Unit.programme),
-        )
-    )
+    statement = (select(Unit).options(selectinload(Unit.courseworks), selectinload(Unit.programme),))
 
     units = session.exec(statement).all()
 
