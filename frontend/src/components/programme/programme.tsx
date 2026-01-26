@@ -1,5 +1,5 @@
 "use client";
-import { Ellipsis, SquareX } from "lucide-react";
+import { Edit, Ellipsis, SquarePen, SquareX } from "lucide-react";
 import { useState } from "react";
 import DeleteProgrammeButton from "@/app/programmes/delete_programme_button";
 import {
@@ -21,6 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Card } from "../ui/card";
+import EditProgramme from "./edit-programme";
 
 type programmeData = {
   id: string;
@@ -37,6 +38,7 @@ export default function Coursework({
   hasPermissions: boolean;
 }) {
   const [showDelete, setShowDelete] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
   console.log(props);
   return (
     <div>
@@ -67,6 +69,12 @@ export default function Coursework({
               <DropdownMenuContent className={"w-56"}>
                 <DropdownMenuLabel>Programme Options</DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onSelect={() => setShowEdit(true)}
+                  className={"flex flex-row"}>
+                  <SquarePen className="mr-2 h-4 w-4" />
+                  Edit Programme
+                </DropdownMenuItem>
                 <DropdownMenuItem
                   onSelect={() => setShowDelete(true)}
                   className={
@@ -78,6 +86,11 @@ export default function Coursework({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            <EditProgramme
+              open_state={showEdit}
+              set_open_state={setShowEdit}
+              programme_update_data={props}
+            />
             <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
               <AlertDialogContent>
                 <AlertDialogHeader>
