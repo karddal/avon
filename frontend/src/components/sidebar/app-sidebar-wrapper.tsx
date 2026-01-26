@@ -24,7 +24,7 @@ export default async function AppSidebar() {
             >
               <div>
                 <Image
-                  src={`/images/avon-white-optimized.svg`}
+                  src={`${process.env.NEXT_PUBLIC_CDN_PATH}/images/avon-white-optimized.svg`}
                   alt="logo"
                   width={100}
                   height={100}
@@ -32,7 +32,7 @@ export default async function AppSidebar() {
                   className="dark:block hidden p-4 md:p-0"
                 />
                 <Image
-                  src={`/images/avon-black-optimized.svg`}
+                  src={`${process.env.NEXT_PUBLIC_CDN_PATH}/images/avon-black-optimized.svg`}
                   alt="logo"
                   width={100}
                   height={100}

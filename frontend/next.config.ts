@@ -22,7 +22,10 @@ module.exports = (phase: string, _defaultConfig: NextConfig) => {
   return {
     /* config options for all phases except development here */
     cacheComponents: true,
+    output: "standalone",
+    assetPrefix: undefined,
     images: {
+      unoptimized: true,
       remotePatterns: [
         {
           protocol: "https",
@@ -30,6 +33,5 @@ module.exports = (phase: string, _defaultConfig: NextConfig) => {
         },
       ],
     },
-    assetPrefix: undefined,
   };
 };
