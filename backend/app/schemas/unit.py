@@ -41,9 +41,7 @@ class UnitCreate(BaseModel):
     name: Name
     description: str
     unit_code: str
-    colour: str
-    start_year: int
-    end_year: int
+    colour: str 
     programme_id: uuid.UUID
 
 

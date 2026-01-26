@@ -66,6 +66,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                 credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
+
                 }
             })
             const data = await r.json()

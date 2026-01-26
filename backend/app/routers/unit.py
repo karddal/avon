@@ -31,9 +31,7 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
         description=unit.description,
         unit_code=unit.unit_code,
         colour=unit.colour,
-        start_year=None,
-        end_year=None,
-        programme=unit.programme,
+        programme_id=unit.programme_id,
     )
     print("hi")
     # Add validation for the start and end dates below

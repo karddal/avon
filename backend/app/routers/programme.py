@@ -64,6 +64,8 @@ async def update_programme(id: UUID, programme: ProgrammeUpdate, session: sessio
     session.commit()
     session.refresh(programme_db)
     return programme_db
+
+
 @router.get("/", response_model=ProgrammeAll, status_code=status.HTTP_200_OK)
 async def get_programmes(session: session_dependency):
     statement = select(Programme)
