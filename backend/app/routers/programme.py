@@ -3,13 +3,11 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.db.session import get_session
 from sqlmodel import Session, select
 from uuid import UUID
-from fastapi import HTTPException
 
 from app.models.programme import Programme
 from app.schemas.programme import ProgrammeCreate, ProgrammeRead, ProgrammeDelete
 
-from app.models.programme import Programme
-from app.schemas.programme import ProgrammeCreate, ProgrammeRead, ProgrammeDelete, ProgrammeUpdate
+from app.schemas.programme import ProgrammeUpdate
 
 
 router = APIRouter(prefix="/programmes", tags=["programmes"])

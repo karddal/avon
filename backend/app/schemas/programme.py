@@ -3,6 +3,7 @@ from uuid import UUID
 from datetime import date
 
 from pydantic import BaseModel, AfterValidator
+from app.schemas.unit import UnitWithoutProgramme
 
 def is_valid_name(name: str) -> str:
     name = name.strip()
@@ -35,7 +36,7 @@ class ProgrammeRead(BaseModel): # When reading, don't need to enforce any valida
     name: str
     start_date: date
     end_date: date
-    units: list
+    units: list[UnitWithoutProgramme]
 
 class ProgrammeUpdate(BaseModel):
     name: Name | None = None

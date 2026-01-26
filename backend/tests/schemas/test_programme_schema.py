@@ -82,7 +82,6 @@ def test_programme_end_date_empty():
         ProgrammeCreate(name="Year 2026/2027", start_date=start, end_date=None)
 
 def test_programme_end_date_in_past_raises_error():
-    end = date.today() + timedelta(days=365)
     past_date = date.today() - timedelta(days=10)
     with pytest.raises(ValidationError):
         ProgrammeCreate(name="Year 2026/2027", start_date=date.today(), end_date=past_date)
