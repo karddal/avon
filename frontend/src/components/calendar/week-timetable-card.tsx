@@ -5,7 +5,6 @@ import {addDays, format, startOfWeek} from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {cn} from "@/lib/utils";
 import {RefObject, useEffect, useMemo, useRef, useState} from "react";
-import {group} from "d3-array";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 
 export type CalendarEvent = {
@@ -45,40 +44,10 @@ export function WeeklyTimeTableCard(
         return [inWeek ?? days[0]];
     }, [isMobile, days]);
 
-    const testEvents = useMemo(() => {
-        // 用本周周一作为测试日，确保一定在 days 范围内
-        const mondayKey = format(days[0], "yyyy-MM-dd");
-
-        const mk = (id: string, title: string, start: string, end: string): CalendarEvent => ({
-            id,
-            title,
-            start: new Date(`${mondayKey}T${start}:00`),
-            end: new Date(`${mondayKey}T${end}:00`),
-        });
-
-        return new Map<string, CalendarEvent[]>([
-            [mondayKey, [
-                // 1) A/B/D 三重重叠 -> 应出现 3 列
-                mk("a", "A 09:00–10:00", "09:00", "10:00"),
-                mk("b", "B 09:30–11:00", "09:30", "11:00"),
-                mk("d", "D 09:45–10:15", "09:45", "10:15"),
-
-                // 2) C 与 A 边界相接（10:00 开始）-> 不应与 A 并排
-                mk("c", "C 10:00–10:30", "10:00", "10:30"),
-
-                // 3) 完全不重叠 -> 应恢复全宽
-                mk("e", "E 12:00–13:00", "12:00", "13:00"),
-
-                // 4) 很短 -> 测 minEventHeightPx
-                mk("f", "F 14:00–14:05", "14:00", "14:05"),
-            ]],
-        ]);
-    }, [days]);
-
     return (
         <Card className="w-full">
             <CardContent className="p-0">
-                <TimeGridBody days={visibleDays} events={testEvents} today={today} />
+                <TimeGridBody days={visibleDays} events={events} today={today} />
             </CardContent>
         </Card>
     )
