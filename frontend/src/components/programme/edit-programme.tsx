@@ -141,9 +141,13 @@ export default function EditProgramme({
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor={"form-flow-name"}>
+                    <FieldLabel
+                      htmlFor="form-flow-name"
+                      className="text-base font-semibold"
+                    >
                       Programme name
                     </FieldLabel>
+
                     <Input
                       {...field}
                       id={"form-flow-name"}
@@ -162,7 +166,10 @@ export default function EditProgramme({
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor={"date"}>
+                    <FieldLabel
+                      htmlFor="date"
+                      className="text-base font-semibold"
+                    >
                       Program start date
                     </FieldLabel>
                     <Calendar29
@@ -183,7 +190,10 @@ export default function EditProgramme({
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor={"date"}>
+                    <FieldLabel
+                      htmlFor="date"
+                      className="text-base font-semibold"
+                    >
                       Program end date
                     </FieldLabel>
                     <Calendar29
