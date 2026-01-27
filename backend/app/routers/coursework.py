@@ -1,12 +1,18 @@
+import datetime
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
+
+from app.core.security import get_current_user
 from app.db.session import get_session
-from typing import Annotated
+from typing import Annotated, Optional, Literal
 from uuid import UUID
 
 from app.models.coursework import Coursework
 from app.models.unit import Unit
-from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkUpdate, CourseworkDelete
+from app.models.unit_enrollment import UnitEnrollment
+from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkUpdate, CourseworkDelete, \
+    CourseworkEventRead
 
 router = APIRouter(prefix = "/coursework", tags=["coursework"])
 session_dependency = Annotated[Session, Depends(get_session)]
@@ -74,3 +80,38 @@ async def update_coursework(id: UUID, coursework: CourseworkUpdate, session: ses
     session.refresh(coursework_db)
     return coursework_db
 
+@router.get("/events", response_model=list[CourseworkEventRead])
+async def list_coursework_events(
+        session: session_dependency,
+        from_: Optional[datetime.datetime] = None,
+        to: Optional[datetime.datetime] = None,
+        unit_ids: Optional[list[UUID]] = None,
+        current_user_id: str = Depends(get_current_user)
+        ):
+    statement = select(Coursework, Unit).join(Unit).join(UnitEnrollment).where(UnitEnrollment.user_id == current_user_id)
+
+    # TODO: currently useless code, I thought that we might need a function that can hide some coursework to student
+    # enrollment_type = Optional[Literal["student", "lecturer"]] = None
+    # if enrollment_type:
+    #     statement = statement.where(UnitEnrollment.type == enrollment_type)
+
+    if unit_ids:
+        statement = statement.where(Coursework.unit_id.in_(unit_ids))
+    if from_:
+        statement = statement.where(Coursework.due_date >= from_)
+    if to:
+        statement = statement.where(Coursework.due_date < to)
+
+    rows = session.exec(statement).all()
+
+    return [
+        {
+            "id": coursework.id,
+            "name": coursework.name,
+            "due_date": coursework.due_date,
+            "unit_id": str(unit.id),
+            "unit_name": unit.unit_name,
+            "colour": coursework.colour,
+        }
+        for coursework, unit in rows
+    ]
