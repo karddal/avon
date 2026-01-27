@@ -10,7 +10,7 @@ export async function get_user_image_from_id(user_id: string): Promise<string> {
       connectionString: process.env.BA_DATABASE_URL,
       ssl: {
         rejectUnauthorized: false,
-      }
+      },
     });
 
     const result = await db.query("SELECT image from user WHERE id = ?", [

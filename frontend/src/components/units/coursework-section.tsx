@@ -49,7 +49,6 @@ export default async function CourseworkSection({
     ? data.courseworks
     : [];
 
-  
   if (courseworks.length === 0) {
     return (
       <Empty>
@@ -66,7 +65,11 @@ export default async function CourseworkSection({
   return (
     <>
       {courseworks.map((coursework) => (
-        <Coursework key={coursework.id} props={coursework} hasPermissions={hasPermissions}/>
+        <Coursework
+          key={coursework.id}
+          props={coursework}
+          hasPermissions={hasPermissions}
+        />
       ))}
     </>
   );

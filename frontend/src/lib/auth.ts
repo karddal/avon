@@ -14,7 +14,7 @@ export const auth = betterAuth({
         connectionString: process.env.BA_DATABASE_URL,
         ssl: {
           rejectUnauthorized: false,
-        }
+        },
       }),
   emailAndPassword: {
     enabled: true,
