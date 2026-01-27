@@ -35,11 +35,11 @@
   # processes.dev.exec = "${lib.getExe pkgs.watchexec} -n -- ls -la";
 
   processes.frontend = {
-    exec = "just run-fe";
+    exec = "just fe run dev";
   };
 
   processes.backend = {
-    exec = "ENV=dev just run-be";
+    exec = "just be run dev";
   };
 
   # https://devenv.sh/services/
