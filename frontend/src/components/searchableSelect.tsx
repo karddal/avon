@@ -15,18 +15,29 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-export type Option = { value: string };
+export type SearchableSelectOption = {
+    value: string
+    label?: string
+};
 
 export interface SearchableSelectProps {
-  value?: string;
-  defaultValue?: string;
-  onChange?: (value: string | undefined) => void;
-  options?: Option[];
-  placeholder?: string;
-  searchPlaceholder?: string;
-  emptyMessage?: string;
-  clearable?: boolean;
-  prefix?: string;
+    //single choose
+    value?: string;
+    defaultValue?: string;
+    onChange?: (value: string | undefined) => void;
+
+    //multiple choose
+    multiple?: boolean
+    values?: string[]
+    defaultValues?: string[]
+    onChangeMultiple?: (values: string[]) => void
+
+    options?: SearchableSelectOption[];
+    placeholder?: string;
+    searchPlaceholder?: string;
+    emptyMessage?: string;
+    clearable?: boolean;
+    prefix?: string;
 }
 
 export function SearchableSelect(props: SearchableSelectProps) {
@@ -39,40 +50,80 @@ export function SearchableSelect(props: SearchableSelectProps) {
     emptyMessage,
     clearable,
     prefix,
+      multiple,
+      values,
+      defaultValues,
   } = {
     options: [],
     placeholder: "Select an option",
     searchPlaceholder: "Enter keyword to search",
     emptyMessage: "No matching results",
     clearable: true,
+      multiple: false,
     ...props,
   };
 
   const [open, setOpen] = useState(false);
-  const [uncontrolledValue, setUncontrolledValue] = useState<
-    string | undefined
-  >(defaultValue);
+
+  //single choice
+  const [uncontrolledValue, setUncontrolledValue] = useState<string | undefined>(defaultValue);
   const selectedValue = value !== undefined ? value : uncontrolledValue;
+
+  //multiple
+  const [uncontrolledValues, setUncontrolledValues] = useState<string[]>(defaultValues ?? [])
+  const selectedValues = values !== undefined ? values : uncontrolledValues
+
   const [query, setQuery] = useState("");
 
   const filtered =
     useMemo(() => {
       if (!query) return options;
       const lowerCasedQuery = query.toLowerCase();
-      return options?.filter((option) =>
-        option.value.toLowerCase().includes(lowerCasedQuery),
-      );
+      return options?.filter((option) => {
+          const content = `${option.label ?? ""} ${option.value}`.toLowerCase()
+          return content.includes(lowerCasedQuery)
+      });
     }, [options, query]) || [];
 
-  const applyChange = (nextValue: string | undefined) => {
+  const applySingleChange = (nextValue: string | undefined) => {
     if (value === undefined) setUncontrolledValue(nextValue);
     props.onChange?.(nextValue);
   };
 
-  const clearSelection = (event?: React.MouseEvent) => {
+  const clearSingleSelection = (event?: React.MouseEvent) => {
     event?.stopPropagation();
-    applyChange(undefined);
+    applySingleChange(undefined);
   };
+
+    const selectedSingleLabel = useMemo(() => {
+        if (!selectedValue) return undefined
+        return options.find((option) => option.value === selectedValue)?.label || selectedValue
+    }, [options, selectedValue])
+
+
+    const applyMultipleChange = (nextValue: string[]) => {
+      if (values === undefined) setUncontrolledValues(nextValue)
+      props.onChangeMultiple?.(nextValue)
+  }
+
+  const toggleMultiple = (value: string) => {
+      const nextValue = selectedValues.includes(value)
+      ? selectedValues.filter((val) => val !== value) : [...selectedValues, value]
+      applyMultipleChange(nextValue);
+  }
+
+  const clearMultiple = (event?: React.MouseEvent) => {
+      event?.stopPropagation();
+      applyMultipleChange([])
+  }
+
+  const hasSelection = multiple ? selectedValues.length > 0 : !!selectedValue
+
+  const displayText = multiple ?
+      selectedValues.length > 0
+          ? `${selectedValues.length} selected`
+          : placeholder
+      : selectedSingleLabel ?? placeholder
 
   return (
     <div className="flex-1">
@@ -91,18 +142,18 @@ export function SearchableSelect(props: SearchableSelectProps) {
               )}
               <span
                 className={`${
-                  selectedValue ? "" : "text-muted-foreground"
+                  hasSelection ? "" : "text-muted-foreground"
                 } truncate`}
               >
-                {selectedValue ?? placeholder}
+                {displayText}
               </span>
             </div>
             <div className={"flex gap-4"}>
-              {clearable && selectedValue && (
+              {clearable && hasSelection && (
                 <button
                   type="button"
                   className={"cursor-pointer text-base"}
-                  onClick={clearSelection}
+                  onClick={(event) => multiple ? clearMultiple(event) : clearSingleSelection(event)}
                   aria-label="Clear selection"
                 >
                   ×
@@ -127,19 +178,32 @@ export function SearchableSelect(props: SearchableSelectProps) {
             <CommandList className={"max-h-64"}>
               <CommandEmpty>{emptyMessage}</CommandEmpty>
               <CommandGroup>
-                {filtered.map((option) => (
-                  <CommandItem
-                    key={option.value}
-                    value={option.value}
-                    onSelect={(val) => {
-                      const nextValue = val === selectedValue ? undefined : val;
-                      applyChange(nextValue);
-                      setOpen(false);
-                    }}
-                  >
-                    <span>{option.value}</span>
-                  </CommandItem>
-                ))}
+                {filtered.map((option) => {
+                    const checked = multiple && selectedValues.includes(option.value);
+
+                    return (
+                        <CommandItem
+                            key={option.value}
+                            value={option.value}
+                            onSelect={(val) => {
+                                if (multiple) {
+                                    toggleMultiple(val)
+                                    return
+                                }
+                                const nextValue = val === selectedValue ? undefined : val;
+                                applySingleChange(nextValue);
+                                setOpen(false);
+                            }}
+                        >
+                            {multiple && (
+                                <span className="mr-2 inline-flex h-4 w-4 items-center justify-center rounded border text-xs">
+                              {checked ? "✓" : ""}
+                          </span>
+                            )}
+                            <span>{option.label || option.value}</span>
+                        </CommandItem>
+                    )
+                })}
               </CommandGroup>
             </CommandList>
           </Command>

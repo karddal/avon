@@ -6,12 +6,18 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import {cn} from "@/lib/utils";
 import {RefObject, useEffect, useMemo, useRef, useState} from "react";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
+import {useIsMobile} from "@/hooks/use-mobile";
+import {useCalendarEvents} from "@/hooks/calendar/use-calendar-events";
 
 export type CalendarEvent = {
     id: string;
-    title: string;
+    name: string;
     start: Date;
     end: Date;
+    unit_id: string
+    unit_name: string
+    href?: string; // TODO: this not add yet, but should be few line change
+    colour?: string
 };
 
 function useMounted() {
@@ -23,11 +29,11 @@ function useMounted() {
 export function WeeklyTimeTableCard(
     {
         weekStartDate = new Date(),
-        events,
+        unitIds = [],
 }: {
-    weekStartDate?: Date;
-    events: Map<string, CalendarEvent[]>;
-}) {
+        weekStartDate?: Date;
+        unitIds?: string[]
+    }) {
     const weekStart = startOfWeek(weekStartDate, {weekStartsOn : 1})// 1 is monday
     const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
     const [today, setToday] = useState<string | undefined>(undefined);
@@ -36,7 +42,7 @@ export function WeeklyTimeTableCard(
         setToday(format(new Date(), "yyyy-MM-dd"));
     }, []);
 
-    const isMobile = useMediaQuery("(max-width: 640px)");
+    const isMobile = useIsMobile();
     const visibleDays = useMemo(() => {
         if (!isMobile) return days;
 
@@ -44,10 +50,14 @@ export function WeeklyTimeTableCard(
         return [inWeek ?? days[0]];
     }, [isMobile, days]);
 
+    const form = weekStart.toISOString()
+    const to = addDays(weekStart, 7).toISOString()
+    const {eventsMap, isLoading, error} = useCalendarEvents(form, to, unitIds)
+
     return (
         <Card className="w-full">
             <CardContent className="p-0">
-                <TimeGridBody days={visibleDays} events={events} today={today} />
+                <TimeGridBody days={visibleDays} events={eventsMap} today={today} />
             </CardContent>
         </Card>
     )
@@ -93,7 +103,7 @@ function TimeGridBody(
         gridRef,
         gutterWidth,
         daysCount: days.length,
-        minColPx: 140, // minim length for one event in a column
+        minColPx: 120, // minim length for one event in a column
         maxColsCap: 3,
     });
     const { getEventsForKey } = useWeeklyEvents({
@@ -169,7 +179,7 @@ function TimeGridBody(
                                             }}
                                             title={`${format(event.start, "HH:mm")} - ${format(event.end, "HH:mm")}`}
                                         >
-                                            <div className="font-medium truncate leading-4">{event.title}</div>
+                                            <div className="font-medium truncate leading-4">{event.name}</div>
                                             <div className="text-muted-foreground truncate leading-4">
                                                 {format(event.start, "HH:mm")} - {format(event.end, "HH:mm")}
                                             </div>
@@ -212,7 +222,7 @@ function TimeGridBody(
                                                             className="rounded-md border bg-card px-2 py-1 text-xs"
                                                             title={`${format(event.start, "HH:mm")} - ${format(event.end, "HH:mm")}`}
                                                         >
-                                                            <div className="font-medium truncate">{event.title}</div>
+                                                            <div className="font-medium truncate">{event.name}</div>
                                                             <div className="text-muted-foreground">
                                                                 {format(event.start, "HH:mm")}–{format(event.end, "HH:mm")}
                                                             </div>
@@ -308,19 +318,6 @@ function useMaxCols(opts: {
     }, [dayColPx, minColPx, maxColsCap]);
 }
 
-function useMediaQuery(query: string) {
-    const [matches, setMatches] = useState(false);
-    useEffect(() => {
-        const media = window.matchMedia(query);
-        const onChange = () => setMatches(media.matches)
-        onChange()
-        media.addEventListener("change", onChange)
-        return () => media.removeEventListener?.("change", onChange)
-    }, [query])
-
-    return matches
-}
-
 function useScrollToNowCenter<T extends HTMLElement>(ref: RefObject<T | null>, y: number, dayHeight: number, enabled: boolean) {
     const done = useRef(false)
     useEffect(() => {
@@ -387,7 +384,7 @@ export function useNowIndicator(pxPerMinute: number) {
     const [now, setNow] = useState(() => new Date());
 
     useEffect(() => {
-        const id = window.setInterval(() => setNow(new Date()), 30_000)
+        const id = window.setInterval(() => setNow(new Date()), 30 * 1000)
         return () => window.clearInterval(id)
     }, [])
 
