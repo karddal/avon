@@ -8,7 +8,9 @@
 # You can also reference a tag or branch, but the action may change without warning.
 
 name: Deploy Frontend to Amazon ECS
-
+permissions:
+  id-token: write
+  contents: read
 on:
   push:
     branches:
@@ -37,7 +39,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@0e613a0980cbf65ed5b322eb7a1e075d28913a83
         with:
-          role-to-assume: arn:aws:iam::418272753045:role/github-actions
+          role-to-assume: arn:aws:iam::418272753045:role/GithubOIDC
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
