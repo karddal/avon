@@ -15,6 +15,7 @@ import LecturerDropdown from "@/components/units/lecturer-dropdown";
 import Lecturers from "@/components/units/lecturers";
 import UnitsCourseworkList from "@/components/units/units-coursework-list";
 import { getRequestJWT, requireSession } from "@/lib/auth-utils";
+import Repository from "@/components/coursework/repository";
 
 async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -39,10 +40,9 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
           >
             <div className="flex flex-row gap-4 justify-between items-center">
               <UnitName slug={slug} token={token} />
-              {userRole === "lecturer" ||
-                (userRole === "admin" && (
-                  <LecturerDropdown me={me} slug={slug}></LecturerDropdown>
-                ))}
+              {(userRole === "lecturer" || userRole === "admin") && (
+                <LecturerDropdown me={me} slug={slug}></LecturerDropdown>
+              )}
             </div>
           </Suspense>
         </div>

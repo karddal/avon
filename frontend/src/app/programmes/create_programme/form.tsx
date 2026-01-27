@@ -41,6 +41,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Spinner } from "@/components/ui/spinner";
 import { create_programme } from "@/lib/actions/create_programme";
+import { gl_create_programme } from "@/lib/actions/gitlab/gl_create_programme";
 
 function nextStep(step: number, setStep: Dispatch<SetStateAction<number>>) {
   if (step <= 0) {
@@ -110,15 +111,27 @@ export const ProgForm = () => {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // do something with values, submit here
-
     setSubmitState(true);
     const req = {
       name: values.name,
       start_date: values.start_date.toISOString().split("T")[0],
       end_date: values.end_date.toISOString().split("T")[0],
     };
-    await create_programme(req).then((r) => {
+    const gitlab_data = await gl_create_programme(req);
+    if (!gitlab_data.success) {
+      setAlertText(gitlab_data.error);
+      setShowAlert(true);
+      setSubmitState(false);
+      return;
+    }
+    const db_req = {
+      name: values.name,
+      start_date: values.start_date.toISOString().split("T")[0],
+      end_date: values.end_date.toISOString().split("T")[0],
+      gitlab_id: String(gitlab_data.gitlabGroupId),
+    };
+
+    await create_programme(db_req).then((r) => {
       if (!r.success) {
         setAlertText(r.data.detail);
         setShowAlert(true);

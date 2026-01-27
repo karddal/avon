@@ -10,6 +10,7 @@ import Loading from "../loading";
 import CourseworkDescription from "./description";
 import CourseworkInformation from "./information";
 import CourseworkName from "./name";
+import Repository from "@/components/coursework/repository";
 
 type CourseworkUpdateReqResponse = {
   id: string;
@@ -56,8 +57,6 @@ async function CourseworkPageContent({
       cache: "no-cache",
     },
   );
-  console.log("GOT RESPONSE");
-  console.log(response);
   const c: CourseworkUpdateReqResponse = await response.json();
   const end = new Date(c.max_end_date);
   const data: CourseworkUpdateData = {
@@ -116,6 +115,22 @@ async function CourseworkPageContent({
               </Suspense>
             </CardContent>
           </Card>
+
+          {/* Repo */}
+          <Repository></Repository>
+        </div>
+        <div className="flex flex-col xl:col-span-1 lg:col-span-2 gap-4 min-h-0">
+          <Suspense>
+            <CourseworkInformation slug={slug} token={token} />
+          </Suspense>
+          <DropdownCard
+            openByDefault={false}
+            title="Tools"
+            desc="Tools you can use for this coursework appear here."
+          >
+            {" "}
+            <RunTestsItem />
+          </DropdownCard>
           <Card className="flex flex-col gap-4 h-96 md:h-128 lg:min-h-0 xl:h-auto xl:min-h-0">
             <CardHeader>
               <CardTitle>
@@ -161,19 +176,6 @@ async function CourseworkPageContent({
               </CardContent>
             </Suspense>
           </Card>
-        </div>
-        <div className="flex flex-col xl:col-span-1 lg:col-span-2 gap-4 min-h-0">
-          <Suspense>
-            <CourseworkInformation slug={slug} token={token} />
-          </Suspense>
-          <DropdownCard
-            openByDefault={true}
-            title="Tools"
-            desc="Tools you can use for this coursework appear here."
-          >
-            {" "}
-            <RunTestsItem />
-          </DropdownCard>
         </div>
       </section>
     </>
