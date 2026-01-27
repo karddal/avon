@@ -130,7 +130,11 @@ export default function lecturerList({
                     <DropdownMenuItem
                       onClick={() => handleDelete(lecturer.id)}
                       className="text-destructive hover:text-destructive"
-                      disabled={role !== "admin" || lecturer.id === me || lecturers.length <= 1}
+                      disabled={
+                        role !== "admin" ||
+                        lecturer.id === me ||
+                        lecturers.length <= 1
+                      }
                     >
                       <X className="text-destructive hover:text-destructive"></X>
                       <p className="text-destructive hover:text-destructive">
