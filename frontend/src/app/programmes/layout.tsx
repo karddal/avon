@@ -7,11 +7,14 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { SidebarCloser } from "@/components/sidebar/sidebar-closer";
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider>
       <AppSidebar />
+      <SidebarCloser></SidebarCloser>
+
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center justify-between gap-2 px-4">
           <div className="flex flex-row gap-2 items-center">

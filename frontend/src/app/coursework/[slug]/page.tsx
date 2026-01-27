@@ -24,7 +24,7 @@ async function CourseworkPageContent({
       {/* Header */}
       <div className="flex flex-col gap-4 min-h-0">
         <div className="flex flex-col col-span-3">
-          <div className="font-semibold text-5xl text-shadow-2xs">
+          <div className="font-semibold text-5xl text-shadow-2xs mt-4">
             <Suspense>
               <CourseworkName slug={slug} token={token} />
             </Suspense>
@@ -104,6 +104,7 @@ async function CourseworkPageContent({
               <CourseworkInformation slug={slug} token={token} />
             </Suspense>
             <DropdownCard
+              openByDefault={true}
               title="Tools"
               desc="Tools you can use for this coursework appear here."
             >
