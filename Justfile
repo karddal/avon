@@ -69,3 +69,8 @@ sync:
 
 serve-book-doc:
     mdbook serve --open
+seed:
+    cd frontend && npm run seed
+
+serve-book:
+    cd documentation && mdbook serve --open
