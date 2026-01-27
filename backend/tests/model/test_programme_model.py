@@ -10,7 +10,7 @@ def test_programme_auto_fields(session):
     start = date.today()
     end = start + timedelta(days=365)
 
-    programme = Programme(name="Year 2026/2027", start_date=start, end_date=end)
+    programme = Programme(name="Year 2026/2027", start_date=start, end_date=end, gitlab_id="12345")
 
     session.add(programme)
     session.commit()
@@ -24,7 +24,7 @@ def test_programme_persists_properly(session):
     end = start + timedelta(days=365)
     programme_id = uuid4()
 
-    programme = Programme(id=programme_id, name="Year 2026/2027", start_date=start, end_date=end)
+    programme = Programme(id=programme_id, name="Year 2026/2027", start_date=start, end_date=end, gitlab_id="12345")
 
     session.add(programme)
     session.commit()
@@ -42,7 +42,7 @@ def test_programme_query_by_programme_id(session):
     end = start + timedelta(days=365)
     programme_id = uuid4()
 
-    programme = Programme(id=programme_id, name="Year 2026/2027", start_date=start, end_date=end)
+    programme = Programme(id=programme_id, name="Year 2026/2027", start_date=start, end_date=end, gitlab_id="12345")
 
     session.add(programme)
     session.commit()
@@ -58,7 +58,7 @@ def test_programme_update(session):
     end = start + timedelta(days=365)
     programme_id = uuid4()
 
-    programme = Programme(id=programme_id, name="Year 2026/2027", start_date=start, end_date=end)
+    programme = Programme(id=programme_id, name="Year 2026/2027", start_date=start, end_date=end, gitlab_id="12345")
 
     session.add(programme)
     session.commit()
@@ -77,7 +77,7 @@ def test_programme_delete(session):
     end = start + timedelta(days=365)
     programme_id = uuid4()
 
-    programme = Programme(id=programme_id, name="Year 2026/2027", start_date=start, end_date=end)
+    programme = Programme(id=programme_id, name="Year 2026/2027", start_date=start, end_date=end, gitlab_id="12345")
 
     session.add(programme)
     session.commit()
@@ -95,7 +95,7 @@ def test_programme_field_types(session):
     end = start + timedelta(days=365)
     programme_id = uuid4()
 
-    programme = Programme(id=programme_id, name="Year 2026/2027", start_date=start, end_date=end)
+    programme = Programme(id=programme_id, name="Year 2026/2027", start_date=start, end_date=end, gitlab_id="12345")
 
     session.add(programme)
     session.commit()

@@ -6,13 +6,7 @@ from datetime import datetime, timedelta
 
 from app.models.programme import Programme
 from app.models.unit import Unit
-
-def create_programme(session) -> UUID:
-    programme = Programme(id=uuid4(), name="Test Programme", start_date=datetime.now(),
-                          end_date=datetime.today() + timedelta(days=365))
-    session.add(programme)
-    session.commit()
-    return programme.id
+from tests.helpers.factories import create_programme
 
 # Ensure that the unit autopopulates id, creation_date
 def test_unit_autopopulate_works(session):
@@ -24,7 +18,8 @@ def test_unit_autopopulate_works(session):
         description="Test description",
         unit_code="ABCDEF",
         colour="ffffff",
-        programme_id=pid,
+        programme_id=pid.id,
+        gitlab_id="12345"
     )
     session.add(my_unit)
     session.commit()
@@ -44,7 +39,8 @@ def test_unit_saving(session):
         description="Test description",
         unit_code="ABCDEF",
         colour="ffffff",
-        programme_id=pid,
+        programme_id=pid.id,
+        gitlab_id="12345"
     )
     session.add(my_unit)
     session.commit()
@@ -53,4 +49,4 @@ def test_unit_saving(session):
     retrieved = session.get(Unit, my_unit.id)
     assert retrieved.name == "My Unit"
     assert retrieved.description == "Test description"
-    assert retrieved.programme_id == pid
+    assert retrieved.programme_id == pid.id

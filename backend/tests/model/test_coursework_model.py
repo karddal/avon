@@ -13,7 +13,7 @@ def test_coursework_auto_fields(session):
     unit_id = create_unit(session)
 
     due = datetime.now()
-    cw = Coursework(name="Haskell 2",description="Coursework Description",unit_id=unit_id,due_date=due,colour="abcdef")
+    cw = Coursework(name="Haskell 2",description="Coursework Description",unit_id=unit_id,due_date=due,colour="abcdef", gitlab_id="12345")
     
     session.add(cw)
     session.commit()
@@ -28,7 +28,7 @@ def test_coursework_persists_properly(session):
     unit_id = create_unit(session)
 
     due = datetime.now()
-    cw = Coursework(name="Haskell 2", description="Coursework Description", unit_id=unit_id, due_date=due, colour="abcdef")
+    cw = Coursework(name="Haskell 2", description="Coursework Description", unit_id=unit_id, due_date=due, colour="abcdef", gitlab_id="12345")
 
     session.add(cw)
     session.commit()
@@ -46,7 +46,7 @@ def test_coursework_query_by_unit_id(session):
     unit_id = create_unit(session)
 
     due = datetime.now()
-    cw = Coursework(name="Haskell 2",description="Coursework Description",unit_id=unit_id,due_date=due,colour="abcdef")
+    cw = Coursework(name="Haskell 2",description="Coursework Description",unit_id=unit_id,due_date=due,colour="abcdef", gitlab_id="12345")
 
     session.add(cw)
     session.commit()
@@ -61,7 +61,7 @@ def test_coursework_update(session):
     unit_id = create_unit(session)
 
     due = datetime.now()
-    cw = Coursework(name="Haskell 2",description="Coursework Description",unit_id=unit_id,due_date=due,colour="abcdef")
+    cw = Coursework(name="Haskell 2",description="Coursework Description",unit_id=unit_id,due_date=due,colour="abcdef", gitlab_id="12345")
 
     session.add(cw)
     session.commit()
@@ -80,7 +80,7 @@ def test_coursework_delete(session):
     unit_id = create_unit(session)
 
     due = datetime.now()
-    cw = Coursework(name="Haskell 2",description="Coursework Description",unit_id=unit_id,due_date=due,colour="abcdef")
+    cw = Coursework(name="Haskell 2",description="Coursework Description",unit_id=unit_id,due_date=due,colour="abcdef", gitlab_id="12345")
 
     session.add(cw)
     session.commit()
@@ -96,7 +96,7 @@ def test_coursework_field_types(session):
     unit_id = create_unit(session)
     
     due = datetime.now()
-    cw = Coursework(name="Haskell 2",description="Coursework Description",unit_id=unit_id,due_date=due,colour="abcdef")
+    cw = Coursework(name="Haskell 2",description="Coursework Description",unit_id=unit_id,due_date=due,colour="abcdef", gitlab_id="12345")
 
     session.add(cw)
     session.commit()
