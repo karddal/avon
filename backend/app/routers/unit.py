@@ -27,17 +27,15 @@ session_dependency = Annotated[Session, Depends(get_session)]
     status_code=status.HTTP_201_CREATED,
 )
 async def create_unit(unit: UnitCreate, session: session_dependency):
-    
-    programme = Programme()
 
     if unit.programme_id:
         programme = session.exec(
             select(Programme).where(Programme.id == unit.programme_id)
-        ).all()
+        ).first()
 
         if not programme:
             raise HTTPException(status_code=400, detail="Programme id is invalid.")
-        
+    
     try:
         gl_data = await gl_create_unit(unit.name, programme.gitlab_id)
     except Exception:
