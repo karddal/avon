@@ -15,8 +15,9 @@ export const user = ac.newRole({
   ...userAc.statements,
 });
 export const lecturer = ac.newRole({
-  ...userAc.statements,
+  user: ["list", "get", "update"],
 });
+
 export const admin = ac.newRole({
   ...adminAc.statements,
 });

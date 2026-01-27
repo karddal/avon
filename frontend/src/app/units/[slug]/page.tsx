@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import LecturerDropdown from "@/components/units/lecturer-dropdown";
 import Lecturers from "@/components/units/lecturers";
 import UnitsCourseworkList from "@/components/units/units-coursework-list";
 import { getRequestJWT, requireSession } from "@/lib/auth-utils";
@@ -19,6 +20,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const s = await requireSession();
   let userRole = s.user.role;
+  const me = s.user.id;
   if (!userRole) {
     userRole = "user";
   }
@@ -35,7 +37,13 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
               </div>
             }
           >
-            <UnitName slug={slug} token={token} />
+            <div className="flex flex-row gap-4 justify-between items-center">
+              <UnitName slug={slug} token={token} />
+              {userRole === "lecturer" ||
+                (userRole === "admin" && (
+                  <LecturerDropdown me={me} slug={slug}></LecturerDropdown>
+                ))}
+            </div>
           </Suspense>
         </div>
         <div className="w-full bg-accent-foreground"></div>
@@ -78,7 +86,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
               </CardTitle>
             </CardHeader>
 
-            <CardContent className="w-full">
+            <CardContent className="w-full flex flex-col">
               <Tabs defaultValue="ongoing">
                 <div className={"flex flex-row justify-between items-center"}>
                   <TabsList>
@@ -123,8 +131,6 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
 
         {/* Right column */}
         <div className="flex flex-col xl:col-span-1 lg:col-span-2 gap-4 min-h-0">
-          {/* Create a coursework*/}
-
           {/* Unit Staff */}
           <DropdownCard
             openByDefault={true}

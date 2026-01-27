@@ -2,9 +2,18 @@
 
 # Continuous Assessment for Revision Control
 
+[![Deploy Backend to Amazon ECS](https://github.com/spe-uob/2025-ContinuousAssessment/actions/workflows/deploy-backend.yml/badge.svg)](https://github.com/spe-uob/2025-ContinuousAssessment/actions/workflows/deploy-backend.yml)
+[![Deploy Frontend to Amazon ECS](https://github.com/spe-uob/2025-ContinuousAssessment/actions/workflows/deploy-frontend.yml/badge.svg)](https://github.com/spe-uob/2025-ContinuousAssessment/actions/workflows/deploy-frontend.yml)
+
+[![Deploy docs site](https://github.com/spe-uob/2025-ContinuousAssessment/actions/workflows/mdbook.yml/badge.svg)](https://github.com/spe-uob/2025-ContinuousAssessment/actions/workflows/mdbook.yml)
+[![Frontend Lints, Tests](https://github.com/spe-uob/2025-ContinuousAssessment/actions/workflows/frontend.yml/badge.svg)](https://github.com/spe-uob/2025-ContinuousAssessment/actions/workflows/frontend.yml)
+[![Backend Lints, Tests](https://github.com/spe-uob/2025-ContinuousAssessment/actions/workflows/backend.yml/badge.svg)](https://github.com/spe-uob/2025-ContinuousAssessment/actions/workflows/backend.yml)
+
 ![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white) ![AWS](https://img.shields.io/badge/aws-%23232f3e.svg?style=for-the-badge&logo=amazon&logoColor=white) ![GitLab](https://img.shields.io/badge/GitLab-FC6D26?style=for-the-badge&logo=gitlab&logoColor=white) ![Next.JS](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white) ![FastAPI](https://img.shields.io/badge/FastAPI-009485.svg?style=for-the-badge&logo=fastapi&logoColor=white)
 
 **Continuous Assessment for Revision Control (CARC)** is a **Virtual Learning Environment (VLE)** allowing lecturers to track the progress of students through coursework.
+
+View the [docs site](https://cautious-adventure-gz73j3v.pages.github.io/).
 
 ## Contents
 

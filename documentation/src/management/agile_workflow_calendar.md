@@ -11,6 +11,7 @@ Each week of the term is split into sprints, led by a rotating project manager. 
 - Assign and create issues
 - Ensure equal workload is met
 - Create a sprint section in the documentation that summarizes the sprint and organizes all related meeting notes under it.
+- Maintain kanban throughout the sprint
 
 ## Schedule
 
