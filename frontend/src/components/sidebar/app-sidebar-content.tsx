@@ -1,12 +1,12 @@
 import {
-  BookCheck,
-  ChartLine,
-  Layers,
-  LayoutDashboard,
-  NotepadText,
-  Settings,
-  SwatchBook,
-  User,
+    BookCheck, Calendar,
+    ChartLine,
+    Layers,
+    LayoutDashboard,
+    NotepadText,
+    Settings,
+    SwatchBook,
+    User,
 } from "lucide-react";
 import Link from "next/link";
 import { Kbd, KbdGroup } from "@/components/ui/kbd";
@@ -73,7 +73,7 @@ const adminItems = [
     {
         title: "Calendar",
         url: "/calendar",
-        icon: Layers,
+        icon: Calendar,
         bottom: false,
     },
 ];
@@ -118,7 +118,7 @@ const lecturerItems = [
     {
         title: "Calendar",
         url: "/calendar",
-        icon: Layers,
+        icon: Calendar,
         bottom: false,
     },
 ];
@@ -144,7 +144,7 @@ const studentItems = [
     {
         title: "Calendar",
         url: "/calendar",
-        icon: Layers,
+        icon: Calendar,
         bottom: false,
     },
 ];
