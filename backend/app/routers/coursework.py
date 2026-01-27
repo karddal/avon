@@ -30,7 +30,7 @@ async def create_coursework(coursework: CourseworkCreate, session: session_depen
         gl_data = await gl_create_coursework(coursework.name, unit_exists.gitlab_id)
     except Exception:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            status_code=status.HTTP_100_CONTINUE, 
             detail="Database failed. GitLab group rolled back."
     )
 

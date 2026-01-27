@@ -7,15 +7,7 @@ from contextlib import nullcontext as does_not_raise
 from app.models.programme import Programme
 from app.models.unit import Unit
 from app.schemas.unit import UnitCreate
-
-@pytest.fixture
-def programme(session):
-    programme = Programme(id=uuid4(), name="Test Programme", start_date=datetime.now(),
-                         end_date=datetime.today() + timedelta(days=365))
-    session.add(programme)
-    session.commit()
-    session.refresh(programme)
-    return programme
+from tests.helpers.factories import create_programme
 
 @pytest.mark.parametrize("name,expected", [
     ("", pytest.raises(ValidationError)),
@@ -25,7 +17,8 @@ def programme(session):
     ("a" * 2345, pytest.raises(ValidationError)),
 ],
                          ids=["empty", "length 1", "length 10", "length 72", "length too high"])
-def test_create_unit_with_name(name, expected, programme):
+def test_create_unit_with_name(session, name, expected):
+    programme = create_programme(session)
     with expected:
         UnitCreate(name=name, description="test", unit_code="aaaaa", colour="abcdef", programme_id=programme.id)
 
@@ -37,7 +30,8 @@ def test_create_unit_with_name(name, expected, programme):
     ("a" * 2345, pytest.raises(ValidationError)),
 ],
                          ids=["empty", "length 1", "length 10", "length 2000", "length too high"])
-def test_create_unit_with_description(description, expected, programme):
+def test_create_unit_with_description(session, description, expected):
+    programme = create_programme(session)
     with expected:
         UnitCreate(name="name", description=description, unit_code="aaaaa", colour="abcdef", programme_id=programme.id)
 
@@ -49,7 +43,8 @@ def test_create_unit_with_description(description, expected, programme):
     ("a" * 2345, pytest.raises(ValidationError)),
 ],
                          ids=["empty", "length 1", "length 10", "length 100", "length too high"])
-def test_create_unit_with_code(code, expected, programme):
+def test_create_unit_with_code(session, code, expected):
+    programme = create_programme(session)
     with expected:
         UnitCreate(name="name", description="test", unit_code=code, colour="abcdef", programme_id=programme.id)
 
@@ -61,6 +56,7 @@ def test_create_unit_with_code(code, expected, programme):
     ("afbadsf" * 100, pytest.raises(ValidationError))
 ],
                          ids=["empty", "a", "12cc34", "abcdef", "length too high"])
-def test_create_unit_with_colour(colour, expected, programme):
+def test_create_unit_with_colour(session, colour, expected):
+    programme = create_programme(session)
     with expected:
         UnitCreate(name="name", description="test", unit_code="abcdef", colour=colour, programme_id=programme.id)

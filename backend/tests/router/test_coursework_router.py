@@ -11,19 +11,6 @@ from app.models.programme import Programme
 from app.models.unit_enrollment import UnitEnrollment
 from tests.helpers.factories import create_unit
 
-
-# Helper Funcs:
-def create_unit_with_programme(session) -> UUID:
-    programme = Programme(id=uuid4(), name="Test Programme",start_date=datetime.now(), end_date=datetime.today() + timedelta(days=365))
-    session.add(programme)
-    session.commit()
-    unit_id = uuid4()
-    unit = Unit(id=unit_id, name="Test Unit", description="Test description", unit_code="COMS20017", colour="abcdef", programme_id=programme.id,)
-    session.add(unit)
-    session.commit()
-
-    return unit_id
-
 def coursework_payload(unit_id):
     return {
         "name": "Haskell 2",
@@ -191,7 +178,7 @@ def test_delete_coursework_not_found(client):
     assert response.json()["detail"] == "Coursework not found"
 
 def test_update_coursework_works(client, session):
-    unit_id = create_unit_with_programme(session)
+    unit_id = create_unit(session)
 
     payload = coursework_payload(str(unit_id))
     createResponse = client.post("/coursework/create", json=payload)
@@ -211,7 +198,7 @@ def test_update_coursework_works(client, session):
     assert g.name == np["name"]
 
 def test_update_coursework_data(client, session):
-    unit_id = create_unit_with_programme(session)
+    unit_id = create_unit(session)
 
     np = coursework_payload(str(unit_id))
     createResponse = client.post("/coursework/create", json=np)

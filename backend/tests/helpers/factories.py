@@ -7,7 +7,7 @@ from app.models.unit import Unit
 
 
 def create_programme(session: Session):
-    programme = Programme(id=uuid4(), name="Test Programme", start_date=datetime.now(),end_date=datetime.today() + timedelta(days=365), gitlab_id="12345")
+    programme = Programme(id=uuid4(), name="Test Programme", start_date=datetime.now(),end_date=datetime.today() + timedelta(days=365), gitlab_id="123456")
     session.add(programme)
     session.commit()
     session.refresh(programme)
@@ -17,7 +17,7 @@ def create_programme(session: Session):
 def create_unit(session) -> UUID:
     programme = create_programme(session)
     unit_id = uuid4()
-    unit = Unit(id=unit_id, name="Test Unit", description="Test description", unit_code="COMS20017", colour="abcdef", programme_id=programme.id, gitlab_id="12345")
+    unit = Unit(id=unit_id, name="Test Unit", description="Test description", unit_code="COMS20017", colour="abcdef", programme_id=programme.id, gitlab_id="123456")
     session.add(unit)
     session.commit()
     session.refresh(unit)
