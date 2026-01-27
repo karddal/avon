@@ -166,7 +166,7 @@ export default function EditProgramme({
                       htmlFor="date"
                       className="text-base font-semibold"
                     >
-                      Program start date
+                      Programme start date
                     </FieldLabel>
                     <Calendar29
                       props={{
@@ -190,7 +190,7 @@ export default function EditProgramme({
                       htmlFor="date"
                       className="text-base font-semibold"
                     >
-                      Program end date
+                      Programme end date
                     </FieldLabel>
                     <Calendar29
                       props={{

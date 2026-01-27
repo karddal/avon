@@ -83,7 +83,7 @@ export default function Coursework({
                   }
                 >
                   <SquareX size={4} className={"text-destructive"}></SquareX>
-                  Delete programme
+                  Delete Programme
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
