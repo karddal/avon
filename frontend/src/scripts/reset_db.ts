@@ -1,31 +1,31 @@
+import { readFileSync } from "node:fs";
+import { DatabaseSync } from "node:sqlite";
 import { auth } from "@/lib/auth";
-import {DatabaseSync} from "node:sqlite";
-import {readFileSync} from "node:fs";
 
 interface User {
-    name: string;
-    email: string;
-    password: string;
-    role: string;
+  name: string;
+  email: string;
+  password: string;
+  role: string;
 }
 
 async function seed() {
-    console.log(process.env);
+  console.log(process.env);
 
-    // run seeding
-    const db = new DatabaseSync("../sqlite.db");
-    const _session = db.createSession();
-    const statement = readFileSync('./src/scripts/drop.sql', 'utf-8')
-    const result = db.exec(statement)
+  // run seeding
+  const db = new DatabaseSync("../sqlite.db");
+  const _session = db.createSession();
+  const statement = readFileSync("./src/scripts/drop.sql", "utf-8");
+  const result = db.exec(statement);
 
-    console.log("Dropped DB");
+  console.log("Dropped DB");
 }
 
 seed()
-    .then(() => {
-        process.exit(0);
-    })
-    .catch((err) => {
-        console.error(err);
-        process.exit(1);
-    });
+  .then(() => {
+    process.exit(0);
+  })
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });

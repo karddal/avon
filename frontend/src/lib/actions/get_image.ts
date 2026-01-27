@@ -2,7 +2,7 @@
 
 import { DatabaseSync } from "node:sqlite";
 import { Pool } from "pg";
-import {pool} from "@/lib/actions/db_pool";
+import { pool } from "@/lib/actions/db_pool";
 
 export async function get_user_image_from_id(user_id: string): Promise<string> {
   const isProd = process.env.NODE_ENV === "production";

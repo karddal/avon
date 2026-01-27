@@ -1,4 +1,3 @@
-import datetime
 import os
 from contextlib import asynccontextmanager
 from typing import Annotated
@@ -7,10 +6,6 @@ from dotenv import load_dotenv
 from fastapi import Depends, FastAPI
 from sqlmodel import Session, SQLModel, create_engine
 
-from app.models.coursework import Coursework
-from app.models.programme import Programme
-from app.models.unit import Unit
-from app.models.unit_enrollment import UnitEnrollment
 
 if os.getenv("ENV") == "dev":
     env_file = ".env.dev"
