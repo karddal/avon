@@ -168,8 +168,8 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
               </Card>
             ))}
           </DropdownCard>
-        </div >
-      </section >
+        </div>
+      </section>
     </>
   );
 }

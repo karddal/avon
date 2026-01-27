@@ -8,8 +8,7 @@ from app.models.programme import Programme
 from app.schemas.programme import ProgrammeCreate, ProgrammeRead, ProgrammeDelete, ProgrammeUpdate
 
 
-from app.models.programme import Programme
-from app.schemas.programme import ProgrammeCreate, ProgrammeRead, ProgrammeAll
+from app.schemas.programme import ProgrammeAll
 
 router = APIRouter(prefix="/programmes", tags=["programmes"])
 session_dependency = Annotated[Session, Depends(get_session)]

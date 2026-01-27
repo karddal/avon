@@ -6,16 +6,12 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { requireSession } from "@/lib/auth-utils";
-import Link from "next/link";
 
 export default async function Layout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-
-
   return (
     <SidebarProvider>
       <AppSidebar />

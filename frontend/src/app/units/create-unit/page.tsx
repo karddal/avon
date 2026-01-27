@@ -1,20 +1,24 @@
+import { RedirectType, redirect } from "next/navigation";
 import { Suspense } from "react";
-import { IntForm } from "./form";
 import { requireSession } from "@/lib/auth-utils";
-import { redirect, RedirectType } from "next/navigation";
+import { IntForm } from "./form";
 
-export default async function CreateUnit({ params }: { params: Promise<{ slug: string }> }) {
-    const s = await requireSession()
-    let userRole = s.user.role
-    console.log("User Role:", userRole)
-    if (userRole != "admin") {
-        redirect("/units", RedirectType.replace)
-    }
-    return (
-        <>
-            <Suspense>
-                <IntForm slug={params}></IntForm>
-            </Suspense>
-        </>
-    )
+export default async function CreateUnit({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const s = await requireSession();
+  const userRole = s.user.role;
+  console.log("User Role:", userRole);
+  if (userRole !== "admin") {
+    redirect("/units", RedirectType.replace);
+  }
+  return (
+    <>
+      <Suspense>
+        <IntForm slug={params}></IntForm>
+      </Suspense>
+    </>
+  );
 }

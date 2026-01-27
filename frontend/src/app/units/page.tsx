@@ -1,10 +1,10 @@
 "use server";
 
+import Link from "next/link";
 import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
 import UnitList from "@/components/units/unit-list";
 import { requireSession } from "@/lib/auth-utils";
-import Link from "next/link";
 
 async function PageContent() {
   await requireSession(); // make sure logged in
@@ -20,12 +20,11 @@ export default async function UnitPage() {
   }
   return (
     <Suspense fallback={<Loading />}>
-
       {userRole === "admin" && (
         <Link href={"/units/create-unit"}>
-          <button className="w-32 py-4 border-2 hover:cursor-pointer" >
+          <div className="w-32 py-4 border-2 hover:cursor-pointer">
             Create unit
-          </button>
+          </div>
         </Link>
       )}
       <PageContent />

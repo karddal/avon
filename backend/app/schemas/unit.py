@@ -2,9 +2,8 @@ import uuid
 from datetime import date, datetime
 from typing import Annotated, List
 
-from pydantic import AfterValidator, BaseModel, ConfigDict, Field
+from pydantic import AfterValidator, BaseModel, ConfigDict
 
-from app.models.colour import Colour
 
 
 def name_is_correct_length(name: str) -> str:
