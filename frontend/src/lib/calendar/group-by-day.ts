@@ -1,4 +1,4 @@
-import {CalendarEvent} from "@/components/calendar/week-timetable-card";
+import {CalendarEvent} from "@/components/calendar/calendar-timetable-card";
 import {format} from "date-fns";
 
 export function groupEventsByDay(events: CalendarEvent[]) {

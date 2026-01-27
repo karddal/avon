@@ -1,4 +1,4 @@
-import {CalendarEvent} from "@/components/calendar/week-timetable-card";
+import {CalendarEvent} from "@/components/calendar/calendar-timetable-card";
 
 type CourseworkEvent = {
     id: string

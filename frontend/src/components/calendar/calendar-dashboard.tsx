@@ -3,7 +3,7 @@
 import {useCallback, useState} from "react";
 import {CalendarNavigationCard} from "@/components/calendar/calendar-navigation-card";
 import {Tabs, TabsContent} from "@/components/ui/tabs";
-import {WeeklyTimeTableCard} from "@/components/calendar/week-timetable-card";
+import {WeeklyTimeTableCard} from "@/components/calendar/calendar-timetable-card";
 
 export default function CalendarDashboard() {
     const [weekStartDate, setWeekStartDate] = useState<Date>(new Date())
