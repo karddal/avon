@@ -2,7 +2,7 @@ import uuid
 from datetime import date, datetime
 from typing import Annotated, List
 
-from pydantic import AfterValidator, BaseModel, ConfigDict, ValidationError
+from pydantic import AfterValidator, BaseModel, ConfigDict
 
 def name_is_correct_length(name: str) -> str:
     if 1 <= len(name) <= 72:
