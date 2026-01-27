@@ -97,3 +97,7 @@ Please follow the rest of the instructions in this chapter to setup the tools fo
 
 Some of our workflows use Docker, because we containerise our platform. This means that you should install Docker or a Docker-compatible runtime, like
 Podman.
+
+## Local db setup
+
+To seed a local db for development use, see the just commands above.
