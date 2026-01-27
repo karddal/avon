@@ -1,6 +1,7 @@
 from typing import Annotated
 from uuid import UUID
 
+from app.core.helpers.gitlab import gl_create_unit
 from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlmodel import Session, select
 
@@ -26,15 +27,8 @@ session_dependency = Annotated[Session, Depends(get_session)]
     status_code=status.HTTP_201_CREATED,
 )
 async def create_unit(unit: UnitCreate, session: session_dependency):
-    db_unit = Unit(
-        name=unit.name,
-        description=unit.description,
-        unit_code=unit.unit_code,
-        colour=unit.colour,
-        start_date=None,
-        end_date=None,
-        programme_id=unit.programme_id,
-    )
+    
+    programme = Programme()
 
     if unit.programme_id:
         programme = session.exec(
@@ -43,6 +37,25 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
 
         if not programme:
             raise HTTPException(status_code=400, detail="Programme id is invalid.")
+        
+    try:
+        gl_data = await gl_create_unit(unit.name, programme.gitlab_id)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail="Database failed. GitLab group rolled back."
+    )
+
+    db_unit = Unit(
+        name=unit.name,
+        description=unit.description,
+        unit_code=unit.unit_code,
+        colour=unit.colour,
+        start_date=None,
+        end_date=None,
+        programme_id=unit.programme_id,
+        gitlab_id=gl_data["gitlabGroupId"]
+    )
 
     session.add(db_unit)
     session.commit()
