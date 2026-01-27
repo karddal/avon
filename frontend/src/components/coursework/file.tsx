@@ -1,5 +1,5 @@
-import { Card, CardTitle } from "@/components/ui/card";
 import { FileBracesCorner, SearchAlert } from "lucide-react";
+import { Card, CardTitle } from "@/components/ui/card";
 
 export default function File({
   fileName,

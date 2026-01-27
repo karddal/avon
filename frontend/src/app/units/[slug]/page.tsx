@@ -15,7 +15,6 @@ import LecturerDropdown from "@/components/units/lecturer-dropdown";
 import Lecturers from "@/components/units/lecturers";
 import UnitsCourseworkList from "@/components/units/units-coursework-list";
 import { getRequestJWT, requireSession } from "@/lib/auth-utils";
-import Repository from "@/components/coursework/repository";
 
 async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

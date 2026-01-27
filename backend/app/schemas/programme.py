@@ -4,6 +4,7 @@ from datetime import date
 
 from pydantic import BaseModel, AfterValidator
 
+
 def is_valid_name(name: str) -> str:
     name = name.strip()
     if 1 <= len(name) <= 100:
@@ -29,7 +30,6 @@ class ProgrammeCreate(BaseModel):
     name: Name
     start_date: StartDate
     end_date: EndDate
-    gitlab_id: str
 
 
 class ProgrammeRead(BaseModel):

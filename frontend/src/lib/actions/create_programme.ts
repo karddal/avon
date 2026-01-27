@@ -5,7 +5,7 @@ type CreateProgrammeRequest = {
   name: string;
   start_date: string;
   end_date: string;
-  gitlab_id: string;
+  // gitlab_id: string;
 };
 
 type _CreateProgrammeResponse = {

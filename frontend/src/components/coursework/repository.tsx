@@ -1,9 +1,8 @@
-import { DropdownCard } from "@/components/dropdown-card";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { FilePlus, Gitlab } from "lucide-react";
 import File from "@/components/coursework/file";
+import { DropdownCard } from "@/components/dropdown-card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default function Repository() {
   return (

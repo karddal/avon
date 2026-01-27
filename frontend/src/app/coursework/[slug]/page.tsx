@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import CourseworkLectDropdown from "@/components/coursework/coursework-lect-dropdown";
+import Repository from "@/components/coursework/repository";
 import { DropdownCard } from "@/components/dropdown-card";
 import RunTestsItem from "@/components/run-tests-item";
 import TestPassedProgressBar from "@/components/tests-passed-progress";
@@ -10,7 +11,6 @@ import Loading from "../loading";
 import CourseworkDescription from "./description";
 import CourseworkInformation from "./information";
 import CourseworkName from "./name";
-import Repository from "@/components/coursework/repository";
 
 type CourseworkUpdateReqResponse = {
   id: string;
