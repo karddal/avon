@@ -76,7 +76,7 @@ export function LoginForm({
       <Card className="drop-shadow-2xl shadow-none border">
         <div className="flex justify-center">
           <Image
-            src={`/images/avon-white-optimized.svg`}
+            src={`${process.env.NEXT_PUBLIC_CDN_PATH}/images/avon-white-optimized.svg`}
             alt="logo"
             loading="eager"
             width={200}
@@ -84,7 +84,7 @@ export function LoginForm({
             className="dark:block hidden"
           />
           <Image
-            src={`/images/avon-black-optimized.svg`}
+            src={`${process.env.NEXT_PUBLIC_CDN_PATH}/images/avon-black-optimized.svg`}
             alt="logo"
             loading="eager"
             width={200}
@@ -105,7 +105,7 @@ export function LoginForm({
                   <Image
                     width={15}
                     height={15}
-                    src={`/images/microsoft.svg`}
+                    src={`${process.env.NEXT_PUBLIC_CDN_PATH}/images/microsoft.svg`}
                     alt="microsoft logo"
                   />
                   Login with Microsoft
