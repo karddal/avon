@@ -101,3 +101,46 @@ async def gl_create_unit(name, programme_id):
         "webUrl": data.get("web_url"),
         "path": data.get("path"),
     }
+
+async def gl_create_coursework(name, unit_id):
+    if not TOKEN or not BASE_URL:
+        raise HTTPException(status_code=500, detail="Missing GitLab configuration")
+        
+    path = generate_gitlab_path(name)
+    
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.post(
+                f"{BASE_URL}/groups",
+                headers={
+                    "PRIVATE-TOKEN": TOKEN,
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "name": name,
+                    "path": path,
+                    "parent_id": unit_id,
+                    "visibility": "private",
+                    "description": f"Root group for the {name} coursework.",
+                },
+                timeout=10.0
+            )
+
+            data = response.json()
+
+            if response.status_code != 201:
+                return {
+                    "success": False,
+                    "error": data.get("message") or "Failed to create GitLab group"
+                }
+
+        except httpx.RequestError as err:
+            print(f"Network Error: {err}")
+            raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
+        
+    return {
+        "success": True,
+        "gitlabGroupId": data.get("id"),
+        "webUrl": data.get("web_url"),
+        "path": data.get("path"),
+    }
