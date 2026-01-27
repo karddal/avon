@@ -85,7 +85,11 @@ async function CourseworkPageContent({
               </div>
             }
           >
-            <div className={"flex flex-row gap-4 justify-between items-center mt-4"}>
+            <div
+              className={
+                "flex flex-row gap-4 justify-between items-center mt-4"
+              }
+            >
               <CourseworkName slug={slug} token={token} />
               {(me === "lecturer" || me === "admin") && (
                 <CourseworkLectDropdown

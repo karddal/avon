@@ -1,16 +1,16 @@
 "use client";
 
-import { useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 import { useSidebar } from "@/components/ui/sidebar";
 
 export function SidebarCloser() {
-  const pathname = usePathname();
+  const _pathname = usePathname();
   const { setOpenMobile } = useSidebar();
 
   useEffect(() => {
     setOpenMobile(false);
-  }, [pathname, setOpenMobile]);
+  }, [setOpenMobile]);
 
   return null;
 }

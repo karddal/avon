@@ -2,12 +2,12 @@ import type { ReactNode } from "react";
 import { ModeToggle } from "@/components/mode-toggle";
 import NotificationBar from "@/components/notifications-bar";
 import AppSidebar from "@/components/sidebar/app-sidebar-wrapper";
+import { SidebarCloser } from "@/components/sidebar/sidebar-closer";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { SidebarCloser } from "@/components/sidebar/sidebar-closer";
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
