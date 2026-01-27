@@ -78,14 +78,13 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
           >
             <div className="flex flex-row gap-4 justify-between items-center">
               <UnitName slug={slug} token={token} />
-              {userRole === "lecturer" ||
-                (userRole === "admin" && (
-                  <LecturerDropdown
-                    unit_update_data={data}
-                    me={me}
-                    slug={slug}
-                  ></LecturerDropdown>
-                ))}
+              {(userRole === "lecturer" || userRole === "admin") && (
+                <LecturerDropdown
+                  unit_update_data={data}
+                  me={me}
+                  slug={slug}
+                ></LecturerDropdown>
+              )}
             </div>
           </Suspense>
         </div>
