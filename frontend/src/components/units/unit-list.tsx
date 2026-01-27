@@ -2,7 +2,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Unit from "@/components/units/unit";
-import { getRequestJWT } from "@/lib/auth-utils";
+import { getRequestJWT, requireSession } from "@/lib/auth-utils";
 
 export type UnitData = {
   id: string;
@@ -28,6 +28,9 @@ type ProgrammesResponse = {
 export default async function UnitList() {
   // place unit data into tabs based on year
   const token = await getRequestJWT();
+  const s = await requireSession();
+  const role = s.user.role;
+  const hasPermissions = role === "admin" || role === "lecturer";
 
   const data = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/me/units-by-programme`,
@@ -72,7 +75,11 @@ export default async function UnitList() {
           >
             {programme.units.map((unit) => (
               <div className={"mb-3"} key={unit.id}>
-                <Unit key={unit.id} props={unit} />
+                <Unit
+                  key={unit.id}
+                  props={unit}
+                  hasPermissions={hasPermissions}
+                />
               </div>
             ))}
           </TabsContent>
