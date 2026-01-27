@@ -29,6 +29,7 @@ class ProgrammeCreate(BaseModel):
     name: Name
     start_date: StartDate
     end_date: EndDate
+    gitlab_id: str
 
 
 class ProgrammeRead(BaseModel):

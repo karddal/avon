@@ -19,7 +19,7 @@ async def create_programme(programme: ProgrammeCreate, session: session_dependen
     if programmeAlreadyExists:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Programme already exists')
 
-    db_programme = Programme(name=programme.name, start_date=programme.start_date, end_date=programme.end_date)
+    db_programme = Programme(name=programme.name, start_date=programme.start_date, end_date=programme.end_date, gitlab_id=programme.gitlab_id)
 
     session.add(db_programme)
     session.commit()
