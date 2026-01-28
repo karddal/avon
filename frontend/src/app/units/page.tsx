@@ -1,10 +1,10 @@
 "use server";
+import Link from "next/link";
 import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UnitList from "@/components/units/unit-list";
 import { requireSession } from "@/lib/auth-utils";
-import Link from "next/link";
 
 async function PageContent() {
   const s = await requireSession(); // make sure logged in
