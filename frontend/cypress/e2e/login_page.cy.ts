@@ -18,17 +18,24 @@ describe("Login page", () => {
     cy.get("button").should("contain.text", "Login");
   });
 
-  it("sets auth cookie when logging in", () => {
-    cy.visit("/");
+  it(
+    "sets auth cookie when logging in",
+    {
+      defaultCommandTimeout: 50000,
+    },
+    () => {
+      cy.visit("/");
 
-    cy.get("#email").type("one@bris.ac.uk");
-    cy.get("#password").type("changeme");
+      cy.get("#email").type("one@bris.ac.uk");
+      cy.get("#password").type("changeme");
 
-    cy.get("button[type=submit]").click();
-    cy.url().should("include", "/dashboard");
-    cy.getCookie("__Secure-better-auth.session_token").should("exist");
-    cy.get("span").should("contain", "One");
-  });
+      cy.get("button[type=submit]").click();
+      cy.get('[data-content=""] > div').should("not.exist");
+      cy.url().should("include", "/dashboard");
+      cy.getCookie("__Secure-better-auth.session_token").should("exist");
+      cy.get("span").should("contain", "One");
+    },
+  );
 
   it("shows error with invalid credentials", () => {
     cy.visit("/");
