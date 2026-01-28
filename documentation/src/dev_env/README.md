@@ -31,6 +31,7 @@ Different targets (frontend, backend, and docs) support different commands.
 - **Frontend:** `just fe <cmd>`
 - **Backend:** `just be <cmd>`
 - **Docs:** `just doc <cmd>`
+- **DB:** `just db <cmd>`
 
 ---
 
@@ -90,6 +91,13 @@ If omitted, it defaults to `dev`.
 | `just doc serve-book` | open documentation |
 
 ---
+
+### DB Commands
+
+| Command       | Purpose                       |
+|---------------|-------------------------------|
+|`just db reset`| Resets the db, drop all tables|
+|`just db seed` | Seeds db with sample data     |
 
 Please follow the rest of the instructions in this chapter to setup the tools for running the frontend and the backend.
 
