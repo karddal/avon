@@ -6,12 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UnitList from "@/components/units/unit-list";
 import { requireSession } from "@/lib/auth-utils";
 
-async function PageContent() {
-  const s = await requireSession(); // make sure logged in
-  let userRole = s.user.role;
-  if (!userRole) {
-    userRole = "user";
-  }
+function PageContent() {
   return (
     <div className="space-y-6">
       <Tabs defaultValue="ongoing">
@@ -42,14 +37,14 @@ async function PageContent() {
   );
 }
 
-export default async function UnitPage() {
+async function AdminPage() {
   const s = await requireSession();
   let userRole = s.user.role;
   if (!userRole) {
     userRole = "user";
   }
   return (
-    <Suspense fallback={<Loading />}>
+    <div>
       {userRole === "admin" && (
         <Link href={"/units/create-unit"}>
           <div className="w-32 py-4 border-2 hover:cursor-pointer">
@@ -58,6 +53,14 @@ export default async function UnitPage() {
         </Link>
       )}
       <PageContent />
+    </div>
+  )
+}
+
+export default async function UnitPage() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <AdminPage />
     </Suspense>
   );
 }
