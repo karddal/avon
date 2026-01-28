@@ -5,7 +5,9 @@ from sqlmodel import Session, select
 from uuid import UUID
 
 from app.models.programme import Programme
-from app.schemas.programme import ProgrammeCreate, ProgrammeRead, ProgrammeDelete, ProgrammeUpdate
+from app.schemas.programme import ProgrammeCreate, ProgrammeRead, ProgrammeDelete
+
+from app.schemas.programme import ProgrammeUpdate
 
 
 router = APIRouter(prefix="/programmes", tags=["programmes"])
@@ -27,6 +29,11 @@ async def create_programme(programme: ProgrammeCreate, session: session_dependen
 
     return db_programme
 
+@router.get("/all", response_model=list[ProgrammeRead])
+async def list_programmes(session: session_dependency):
+    statement = select(Programme)
+    programmes = session.exec(statement).all()
+    return programmes
 @router.get('/{id}', response_model = ProgrammeRead, status_code=status.HTTP_200_OK)
 async def get_programme(id: UUID, session: session_dependency):
     programme = session.get(Programme, id)
