@@ -196,11 +196,10 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                 e.key === "Enter" && setStep(0);
               }}
               onClick={() => setStep(0)}
-              className={`${
-                step === 0
-                  ? "underline decoration-line decoration-2 decoration-yellow-300"
-                  : ""
-              } cursor-pointer`}
+              className={`${step === 0
+                ? "underline decoration-line decoration-2 decoration-yellow-300"
+                : ""
+                } cursor-pointer`}
             >
               Step 1
             </p>
@@ -209,11 +208,10 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                 e.key === "Enter" && setStep(1);
               }}
               onClick={() => setStep(1)}
-              className={`${
-                step === 1
-                  ? "underline decoration-line decoration-2 decoration-yellow-300"
-                  : ""
-              } cursor-pointer`}
+              className={`${step === 1
+                ? "underline decoration-line decoration-2 decoration-yellow-300"
+                : ""
+                } cursor-pointer`}
             >
               Step 2
             </p>
@@ -222,11 +220,10 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                 e.key === "Enter" && setStep(2);
               }}
               onClick={() => setStep(2)}
-              className={`${
-                step === 2
-                  ? "underline decoration-line decoration-2 decoration-yellow-300"
-                  : ""
-              } cursor-pointer`}
+              className={`${step === 2
+                ? "underline decoration-line decoration-2 decoration-yellow-300"
+                : ""
+                } cursor-pointer`}
             >
               Step 3
             </p>
@@ -279,7 +276,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                         render={({ field, fieldState }) => (
                           <Field data-invalid={fieldState.invalid}>
                             <FieldLabel htmlFor={"form-flow-description"}>
-                              Give your Unit a description
+                              Give Your Unit a Description
                             </FieldLabel>
                             <Textarea
                               {...field}
@@ -301,15 +298,19 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                         render={({ field, fieldState }) => (
                           <Field data-invalid={fieldState.invalid}>
                             <FieldLabel htmlFor={"form-flow-unitCode"}>
-                              Give your Unit a code
+                              Give Your Unit a Code
                             </FieldLabel>
-                            <Textarea
-                              {...field}
-                              id={"form-flow-unitCode"}
-                              aria-invalid={fieldState.invalid}
-                              placeholder={"A unit code"}
-                              autoComplete={"off"}
-                            />
+                            <div className="w-30">
+                              <Input
+                                {...field}
+                                id={"form-flow-unitCode"}
+                                aria-invalid={fieldState.invalid}
+                                placeholder={"A unit code"}
+                                autoComplete={"off"}
+                                maxLength={12}
+                                className="w-30"
+                              />
+                            </div>
                             {fieldState.invalid && (
                               <FieldError errors={[fieldState.error]} />
                             )}
@@ -317,14 +318,14 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                         )}
                       />
 
-                      {/* Select the programme it's part off */}
+                      {/* Select the programme it's part of */}
                       <Controller
                         name={"programme"}
                         control={form.control}
                         render={({ field, fieldState }) => (
                           <Field data-invalid={fieldState.invalid}>
                             <FieldLabel htmlFor={"form-flow-programme"}>
-                              Select the programme the unit is part off
+                              Select the Programme Its Part Of
                             </FieldLabel>
 
                             <Select

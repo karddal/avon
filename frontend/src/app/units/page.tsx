@@ -73,14 +73,6 @@ async function AdminPage() {
   }
   return (
     <div>
-      {/* {userRole === "admin" && (
-        <Button asChild variant="outline" size="sm" className="mt-2">
-          <Link href={{ pathname: "/programmes/create_programme" }}>
-            <ClipboardPlus />
-            Add Unit
-          </Link>
-        </Button>
-      )} */}
       <PageContent userRole={userRole} />
     </div>
   )
