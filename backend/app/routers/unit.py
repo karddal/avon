@@ -26,6 +26,8 @@ session_dependency = Annotated[Session, Depends(get_session)]
     status_code=status.HTTP_201_CREATED,
 )
 async def create_unit(unit: UnitCreate, session: session_dependency):
+    print("Unit", unit)
+    
     db_unit = Unit(
         name=unit.name,
         description=unit.description,
@@ -33,7 +35,6 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
         colour=unit.colour,
         programme_id=unit.programme_id,
     )
-    print("hi")
     # Add validation for the start and end dates below
 
     if unit.programme_id:
@@ -47,7 +48,6 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
     session.add(db_unit)
     session.commit()
     session.refresh(db_unit)
-    print("here")
     return db_unit
 
 
