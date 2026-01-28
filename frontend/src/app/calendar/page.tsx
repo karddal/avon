@@ -1,7 +1,5 @@
 import Loading from "@/app/coursework/loading";
 import {Suspense} from "react";
-import {WeeklyTimeTableCard} from "@/components/calendar/calendar-timetable-card";
-import {CalendarNavigationCard} from "@/components/calendar/calendar-navigation-card";
 import CalendarDashboard from "@/components/calendar/calendar-dashboard";
 
 async function CalendarPageContent() {

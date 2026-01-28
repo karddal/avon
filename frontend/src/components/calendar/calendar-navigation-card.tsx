@@ -5,7 +5,7 @@ import {Button} from "@/components/ui/button";
 import {addDays, addWeeks, format, startOfWeek} from "date-fns";
 import {useEffect, useMemo, useState} from "react";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
-import {CalendarCheck, CalendarIcon, ChevronLeft, ChevronRight} from "lucide-react";
+import {CalendarIcon, ChevronLeft, ChevronRight} from "lucide-react";
 import {Calendar} from "@/components/ui/calendar";
 import {TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {SearchableSelect, type SearchableSelectOption} from "@/components/searchableSelect";
