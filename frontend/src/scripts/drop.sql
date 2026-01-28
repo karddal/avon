@@ -1,17 +1,17 @@
-drop table account;
+drop table if exists account;
 
-drop table coursework;
+drop table if exists coursework;
 
-drop table jwks;
+drop table if exists jwks;
 
-drop table session;
+drop table if exists session;
 
-drop table unitenrollment;
+drop table if exists unitenrollment;
 
-drop table unit;
+drop table if exists unit;
 
-drop table programme;
+drop table if exists programme;
 
-drop table user;
+drop table if exists user;
 
-drop table verification;
+drop table if exists verification;
