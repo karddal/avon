@@ -16,6 +16,25 @@ import Lecturers from "@/components/units/lecturers";
 import UnitsCourseworkList from "@/components/units/units-coursework-list";
 import { getRequestJWT, requireSession } from "@/lib/auth-utils";
 
+type UnitDataResponse = {
+  id: string;
+  name: string;
+  description: string;
+  creation_date: string;
+  unit_code: string;
+  colour: string;
+  programme_id: string;
+};
+
+type UnitUpdateData = {
+  id: string;
+  name: string;
+  description?: string;
+  colour: string;
+  unit_code: string;
+  programme_id: string;
+};
+
 async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const s = await requireSession();
@@ -25,6 +44,26 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
     userRole = "user";
   }
   const token = await getRequestJWT();
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/units/${slug}/`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      cache: "no-cache",
+    },
+  );
+  const c: UnitDataResponse = await response.json();
+  const data: UnitUpdateData = {
+    id: c.id,
+    name: c.name,
+    description: c.description,
+    colour: c.colour,
+    unit_code: c.unit_code,
+    programme_id: c.programme_id,
+  };
+
   return (
     <>
       {/* Header */}
@@ -40,7 +79,11 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
             <div className="flex flex-row gap-4 justify-between items-center">
               <UnitName slug={slug} token={token} />
               {(userRole === "lecturer" || userRole === "admin") && (
-                <LecturerDropdown me={me} slug={slug}></LecturerDropdown>
+                <LecturerDropdown
+                  unit_update_data={data}
+                  me={me}
+                  slug={slug}
+                ></LecturerDropdown>
               )}
             </div>
           </Suspense>

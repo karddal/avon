@@ -37,17 +37,15 @@ export default async function CourseworkList({
   const s = await requireSession();
   const role = s.user.role;
   const hasPermissions = role === "admin" || role === "lecturer";
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/me/courseworks`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      cache: "no-cache",
+  const route = role === "admin" ? "coursework/all" : "me/courseworks";
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/${route}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
     },
-  );
+    cache: "no-cache",
+  });
   const courseworkListData: unit[] = await response.json();
 
   const now = new Date();
@@ -97,7 +95,7 @@ export default async function CourseworkList({
         <Tabs
           defaultValue={filteredUnitsList[0].id}
           orientation={"vertical"}
-          className={"flex flex-col lg:flex-row w-full"}
+          className={"flex flex-col lg:flex-row w-full overflow-y-scroll h-48"}
         >
           <TabsList
             className={"basis-1/3 flex flex-col h-min w-full justify-start"}
@@ -105,13 +103,15 @@ export default async function CourseworkList({
             {filteredUnitsList.map((unit) => (
               <TabsTrigger
                 key={unit.id}
-                className={"text-lg p-4 w-full text-ellipsis"}
+                className={"p-4 w-full text-ellipsis flex"}
                 value={unit.id}
               >
-                {unit.name}
-                <span className={"font-light"}>
-                  {new Date(unit.programme_start_date).getFullYear()}-
-                  {new Date(unit.programme_end_date).getFullYear()}
+                <span className="text-sm md:text-lg text-wrap ">
+                  {unit.name}{" "}
+                  <span className={"font-light text-sm md:text-lg"}>
+                    {new Date(unit.programme_start_date).getFullYear()}-
+                    {new Date(unit.programme_end_date).getFullYear()}
+                  </span>
                 </span>
               </TabsTrigger>
             ))}

@@ -7,7 +7,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import Unit from "@/components/units/unit";
-import { getRequestJWT } from "@/lib/auth-utils";
+import { getRequestJWT, requireSession } from "@/lib/auth-utils";
 
 export type UnitData = {
   id: string;
@@ -25,18 +25,17 @@ export default async function UnitListByYear({
   year: string | number;
 }) {
   const token = await getRequestJWT();
-
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/me/units/active`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      cache: "no-store",
+  const s = await requireSession();
+  const role = s.user.role;
+  const route = role === "admin" ? "units/active" : "me/units/active";
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/${route}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
     },
-  );
+    cache: "no-store",
+  });
 
   if (!response.ok) {
     throw new Error(`Failed to fetch: ${response.statusText}`);
@@ -62,7 +61,7 @@ export default async function UnitListByYear({
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 lg:grid-cols-1 gap-4 overflow-y-scroll h-48">
       {unitsArray.map((unit: UnitData) => (
         <Unit key={unit.id} props={unit} />
       ))}

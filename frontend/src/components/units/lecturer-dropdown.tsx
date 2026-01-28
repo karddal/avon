@@ -23,12 +23,23 @@ import DeleteUnitButton from "@/components/units/delete-unit-button";
 import EditUnit from "@/components/units/edit-unit";
 import ListMembers from "@/components/units/list-members";
 
+type UnitUpdateData = {
+  id: string;
+  name: string;
+  description?: string;
+  colour: string;
+  unit_code: string;
+  programme_id: string;
+};
+
 export default function LecturerDropdown({
   slug,
   me,
+  unit_update_data,
 }: {
   slug: string;
   me: string;
+  unit_update_data: UnitUpdateData;
 }) {
   const [showMembers, setShowMembers] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
@@ -70,7 +81,11 @@ export default function LecturerDropdown({
         me={me}
       />
 
-      <EditUnit openState={showEdit} setOpenState={setShowEdit} />
+      <EditUnit
+        unit_update_data={unit_update_data}
+        open_state={showEdit}
+        set_open_state={setShowEdit}
+      />
 
       <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
         <AlertDialogContent>

@@ -2,7 +2,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Unit from "@/components/units/unit";
-import { getRequestJWT } from "@/lib/auth-utils";
+import { getRequestJWT, requireSession } from "@/lib/auth-utils";
 
 export type UnitData = {
   id: string;
@@ -25,12 +25,15 @@ type ProgrammesResponse = {
   programmes: Programme[];
 };
 
-export default async function UnitList() {
+export default async function UnitList({ finished }: { finished: boolean }) {
   // place unit data into tabs based on year
   const token = await getRequestJWT();
-
+  const s = await requireSession();
+  const role = s.user.role;
+  const hasPermissions = role === "admin";
+  const user = hasPermissions ? "units" : "me";
   const data = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/me/units-by-programme`,
+    `${process.env.NEXT_PUBLIC_API_URL}/${user}/units-by-programme`,
     {
       method: "GET",
       headers: {
@@ -40,7 +43,21 @@ export default async function UnitList() {
     },
   );
   const unitData: ProgrammesResponse = await data.json();
-  const programmes = unitData.programmes;
+  const programmeListData = unitData.programmes;
+  const now = new Date();
+
+  const programmes = programmeListData.filter((programme) => {
+    const created = new Date(programme.start_date);
+    const due = new Date(programme.end_date);
+
+    const isActive = now >= created && now <= due;
+
+    if (finished) {
+      return now > due;
+    }
+
+    return isActive;
+  });
   console.log(unitData);
   // const filtered = await getData(currentYear, finished)
   const d = programmes.at(0)?.id ?? "0";
@@ -56,10 +73,12 @@ export default async function UnitList() {
         {programmes.map((programme) => (
           <TabsTrigger
             key={programme.id}
-            className={"text-lg p-4 w-full text-ellipsis"}
+            className={"p-4 w-full text-ellipsis"}
             value={programme.id}
           >
-            {programme.name}
+            <span className="text-sm text-wrap md:text-lg">
+              {programme.name}
+            </span>
           </TabsTrigger>
         ))}
       </TabsList>
@@ -72,7 +91,11 @@ export default async function UnitList() {
           >
             {programme.units.map((unit) => (
               <div className={"mb-3"} key={unit.id}>
-                <Unit key={unit.id} props={unit} />
+                <Unit
+                  key={unit.id}
+                  props={unit}
+                  hasPermissions={hasPermissions}
+                />
               </div>
             ))}
           </TabsContent>

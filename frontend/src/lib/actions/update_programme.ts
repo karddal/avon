@@ -1,21 +1,20 @@
 "use server";
 import { getRequestJWT } from "@/lib/auth-utils";
 
-type UpdateCourseworkRequest = {
+type UpdateProgrammeRequest = {
   id: string;
   name: string;
-  description: string;
-  unit_id: string;
-  due_date: string;
-  colour: string;
+  start_date: string;
+  end_date: string;
 };
 
-export async function update_coursework(req: UpdateCourseworkRequest) {
+export async function update_programme(req: UpdateProgrammeRequest) {
   "use server";
   const token = await getRequestJWT();
-
+  console.log("current request");
+  console.log(req);
   const data = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/coursework/${req.id}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/programmes/${req.id}`,
     {
       method: "PUT",
       headers: {
