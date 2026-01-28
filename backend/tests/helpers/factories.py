@@ -1,9 +1,11 @@
 from sqlmodel import Session
+from app.models.coursework import Coursework
 from app.models.programme import Programme
 from uuid import uuid4, UUID
 from datetime import datetime, timedelta
 
 from app.models.unit import Unit
+from app.models.unit_enrollment import UnitEnrollment
 
 
 def create_programme(session: Session):
@@ -23,3 +25,24 @@ def create_unit(session) -> UUID:
     session.refresh(unit)
 
     return unit_id
+
+def create_lecturers(session, unit_id) -> UnitEnrollment:
+    user_id = str(uuid4())
+    unit_enrollment = UnitEnrollment(unit_id=unit_id, user_id=user_id, type="lecturer")
+    session.add(unit_enrollment)
+    session.commit()
+    return unit_enrollment
+
+def create_students(session, unit_id) -> UnitEnrollment:
+    user_id = str(uuid4())
+    unit_enrollment = UnitEnrollment(unit_id=unit_id, user_id=user_id, type="student")
+    session.add(unit_enrollment)
+    session.commit()
+    return unit_enrollment
+
+def create_coursework(session, unit_id) -> Coursework:
+    coursework_id = uuid4()
+    coursework = Coursework(id=coursework_id, name="Test coursework", description="Test description", unit_id=unit_id, due_date=datetime.today() + timedelta(days=365), colour="abcdef")
+    session.add(coursework)
+    session.commit()
+    return coursework
