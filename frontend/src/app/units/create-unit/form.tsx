@@ -3,9 +3,8 @@
 import type { UUID } from "node:crypto";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "framer-motion";
-import { Terminal } from "lucide-react";
+import { ArrowLeft, ArrowRight, Send, Terminal } from "lucide-react";
 import { easeIn, easeOut } from "motion";
-import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { HexColorInput, HexColorPicker } from "react-colorful";
 import { Controller, useForm } from "react-hook-form";
@@ -60,7 +59,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
   const [submitState, setSubmitState] = useState<boolean>(false);
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [alertText, setAlertText] = useState<string>("");
-  const { step, setStep, next } = multistep_unit_flow();
+  const { step, setStep, next, back } = multistep_unit_flow();
   const [programmes, setProgrammes] = useState<Programme[]>([]);
   const [programmeName, setProgrammeName] = useState<string>("");
 
@@ -362,10 +361,21 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                           </Field>
                         )}
                       />
-
-                      <Button
-                        type={"button"}
-                        variant={"outline"}
+                      {/* <div className="flex flex-row"> */}
+                      {/* <Button type={"button"} variant={"outline"}
+                          onClick={() => {
+                            form
+                              .trigger(["name", "description", "programme"])
+                              .then((_result) => {
+                                if (form.formState.isValid) {
+                                  next();
+                                }
+                              });
+                          }}
+                        >
+                          Back
+                        </Button> */}
+                      <Button className="bg-black text-white hover:bg-zinc-700 hover:text-white hover:cursor-pointer" type={"button"} variant={"outline"}
                         onClick={() => {
                           form
                             .trigger(["name", "description", "programme"])
@@ -377,7 +387,9 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                         }}
                       >
                         Next
+                        <ArrowRight />
                       </Button>
+                      {/* </div> */}
                     </FieldGroup>
                   </motion.div>
                 )}
@@ -499,13 +511,43 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                           </Field>
                         )}
                       />
-                      <Button
+                      {/* <Button
                         type={"button"}
                         variant={"outline"}
                         onClick={() => next()}
                       >
                         Next
-                      </Button>
+                      </Button> */}
+                      <div className="flex flex-col w-full gap-2">
+                        <Button className="bg-black text-white hover:bg-zinc-700 hover:text-white hover:cursor-pointer" type={"button"} variant={"outline"}
+                          onClick={() => {
+                            form
+                              .trigger(["color"])
+                              .then((_result) => {
+                                if (form.formState.isValid) {
+                                  next();
+                                }
+                              });
+                          }}
+                        >
+                          Next
+                          <ArrowRight />
+                        </Button>
+                        <Button className="hover:cursor-pointer" type={"button"} variant={"outline"}
+                          onClick={() => {
+                            form
+                              .trigger([])
+                              .then((_result) => {
+                                if (form.formState.isValid) {
+                                  back();
+                                }
+                              });
+                          }}
+                        >
+                          <ArrowLeft />
+                          Back
+                        </Button>
+                      </div>
                     </FieldGroup>
                   </motion.div>
                 )}
@@ -562,16 +604,34 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                           disabled={true}
                           type={"submit"}
                           variant={"outline"}
+                          className="bg-black text-white hover:bg-zinc-700 hover:cursor-pointer"
                         >
                           <Spinner />
                           Submit
                         </Button>
                       )}
+
                       {!submitState && (
-                        <Button type={"submit"} variant={"outline"}>
+                        <Button type={"submit"} variant={"outline"} className="bg-black text-white hover:bg-zinc-700 hover:text-white hover:cursor-pointer">
                           Submit
+                          <Send />
                         </Button>
                       )}
+                      <Button className="hover:cursor-pointer -mt-5" type={"button"} variant={"outline"}
+                        onClick={() => {
+                          form
+                            .trigger([])
+                            .then((_result) => {
+                              if (form.formState.isValid) {
+                                back();
+                              }
+                            });
+                        }}
+                      >
+                        <ArrowLeft />
+                        Back
+                      </Button>
+
 
                       {showAlert && (
                         <Alert variant="destructive">
