@@ -256,19 +256,40 @@ Python is used for the FastAPI backend. It can be downloaded [here](https://www.
 Just is a command runner that we use to simplify our workflow and make commits easier.
 To install it, follow the instructions on this page: [here](https://github.com/casey/just?tab=readme-ov-file#installation)
 
-Pay particular attention to the instructions if you are using **Windows** because in order to use Just you will need to add Git Bash to your PATH.
-There are instructions on the linked Just GitHub page.
+To see more command see [here](https://github.com/spe-uob/2025-ContinuousAssessment/blob/dev/documentation/src/dev_env/README.md)
 
 Once you have installed it, make sure you are in the root (i.e. the folder with README.md).
 Here, you can use `just --list` to list all available commands.
 
-| Command                   | Usecase                                                                |
-| ------------------------- | ---------------------------------------------------------------------- |
-| `check`                   | Runs both frontend and backend checks, does not fix, just list issues. |
-| `check-fe` and `check-be` | Runs either frontend or backend checks, respectively. Does not fix.    |
-| `fixit`                   | Fixes things flagged up for both frontend and backend.                 |
-| `fix-fe` and `fix-be`     | Fixes either frontend or backend                                       |
-| `run-fe` and `run-be`     | Runs either frontend or backend.                                       |
+| Command                           | Usecase                                                                |
+|-----------------------------------| ---------------------------------------------------------------------- |
+| `check`                           | Runs both frontend and backend checks, does not fix, just list issues. |
+| `fe check` and `be check`         | Runs either frontend or backend checks, respectively. Does not fix.    |
+| `fixit`                           | Fixes things flagged up for both frontend and backend.                 |
+| `fe fix` and `be fix`             | Fixes either frontend or backend                                       |
+| `fe run <env>` and `be run <env>` | Runs either frontend or backend.                                       |
+
+#### frontend Environment Options
+
+The `<env>` parameter specifies which environment to run the frontend in.
+
+If omitted, it defaults to `dev`.
+
+| Value   | Description             |
+|---------|-------------------------|
+| `dev`   | Development environment |
+| `start` | Production environment  |
+
+#### Environment Options
+
+The `<env>` parameter specifies which environment to run the backend in.
+
+If omitted, it defaults to `dev`.
+
+| Value     | Description               |
+|-----------|---------------------------|
+| `dev`     | Development environment   |
+
 
 ### Setup / Installing Dependancies
 
@@ -280,9 +301,9 @@ git clone git@github.com:spe-uob/2025-ContinuousAssessment
 
 Before starting work, you need to install all the required packages.
 
-For the **frontend**, enter the `frontend` folder and execute `npm install` to fetch all dependencies..
+For the **frontend**, execute `just fe sync` or `just sync` to fetch all dependencies..
 
-For the **backend**, enter the `backend` folder, create a virtual environment using `uv venv`, activate the environment, and then run `uv sync` to install all packages.
+For the **backend**, enter the `backend` folder, create a virtual environment using `uv venv`, activate the environment, and then run `just be sync` or `just sync` to install all packages.
 Other commands such as `uv add` can be used to add packages to the project.
 
 ### Running
@@ -313,9 +334,12 @@ JWT_ISSUER="https://localhost:3000"             # jwt issuer, from frontend
 
 #### Final Steps
 
-To run the frontend, simply run `just run-fe` in the project root.
+To run the frontend, simply run `just fe run <env>` in the project root.
+- the `<env>` can be blank, it automatically will use `dev` as `env`
 
-Similarly, to run the backend, run `ENV=dev just run-be` if using `.env.dev`.
+Similarly, to run the backend, run `just be run <env>` 
+- use `dev` as env if using `.env.dev`.
+- the `<env>` can be blank it will use `dev` as `env`
 
 Now you should be able to visit `http://localhost:3000` and view the frontend Next.js app, with the backend running on`http://localhost:8000`.
 
