@@ -1,8 +1,7 @@
 "use client";
-import { Ellipsis, SquareX } from "lucide-react";
-import Link from "next/link";
+import { Ellipsis, SquarePen, SquareX } from "lucide-react";
 import { useState } from "react";
-import DeleteCourseworkButton from "@/app/units/[slug]/delete_coursework_button";
+import DeleteProgrammeButton from "@/app/programmes/delete_programme_button";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -22,51 +21,43 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Card } from "../ui/card";
+import EditProgramme from "./edit-programme";
 
-type courseworkData = {
+type programmeData = {
   id: string;
   name: string;
-  unit_id?: string;
-  description: string;
-  colour: string;
-  creation_date: string;
-  due_date: string;
-  unit_code?: string;
+  start_date: string;
+  end_date: string;
 };
-
-function _getRandomTestsPassed(): number {
-  return Math.random() * 100;
-}
 
 export default function Coursework({
   props,
   hasPermissions,
 }: {
-  props: courseworkData;
+  props: programmeData;
   hasPermissions: boolean;
 }) {
-  const colouring = {
-    backgroundColor: `#${props.colour}`,
-  };
   const [showDelete, setShowDelete] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
+  console.log(props);
   return (
     <div>
-      <div style={colouring} className="h-2 w-full"></div>
-      <Card className="bg-muted h-full flex flex-row p-2 hover:bg-foreground/10">
-        <Link className={"flex-1 h-full"} href={`/coursework/${props.id}`}>
-          <div className="h-full flex-row justify-between">
-            <div className="flex flex-col">
-              <p className="text-lg lg:text-xl">{props.name}</p>
-              <p className="text-muted-foreground">{props.unit_code}</p>
-            </div>
-            <div className="flex flex-row gap-2">
-              <p className="text-sm lg:text-xl text-muted-foreground">
-                <span className="text-sm">Due: </span>
-                {new Date(props.due_date).toLocaleDateString()}
-              </p>
-            </div>
+      <Card className="bg-muted h-full justify-between flex-1 flex flex-row p-2 hover:bg-foreground/10">
+        <div className="h-full flex-row justify-between">
+          <div className="flex flex-col">
+            <p className="text-lg lg:text-xl">{props.name}</p>
           </div>
-        </Link>
+          <div className="flex flex-row gap-2">
+            <p className="text-sm lg:text-xl text-muted-foreground">
+              <span className="text-sm">Start Date: </span>
+              {new Date(props.start_date).toLocaleDateString()}
+            </p>
+            <p className="text-sm lg:text-xl text-muted-foreground">
+              <span className="text-sm">End Date: </span>
+              {new Date(props.end_date).toLocaleDateString()}
+            </p>
+          </div>
+        </div>
         {hasPermissions && (
           <div className={"z-20 place-self-end"}>
             <DropdownMenu>
@@ -76,8 +67,15 @@ export default function Coursework({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className={"w-56"}>
-                <DropdownMenuLabel>Coursework Options</DropdownMenuLabel>
+                <DropdownMenuLabel>Programme Options</DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onSelect={() => setShowEdit(true)}
+                  className={"flex flex-row"}
+                >
+                  <SquarePen className="mr-2 h-4 w-4" />
+                  Edit Programme
+                </DropdownMenuItem>
                 <DropdownMenuItem
                   onSelect={() => setShowDelete(true)}
                   className={
@@ -85,25 +83,30 @@ export default function Coursework({
                   }
                 >
                   <SquareX size={4} className={"text-destructive"}></SquareX>
-                  Delete coursework
+                  Delete Programme
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            <EditProgramme
+              open_state={showEdit}
+              set_open_state={setShowEdit}
+              programme_update_data={props}
+            />
             <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                   <AlertDialogDescription>
                     This action cannot be undone. This will permanently delete
-                    the coursework and all of its data.
+                    the programme and all of its data.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel className="h-full">
                     Cancel
                   </AlertDialogCancel>
-                  <DeleteCourseworkButton
-                    courseworkId={props.id}
+                  <DeleteProgrammeButton
+                    programmeId={props.id}
                     setAlertState={setShowDelete}
                   />
                 </AlertDialogFooter>

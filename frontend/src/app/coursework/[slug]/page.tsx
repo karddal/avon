@@ -56,8 +56,6 @@ async function CourseworkPageContent({
       cache: "no-cache",
     },
   );
-  console.log("GOT RESPONSE");
-  console.log(response);
   const c: CourseworkUpdateReqResponse = await response.json();
   const end = new Date(c.max_end_date);
   const data: CourseworkUpdateData = {
@@ -85,7 +83,11 @@ async function CourseworkPageContent({
               </div>
             }
           >
-            <div className={"flex flex-row gap-4 justify-between items-center"}>
+            <div
+              className={
+                "flex flex-row gap-4 justify-between items-center mt-4"
+              }
+            >
               <CourseworkName slug={slug} token={token} />
               {(me === "lecturer" || me === "admin") && (
                 <CourseworkLectDropdown

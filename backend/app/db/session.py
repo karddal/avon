@@ -19,8 +19,7 @@ if os.getenv("ENV") == "dev":
 db_url = os.getenv("DATABASE_URL")
 if not db_url:
     raise RuntimeError("No database url found")
-connect_args = {"check_same_thread": False}
-engine = create_engine(db_url, connect_args=connect_args)
+engine = create_engine(db_url)
 
 
 # Create session dependency so that you use only one session per request

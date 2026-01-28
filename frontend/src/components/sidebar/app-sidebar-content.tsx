@@ -144,7 +144,7 @@ export default async function AppSideBarContent() {
         ? lecturerItems
         : studentItems;
   return (
-    <SidebarContent>
+    <SidebarContent className="z-100">
       <SidebarGroup className="h-full p-0">
         <SidebarMenu className="flex h-full flex-col md:justify-between">
           <div className="flex flex-col py-2">
