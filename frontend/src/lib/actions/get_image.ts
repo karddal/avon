@@ -1,3 +1,5 @@
+"use server";
+
 import { DatabaseSync } from "node:sqlite";
 import { Pool } from "pg";
 
@@ -19,7 +21,6 @@ export async function get_user_image_from_id(user_id: string): Promise<string> {
   } else {
     const db = new DatabaseSync("../sqlite.db");
     const _session = db.createSession();
-    console.log("querying ", user_id);
     const query = db.prepare("SELECT image FROM user WHERE id = ?");
     const result = query.get(user_id) as { name: string } | undefined;
     if (!result) {

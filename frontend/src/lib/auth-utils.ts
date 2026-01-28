@@ -1,3 +1,5 @@
+"use server";
+
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
@@ -20,6 +22,15 @@ export async function requireSession() {
 export async function requireLecturerSession() {
   const s = await requireSession();
   if (s.user.role === "admin" || s.user.role === "lecturer") {
+    return s;
+  } else {
+    redirect("/units");
+  }
+}
+
+export async function requireAdminSession() {
+  const s = await requireSession();
+  if (s.user.role === "admin") {
     return s;
   } else {
     redirect("/units");

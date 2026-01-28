@@ -5,15 +5,9 @@ type DeleteCourseworkRequest = {
   id: string;
 };
 
-type CreateCourseworkResponse = {
-  success: boolean;
-};
-
 export async function delete_coursework(req: DeleteCourseworkRequest) {
   "use server";
   const token = await getRequestJWT();
-  console.log("current request");
-  console.log(req);
   const data = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/coursework/${req.id}`,
     {
