@@ -30,10 +30,6 @@ export default async function UnitList({ finished }: { finished: boolean }) {
   const token = await getRequestJWT();
   const s = await requireSession();
   const role = s.user.role;
-  const hasPermissions = role === "admin" || role === "lecturer";
-
-  const s = await requireSession();
-  const role = s.user.role;
   const hasPermissions = role === "admin";
   const user = hasPermissions ? "units" : "me";
   const data = await fetch(
