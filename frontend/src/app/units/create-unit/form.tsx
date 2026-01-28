@@ -44,6 +44,7 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { multistep_unit_flow } from "./multistep_unit_flow";
+import { useRouter } from "next/navigation";
 
 interface FormProps {
     slug: Promise<{ slug: string }>;
@@ -74,9 +75,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                 },
             });
             const data = await r.json();
-            if (r.ok) {
-                toast.success("Fetched programmes");
-            } else {
+            if (!r.ok) {
                 toast.error("Could not fetch programmes");
             }
             setProgrammes(data.programmes);
@@ -168,7 +167,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                     toast.success("Unit created. You will be redirected in 1 second.");
                     const delay = new Promise((resolve) => setTimeout(resolve, 1000));
                     delay.then(() => {
-                        redirect(`/units/`);
+                        window.location.href = `/units/`;
                     });
                     setSubmitState(false);
                 }
