@@ -55,6 +55,7 @@ export default async function CourseworkInformation({
     <DropdownCard
       title={"Information"}
       desc={"Important information about the coursework appears here."}
+      openByDefault={true}
     >
       <p>
         <strong>Set date:</strong> {start_date}

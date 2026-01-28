@@ -7,12 +7,14 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { requireSession } from "@/lib/auth-utils";
 
 type courseworkData = {
   id: string;
   name: string;
   code: string;
   year: number;
+  description: string;
   finished: boolean;
   colour: string;
   creation_date: string;
@@ -38,11 +40,15 @@ export default async function CourseworkSection({
       },
     },
   );
+  const s = await requireSession();
+  const role = s.user.role;
+  const hasPermissions = role === "lecturer" || role === "admin";
 
   const data = await response.json();
   const courseworks: courseworkData[] = Array.isArray(data.courseworks)
     ? data.courseworks
     : [];
+
   if (courseworks.length === 0) {
     return (
       <Empty>
@@ -59,7 +65,11 @@ export default async function CourseworkSection({
   return (
     <>
       {courseworks.map((coursework) => (
-        <Coursework key={coursework.id} props={coursework} />
+        <Coursework
+          key={coursework.id}
+          props={coursework}
+          hasPermissions={hasPermissions}
+        />
       ))}
     </>
   );

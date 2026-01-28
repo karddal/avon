@@ -2,6 +2,9 @@
 
 # Continuous Assessment for Revision Control
 
+[![Deploy Backend to Amazon ECS](https://github.com/spe-uob/2025-ContinuousAssessment/actions/workflows/deploy-backend.yml/badge.svg)](https://github.com/spe-uob/2025-ContinuousAssessment/actions/workflows/deploy-backend.yml)
+[![Deploy Frontend to Amazon ECS](https://github.com/spe-uob/2025-ContinuousAssessment/actions/workflows/deploy-frontend.yml/badge.svg)](https://github.com/spe-uob/2025-ContinuousAssessment/actions/workflows/deploy-frontend.yml)
+
 [![Deploy docs site](https://github.com/spe-uob/2025-ContinuousAssessment/actions/workflows/mdbook.yml/badge.svg)](https://github.com/spe-uob/2025-ContinuousAssessment/actions/workflows/mdbook.yml)
 [![Frontend Lints, Tests](https://github.com/spe-uob/2025-ContinuousAssessment/actions/workflows/frontend.yml/badge.svg)](https://github.com/spe-uob/2025-ContinuousAssessment/actions/workflows/frontend.yml)
 [![Backend Lints, Tests](https://github.com/spe-uob/2025-ContinuousAssessment/actions/workflows/backend.yml/badge.svg)](https://github.com/spe-uob/2025-ContinuousAssessment/actions/workflows/backend.yml)
