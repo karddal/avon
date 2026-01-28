@@ -56,8 +56,6 @@ async function CourseworkPageContent({
       cache: "no-cache",
     },
   );
-  console.log("GOT RESPONSE");
-  console.log(response);
   const c: CourseworkUpdateReqResponse = await response.json();
   const end = new Date(c.max_end_date);
   const data: CourseworkUpdateData = {
