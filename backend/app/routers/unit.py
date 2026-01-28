@@ -4,6 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 
+from app.core.security import get_current_user
 from app.db.session import get_session
 from app.models.programme import Programme
 from app.models.unit import Unit
@@ -13,7 +14,7 @@ from app.schemas.unit import (
     UnitAll,
     UnitCreate,
     UnitRead,
-    UnitUpdate, UnitLecturers, UnitReadWithDates
+    UnitUpdate, UnitLecturers, UnitReadWithDates, UnitEventRead
 )
 
 router = APIRouter(prefix="/units", tags=["units"])
@@ -164,3 +165,22 @@ async def get_units(session: session_dependency):
     statement = select(Unit)
     units = session.exec(statement).all()
     return units
+
+# this function is quite duplicate to other units get
+#but for not causing problem when merging I will use a new one and possibility combine later
+@router.get("/units", response_model=list[UnitEventRead])
+def list_units_for_events(
+        session: session_dependency,
+        current_user_id: str = Depends(get_current_user),
+    ):
+    statement = select(Unit).join(UnitEnrollment).where(UnitEnrollment.user_id == current_user_id)
+
+    units = session.exec(statement).all()
+
+    return [
+        {
+            "id": unit.id,
+            "name": unit.name,
+        }
+        for unit in units
+    ]
