@@ -28,9 +28,6 @@ type ProgrammesResponse = {
 export default async function UnitList({ finished }: { finished: boolean }) {
   // place unit data into tabs based on year
   const token = await getRequestJWT();
-  const s = await requireSession();
-  const role = s.user.role;
-  const hasPermissions = role === "admin" || role === "lecturer";
 
   const s = await requireSession();
   const role = s.user.role;
