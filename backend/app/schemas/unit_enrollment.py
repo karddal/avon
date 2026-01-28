@@ -1,4 +1,4 @@
-from typing import Annotated, Literal
+from typing import Annotated, List, Literal
 
 from pydantic import BaseModel, AfterValidator, ConfigDict
 from uuid import UUID
@@ -36,3 +36,7 @@ class UnitEnrollmentUpdate(BaseModel):
 class UnitEnrollmentDelete(BaseModel):
     unit_id: UUID
     user_id: str
+
+class UnitEnrollmentBatchCreate(BaseModel):
+    unit_id: UUID
+    user_ids: List[UserId]

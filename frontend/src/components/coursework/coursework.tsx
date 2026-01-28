@@ -49,7 +49,6 @@ export default function Coursework({
     backgroundColor: `#${props.colour}`,
   };
   const [showDelete, setShowDelete] = useState(false);
-  console.log(props);
   return (
     <div>
       <div style={colouring} className="h-2 w-full"></div>
