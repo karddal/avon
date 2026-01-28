@@ -16,7 +16,7 @@ export type CalendarEvent = {
     end: Date;
     unit_id: string
     unit_name: string
-    href?: string; // TODO: this not add yet, but should be few line change
+    href?: string;
     colour?: string
 };
 
@@ -29,10 +29,10 @@ function useMounted() {
 export function WeeklyTimeTableCard(
     {
         weekStartDate = new Date(),
-        unitIds = [],
+        eventsMap,
 }: {
         weekStartDate?: Date;
-        unitIds?: string[]
+        eventsMap: Map<string, CalendarEvent[]>
     }) {
     const weekStart = startOfWeek(weekStartDate, {weekStartsOn : 1})// 1 is monday
     const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
@@ -49,10 +49,6 @@ export function WeeklyTimeTableCard(
         const inWeek = days.find((d) => format(d, "yyyy-MM-dd") === today);
         return [inWeek ?? days[0]];
     }, [isMobile, days]);
-
-    const form = weekStart.toISOString()
-    const to = addDays(weekStart, 7).toISOString()
-    const {eventsMap, isLoading, error} = useCalendarEvents(form, to, unitIds)
 
     return (
         <Card className="w-full">
