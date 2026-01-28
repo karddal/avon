@@ -143,7 +143,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
         name: values.name,
         description: values.description,
         unit_code: values.unitCode,
-        colour: values.color,
+        colour: colour.substring(1),
         programme_id: values.programme,
       };
       console.log(req);
@@ -420,10 +420,10 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                                 tabIndex={0}
                                 role={"option"}
                                 onKeyDown={(e) => {
-                                  e.key === "Enter" && field.onChange("ff6467");
+                                  e.key === "Enter" && field.onChange("#ff6467");
                                 }}
                                 onClick={() => {
-                                  field.onChange("ff6467");
+                                  field.onChange("#ff6467");
                                 }}
                                 className=" aspect-square border-2 border-input hover:bg-red-300 cursor-pointer size-8 rounded-none bg-red-400"
                               ></span>
@@ -431,10 +431,10 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                                 tabIndex={0}
                                 role={"option"}
                                 onKeyDown={(e) => {
-                                  e.key === "Enter" && field.onChange("e17100");
+                                  e.key === "Enter" && field.onChange("#e17100");
                                 }}
                                 onClick={() => {
-                                  field.onChange("e17100");
+                                  field.onChange("#e17100");
                                 }}
                                 className=" aspect-square border-2 border-input hover:bg-amber-300 cursor-pointer size-8 rounded-none bg-amber-400"
                               ></span>
@@ -442,10 +442,10 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                                 tabIndex={0}
                                 role={"option"}
                                 onKeyDown={(e) => {
-                                  e.key === "Enter" && field.onChange("05df72");
+                                  e.key === "Enter" && field.onChange("#05df72");
                                 }}
                                 onClick={() => {
-                                  field.onChange("05df72");
+                                  field.onChange("#05df72");
                                 }}
                                 className=" aspect-square border-2 border-input hover:bg-green-300 cursor-pointer size-8 rounded-none bg-green-400"
                               ></span>
@@ -453,10 +453,10 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                                 tabIndex={0}
                                 role={"option"}
                                 onKeyDown={(e) => {
-                                  e.key === "Enter" && field.onChange("51a2ff");
+                                  e.key === "Enter" && field.onChange("#51a2ff");
                                 }}
                                 onClick={() => {
-                                  field.onChange("51a2ff");
+                                  field.onChange("#51a2ff");
                                 }}
                                 className=" aspect-square border-2 border-input hover:bg-blue-300 cursor-pointer size-8 rounded-none bg-blue-400"
                               ></span>
@@ -464,10 +464,10 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                                 tabIndex={0}
                                 role={"option"}
                                 onKeyDown={(e) => {
-                                  e.key === "Enter" && field.onChange("c27aff");
+                                  e.key === "Enter" && field.onChange("#c27aff");
                                 }}
                                 onClick={() => {
-                                  field.onChange("c27aff");
+                                  field.onChange("#c27aff");
                                 }}
                                 className=" aspect-square border-2 border-input hover:bg-purple-300 cursor-pointer size-8 rounded-none bg-purple-400"
                               ></span>
@@ -475,10 +475,10 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                                 tabIndex={0}
                                 role={"option"}
                                 onKeyDown={(e) => {
-                                  e.key === "Enter" && field.onChange("fb64b6");
+                                  e.key === "Enter" && field.onChange("#fb64b6");
                                 }}
                                 onClick={() => {
-                                  field.onChange("fb64b6");
+                                  field.onChange("#fb64b6");
                                 }}
                                 className=" aspect-square border-2 border-input hover:bg-pink-300 cursor-pointer size-8 rounded-none bg-pink-400"
                               ></span>

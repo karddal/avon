@@ -23,7 +23,7 @@ def valid_unit_code(unit_code: str) -> str:
         raise ValueError("Unit code must be between 1 and 100 characters")
 
 def valid_colour(colour: str) -> str:
-    if (len(colour) == 7) and (colour[0] == '#'):
+    if (len(colour) == 6):
         return colour
     else:
         raise ValueError("Colour code is invalid length")
