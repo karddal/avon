@@ -28,6 +28,9 @@ type ProgrammesResponse = {
 export default async function UnitList({ finished }: { finished: boolean }) {
   // place unit data into tabs based on year
   const token = await getRequestJWT();
+  const s = await requireSession();
+  const role = s.user.role;
+  const hasPermissions = role === "admin" || role === "lecturer";
 
   const s = await requireSession();
   const role = s.user.role;
@@ -92,7 +95,11 @@ export default async function UnitList({ finished }: { finished: boolean }) {
           >
             {programme.units.map((unit) => (
               <div className={"mb-3"} key={unit.id}>
-                <Unit key={unit.id} props={unit} />
+                <Unit
+                  key={unit.id}
+                  props={unit}
+                  hasPermissions={hasPermissions}
+                />
               </div>
             ))}
           </TabsContent>
