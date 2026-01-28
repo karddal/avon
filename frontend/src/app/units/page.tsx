@@ -1,32 +1,30 @@
 "use server";
+import { ClipboardPlus } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UnitList from "@/components/units/unit-list";
 import { requireSession } from "@/lib/auth-utils";
-import { Button } from "@/components/ui/button";
-import { ClipboardPlus } from "lucide-react";
 
 type UserRole = {
-  userRole: string
-}
+  userRole: string;
+};
 
 function CreateUnit({ userRole }: UserRole) {
   return (
     <div>
-      {
-        userRole === "admin" && (
-          <Button asChild variant="outline" size="sm" className="mt-2">
-            <Link href={"/units/create-unit/"}>
-              <ClipboardPlus />
-              Add Unit
-            </Link>
-          </Button>
-        )
-      }
+      {userRole === "admin" && (
+        <Button asChild variant="outline" size="sm" className="mt-2">
+          <Link href={"/units/create-unit/"}>
+            <ClipboardPlus />
+            Add Unit
+          </Link>
+        </Button>
+      )}
     </div>
-  )
+  );
 }
 
 function PageContent({ userRole }: UserRole) {
@@ -75,7 +73,7 @@ async function AdminPage() {
     <div>
       <PageContent userRole={userRole} />
     </div>
-  )
+  );
 }
 
 export default async function UnitPage() {

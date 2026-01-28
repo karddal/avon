@@ -195,10 +195,11 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                 e.key === "Enter" && setStep(0);
               }}
               onClick={() => setStep(0)}
-              className={`${step === 0
-                ? "underline decoration-line decoration-2 decoration-yellow-300"
-                : ""
-                } cursor-pointer`}
+              className={`${
+                step === 0
+                  ? "underline decoration-line decoration-2 decoration-yellow-300"
+                  : ""
+              } cursor-pointer`}
             >
               Step 1
             </p>
@@ -207,10 +208,11 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                 e.key === "Enter" && setStep(1);
               }}
               onClick={() => setStep(1)}
-              className={`${step === 1
-                ? "underline decoration-line decoration-2 decoration-yellow-300"
-                : ""
-                } cursor-pointer`}
+              className={`${
+                step === 1
+                  ? "underline decoration-line decoration-2 decoration-yellow-300"
+                  : ""
+              } cursor-pointer`}
             >
               Step 2
             </p>
@@ -219,10 +221,11 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                 e.key === "Enter" && setStep(2);
               }}
               onClick={() => setStep(2)}
-              className={`${step === 2
-                ? "underline decoration-line decoration-2 decoration-yellow-300"
-                : ""
-                } cursor-pointer`}
+              className={`${
+                step === 2
+                  ? "underline decoration-line decoration-2 decoration-yellow-300"
+                  : ""
+              } cursor-pointer`}
             >
               Step 3
             </p>
@@ -375,7 +378,10 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                         >
                           Back
                         </Button> */}
-                      <Button className="bg-black text-white hover:bg-zinc-700 hover:text-white hover:cursor-pointer" type={"button"} variant={"outline"}
+                      <Button
+                        className="bg-black text-white hover:bg-zinc-700 hover:text-white hover:cursor-pointer"
+                        type={"button"}
+                        variant={"outline"}
                         onClick={() => {
                           form
                             .trigger(["name", "description", "programme"])
@@ -420,7 +426,8 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                                 tabIndex={0}
                                 role={"option"}
                                 onKeyDown={(e) => {
-                                  e.key === "Enter" && field.onChange("#ff6467");
+                                  e.key === "Enter" &&
+                                    field.onChange("#ff6467");
                                 }}
                                 onClick={() => {
                                   field.onChange("#ff6467");
@@ -431,7 +438,8 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                                 tabIndex={0}
                                 role={"option"}
                                 onKeyDown={(e) => {
-                                  e.key === "Enter" && field.onChange("#e17100");
+                                  e.key === "Enter" &&
+                                    field.onChange("#e17100");
                                 }}
                                 onClick={() => {
                                   field.onChange("#e17100");
@@ -442,7 +450,8 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                                 tabIndex={0}
                                 role={"option"}
                                 onKeyDown={(e) => {
-                                  e.key === "Enter" && field.onChange("#05df72");
+                                  e.key === "Enter" &&
+                                    field.onChange("#05df72");
                                 }}
                                 onClick={() => {
                                   field.onChange("#05df72");
@@ -453,7 +462,8 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                                 tabIndex={0}
                                 role={"option"}
                                 onKeyDown={(e) => {
-                                  e.key === "Enter" && field.onChange("#51a2ff");
+                                  e.key === "Enter" &&
+                                    field.onChange("#51a2ff");
                                 }}
                                 onClick={() => {
                                   field.onChange("#51a2ff");
@@ -464,7 +474,8 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                                 tabIndex={0}
                                 role={"option"}
                                 onKeyDown={(e) => {
-                                  e.key === "Enter" && field.onChange("#c27aff");
+                                  e.key === "Enter" &&
+                                    field.onChange("#c27aff");
                                 }}
                                 onClick={() => {
                                   field.onChange("#c27aff");
@@ -475,7 +486,8 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                                 tabIndex={0}
                                 role={"option"}
                                 onKeyDown={(e) => {
-                                  e.key === "Enter" && field.onChange("#fb64b6");
+                                  e.key === "Enter" &&
+                                    field.onChange("#fb64b6");
                                 }}
                                 onClick={() => {
                                   field.onChange("#fb64b6");
@@ -519,29 +531,31 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                         Next
                       </Button> */}
                       <div className="flex flex-col w-full gap-2">
-                        <Button className="bg-black text-white hover:bg-zinc-700 hover:text-white hover:cursor-pointer" type={"button"} variant={"outline"}
+                        <Button
+                          className="bg-black text-white hover:bg-zinc-700 hover:text-white hover:cursor-pointer"
+                          type={"button"}
+                          variant={"outline"}
                           onClick={() => {
-                            form
-                              .trigger(["color"])
-                              .then((_result) => {
-                                if (form.formState.isValid) {
-                                  next();
-                                }
-                              });
+                            form.trigger(["color"]).then((_result) => {
+                              if (form.formState.isValid) {
+                                next();
+                              }
+                            });
                           }}
                         >
                           Next
                           <ArrowRight />
                         </Button>
-                        <Button className="hover:cursor-pointer" type={"button"} variant={"outline"}
+                        <Button
+                          className="hover:cursor-pointer"
+                          type={"button"}
+                          variant={"outline"}
                           onClick={() => {
-                            form
-                              .trigger([])
-                              .then((_result) => {
-                                if (form.formState.isValid) {
-                                  back();
-                                }
-                              });
+                            form.trigger([]).then((_result) => {
+                              if (form.formState.isValid) {
+                                back();
+                              }
+                            });
                           }}
                         >
                           <ArrowLeft />
@@ -612,26 +626,30 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                       )}
 
                       {!submitState && (
-                        <Button type={"submit"} variant={"outline"} className="bg-black text-white hover:bg-zinc-700 hover:text-white hover:cursor-pointer">
+                        <Button
+                          type={"submit"}
+                          variant={"outline"}
+                          className="bg-black text-white hover:bg-zinc-700 hover:text-white hover:cursor-pointer"
+                        >
                           Submit
                           <Send />
                         </Button>
                       )}
-                      <Button className="hover:cursor-pointer -mt-5" type={"button"} variant={"outline"}
+                      <Button
+                        className="hover:cursor-pointer -mt-5"
+                        type={"button"}
+                        variant={"outline"}
                         onClick={() => {
-                          form
-                            .trigger([])
-                            .then((_result) => {
-                              if (form.formState.isValid) {
-                                back();
-                              }
-                            });
+                          form.trigger([]).then((_result) => {
+                            if (form.formState.isValid) {
+                              back();
+                            }
+                          });
                         }}
                       >
                         <ArrowLeft />
                         Back
                       </Button>
-
 
                       {showAlert && (
                         <Alert variant="destructive">
