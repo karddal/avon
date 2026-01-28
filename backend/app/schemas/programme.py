@@ -16,23 +16,22 @@ def is_valid_date(value: date) -> date:
     today = date.today()
 
     if value <= today:
-        raise ValueError("Date must be in the future")
+        raise ValueError("End date must be in the future")
 
     return value
 
 # Can't test for end_date > start_date here as we don't have access to both fields in teh validator, so check in route handler (and create form on frontend inforces it anyway)
 
 Name = Annotated[str, AfterValidator(is_valid_name)]
-StartDate = Annotated[date, AfterValidator(is_valid_date)]
 EndDate = Annotated[date, AfterValidator(is_valid_date)]
 
 class ProgrammeCreate(BaseModel):
     name: Name
-    start_date: StartDate
+    start_date: date # start date can be in teh past, if they forgot to make it before the programme started
     end_date: EndDate
 
 
-class ProgrammeRead(BaseModel):
+class ProgrammeRead(BaseModel): # When reading, don't need to enforce any validation, just return what's in the DB
     id: UUID
     name: str
     start_date: date
@@ -42,7 +41,7 @@ class ProgrammeRead(BaseModel):
 class ProgrammeUpdate(BaseModel):
     name: Name | None = None
     start_date: date | None = None
-    end_date: date | None = None
+    end_date: EndDate | None = None
 
 class ProgrammeDelete(BaseModel):
     id: UUID
