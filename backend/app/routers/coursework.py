@@ -1,5 +1,6 @@
 import datetime
 
+from sqlalchemy.orm import selectinload
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 
@@ -9,10 +10,9 @@ from typing import Annotated, Optional
 from uuid import UUID
 
 from app.models.coursework import Coursework
-from app.models.unit import Unit
+from app.models.unit import Unit, UnitWithCourseworks
 from app.models.unit_enrollment import UnitEnrollment
-from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkUpdate, CourseworkDelete, \
-    CourseworkEventRead
+from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkUpdate, CourseworkDelete, CourseworkEventRead, CourseworkUpdateFormData
 
 router = APIRouter(prefix = "/coursework", tags=["coursework"])
 session_dependency = Annotated[Session, Depends(get_session)]
@@ -36,6 +36,44 @@ async def create_coursework(coursework: CourseworkCreate, session: session_depen
     session.commit()
     session.refresh(db_coursework)
     return db_coursework
+
+@router.get("/all")
+async def all_courseworks(session: session_dependency):
+    statement = (select(Unit).options(selectinload(Unit.courseworks), selectinload(Unit.programme),))
+
+    units = session.exec(statement).all()
+
+    results = [
+        UnitWithCourseworks(
+            id=unit.id,
+            unit_code=unit.unit_code,
+            name=unit.name,
+            programme_start_date=unit.programme.start_date,
+            programme_end_date=unit.programme.end_date,
+            courseworks=unit.courseworks,
+        ).model_dump()
+        for unit in units
+    ]
+
+    return results
+@router.get('/{id}/update_form_data', response_model=CourseworkUpdateFormData)
+async def get_coursework_update_form_data(id: UUID, session: session_dependency):
+    coursework = session.get(Coursework, id)
+    unit = coursework.unit
+
+    return CourseworkUpdateFormData(
+        id=coursework.id,
+        name=coursework.name,
+        description=coursework.description,
+        unit_id=unit.id,
+        due_date=coursework.due_date,
+        creation_date=coursework.creation_date,
+        colour=coursework.colour,
+        unit_name=unit.name,
+        unit_code=unit.unit_code,
+        max_end_date=unit.programme.end_date,
+    )
+
 
 @router.get('/{id}', response_model = CourseworkRead)
 async def get_coursework(id: UUID, session: session_dependency):

@@ -1,10 +1,14 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from app.db.session import get_session
-from sqlmodel import Session
+from sqlmodel import Session, select
+from uuid import UUID
 
 from app.models.programme import Programme
-from app.schemas.programme import ProgrammeCreate, ProgrammeRead
+from app.schemas.programme import ProgrammeCreate, ProgrammeRead, ProgrammeDelete
+
+from app.schemas.programme import ProgrammeUpdate
+
 
 router = APIRouter(prefix="/programmes", tags=["programmes"])
 session_dependency = Annotated[Session, Depends(get_session)]
@@ -12,14 +16,55 @@ session_dependency = Annotated[Session, Depends(get_session)]
 
 @router.post('/create', response_model = ProgrammeRead, status_code=status.HTTP_201_CREATED)
 async def create_programme(programme: ProgrammeCreate, session: session_dependency):
-    db_programme = Programme(
-        name=programme.name,
-        start_date=programme.start_date,
-        end_date=programme.end_date,
-    )
+    programmeAlreadyExists = session.exec(select(Programme).where((Programme.name == programme.name))).first()
+
+    if programmeAlreadyExists:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Programme already exists')
+
+    db_programme = Programme(name=programme.name, start_date=programme.start_date, end_date=programme.end_date)
 
     session.add(db_programme)
     session.commit()
     session.refresh(db_programme)
 
     return db_programme
+
+@router.get("/all", response_model=list[ProgrammeRead])
+async def list_programmes(session: session_dependency):
+    statement = select(Programme)
+    programmes = session.exec(statement).all()
+    return programmes
+@router.get('/{id}', response_model = ProgrammeRead, status_code=status.HTTP_200_OK)
+async def get_programme(id: UUID, session: session_dependency):
+    programme = session.get(Programme, id)
+
+    if programme is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Programme not found')
+    return programme
+
+@router.delete('/{id}', response_model=ProgrammeDelete)
+async def delete_programme(id: UUID, session: session_dependency):
+    programme = session.get(Programme,id)
+
+    if programme is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Programme not found')
+    session.delete(programme)
+    session.commit()
+
+    programmeDeleted = ProgrammeDelete(id=id, deletion_successful=True)
+    return programmeDeleted
+
+@router.put('/{id}', response_model=ProgrammeRead)
+async def update_programme(id: UUID, programme: ProgrammeUpdate, session: session_dependency):
+    programme_db = session.get(Programme, id)
+
+    if programme_db is None:
+        raise HTTPException(status_code=404, detail='Programme not found')
+
+    programme_data = programme.model_dump(exclude_unset=True)
+    programme_db.sqlmodel_update(programme_data)
+
+    session.add(programme_db)
+    session.commit()
+    session.refresh(programme_db)
+    return programme_db

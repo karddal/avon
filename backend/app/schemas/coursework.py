@@ -56,6 +56,11 @@ class CourseworkRead(BaseModel):
     creation_date: datetime.datetime
     colour: str
 
+class CourseworkUpdateFormData(CourseworkRead):
+    unit_name: str
+    unit_code: str
+    max_end_date: datetime.date
+
 class CourseworkCreate(BaseModel):
     name: Name
     description: Description

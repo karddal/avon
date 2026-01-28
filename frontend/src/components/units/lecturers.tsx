@@ -1,6 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card } from "@/components/ui/card";
-import { initials } from "@/components/units/unit_utils";
+import UserCard from "@/components/user-card";
 import { get_user_image_from_id } from "@/lib/actions/get_image";
 import { get_username_from_id } from "@/lib/actions/get_username";
 import { getRequestJWT } from "@/lib/auth-utils";
@@ -30,17 +28,13 @@ export default async function Lecturers({ unit_id }: { unit_id: string }) {
   );
 
   const lecturerResponse: Response = await response.json();
-  console.log(lecturerResponse.lecturers);
   const lecturers = lecturerResponse.lecturers;
-  // filter to only those that are
-
-  // for each lecturer, we convert into their name
   const results: Lecturer[] = [];
   for (const lecturer of lecturers) {
     console.log(lecturer);
     results.push({
       id: lecturer,
-      name: (await get_username_from_id(lecturer)).name,
+      name: await get_username_from_id(lecturer),
       image: await get_user_image_from_id(lecturer),
     });
   }
@@ -48,24 +42,12 @@ export default async function Lecturers({ unit_id }: { unit_id: string }) {
   return (
     <>
       {results.map((lecturer) => (
-        <Card
+        <UserCard
           key={lecturer.id}
-          className="p-0 bg-accent flex flex-row items-center gap-4"
-        >
-          <Avatar className="bg-slate-300 size-16 rounded-none">
-            <AvatarImage src={lecturer.image} alt={"avatar"} />
-            <AvatarFallback
-              className={"rounded-none bg-foreground text-background"}
-            >
-              {initials(lecturer.name)}
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col">
-            <div className="text-xl font-semibold">{lecturer.name}</div>
-            {/*<div className="font-light">*/}
-            {/*    Senior Lecturer, School of Computer Science*/}
-          </div>
-        </Card>
+          name={lecturer.name}
+          id={lecturer.id}
+          image={lecturer.image}
+        ></UserCard>
       ))}
     </>
   );

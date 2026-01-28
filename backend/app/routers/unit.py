@@ -1,8 +1,10 @@
+from datetime import date
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlmodel import Session, select
+from sqlalchemy.orm.strategy_options import selectinload
 
 from app.core.security import get_current_user
 from app.db.session import get_session
@@ -12,9 +14,14 @@ from app.models.unit_enrollment import UnitEnrollment
 from app.schemas.unit import (
     CourseworkAll,
     UnitAll,
+    UnitAllByGroup,
     UnitCreate,
     UnitRead,
-    UnitUpdate, UnitLecturers, UnitReadWithDates, UnitEventRead
+    UnitUpdate, 
+    UnitLecturers, 
+    UnitReadWithDates, 
+    UnitEventRead, 
+    UnitStudents
 )
 
 router = APIRouter(prefix="/units", tags=["units"])
@@ -50,6 +57,22 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
     session.refresh(db_unit)
 
     return db_unit
+
+@router.get("/units-by-programme", response_model=UnitAllByGroup)
+async def get_units_by_programme(session: session_dependency):
+    results = session.exec(
+        select(Programme).options(selectinload(Programme.units))
+    ).all()
+    return UnitAllByGroup(programmes=results)
+
+@router.get("/active", response_model=UnitAll)
+async def active_units(session: session_dependency):
+    results = session.exec(select(Unit).join(UnitEnrollment)).unique()
+    today = date.today()
+    filtered = filter(lambda unit: unit.programme.start_date <= today <= unit.programme.end_date, results)
+    return UnitAll(
+        units=filtered
+    )
 
 
 @router.get("/{unit_id}", response_model=UnitRead, status_code=status.HTTP_200_OK)
@@ -97,6 +120,17 @@ async def get_unit_lecturers(unit_id: UUID, session: session_dependency):
         lecturers=lects,
     )
 
+@router.get("/{unit_id}/students", response_model=UnitStudents, status_code=status.HTTP_200_OK)
+async def get_unit_students(unit_id: UUID, session: session_dependency):
+    studs = session.exec(
+        select(UnitEnrollment.user_id).join(Unit).where(Unit.id == unit_id).where(UnitEnrollment.type == "student")
+    ).all()
+    if not studs:
+        raise HTTPException(status_code=404, detail="No students found.")
+    return UnitStudents(
+        students=studs,
+    )
+
 @router.put("/{unit_id}", response_model=UnitUpdate, status_code=status.HTTP_200_OK)
 async def update_unit(unit_id: UUID, unit: UnitUpdate, session: session_dependency):
     if not unit.name:
@@ -136,7 +170,7 @@ async def delete_unit(unit_id: UUID, session: session_dependency):
     session.delete(unit)
     session.commit()
 
-    return
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.get("/u/{user_id}", response_model=UnitAll)
