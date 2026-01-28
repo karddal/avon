@@ -1,8 +1,10 @@
+from datetime import date
 from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlmodel import Session, select
+from sqlalchemy.orm.strategy_options import selectinload
 
 from app.db.session import get_session
 from app.models.programme import Programme
@@ -11,6 +13,7 @@ from app.models.unit_enrollment import UnitEnrollment
 from app.schemas.unit import (
     CourseworkAll,
     UnitAll,
+    UnitAllByGroup,
     UnitCreate,
     UnitRead,
     UnitUpdate, UnitLecturers, UnitReadWithDates, UnitStudents
@@ -49,6 +52,22 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
     session.refresh(db_unit)
 
     return db_unit
+
+@router.get("/units-by-programme", response_model=UnitAllByGroup)
+async def get_units_by_programme(session: session_dependency):
+    results = session.exec(
+        select(Programme).options(selectinload(Programme.units))
+    ).all()
+    return UnitAllByGroup(programmes=results)
+
+@router.get("/active", response_model=UnitAll)
+async def active_units(session: session_dependency):
+    results = session.exec(select(Unit).join(UnitEnrollment)).unique()
+    today = date.today()
+    filtered = filter(lambda unit: unit.programme.start_date <= today <= unit.programme.end_date, results)
+    return UnitAll(
+        units=filtered
+    )
 
 
 @router.get("/{unit_id}", response_model=UnitRead, status_code=status.HTTP_200_OK)
