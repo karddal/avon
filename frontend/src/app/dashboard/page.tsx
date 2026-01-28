@@ -22,9 +22,9 @@ async function DashboardPageContent() {
   const currentAcademicYear = getCurrentAcademicYear();
   return (
     <div className="space-y-6 mb-2">
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <section className="grid gap-4 grid-cols-3 lg:grid-cols-3">
         <DashboardAnalysis />
-        <Card className="flex flex-col col-span-3 xl:col-span-3">
+        <Card className="flex flex-col col-span-3">
           <CardContent>
             <Tabs defaultValue="coursework" className="">
               <TabsList className="flex flex-row gap-4 bg-background my-2">

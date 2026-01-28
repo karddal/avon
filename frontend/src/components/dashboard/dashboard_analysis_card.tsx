@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export default function DashboardAnalysis() {
   return (
     <Card className="col-span-3 gap-0 shadow-none border-none bg-background">
-      <CardContent className="grid xl:grid-cols-4 grid-cols-2 gap-4">
+      <CardContent className="grid xl:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4">
         <Card className="p-2 gap-0 bg-accent flex flex-col justify-between">
           <CardHeader className="p-0">
             <CardTitle className="text-center lg:text-xl font-light p-2">
