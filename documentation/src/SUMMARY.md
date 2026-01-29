@@ -4,13 +4,14 @@
 
 # User guide
 
-- [Welcome]()
+- [User instructions](user_guide/README.md)
+<!-- - [Welcome]()
 - [The Avon web interface]()
   - [Dashboard]()
   - [Analytics page]()
   - [Units listing]()
   - [Courseworks listing]()
-  - [Creating a coursework]()
+  - [Creating a coursework]() -->
 
 # Project management
 
