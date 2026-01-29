@@ -43,3 +43,66 @@
 - Change anything you'd like in the form that appears.
 - Select `Save` to finish the process.
 
+## Admin
+
+### Login
+  The first page is the login page. 
+  To login as a admin use account that is admin and enter `email` and `password` and click `Log in` button to login.
+
+---
+
+### Dashboard
+  Once logged in, the page will show is Dashboard. There is a card below some analytics data that can switch between `Coursework` and `Units`.
+  
+ - **Delete coursework**:
+    Admin can delete coursework when select `coursework` on the card, and choose the unit from below. 
+    To do that click `...` on a coursework and click `Delete coursework`.
+
+---
+
+### Units
+  There is two button `Ongoing`, `Finished`. And below is all the Programmes can choose from.
+
+  - **Delete unit**:
+
+    On both the `Ongoing` and `Finished` pages, admins can delete a unit from a selected programme.
+
+    When a programme is selected, the right-hand side will show all units in that programme.
+
+    Click `...` on a unit and select **Delete unit**.
+
+---
+
+### Coursework
+  There is two button `Ongoing`, `Finished`. And below is all the Units can choose from.
+
+  - **Delete coursework**:
+
+    On both the `Ongoing` and `Finished` pages, admins can delete coursework from a selected unit.
+
+    When a unit is selected, the right-hand side will show all coursework in that unit.  
+
+    Click `...` on a coursework item and select **Delete coursework**.
+
+---
+
+### Programmes
+  There is three button `Ongoing`, `Upcoming` and `Finished`. And below is all the Programmes.
+  - **Delete programme**:
+    All the page `Ongoing`, `Upcoming` and `Finished` can delete programme. 
+
+    To delete coursework click `...` on a programme and click `Delete programme`.
+
+  - **Add programme**:
+
+    Click **Add programme** to create a new one.
+
+    On the creation page, the admin can:
+
+    - Enter the `name of programme`
+
+    - Select a `start date` and `end date` (dates can also be entered using natural language)
+
+    Click **Next** to review the information.
+
+    - To fix error click `back` and go back to creation page. If nothing wrong admin can click `submit`.
