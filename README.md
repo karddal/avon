@@ -37,8 +37,9 @@ View the [docs site](https://cautious-adventure-gz73j3v.pages.github.io/).
       - [Marking coursework](#marking-coursework)
       - [Analytics](#analytics)
   - [Project structure](#project-structure)
-    - [Frontend](#frontend-tree)
-    - [Backend](#backend-tree)
+    - [Frontend tree](#frontend-tree)
+    - [Backend tree](#backend-tree)
+  - [User Instructions](#user-instructions)
   - [Developer Instructions](#developer-instructions)
     - [Prerequisites](#prerequisites)
       - [NPM](#npm)
@@ -46,7 +47,9 @@ View the [docs site](https://cautious-adventure-gz73j3v.pages.github.io/).
       - [UV](#uv)
       - [Python](#python)
       - [Just](#just)
-    - [Setup / Installing Dependencies](#setup--installing-dependancies)
+      - [frontend Environment Options](#frontend-environment-options)
+      - [Environment Options](#environment-options)
+    - [Setup / Installing Dependancies](#setup--installing-dependancies)
     - [Running](#running)
       - [Environment Variables](#environment-variables)
       - [Final Steps](#final-steps)
@@ -61,14 +64,14 @@ View the [docs site](https://cautious-adventure-gz73j3v.pages.github.io/).
 
 ## Tech Stack
 
-| Category       | Tech                                                                                        |
-| -------------- | ------------------------------------------------------------------------------------------- |
-| Frontend       | [Next.js](https://nextjs.org/), [TailwindCSS](https://tailwindcss.com/)                     |
-| Backend        | [FastAPI](https://fastapi.tiangolo.com/)                                                    |
-| Database       | [PostgreSQL](https://www.postgresql.org/)                                                   |
-| Linters        | [Biome](https://biomejs.dev/), [Ruff](https://github.com/astral-sh/ruff)                    |
+| Category       | Tech                                                                                          |
+| -------------- | --------------------------------------------------------------------------------------------- |
+| Frontend       | [Next.js](https://nextjs.org/), [TailwindCSS](https://tailwindcss.com/)                       |
+| Backend        | [FastAPI](https://fastapi.tiangolo.com/)                                                      |
+| Database       | [PostgreSQL](https://www.postgresql.org/)                                                     |
+| Linters        | [Biome](https://biomejs.dev/), [Ruff](https://github.com/astral-sh/ruff)                      |
 | Tools          | [Just](https://github.com/casey/just), [Git](https://git-scm.com/), [NPM](https://npmjs.com/) |
-| Infrastructure | [AWS](https://aws.amazon.com)                                                               |
+| Infrastructure | [AWS](https://aws.amazon.com)                                                                 |
 
 ## Project Description
 
@@ -181,7 +184,6 @@ A modern, responsive Next.JS frontend designed to be fast and lightweight consum
 - `devenv` stuff - Nix stuff related to the `devenv` tool some team members use locally for nice local environments.
 - `.envrc` - used for devenv, automatically activates the devenv when you cd into folder if set up locally.
 
-
 ### Frontend tree
 
 ```
@@ -238,6 +240,10 @@ A modern, responsive Next.JS frontend designed to be fast and lightweight consum
     └── uv.lock                   # Dependency lock file (uv)
 ```
 
+## User Instructions
+
+Visit the user guide on the documentation website [here](https://docs.avon.ac/user_guide).
+
 ## Developer Instructions
 
 Here is how to setup a local development version of Avon on your machine. More in-depth instructions can be seen in the Documentation Website.
@@ -271,7 +277,7 @@ Once you have installed it, make sure you are in the root (i.e. the folder with 
 Here, you can use `just --list` to list all available commands.
 
 | Command                           | Usecase                                                                |
-|-----------------------------------| ---------------------------------------------------------------------- |
+| --------------------------------- | ---------------------------------------------------------------------- |
 | `check`                           | Runs both frontend and backend checks, does not fix, just list issues. |
 | `fe check` and `be check`         | Runs either frontend or backend checks, respectively. Does not fix.    |
 | `fixit`                           | Fixes things flagged up for both frontend and backend.                 |
@@ -285,7 +291,7 @@ The `<env>` parameter specifies which environment to run the frontend in.
 If omitted, it defaults to `dev`.
 
 | Value   | Description             |
-|---------|-------------------------|
+| ------- | ----------------------- |
 | `dev`   | Development environment |
 | `start` | Production environment  |
 
@@ -295,10 +301,9 @@ The `<env>` parameter specifies which environment to run the backend in.
 
 If omitted, it defaults to `dev`.
 
-| Value     | Description               |
-|-----------|---------------------------|
-| `dev`     | Development environment   |
-
+| Value | Description             |
+| ----- | ----------------------- |
+| `dev` | Development environment |
 
 ### Setup / Installing Dependancies
 
@@ -329,7 +334,6 @@ BETTER_AUTH_SECRET={RANDOM SECRET}              # better auth secret to use
 BETTER_AUTH_URL=https://localhost:3000          # better auth url to bind to
 ```
 
-
 **Backend:**
 in `.env.dev`
 
@@ -344,9 +348,11 @@ JWT_ISSUER="https://localhost:3000"             # jwt issuer, from frontend
 #### Final Steps
 
 To run the frontend, simply run `just fe run <env>` in the project root.
+
 - the `<env>` can be blank, it automatically will use `dev` as `env`
 
-Similarly, to run the backend, run `just be run <env>` 
+Similarly, to run the backend, run `just be run <env>`
+
 - use `dev` as env if using `.env.dev`.
 - the `<env>` can be blank it will use `dev` as `env`
 
