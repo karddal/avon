@@ -87,5 +87,5 @@ seed-db:
 reset-db:
     just fe run db:reset
 
-serve-book:
-    cd documentation && mdbook serve --open
+serve-doc:
+    mdbook serve --open
