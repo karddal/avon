@@ -82,10 +82,10 @@ serve-book-doc:
     mdbook serve --open
 
 seed-db:
-    cd frontend && npm run db:seed
+    just fe run db:seed
 
 reset-db:
-    cd frontend && npm run db:reset
+    just fe run db:reset
 
 serve-book:
     cd documentation && mdbook serve --open
