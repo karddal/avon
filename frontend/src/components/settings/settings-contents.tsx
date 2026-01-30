@@ -1,5 +1,6 @@
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/new_tabs";
 import {KeyRound, Palette, SquareUser} from "lucide-react";
+import AccountSettings from "@/components/settings/account-settings";
 
 export default function SettingsContents() {
     return (
@@ -18,9 +19,9 @@ export default function SettingsContents() {
                     Theme
                 </TabsTrigger>
             </TabsList>
-            <div className={"no-scrollbar -mx-4 max-h-[50vh] overflow-y-auto px-4"}>
+            <div className={"no-scrollbar -mx-4 max-h-[50vh] w-full overflow-y-auto px-4"}>
                 <TabsContent value={"account"}>
-                    Account settings
+                    <AccountSettings/>
                 </TabsContent>
                 <TabsContent value={"password"}>
 

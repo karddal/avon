@@ -9,18 +9,18 @@ type UserCardProps = {
   role?: string | undefined;
 };
 
-export default function UserCard(props: UserCardProps) {
-  function getInitials(name: string) {
-    if (!name || typeof name !== "string") return "?";
-    const allNames = name.trim().split(" ");
-    if (allNames.length === 0) return "?";
+export function getInitials(name: string) {
+  if (!name || typeof name !== "string") return "?";
+  const allNames = name.trim().split(" ");
+  if (allNames.length === 0) return "?";
 
-    const first = allNames[0].charAt(0);
-    const last =
+  const first = allNames[0].charAt(0);
+  const last =
       allNames.length > 1 ? allNames[allNames.length - 1].charAt(0) : "";
-    return (first + last).toUpperCase();
-  }
+  return (first + last).toUpperCase();
+}
 
+export default function UserCard(props: UserCardProps) {
   return (
     <Card
       key={props.id}
