@@ -13,7 +13,7 @@
 
 **Continuous Assessment for Revision Control (CARC)** is a **Virtual Learning Environment (VLE)** allowing lecturers to track the progress of students through coursework.
 
-View the [docs site](https://cautious-adventure-gz73j3v.pages.github.io/).
+**View the [docs site](https://docs.avon.ac).**
 
 ## Contents
 

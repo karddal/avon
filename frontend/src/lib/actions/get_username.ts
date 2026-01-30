@@ -3,18 +3,14 @@
 import "node:sqlite";
 import { DatabaseSync } from "node:sqlite";
 import { Pool } from "pg";
+import { pool } from "@/lib/actions/db_pool";
 
 export async function get_username_from_id(user_id: string): Promise<string> {
   const isProd = process.env.NODE_ENV === "production";
   if (isProd) {
-    const db = new Pool({
-      connectionString: process.env.BA_DATABASE_URL,
-      ssl: {
-        rejectUnauthorized: false,
-      },
-    });
+    const db = pool;
 
-    const result = await db.query("SELECT name from user WHERE id = ?", [
+    const result = await db.query('SELECT name from "user" WHERE id = $1', [
       user_id,
     ]);
     const out = result.rows[0];
