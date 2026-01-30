@@ -32,6 +32,7 @@ import {
   ItemDescription,
   ItemTitle,
 } from "@/components/ui/item";
+import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -59,7 +60,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
   const [submitState, setSubmitState] = useState<boolean>(false);
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [alertText, setAlertText] = useState<string>("");
-  const { step, setStep, next, back } = multistep_unit_flow();
+  const { step, next, back } = multistep_unit_flow();
   const [programmes, setProgrammes] = useState<Programme[]>([]);
   const [programmeName, setProgrammeName] = useState<string>("");
 
@@ -180,58 +181,12 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
   const colour = form.watch("color");
   return (
     <div className="flex flex-1 flex-row gap-4 px-4 sm:justify-center sm:align-center sm:items-center">
-      <div className="flex flex-col sm:flex-row w-full lg:w-[70%] gap-4 min-h-150 h-fit mb-2">
-        <Card
-          className={
-            "h-fit w-fit flex flex-row sm:flex-col items-center justify-center gap-4 px-4"
-          }
-        >
-          <CardContent
-            className={"flex flex-row sm:flex-col justify-center gap-2 p-0"}
-          >
-            <CardTitle>Steps</CardTitle>
-            <p
-              onKeyDown={(e) => {
-                e.key === "Enter" && setStep(0);
-              }}
-              onClick={() => setStep(0)}
-              className={`${
-                step === 0
-                  ? "underline decoration-line decoration-2 decoration-yellow-300"
-                  : ""
-              } cursor-pointer`}
-            >
-              Step 1
-            </p>
-            <p
-              onKeyDown={(e) => {
-                e.key === "Enter" && setStep(1);
-              }}
-              onClick={() => setStep(1)}
-              className={`${
-                step === 1
-                  ? "underline decoration-line decoration-2 decoration-yellow-300"
-                  : ""
-              } cursor-pointer`}
-            >
-              Step 2
-            </p>
-            <p
-              onKeyDown={(e) => {
-                e.key === "Enter" && setStep(2);
-              }}
-              onClick={() => setStep(2)}
-              className={`${
-                step === 2
-                  ? "underline decoration-line decoration-2 decoration-yellow-300"
-                  : ""
-              } cursor-pointer`}
-            >
-              Step 3
-            </p>
-          </CardContent>
-        </Card>
+      <div className="flex sm:flex-row w-full lg:w-[70%] gap-4 mb-2 h-fit">
         <Card className={"flex-1"}>
+          <Progress
+            value={step * (100 / 2)}
+            className={"rounded-none"}
+          ></Progress>
           <CardHeader>
             <CardTitle>Create a Unit</CardTitle>
             <CardDescription>
@@ -300,7 +255,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                         render={({ field, fieldState }) => (
                           <Field data-invalid={fieldState.invalid}>
                             <FieldLabel htmlFor={"form-flow-unitCode"}>
-                              Give Your Unit a Code
+                              Unit Code
                             </FieldLabel>
                             <div className="w-30">
                               <Input
@@ -327,7 +282,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                         render={({ field, fieldState }) => (
                           <Field data-invalid={fieldState.invalid}>
                             <FieldLabel htmlFor={"form-flow-programme"}>
-                              Select the Programme Its Part Of
+                              Programme
                             </FieldLabel>
 
                             <Select
