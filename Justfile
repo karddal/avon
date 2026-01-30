@@ -78,14 +78,5 @@ sync:
     just fe sync
     just be sync
 
-serve-book-doc:
+serve-doc:
     mdbook serve --open
-
-seed-db:
-    just fe run db:seed
-
-reset-db:
-    just fe run db:reset
-
-serve-book:
-    cd documentation && mdbook serve --open
