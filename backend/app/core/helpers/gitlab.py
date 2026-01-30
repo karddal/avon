@@ -64,7 +64,7 @@ async def gl_delete_programme(gitlab_group_id):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
         
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient() as client: # In order to get full path so can delete stuff bellow it, e.g. subgroups
         try:
             response = await client.get(
                 f"{BASE_URL}/groups/{gitlab_group_id}",
@@ -114,6 +114,39 @@ async def gl_delete_programme(gitlab_group_id):
     return {
         "success": True 
     }
+
+async def gl_update_programme(gitlab_group_id, name):
+    if not TOKEN or not BASE_URL:
+        raise HTTPException(status_code=500, detail="Missing GitLab configuration")
+
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.put(
+                f"{BASE_URL}/groups/{gitlab_group_id}",
+                headers={
+                    "PRIVATE-TOKEN": TOKEN,
+                    "Content-Type": "application/json",
+                },params = {
+                    "name": name
+                },timeout=10.0,
+            )
+
+            data = response.json()
+
+            if response.status_code != 200:
+                return {
+                    "success": False,
+                    "error": data.get("message") or "Failed to update GitLab group"
+                }
+        except httpx.RequestError as err:
+            print(f"Network Error: {err}")
+            raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
+    return {
+        "success": True,
+        "gitlabGroupId": data.get("id"),
+        "name" : data.get("name"),
+    }
+
 
 # Unit CRUD
 
@@ -166,7 +199,7 @@ async def gl_delete_unit(gitlab_group_id):
     
     async with httpx.AsyncClient() as client:
         try:
-            response = await client.get(
+            response = await client.get( # In order to get full path so can delete stuff bellow it, e.g. subgroups
                 f"{BASE_URL}/groups/{gitlab_group_id}",
                 headers={
                     "PRIVATE-TOKEN": TOKEN,
@@ -213,6 +246,37 @@ async def gl_delete_unit(gitlab_group_id):
         "success": True 
     }
 
+async def gl_update_unit(gitlab_group_id, name):
+    if not TOKEN or not BASE_URL:
+        raise HTTPException(status_code=500, detail="Missing GitLab configuration")
+
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.put(
+                f"{BASE_URL}/groups/{gitlab_group_id}",
+                headers={
+                    "PRIVATE-TOKEN": TOKEN,
+                    "Content-Type": "application/json",
+                },params = {
+                    "name": name
+                },timeout=10.0,
+            )
+
+            data = response.json()
+
+            if response.status_code != 200:
+                return {
+                    "success": False,
+                    "error": data.get("message") or "Failed to update GitLab group"
+                }
+        except httpx.RequestError as err:
+            print(f"Network Error: {err}")
+            raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
+    return {
+        "success": True,
+        "gitlabGroupId": data.get("id"),
+        "name" : data.get("name"),
+    }
 # Coursework CRUD
 
 async def gl_create_coursework(name, unit_id):
@@ -262,7 +326,7 @@ async def gl_delete_coursework(gitlab_group_id):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
     
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient() as client: # No need to get full path as it's lowest group, therefore no subgroups and only delete needed
             try:
                 response = await client.delete(
                     f"{BASE_URL}/groups/{gitlab_group_id}",
