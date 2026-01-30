@@ -163,7 +163,7 @@ async def gl_create_unit(name, programme_id):
 async def gl_delete_unit(gitlab_group_id):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
-        
+    
     async with httpx.AsyncClient() as client:
         try:
             response = await client.get(
@@ -200,8 +200,6 @@ async def gl_delete_unit(gitlab_group_id):
                 )
 
                 data = response.json()
-                print(data)
-
                 if response.status_code != 202:
                     return {
                         "success": False,
@@ -263,28 +261,6 @@ async def gl_create_coursework(name, unit_id):
 async def gl_delete_coursework(gitlab_group_id):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
-        
-    async with httpx.AsyncClient() as client:
-        try:
-            response = await client.get(
-                f"{BASE_URL}/groups/{gitlab_group_id}",
-                headers={
-                    "PRIVATE-TOKEN": TOKEN,
-                    "Content-Type": "application/json",
-                },
-                timeout=10.0
-            )
-
-            getData = response.json()
-
-            if response.status_code != 200:
-                return {
-                    "success": False,
-                    "error": getData.get("message") or "Failed to fetch GitLab group"
-                }
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
-            raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
     
     async with httpx.AsyncClient() as client:
             try:
@@ -293,9 +269,6 @@ async def gl_delete_coursework(gitlab_group_id):
                     headers={
                         "PRIVATE-TOKEN": TOKEN,
                         "Content-Type": "application/json",
-                    },
-                    params={
-                        "full_path": getData.get("full_path")
                     }, timeout=10.0
                 )
 
