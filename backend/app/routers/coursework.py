@@ -1,4 +1,4 @@
-from app.core.helpers.gitlab import gl_create_coursework
+from app.core.helpers.gitlab import gl_create_coursework, gl_delete_coursework
 from sqlalchemy.orm import selectinload
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
@@ -97,6 +97,14 @@ async def delete_coursework(id: UUID, session: session_dependency):
     #print("\n\n\n\n\n\n\n")
     session.delete(coursework)
     session.commit()
+
+    try:
+        gl_data = await gl_delete_coursework(coursework.gitlab_id)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY, 
+            detail="Database failed. GitLab group rolled back."
+    )
 
     #print("got here")
     courseworkDeleted = CourseworkDelete(id=id, deletion_successful=True)
