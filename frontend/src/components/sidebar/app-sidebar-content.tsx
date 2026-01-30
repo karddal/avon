@@ -4,7 +4,7 @@ import {
   Layers,
   LayoutDashboard,
   NotepadText,
-  Settings,
+  Settings, SettingsIcon,
   SwatchBook,
   User,
 } from "lucide-react";
@@ -26,6 +26,17 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "../ui/sidebar";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from "@/components/ui/dialog";
+import {Button} from "@/components/ui/button";
+import SettingsContents from "@/components/settings/settings-contents";
 
 const adminItems = [
   {
@@ -45,12 +56,6 @@ const adminItems = [
     url: "/markbook",
     icon: BookCheck,
     bottom: false,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-    bottom: true,
   },
   {
     title: "Units",
@@ -90,12 +95,6 @@ const lecturerItems = [
     url: "/markbook",
     icon: BookCheck,
     bottom: false,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-    bottom: true,
   },
   {
     title: "Units",
@@ -176,25 +175,32 @@ export default async function AppSideBarContent() {
           </div>
 
           {/* bottom part of sidebar */}
-          <div className="flex flex-col border-t">
-            {items
-              .filter((item) => item.bottom)
-              .map((item) => (
-                <SidebarMenuItem key={item.title} className="w-full">
-                  <SidebarMenuButton className="h-full" asChild>
-                    <Link
-                      href={item.url}
-                      className="flex flex-row items-center"
-                    >
-                      <item.icon strokeWidth={1} className="size-8!" />
-                      <span className="text-accent-foreground">
-                        {item.title}
-                      </span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-          </div>
+          <Dialog>
+            <div className="flex flex-col border-t">
+              <SidebarMenuButton asChild key={"Settings"} className={"w-full"}>
+                  <DialogTrigger
+                      className="h-full flex flex-row items-center"
+                  >
+                    <SettingsIcon strokeWidth={1} className="size-8!" />
+                    <span className="text-accent-foreground">
+                  {"Settings"}
+                </span>
+                </DialogTrigger>
+              </SidebarMenuButton>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Settings</DialogTitle>
+                </DialogHeader>
+                  <SettingsContents/>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant={"outline"}>Close</Button>
+                  </DialogClose>
+                </DialogFooter>
+              </DialogContent>
+                </div>
+          </Dialog>
+
         </SidebarMenu>
         <SidebarMenuItem key={"Account"} className="w-full">
           <SidebarMenuButton className="h-full" asChild>
