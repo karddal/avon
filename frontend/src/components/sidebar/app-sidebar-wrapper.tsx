@@ -14,7 +14,7 @@ import SidebarLoading from "./sidebar-loading";
 
 export default async function AppSidebar() {
   return (
-    <Sidebar variant="floating" className="z-100">
+    <Sidebar variant="floating" className="">
       <SidebarHeader className="p-0">
         <SidebarMenu>
           <SidebarMenuItem className="md:py-0">
