@@ -1,6 +1,6 @@
 import re
 
-from fastapi import HTTPException
+from fastapi import HTTPException, params
 import httpx
 from dotenv import load_dotenv
 import os
@@ -72,9 +72,6 @@ async def gl_delete_programme(gitlab_group_id):
                     "PRIVATE-TOKEN": TOKEN,
                     "Content-Type": "application/json",
                 },
-                json={
-                    "with_projects": False
-                },
                 timeout=10.0
             )
 
@@ -97,13 +94,13 @@ async def gl_delete_programme(gitlab_group_id):
                         "PRIVATE-TOKEN": TOKEN,
                         "Content-Type": "application/json",
                     },
-                    json={
-                        "full_path": getData.get("full_path"),
-                        "permanently_remove": True
+                    params={
+                        "full_path": getData.get("full_path")
                     }, timeout=10.0
                 )
 
                 data = response.json()
+                print(data)
 
                 if response.status_code != 202:
                     return {

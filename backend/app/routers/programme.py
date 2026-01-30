@@ -62,9 +62,9 @@ async def delete_programme(id: UUID, session: session_dependency):
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
-            detail=Exception
+            detail="Database failed. GitLab group not deleted."
     )
-
+    
     session.delete(programme)
     session.commit()
 
