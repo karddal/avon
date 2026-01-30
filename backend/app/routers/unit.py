@@ -2,7 +2,7 @@ from datetime import date
 from typing import Annotated
 from uuid import UUID
 
-from app.core.helpers.gitlab import gl_create_unit, gl_delete_unit
+from app.core.helpers.gitlab import gl_create_unit, gl_delete_unit, gl_update_unit
 from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlmodel import Session, select
 from sqlalchemy.orm.strategy_options import selectinload
@@ -160,6 +160,14 @@ async def update_unit(unit_id: UUID, unit: UnitUpdate, session: session_dependen
 
     session.commit()
     session.refresh(db_unit)
+
+    try:
+        gl_data = await gl_update_unit(db_unit.gitlab_id, db_unit.name)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY, 
+            detail="Database failed. GitLab group rolled back."
+        )
 
     return db_unit
 

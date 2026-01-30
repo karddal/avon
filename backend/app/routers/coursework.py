@@ -1,4 +1,4 @@
-from app.core.helpers.gitlab import gl_create_coursework, gl_delete_coursework
+from app.core.helpers.gitlab import gl_create_coursework, gl_delete_coursework, gl_update_programme
 from sqlalchemy.orm import selectinload
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
@@ -125,6 +125,14 @@ async def update_coursework(id: UUID, coursework: CourseworkUpdate, session: ses
 
     coursework_data = coursework.model_dump(exclude_unset=True)
     coursework_db.sqlmodel_update(coursework_data)
+
+    try:
+        gl_data = await gl_update_programme(coursework_db.gitlab_id, coursework_db.name)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY, 
+            detail="Database failed. GitLab group rolled back."
+        )
 
     session.add(coursework_db)
     session.commit()
