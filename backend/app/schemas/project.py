@@ -1,9 +1,9 @@
 
-from datetime import date
 import uuid
 from pydantic import BaseModel
 
-from app.schemas.programme import Name
+class TemplateCreate(BaseModel):
+    coursework_id: uuid.UUID
 
 class ProjectCreate(BaseModel):
     name: str

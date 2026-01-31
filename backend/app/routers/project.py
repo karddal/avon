@@ -3,11 +3,11 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 
-from app.core.helpers.gitlab import gl_create_project
+from app.core.helpers.gitlab import gl_create_project, gl_create_template_group, gl_create_template_project
 from app.db.session import get_session
 from app.models.coursework import Coursework
 from app.models.unit_enrollment import UnitEnrollment
-from app.schemas.project import ProjectCreate, ProjectRead
+from app.schemas.project import ProjectCreate, TemplateCreate
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 session_dependency = Annotated[Session, Depends(get_session)]
@@ -15,6 +15,30 @@ session_dependency = Annotated[Session, Depends(get_session)]
 @router.get("/health")
 async def health_check():
     return {"health-check": "alive"}
+
+@router.post("/template", status_code=status.HTTP_201_CREATED)
+async def create_templates(template: TemplateCreate, session: session_dependency):
+    statement = select(Coursework.gitlab_id).where(Coursework.id == template.coursework_id)
+    gitlab_id = session.exec(statement).first()
+    print(gitlab_id)
+    try:
+        gl_template_group = await gl_create_template_group(gitlab_id)
+    except Exception:
+        raise HTTPException(                
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail="Template could not be created"
+        )
+
+    try:
+        gl_template_project = await gl_create_template_project(gl_template_group["gitlabGroupId"])
+    except Exception:
+        raise HTTPException(                
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail="Template could not be created"
+        )
+
+    print(gl_template_project)
+    return {"success": "i think"}
 
 @router.post("/create", status_code=status.HTTP_201_CREATED)
 async def create_projects(project: ProjectCreate, session: session_dependency):
