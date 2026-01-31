@@ -51,21 +51,25 @@ def seed_data():
             name="Year 1 Computer Science 2025/2026",
             start_date=academic_year_202526_start,
             end_date=academic_year_202526_end,
+            gitlab_id="nothing"
         )
         y2_25_26 = Programme(
             name="Year 2 Computer Science 2025/2026",
             start_date=academic_year_202526_start,
             end_date=academic_year_202526_end,
+            gitlab_id="nothing"
         )
         y1_24_25 = Programme(
             name="Year 1 Computer Science 2024/2025",
             start_date=academic_year_202425_start,
             end_date=academic_year_202425_end,
+            gitlab_id="nothing"
         )
         y2_24_25 = Programme(
             name="Year 2 Computer Science 2024/2025",
             start_date=academic_year_202425_start,
             end_date=academic_year_202425_end,
+            gitlab_id="nothing"
         )
         session.add_all([y1_25_26, y2_25_26, y1_24_25, y2_24_25])  # Added this line
         session.commit()  # Added this line
@@ -83,6 +87,7 @@ def seed_data():
             unit_code="COMS10014",
             colour="abcdef",
             programme_id=y1_24_25.id,
+            gitlab_id="nothing"
         )
         maths_for_cs_a_2025_2026 = Unit(
             name="Mathematics for Computer Science A",
@@ -90,6 +95,7 @@ def seed_data():
             unit_code="COMS10014",
             colour="abcdef",
             programme_id=y1_25_26.id,
+            gitlab_id="nothing"
         )
         comp_arch_2024_2025 = Unit(
             name="Computer Architecture",
@@ -97,6 +103,7 @@ def seed_data():
             unit_code="COMS10015",
             colour="343434",
             programme_id=y1_24_25.id,
+            gitlab_id="nothing"
         )
         comp_arch_2025_2026 = Unit(
             name="Computer Architecture",
@@ -104,6 +111,7 @@ def seed_data():
             unit_code="COMS10015",
             colour="343434",
             programme_id=y1_25_26.id,
+            gitlab_id="nothing"
         )
         imp_func_2024_2025 = Unit(
             name="Imperative and Functional Programming",
@@ -111,6 +119,7 @@ def seed_data():
             unit_code="COMS10016",
             colour="565656",
             programme_id=y1_24_25.id,
+            gitlab_id="nothing"
         )
         imp_func_2025_2026 = Unit(
             name="Imperative and Functional Programming",
@@ -118,6 +127,7 @@ def seed_data():
             unit_code="COMS10016",
             colour="565656",
             programme_id=y1_25_26.id,
+            gitlab_id="nothing"
         )
 
         # YEAR 2 UNITS
@@ -127,6 +137,7 @@ def seed_data():
             unit_code="COMS20006",
             colour="112233",
             programme_id=y2_25_26.id,
+            gitlab_id="nothing"
         )
         plc_2025_2026 = Unit(
             name="Programming Languages and Computation",
@@ -134,6 +145,7 @@ def seed_data():
             unit_code="COMS20007",
             colour="454545",
             programme_id=y2_25_26.id,
+            gitlab_id="nothing"
         )
         csa_2025_2026 = Unit(
             name="Computer Systems A",
@@ -141,6 +153,7 @@ def seed_data():
             unit_code="COMS20017",
             colour="676767",
             programme_id=y2_25_26.id,
+            gitlab_id="nothing"
         )
 
         session.add_all([
@@ -172,6 +185,7 @@ def seed_data():
             unit_id=imp_func_2024_2025.id,
             due_date=datetime.datetime(2024, 12, 15, 23, 59),
             colour="676767",
+            gitlab_id="nothing"
         )
         coursework2 = Coursework(
             name="Power to the People in 2025",
@@ -179,6 +193,7 @@ def seed_data():
             unit_id=imp_func_2025_2026.id,
             due_date=datetime.datetime(2025, 12, 15, 23, 59),
             colour="abcdef",
+            gitlab_id="nothing"
         )
         coursework3 = Coursework(
             name="Double Linked List 2024",
@@ -186,6 +201,7 @@ def seed_data():
             unit_id=imp_func_2024_2025.id,
             due_date=datetime.datetime(2024, 10, 30, 23, 59),
             colour="b01c2e",
+            gitlab_id="nothing"
         )
         coursework4 = Coursework(
             name="AI Bill Splitter",
@@ -193,6 +209,7 @@ def seed_data():
             unit_id=sep_2025_2026.id,
             due_date=datetime.datetime(2026, 4, 20, 17, 00),
             colour="f1d2c3",
+            gitlab_id="nothing"
         )
         coursework5 = Coursework(
             name="Encrypt",
@@ -200,6 +217,7 @@ def seed_data():
             unit_id=comp_arch_2025_2026.id,
             due_date=datetime.datetime(2026, 5, 10, 14, 00),
             colour="1a2b3c",
+            gitlab_id="nothing"
         )
         coursework6 = Coursework(
             name="Encrypt",
@@ -207,6 +225,7 @@ def seed_data():
             unit_id=comp_arch_2024_2025.id,
             due_date=datetime.datetime(2024, 11, 10, 14, 00),
             colour="1a2b3c",
+            gitlab_id="nothing"
         )
         session.add_all([coursework1, coursework2, coursework3, coursework4, coursework5, coursework6])
         session.commit()
@@ -380,6 +399,6 @@ SessionDep = Annotated[Session, Depends(get_session)]
 async def lifespan(app: FastAPI):
     create_db_and_tables()
     print("yo yo")
-    #seed_data()
+    # seed_data()
     print("beep beep")
     yield
