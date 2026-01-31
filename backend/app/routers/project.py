@@ -1,8 +1,9 @@
 
 from typing import Annotated
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 
+from app.core.helpers.gitlab import gl_create_project
 from app.db.session import get_session
 from app.models.coursework import Coursework
 from app.models.unit_enrollment import UnitEnrollment
@@ -19,17 +20,26 @@ async def health_check():
 async def create_projects(project: ProjectCreate, session: session_dependency):
     # Figure out how many projects you need to make
     # Get the unit the coursework is in
-    statement = select(Coursework.unit_id).where(Coursework.id == project.coursework_id)
-    unit_id = session.exec(statement).first()
-    print(unit_id)
+    statement = select(Coursework.unit_id, Coursework.name, Coursework.gitlab_id).where(Coursework.id == project.coursework_id)
+    cw_object = session.exec(statement).first()
+    unit_id, name, gitlab_id = cw_object
+    print(unit_id, name, gitlab_id)
 
     # Get the student enrollment
     statement = select(UnitEnrollment.user_id).where((UnitEnrollment.unit_id == unit_id) & (UnitEnrollment.type == "student"))
     students_enrolled = session.exec(statement).all()
     print(students_enrolled)
 
-    
+    for student in students_enrolled:
+        try:
+            gl_project = await gl_create_project(name, student, gitlab_id)
+            # Call helper function to create project
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+                detail="Project for the student: " + student + " could not be created."
+            )
     # Get the number of students enrolled onto a unit, by the courseworkid courseworkid -> unit -> unit_enrollement
     # Make an API call to gitlab to create a project using a helper function for those many students
-
+    print(gl_project)
     return {"unit id": students_enrolled}

@@ -144,3 +144,46 @@ async def gl_create_coursework(name, unit_id):
         "webUrl": data.get("web_url"),
         "path": data.get("path"),
     }
+
+async def gl_create_project(name, user_id, group_id):
+    print("inside", TOKEN, BASE_URL)
+    if not TOKEN or not BASE_URL:
+        raise HTTPException(status_code=500, detail="Missing GitLab configuration")
+    
+    print("point")
+    name = name+"-"+user_id
+    path = generate_gitlab_path(name)
+    async with httpx.AsyncClient(base_url=BASE_URL) as client:
+        print("par")
+        try:
+            print(1)
+            response = await client.post(
+                "/projects/",
+                headers={
+                    "PRIVATE-TOKEN": TOKEN,
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "name": name,
+                    "path": path,
+                    "namespace_id":group_id,
+                    "description":"Project repo for " + user_id,
+                    "initialize_with_readme": "true"
+                },
+                timeout=10.0
+            )
+            print(2)
+            data = response.json()
+            if response.status_code != 201:
+                return {
+                    "success": False,
+                    "error": data.get("message") or "Failed to create GitLab group"
+                }
+
+        except httpx.RequestError as err:
+            print(3)
+            print(f"Network Error: {err}")
+            raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
+    
+    return data
+    # YOU NEED TO GET THE NAMESPACE
