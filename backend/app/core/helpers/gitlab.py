@@ -168,7 +168,9 @@ async def gl_create_project(name, user_id, group_id):
                     "path": path,
                     "namespace_id":group_id,
                     "description":"Project repo for " + user_id,
-                    "initialize_with_readme": "true"
+                    "use_custom_template": "true",
+                    "group_with_project_templates_id": 123229851,
+                    "template_project_id": 78128649
                 },
                 timeout=10.0
             )
