@@ -22,10 +22,12 @@ import {
 import {
   SidebarContent,
   SidebarGroup,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "../ui/sidebar";
+import Image from "next/image";
 
 const adminItems = [
   {
@@ -144,7 +146,41 @@ export default async function AppSideBarContent() {
         ? lecturerItems
         : studentItems;
   return (
-    <SidebarContent className="z-100">
+    <SidebarContent>
+      <SidebarHeader className="p-0">
+        <SidebarMenu>
+          <SidebarMenuItem className="md:py-0">
+            <SidebarMenuButton
+              className="size-25 w-full justify-center md:justify-center border-b"
+              asChild
+            >
+              <Link
+                href={
+                  type === "admin" || type === "lecturer"
+                    ? "/dashboard"
+                    : "/units"
+                }
+              >
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_CDN_PATH}/images/avon-white-optimized.svg`}
+                  alt="logo"
+                  width={100}
+                  height={100}
+                  loading={"eager"}
+                  className="dark:block hidden p-4 md:p-0"
+                />
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_CDN_PATH}/images/avon-black-optimized.svg`}
+                  alt="logo"
+                  width={100}
+                  height={100}
+                  className="dark:hidden p-4 md:p-0"
+                />
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
       <SidebarGroup className="h-full p-0">
         <SidebarMenu className="flex h-full flex-col md:justify-between">
           <div className="flex flex-col py-2">
