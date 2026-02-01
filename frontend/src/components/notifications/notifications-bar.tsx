@@ -7,6 +7,7 @@ import {
 import NotificationMessage from "./notification-message";
 
 export default function NotificationBar() {
+
   const apiCall = [
     {
       id: 0,

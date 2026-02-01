@@ -1,5 +1,5 @@
 import { ModeToggle } from "@/components/mode-toggle";
-import NotificationBar from "@/components/notifications-bar";
+import NotificationBar from "@/components/notifications/notifications-bar";
 import AppSidebar from "@/components/sidebar/app-sidebar-wrapper";
 import { SidebarCloser } from "@/components/sidebar/sidebar-closer";
 import {
