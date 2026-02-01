@@ -5,7 +5,7 @@ from sqlmodel import Field, SQLModel
 from datetime import datetime, timezone
 
 
-class Notification(SQLModel):
+class Notification(SQLModel, table=True):
     """
     A notification sent by a user to a user.
     """

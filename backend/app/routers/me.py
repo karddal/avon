@@ -104,7 +104,7 @@ async def me_active_courseworks(
 async def me_notifications(session: session_dependency, me: str = Depends(get_current_user)):
     my_notifications = list(session.exec(
         select(Notification).where(Notification.recipient_id == me)
-    ))
+    ).all())
     return Notifications(
         notifications=my_notifications
     )
