@@ -39,7 +39,7 @@ describe("Unit page", () => {
       'a[href^="/units/"]',
       "Mathematics for Computer Science A",
     ).click({ force: true });
-    cy.url().should("not.eq", Cypress.config().baseUrl + "/units");
+    cy.url().should("not.eq", `${Cypress.config().baseUrl}/units`);
     cy.url().should("include", "/units/");
     cy.get("#unit-dropdown").click();
     cy.get(`[data-slot="dropdown-menu-item"]`).contains("Edit Unit").click();

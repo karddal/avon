@@ -3,7 +3,6 @@
 // TODO: Probably WONT WORK ON PROD bc of SQLDB being directly checked
 
 import { DatabaseSync, type SQLOutputValue } from "node:sqlite";
-import { Pool } from "pg";
 import { pool } from "./db_pool";
 
 export async function get_batch_user_info(user_ids: string[]) {
