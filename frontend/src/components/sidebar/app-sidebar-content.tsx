@@ -8,6 +8,7 @@ import {
   SwatchBook,
   User,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { Kbd, KbdGroup } from "@/components/ui/kbd";
 import { requireSession } from "@/lib/auth-utils";
@@ -27,7 +28,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "../ui/sidebar";
-import Image from "next/image";
 
 const adminItems = [
   {

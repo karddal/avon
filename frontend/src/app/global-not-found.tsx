@@ -1,18 +1,18 @@
 "use client";
 import "./globals.css";
+import { SearchAlert } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { ThemeProvider } from "next-themes";
 import {
   Empty,
+  EmptyContent,
+  EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-  EmptyDescription,
-  EmptyContent,
 } from "@/components/ui/empty";
-import { SearchAlert } from "lucide-react";
-import { ThemeProvider } from "next-themes";
 
 export const metadata: Metadata = {
   title: "404",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 export default function GlobalNotFound() {
   const router = useRouter();
   return (
-    <html>
+    <html lang="en">
       <body>
         <ThemeProvider
           attribute="class"

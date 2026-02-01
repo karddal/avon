@@ -1,7 +1,6 @@
 "use server";
 
 import { DatabaseSync } from "node:sqlite";
-import { Pool } from "pg";
 import { pool } from "@/lib/actions/db_pool";
 
 export async function delete_user(
