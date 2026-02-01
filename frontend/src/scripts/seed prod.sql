@@ -18,6 +18,8 @@ CREATE TABLE programme (
 
 CREATE TABLE "user" ("id" text not null primary key, "name" text not null, "email" text not null unique, "emailVerified" integer not null, "image" text, "createdAt" date not null, "updatedAt" date not null, "role" text, "banned" integer, "banReason" text, "banExpires" date);
 
+-- "notification" definition
+CREATE TABLE "notification" ("id" UUID not null primary key, "recipient_id" VARCHAR not null, "author_id" VARCHAR not null, "title" text not null, "body" text not null, "created_at" TIMESTAMP not null, "viewed" boolean not null);
 
 -- verification definition
 
