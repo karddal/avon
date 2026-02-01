@@ -35,6 +35,13 @@
 //     }
 //   }
 // }
+/// <reference path="./commands.d.ts" />
+
+import {mount} from "cypress/react";
+
+Cypress.Commands.add("mount", (...args: Parameters<typeof mount>) => {
+    return mount(...args);
+})
 
 Cypress.Commands.add("login", (username: string, password: string) => {
   cy.session(
