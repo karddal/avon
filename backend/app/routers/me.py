@@ -8,9 +8,11 @@ from sqlmodel import Session, select
 
 from app.core.security import get_current_user
 from app.db.session import get_session
+from app.models.notification import Notification
 from app.models.programme import Programme
 from app.models.unit import Unit, UnitWithCourseworks
 from app.models.unit_enrollment import UnitEnrollment
+from app.schemas.notification import Notifications
 from app.schemas.unit import UnitAll, UnitAllByGroup
 
 router = APIRouter(prefix="/me", tags=["me"])
@@ -97,3 +99,12 @@ async def me_active_courseworks(
     filtered = list(filter(lambda coursework: coursework.due_date >= today, courseworks))
     print(filtered)
     return filtered
+
+@router.get("/notifications", response_model=Notifications)
+async def me_notifications(session: session_dependency, me: str = Depends(get_current_user)):
+    my_notifications = list(session.exec(
+        select(Notification).where(Notification.recipient_id == me)
+    ))
+    return Notifications(
+        notifications=my_notifications
+    )
