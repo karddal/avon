@@ -22,16 +22,14 @@
   - [Sprint 1](meetings/sprint1/README.md)
     - [08-01-2026 Sprint 1 initial meeting and retrospective](meetings/sprint1/08-01-2025-team.md)
   - [Sprint 2](meetings/sprint2/README.md)
-<<<<<<< Updated upstream
     - [19-01-2026 Sprint 2 Initial meeting](meetings/sprint2/19-01-2025-team.md)
     - [21-01-2026 Sprint 2 Mentor meeting](meetings/sprint2/21-01-2025-team.md)
     - [23-01-2026 Sprint 2 Review](meetings/sprint2/23-01-2025-team.md)
-=======
     - [19-01-2026 Sprint 2 initial meeting](meetings/sprint2/19-01-2025-team.md)
   - [Sprint 3](meetings/sprint3/README.md)
     - [26-01-2026 Sprint 3 initial meeting](meetings/sprint3/26-01-2025-team.md)
     - [28-01-2026 Sprint 3 midweek meeting](meetings/sprint3/28-01-2025-team.md)
->>>>>>> Stashed changes
+    - [30-01-2026 Sprint 3 end of week meeting](meetings/sprint3/30-01-2025-team.md)
 
 # Developer documentation
 
