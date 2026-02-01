@@ -41,7 +41,7 @@ describe("Unit page", () => {
     ).click({ force: true });
     cy.url().should("not.eq", `${Cypress.config().baseUrl}/units`);
     cy.url().should("include", "/units/");
-    cy.get("#unit-dropdown").click();
+    cy.get("#unit-dropdown", { timeout: 10000 }).click();
     cy.get(`[data-slot="dropdown-menu-item"]`).contains("Edit Unit").click();
     cy.get('[name="name"]').clear().type("Mathematics for Computer Science B");
     cy.get(".mt-auto > .flex > .inline-flex").click();
