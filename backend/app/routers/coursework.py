@@ -99,7 +99,7 @@ async def delete_coursework(id: UUID, session: session_dependency):
     session.commit()
 
     try:
-        gl_data = await gl_delete_coursework(coursework.gitlab_id)
+        await gl_delete_coursework(coursework.gitlab_id)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY, 
@@ -127,7 +127,7 @@ async def update_coursework(id: UUID, coursework: CourseworkUpdate, session: ses
     coursework_db.sqlmodel_update(coursework_data)
 
     try:
-        gl_data = await gl_update_programme(coursework_db.gitlab_id, coursework_db.name)
+        await gl_update_programme(coursework_db.gitlab_id, coursework_db.name)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY, 

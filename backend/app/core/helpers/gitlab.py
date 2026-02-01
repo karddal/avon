@@ -1,6 +1,6 @@
 import re
 
-from fastapi import HTTPException, params
+from fastapi import HTTPException
 import httpx
 from dotenv import load_dotenv
 import os

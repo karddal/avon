@@ -162,7 +162,7 @@ async def update_unit(unit_id: UUID, unit: UnitUpdate, session: session_dependen
     session.refresh(db_unit)
 
     try:
-        gl_data = await gl_update_unit(db_unit.gitlab_id, db_unit.name)
+        await gl_update_unit(db_unit.gitlab_id, db_unit.name)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY, 
@@ -182,7 +182,7 @@ async def delete_unit(unit_id: UUID, session: session_dependency):
         )
     
     try:
-        gl_data = await gl_delete_unit(unit.gitlab_id)
+        await gl_delete_unit(unit.gitlab_id)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 

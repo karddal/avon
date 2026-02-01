@@ -58,7 +58,7 @@ async def delete_programme(id: UUID, session: session_dependency):
     if programme is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Programme not found')
     try:
-        gl_data = await gl_delete_programme(programme.gitlab_id)
+        await gl_delete_programme(programme.gitlab_id)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
@@ -82,7 +82,7 @@ async def update_programme(id: UUID, programme: ProgrammeUpdate, session: sessio
     programme_db.sqlmodel_update(programme_data)
 
     try:
-        gl_data = await gl_update_programme(programme_db.gitlab_id, programme_db.name)
+        await gl_update_programme(programme_db.gitlab_id, programme_db.name)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
