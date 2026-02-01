@@ -11,6 +11,9 @@ set windows-shell := ["powershell.exe", "-NoProfile", "-Command"]
 @doc cmd *args:
     just -f Justfile -d documentation {{cmd}}-doc {{args}}
 
+@db cmd *args:
+    just -f Justfile {{cmd}}-db {{args}}
+
 # real command
 default:
     just --list
@@ -49,6 +52,14 @@ test-be:
 run-fe env = "dev":
     npm run {{env}}
 
+test-fe:
+    @echo "Testing frontend..."
+    npm test
+
+test: 
+    just fe test
+    just be test
+
 [windows]
 run-be env = "dev":
     $env:ENV="{{env}}"; uv run fastapi dev
@@ -67,5 +78,5 @@ sync:
     just fe sync
     just be sync
 
-serve-book-doc:
+serve-doc:
     mdbook serve --open

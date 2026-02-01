@@ -25,6 +25,8 @@ export async function signIn(formData: SignInData): Promise<SignInResponse> {
     throw new Error("No session");
   }
 
+  console.log("DEBUG: ---------Login successful");
+  console.log(formData.email);
   if (data.user.role === "user") {
     return { redirect: "/units" };
   } else {
