@@ -2,12 +2,7 @@
 
 import { DatabaseSync } from "node:sqlite";
 import { Pool } from "pg";
-
-// reuse Pool
-const pgPool =
-  process.env.NODE_ENV === "production"
-    ? new Pool({ connectionString: process.env.BA_DATABASE_URL })
-    : null;
+import { pool } from "@/lib/actions/db_pool";
 
 export async function delete_user(
   user_id: string,
@@ -15,8 +10,8 @@ export async function delete_user(
   const isProd = process.env.NODE_ENV === "production";
 
   try {
-    if (isProd && pgPool) {
-      const result = await pgPool.query('DELETE FROM "user" WHERE id = $1', [
+    if (isProd) {
+      const result = await pool.query('DELETE FROM "user" WHERE id = $1', [
         user_id,
       ]);
 

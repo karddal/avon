@@ -31,6 +31,7 @@ Different targets (frontend, backend, and docs) support different commands.
 - **Frontend:** `just fe <cmd>`
 - **Backend:** `just be <cmd>`
 - **Docs:** `just doc <cmd>`
+- **DB:** `just db <cmd>`
 
 ---
 
@@ -91,9 +92,20 @@ If omitted, it defaults to `dev`.
 
 ---
 
+### DB Commands
+
+| Command       | Purpose                       |
+|---------------|-------------------------------|
+|`just db reset`| Resets the db, drop all tables|
+|`just db seed` | Seeds db with sample data     |
+
 Please follow the rest of the instructions in this chapter to setup the tools for running the frontend and the backend.
 
 ## Docker
 
 Some of our workflows use Docker, because we containerise our platform. This means that you should install Docker or a Docker-compatible runtime, like
 Podman.
+
+## Local db setup
+
+To seed a local db for development use, see the just commands above.

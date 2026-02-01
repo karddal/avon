@@ -47,6 +47,12 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
 
         if not programme:
             raise HTTPException(status_code=400, detail="Programme id is invalid.")
+    
+    # Check if the unit already exists either by code or by name
+    statement = select(Unit.id).where(Unit.name==unit.name or Unit.unit_code==unit.unit_code)
+    existing_units = session.exec(statement).all()
+    if len(existing_units) > 0:
+        raise HTTPException(status_code=400, detail="Unit already exists with same name or unit code")
 
     session.add(db_unit)
     session.commit()
@@ -169,12 +175,12 @@ async def delete_unit(unit_id: UUID, session: session_dependency):
 
 
 @router.get("/u/{user_id}", response_model=UnitAll)
-async def get_user_units(user_id: UUID, session: session_dependency):
+async def get_user_units(user_id: str, session: session_dependency):
     response = session.exec(
         select(Unit).join(UnitEnrollment).where(UnitEnrollment.user_id == user_id)
     ).all()
 
-    return response
+    return {"units": response}
 
 
 @router.get("/{unit_id}/courseworks", response_model=CourseworkAll)
@@ -193,4 +199,4 @@ async def get_courseworks(unit_id: UUID, session: session_dependency):
 async def get_units(session: session_dependency):
     statement = select(Unit)
     units = session.exec(statement).all()
-    return units
+    return {"units":units}
