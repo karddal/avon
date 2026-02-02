@@ -38,12 +38,12 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
   const slug = p.slug;
   console.log("UNIT", slug);
   const s = await requireSession();
+  const token = await getRequestJWT();
   let userRole = s.user.role;
   const me = s.user.id;
   if (!userRole) {
     userRole = "user";
   }
-  const token = await getRequestJWT();
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/units/${slug}/`,
     {
@@ -137,35 +137,29 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
                   </TabsList>
                   {userRole === "lecturer" && (
                     <Button asChild variant={"outline"} size={"sm"}>
-                      <Link
-                        href={{
-                          pathname: `/units/${slug}/create`,
-                        }}
-                      >
+                      <Link href={`/units/${slug}/create`}>
                         <ClipboardPlus />
                         Assign new coursework
                       </Link>
                     </Button>
                   )}
                 </div>
-                <TabsList className={"w-full"}>
-                  <TabsContent value={"ongoing"}>
-                    <Suspense fallback={<Loading />}>
-                      <UnitsCourseworkList
-                        unit_id={slug}
-                        finished={false}
-                      ></UnitsCourseworkList>
-                    </Suspense>
-                  </TabsContent>
-                  <TabsContent className={"w-full"} value={"finished"}>
-                    <Suspense fallback={<Loading />}>
-                      <UnitsCourseworkList
-                        unit_id={slug}
-                        finished={true}
-                      ></UnitsCourseworkList>
-                    </Suspense>
-                  </TabsContent>
-                </TabsList>
+                <TabsContent value={"ongoing"}>
+                  <Suspense fallback={<Loading />}>
+                    <UnitsCourseworkList
+                      unit_id={slug}
+                      finished={false}
+                    ></UnitsCourseworkList>
+                  </Suspense>
+                </TabsContent>
+                <TabsContent className={"w-full"} value={"finished"}>
+                  <Suspense fallback={<Loading />}>
+                    <UnitsCourseworkList
+                      unit_id={slug}
+                      finished={true}
+                    ></UnitsCourseworkList>
+                  </Suspense>
+                </TabsContent>
               </Tabs>
             </CardContent>
           </Card>
@@ -214,7 +208,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
   );
 }
 
-export default async function UnitPage({
+export default function UnitPage({
   params,
 }: {
   params: Promise<{ slug: string }>;

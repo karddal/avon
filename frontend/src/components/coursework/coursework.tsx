@@ -2,7 +2,7 @@
 import { Ellipsis, SquareX } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import DeleteCourseworkButton from "@/app/units/[slug]/delete_coursework_button";
+import DeleteCourseworkButton from "@/components/coursework/delete_coursework_button";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -102,10 +102,7 @@ export default function Coursework({
                   <AlertDialogCancel className="h-full">
                     Cancel
                   </AlertDialogCancel>
-                  <DeleteCourseworkButton
-                    courseworkId={props.id}
-                    setAlertState={setShowDelete}
-                  />
+                  <DeleteCourseworkButton courseworkId={props.id} />
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
