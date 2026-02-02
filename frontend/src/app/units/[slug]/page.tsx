@@ -35,7 +35,7 @@ type UnitUpdateData = {
 
 async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
   const p = await params;
-  const slug = p.slug;
+  const slug = String(p.slug);
   console.log("UNIT", slug);
   const s = await requireSession();
   const token = await getRequestJWT();
@@ -168,14 +168,16 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
         {/* Right column */}
         <div className="flex flex-col xl:col-span-1 lg:col-span-2 gap-4 min-h-0">
           {/* Unit Staff */}
-          <DropdownCard
-            openByDefault={true}
-            title="Unit staff"
-            desc="Lecturers and teachers appear here"
-            className={""}
-          >
-            <Lecturers unit_id={slug}></Lecturers>
-          </DropdownCard>
+          <Suspense fallback={<Loading />}>
+            <DropdownCard
+              openByDefault={true}
+              title="Unit staff"
+              desc="Lecturers and teachers appear here"
+              className={""}
+            >
+              <Lecturers unit_id={slug}></Lecturers>
+            </DropdownCard>
+          </Suspense>
 
           {/* Announcements */}
           <DropdownCard
