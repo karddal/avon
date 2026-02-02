@@ -34,7 +34,9 @@ type UnitUpdateData = {
 };
 
 async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
+  const p = await params;
+  const slug = p.slug;
+  console.log("UNIT", slug);
   const s = await requireSession();
   let userRole = s.user.role;
   const me = s.user.id;
