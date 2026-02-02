@@ -33,7 +33,7 @@ def coursework_updated_payload(unit_id):
 # CREATE:
 # Test successful creation of coursework through response and database
 def test_coursework_create_success(client, session):
-    unit_id = create_unit(session)
+    unit_id = create_unit(session).id
 
     payload = coursework_payload(str(unit_id)) # For some reason wants it in string form
     response = client.post("/coursework/create", json=payload)
@@ -55,7 +55,7 @@ def test_coursework_create_success(client, session):
 
 # Test response when creating duplicate coursework for same unit, not database
 def test_coursework_create_duplicate(client, session):
-    unit_id = create_unit(session)
+    unit_id = create_unit(session).id
 
     payload = coursework_payload(str(unit_id))
 
@@ -82,7 +82,7 @@ def test_coursework_create_unit_empty_fields(client,session):
 # GET:
 # Test getting coursework that exists, through response not database
 def test_get_coursework_success(client, session):
-    unit_id = create_unit(session)
+    unit_id = create_unit(session).id
 
     payload = coursework_payload(str(unit_id))
     createResponse = client.post("/coursework/create", json=payload)  # Need response to get the ID of the coursework
@@ -94,7 +94,7 @@ def test_get_coursework_success(client, session):
     assert response.json()["id"] == coursework_id
 
 def test_get_coursework_empty_fields(client, session):
-    unit_id = create_unit(session)
+    unit_id = create_unit(session).id
 
     payload = coursework_payload(str(unit_id))
     client.post("/coursework/create", json=payload)  # Need response to get the ID of the coursework
@@ -113,7 +113,7 @@ def test_get_coursework_not_found(client):
 # UPDATE:
 # Testing through response and database that updating coursework works
 def test_update_coursework_success(client, session):
-    unit_id = create_unit(session)
+    unit_id = create_unit(session).id
 
     payload = coursework_payload(str(unit_id))
     createResponse = client.post("/coursework/create", json=payload)
@@ -140,7 +140,7 @@ def test_update_coursework_not_found(client):
 
 # Test through response when trying to update coursework to belong to a unit that doesn't exist
 def test_update_coursework_unit_not_found(client, session):
-    unit_id = create_unit(session)
+    unit_id = create_unit(session).id
 
     payload = coursework_payload(str(unit_id))
     createResponse = client.post("/coursework/create", json=payload)
@@ -154,7 +154,7 @@ def test_update_coursework_unit_not_found(client, session):
 # DELETE:
 # Test deletion of coursework through response and database
 def test_delete_coursework_success(client, session):
-    unit_id = create_unit(session)
+    unit_id = create_unit(session).id
 
     payload = coursework_payload(str(unit_id))
     createResponse = client.post("/coursework/create", json=payload)
@@ -178,7 +178,7 @@ def test_delete_coursework_not_found(client):
     assert response.json()["detail"] == "Coursework not found"
 
 def test_update_coursework_works(client, session):
-    unit_id = create_unit(session)
+    unit_id = create_unit(session).id
 
     payload = coursework_payload(str(unit_id))
     createResponse = client.post("/coursework/create", json=payload)
@@ -198,7 +198,7 @@ def test_update_coursework_works(client, session):
     assert g.name == np["name"]
 
 def test_update_coursework_data(client, session):
-    unit_id = create_unit(session)
+    unit_id = create_unit(session).id
 
     np = coursework_payload(str(unit_id))
     createResponse = client.post("/coursework/create", json=np)

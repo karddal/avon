@@ -58,6 +58,11 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
         gitlab_id=gl_data["gitlabGroupId"]
     )
 
+    statement = select(Unit.id).where(Unit.name==unit.name or Unit.unit_code==unit.unit_code)
+    existing_units = session.exec(statement).all()
+    if len(existing_units) > 0:
+        raise HTTPException(status_code=400, detail="Unit already exists with same name or unit code")
+
     session.add(db_unit)
     session.commit()
     session.refresh(db_unit)
