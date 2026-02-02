@@ -91,15 +91,23 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
     return s.slug;
   }
   const formSchema = z.object({
-    name: z.string().min(2, {
-      error: "Name must be at least 2 characters.",
-    }).max(72, "Name is at most 72 characters"),
-    description: z.string().min(2, {
-      message: "Description must be at least 2 characters.",
-    }).max(2000, { error: "Description is at most 2000 characters" }),
+    name: z
+      .string()
+      .min(2, {
+        error: "Name must be at least 2 characters.",
+      })
+      .max(72, "Name is at most 72 characters"),
+    description: z
+      .string()
+      .min(2, {
+        message: "Description must be at least 2 characters.",
+      })
+      .max(2000, { error: "Description is at most 2000 characters" }),
     programme: z.string().nonempty({ error: "Programme cannot be empty" }),
-    unitCode: z.string().length(9, { error: "Unit code must be 9 characters long" }),
-    color: z.string().max(7, { error: "Invalid colour format" })
+    unitCode: z
+      .string()
+      .length(9, { error: "Unit code must be 9 characters long" }),
+    color: z.string().max(7, { error: "Invalid colour format" }),
   });
 
   const formVariants = {
@@ -327,7 +335,12 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                         variant={"outline"}
                         onClick={() => {
                           form
-                            .trigger(["name", "description", "unitCode", "programme"])
+                            .trigger([
+                              "name",
+                              "description",
+                              "unitCode",
+                              "programme",
+                            ])
                             .then((_result) => {
                               if (form.formState.isValid) {
                                 next();
