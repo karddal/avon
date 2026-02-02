@@ -34,6 +34,6 @@ describe("Coursework page", () => {
   it("has default finished coursework", () => {
     cy.visit("/coursework");
     cy.get('#radix-_R_9bneitmlb_-trigger-finished').click();
-    cy.get("p").should("contain", "Power to the People in 2025"); // replace with seeded coursework name
+    cy.get("p").should("contain", "Power to the People in 2025"); 
   });
 });
