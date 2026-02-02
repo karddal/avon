@@ -2,6 +2,7 @@
 
 import { BookCheck, Menu, ServerCog, SquarePen, SquareX } from "lucide-react";
 import { useState } from "react";
+import DeleteCourseworkButton from "@/components/coursework/delete_coursework_button";
 import EditCoursework from "@/components/coursework/edit-coursework";
 import {
   AlertDialog,
@@ -20,7 +21,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import DeleteUnitButton from "@/components/units/delete-unit-button";
 
 type CourseworkUpdateData = {
   id: string;
@@ -101,7 +101,7 @@ export default function CourseworkLectDropdown({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
-            <DeleteUnitButton unitId={slug} />
+            <DeleteCourseworkButton courseworkId={slug} />
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
