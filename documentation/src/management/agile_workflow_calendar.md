@@ -138,42 +138,42 @@ document.addEventListener('DOMContentLoaded', function () {
         {
             title: 'Progress Update',
             start: '2026-01-03',
-            url: '/meetings/pre-TB2/03-01-2025-team.html'
+            url: '/meetings/pre-TB2/03-01-2026-team.html'
         },
         {
             title: 'Retrospective',
             start: '2026-01-08',
-            url: '/meetings/sprint1/08-01-2025-team.html'
+            url: '/meetings/sprint1/08-01-2026-team.html'
         },
         {
             title: 'Initial Meeting',
             start: '2026-01-19',
-            url: '/meetings/sprint2/19-01-2025-team.html'
+            url: '/meetings/sprint2/19-01-2026-team.html'
         },
                 {
             title: 'Mentor Meeting',
             start: '2026-01-21',
-            url: '/meetings/sprint2/21-01-2025-team.html'
+            url: '/meetings/sprint2/21-01-2026-team.html'
         },
                 {
             title: 'Sprint Review',
             start: '2026-01-23',
-            url: '/meetings/sprint2/23-01-2025-team.html'
+            url: '/meetings/sprint2/23-01-2026-team.html'
         },
                         {
             title: 'Initial Sprint 3',
             start: '2026-01-26',
-            url: '/meetings/sprint3/26-01-2025-team.html'
+            url: '/meetings/sprint3/26-01-2026-team.html'
         },
                                 {
             title: 'Midweek Sprint 3',
             start: '2026-01-28',
-            url: '/meetings/sprint3/28-01-2025-team.html'
+            url: '/meetings/sprint3/28-01-2026-team.html'
         },
                                 {
             title: 'Final Sprint 3',
             start: '2026-01-30',
-            url: '/meetings/sprint3/30-01-2025-team.html'
+            url: '/meetings/sprint3/30-01-2026-team.html'
         },
 
     ]
