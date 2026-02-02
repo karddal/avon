@@ -1,6 +1,3 @@
-"use server";
-import { ClipboardPlus } from "lucide-react";
-import Link from "next/link";
 import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
 import { Button } from "@/components/ui/button";
