@@ -2,8 +2,8 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { cache } from "react";
 import { auth } from "@/lib/auth";
+import { cache } from "react";
 
 /**
  * This method can be used to get the current betterAuth session context.
@@ -21,7 +21,6 @@ import { auth } from "@/lib/auth";
 // }
 
 export const requireSession = cache(async () => {
-  // Your existing logic here
   const session = await auth.api.getSession({
     headers: await headers(),
   });

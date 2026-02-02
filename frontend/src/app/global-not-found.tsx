@@ -1,69 +1,89 @@
 "use client";
-import "./globals.css";
-import { SearchAlert } from "lucide-react";
-import type { Metadata } from "next";
+
+import { useEffect, useState } from "react";
+import { Undo } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ThemeProvider } from "next-themes";
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
+import { Button } from "@/components/ui/button";
+import { IBM_Plex_Sans, IBM_Plex_Mono, PT_Serif } from "next/font/google";
+import "./globals.css";
 
-export const metadata: Metadata = {
-  title: "404",
-  description: "Sorry! The page you are looking for does not exist.",
-};
+const ibmPlexSans = IBM_Plex_Sans({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-ibm-sans",
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["300", "400", "500"],
+  variable: "--font-ibm-mono",
+});
+
+const ptSerif = PT_Serif({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-pt-serif",
+});
 
 export default function GlobalNotFound() {
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
-    <html lang="en">
-      <body>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${ibmPlexSans.variable} ${ibmPlexMono.variable} ${ptSerif.variable}`}
+    >
+      <body className="antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <div className="relative min-h-svh w-full flex items-center justify-center p-6 md:p-10">
-            <Image
-              src={`${process.env.NEXT_PUBLIC_CDN_PATH}/images/campus.jpg`}
-              alt="Campus"
-              fill
-              className="object-cover -z-10 brightness-100"
-              priority
-            />
-            <div className="w-full max-w-sm items-center justify-center bg-card border shadow p-4">
-              <Empty>
-                <EmptyHeader>
-                  <EmptyMedia variant={"icon"}>
-                    <SearchAlert />
-                  </EmptyMedia>
-                  <div className="flex flex-row justify- gap-2">
-                    <EmptyTitle className="text-2xl">
-                      404 - Page not found
-                    </EmptyTitle>
-                  </div>
+          {mounted ? (
+            <div className="relative min-h-svh w-full flex items-center justify-center p-6 md:p-10">
+              <Image
+                src={`${process.env.NEXT_PUBLIC_CDN_PATH}/images/campus.jpg`}
+                alt="Campus"
+                fill
+                className="object-cover -z-10 brightness-50"
+                priority
+              />
 
-                  <EmptyDescription>{metadata.description}</EmptyDescription>
-                </EmptyHeader>
-                <EmptyContent>
-                  <button
-                    className="mt-4 rounded-md bg-blue-500 px-4 py-2 text-sm text-white transition-colors hover:bg-blue-400"
-                    type={"button"}
-                    onClick={() => router.back()}
-                  >
-                    Go back
-                  </button>
-                </EmptyContent>
-              </Empty>
+              <div className="w-full max-w-sm flex flex-col items-center justify-center bg-card border shadow-lg p-10 rounded-lg gap-6 text-center">
+                <p className="font-serif text-9xl">404</p>
+
+                <div className="space-y-2">
+                  <p className="text-xl font-semibold tracking-tight">
+                    <strong>Oops!</strong> Page not found.
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    We couldn't find the page you are looking for. It might have
+                    been moved or deleted.
+                  </p>
+                </div>
+
+                <Button
+                  variant="default"
+                  className="w-full"
+                  type="button"
+                  onClick={() => router.back()}
+                >
+                  <Undo className="mr-2 h-4 w-4" /> Go back
+                </Button>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="min-h-svh w-full bg-background" />
+          )}
         </ThemeProvider>
       </body>
     </html>

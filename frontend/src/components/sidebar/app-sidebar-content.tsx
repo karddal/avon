@@ -12,7 +12,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { SidebarLink } from "@/components/sidebar/sidebar-link";
 import { Kbd, KbdGroup } from "@/components/ui/kbd";
-import { requireSession } from "@/lib/auth-utils";
 import LogoutButton from "../logout-button";
 import {
   DropdownMenu,
@@ -29,6 +28,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "../ui/sidebar";
+import { requireSession } from "@/lib/auth-utils";
 
 const adminItems = [
   {
@@ -193,7 +193,7 @@ export default async function AppSidebarContent() {
                   <SidebarMenuButton asChild className="h-full p-0">
                     <SidebarLink url={item.url}>
                       <item.icon strokeWidth={1} className="size-8! mx-2" />
-                      <span className="text-accent-foreground">
+                      <span className="text-accent-foreground text-lg">
                         {item.title}
                       </span>
                     </SidebarLink>
