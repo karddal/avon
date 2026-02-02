@@ -3,11 +3,22 @@
 import {useCallback, useMemo, useState} from "react";
 import {CalendarNavigationCard} from "@/components/calendar/calendar-navigation-card";
 import {Tabs, TabsContent} from "@/components/ui/tabs";
-import {WeeklyTimeTableCard} from "@/components/calendar/calendar-timetable-card";
+import {CalendarTimeTableCard} from "@/components/calendar/calendar-timetable-card";
 import {useUnits} from "@/hooks/calendar/use-units";
 import {useCalendarEvents} from "@/hooks/calendar/use-calendar-events";
 import {addDays, startOfWeek} from "date-fns";
 import {EventsListingCard} from "@/components/calendar/events-listing-card";
+
+export type CalendarEvent = {
+    id: string;
+    name: string;
+    start: Date;
+    end: Date;
+    unit_id: string
+    unit_name: string
+    href?: string;
+    colour?: string
+};
 
 export default function CalendarDashboard() {
     const [weekStartDate, setWeekStartDate] = useState<Date>(new Date())
@@ -37,7 +48,7 @@ export default function CalendarDashboard() {
             />
 
             <TabsContent value="timetable">
-                <WeeklyTimeTableCard
+                <CalendarTimeTableCard
                     weekStartDate={weekStartDate}
                     eventsMap={eventsMap}
                 />

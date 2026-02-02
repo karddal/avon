@@ -7,18 +7,7 @@ import {cn} from "@/lib/utils";
 import {RefObject, useEffect, useMemo, useRef, useState} from "react";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {useIsMobile} from "@/hooks/use-mobile";
-import {useCalendarEvents} from "@/hooks/calendar/use-calendar-events";
-
-export type CalendarEvent = {
-    id: string;
-    name: string;
-    start: Date;
-    end: Date;
-    unit_id: string
-    unit_name: string
-    href?: string;
-    colour?: string
-};
+import {CalendarEvent} from "@/components/calendar/calendar-dashboard";
 
 function useMounted() {
     const [mounted, setMounted] = useState(false);
@@ -26,7 +15,7 @@ function useMounted() {
     return mounted
 }
 
-export function WeeklyTimeTableCard(
+export function CalendarTimeTableCard(
     {
         weekStartDate = new Date(),
         eventsMap,

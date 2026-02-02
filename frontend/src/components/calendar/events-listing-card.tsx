@@ -1,4 +1,4 @@
-import {CalendarEvent} from "@/components/calendar/calendar-timetable-card";
+import {CalendarEvent} from "@/components/calendar/calendar-dashboard";
 import {useMemo} from "react";
 import {Card, CardContent} from "@/components/ui/card";
 import {format, parseISO} from "date-fns";
