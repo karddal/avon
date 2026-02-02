@@ -92,14 +92,14 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
   }
   const formSchema = z.object({
     name: z.string().min(2, {
-      message: "Name must be at least 2 characters.",
-    }),
+      error: "Name must be at least 2 characters.",
+    }).max(72, "Name is at most 72 characters"),
     description: z.string().min(2, {
       message: "Description must be at least 2 characters.",
-    }),
-    programme: z.string(),
-    unitCode: z.string(),
-    color: z.string(),
+    }).max(2000, { error: "Description is at most 2000 characters" }),
+    programme: z.string().nonempty({ error: "Programme cannot be empty" }),
+    unitCode: z.string().length(9, { error: "Unit code must be 9 characters long" }),
+    color: z.string().max(7, { error: "Invalid colour format" })
   });
 
   const formVariants = {
@@ -220,6 +220,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                               aria-invalid={fieldState.invalid}
                               placeholder={"My amazing unit"}
                               autoComplete={"off"}
+                              maxLength={72}
                             />
                             {fieldState.invalid && (
                               <FieldError errors={[fieldState.error]} />
@@ -241,6 +242,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                               aria-invalid={fieldState.invalid}
                               placeholder={"A great description"}
                               autoComplete={"off"}
+                              maxLength={2000}
                             />
                             {fieldState.invalid && (
                               <FieldError errors={[fieldState.error]} />
@@ -264,7 +266,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                                 aria-invalid={fieldState.invalid}
                                 placeholder={"A unit code"}
                                 autoComplete={"off"}
-                                maxLength={12}
+                                maxLength={9}
                                 className="w-30"
                               />
                             </div>
@@ -319,27 +321,13 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                           </Field>
                         )}
                       />
-                      {/* <div className="flex flex-row"> */}
-                      {/* <Button type={"button"} variant={"outline"}
-                          onClick={() => {
-                            form
-                              .trigger(["name", "description", "programme"])
-                              .then((_result) => {
-                                if (form.formState.isValid) {
-                                  next();
-                                }
-                              });
-                          }}
-                        >
-                          Back
-                        </Button> */}
                       <Button
                         className="bg-black text-white hover:bg-zinc-700 hover:text-white hover:cursor-pointer"
                         type={"button"}
                         variant={"outline"}
                         onClick={() => {
                           form
-                            .trigger(["name", "description", "programme"])
+                            .trigger(["name", "description", "unitCode", "programme"])
                             .then((_result) => {
                               if (form.formState.isValid) {
                                 next();
