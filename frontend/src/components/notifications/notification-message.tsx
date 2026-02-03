@@ -13,13 +13,14 @@ export default function NotificationMessage({
     <Item variant={"outline"}>
       <ItemContent>
         <ItemTitle>{data.title}</ItemTitle>
-        <ItemDescription>{data.body}</ItemDescription>
+        <ItemDescription className={"flex flex-col max-h-[50ex] overflow-y-scroll"}>
+          {data.body}
+          <span className={"font-light"}>Received on {new Date(data.created_at).toLocaleString()}</span>
+        </ItemDescription>
       </ItemContent>
       <ItemActions>
         <Button size={"icon-sm"} variant={"ghost"}><Check/></Button>
       </ItemActions>
     </Item>
-
-
   );
 }
