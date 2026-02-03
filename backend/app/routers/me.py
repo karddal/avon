@@ -2,6 +2,7 @@ import datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
+from sqlalchemy import exists
 from sqlalchemy.orm import with_loader_criteria
 from sqlalchemy.orm.strategy_options import selectinload
 from sqlmodel import Session, select
@@ -12,7 +13,7 @@ from app.models.notification import Notification
 from app.models.programme import Programme
 from app.models.unit import Unit, UnitWithCourseworks
 from app.models.unit_enrollment import UnitEnrollment
-from app.schemas.notification import Notifications
+from app.schemas.notification import Notifications, NotificationsUnreadExist
 from app.schemas.notification import Notification as NotificationSchema
 from app.schemas.notification import UnitInfo as UnitInfoSchema
 from app.schemas.unit import UnitAll, UnitAllByGroup
@@ -117,4 +118,11 @@ async def me_notifications(session: session_dependency, me: str = Depends(get_cu
         id=notification.id, unit=UnitInfoSchema(unit_id=notification.unit.id, unit_name=notification.unit.name, unit_code=notification.unit.unit_code), title=notification.title, body=notification.body, created_at=notification.created_at, viewed=notification.viewed))
     return Notifications(
         notifications=my
+    )
+
+@router.get("/notifications/unread_exists", response_model=NotificationsUnreadExist)
+async def me_have_unread_notifications(session: session_dependency, me: str = Depends(get_current_user)):
+    result = session.scalar(exists().where(Notification.recipient_id == me).where(Notification.viewed == False).select())
+    return NotificationsUnreadExist(
+        have_unread_notifications=result
     )

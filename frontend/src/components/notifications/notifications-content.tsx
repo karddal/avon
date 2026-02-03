@@ -15,9 +15,15 @@ export type UnitInfo = {
     unit_code: string;
 }
 
+const system: UnitInfo = {
+  unit_id: "7ea07bcf-9295-469a-8911-2b4431ef9f8e",
+  unit_name: "System",
+  unit_code: "System",
+}
+
 export type Notification2 = {
     id: string
-    unit: UnitInfo
+    unit: UnitInfo | null
     title: string
     body: string
     created_at: string
@@ -45,7 +51,7 @@ export default async function NotificationsContents() {
     // convert the notification user ids to names
 
     const notifs = data.notifications;
-    const groups = Map.groupBy(notifs, ((item) => item.unit))
+    const groups = Map.groupBy(notifs, ((item) => item.unit ? item.unit : system ))
     const tabs = groups.keys().map((group) => (
         <TabsTrigger className={"whitespace-normal! flex flex-col"} key={group.unit_id} value={group.unit_id}>
           <span>{group.unit_name}</span>

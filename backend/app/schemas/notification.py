@@ -26,3 +26,6 @@ class CreateNotification(BaseModel):
     unit_id: str | None
     title: str
     body: str
+
+class NotificationsUnreadExist(BaseModel):
+    have_unread_notifications: bool

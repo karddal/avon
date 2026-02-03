@@ -8,13 +8,16 @@ import NotificationMessage from "./notification-message";
 import {Suspense} from "react";
 import NotificationsContents from "@/components/notifications/notifications-content";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
+import NotificationsBellIcon from "@/components/notifications/bell-icon";
 
 export default function NotificationBar() {
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="p-2 hover:cursor-pointer hover:bg-accent hover:ease-in-out">
-        <Bell className="h-[1.2rem] w-[1.2rem]" />
+        <Suspense>
+          <NotificationsBellIcon/>
+        </Suspense>
       </DropdownMenuTrigger>
       <DropdownMenuContent className={"w-full"}>
           <Card className={"w-[75vw]"}>
