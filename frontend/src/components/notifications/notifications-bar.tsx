@@ -20,7 +20,7 @@ export default function NotificationBar() {
         </Suspense>
       </DropdownMenuTrigger>
       <DropdownMenuContent className={"w-full"}>
-          <Card className={"w-[75vw]"}>
+          <Card className={"w-[75vw] max-h-[75vh] overflow-y-scroll"}>
             <CardHeader>
               <CardTitle className={"flex flex-row items-center gap-2"}><Mailbox/>Notification center</CardTitle>
               <CardDescription>You can view your notifications here.</CardDescription>

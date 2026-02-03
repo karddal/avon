@@ -6,7 +6,7 @@ import {get_username_from_id} from "@/lib/actions/get_username";
 import NotificationMessage from "@/components/notifications/notification-message";
 import {JSX} from "react";
 import {Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty";
-import {BookDashed, Sticker} from "lucide-react";
+import {BookDashed, Cog, Sticker} from "lucide-react";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/new_tabs";
 
 export type UnitInfo = {
@@ -23,15 +23,22 @@ const system: UnitInfo = {
 
 export type Notification2 = {
     id: string
-    unit: UnitInfo | null
     title: string
     body: string
     created_at: string
     viewed: boolean
 }
 
+type UnitWithNotifs = {
+  unit_id: string;
+  unit_name: string;
+  unit_code: string;
+  notifications: Notification2[];
+}
+
 type NotificationsResponse = {
-    notifications: Notification2[];
+    system_notifications: Notification2[];
+    notifications: UnitWithNotifs[];
 }
 
 export default async function NotificationsContents() {
@@ -47,27 +54,40 @@ export default async function NotificationsContents() {
         },
     );
     const data: NotificationsResponse = await response.json();
-
-    // convert the notification user ids to names
-
-    const notifs = data.notifications;
-    const groups = Map.groupBy(notifs, ((item) => item.unit ? item.unit : system ))
-    const tabs = groups.keys().map((group) => (
+    const groups = data.notifications;
+    const tabs = groups.map((group) => (
         <TabsTrigger className={"whitespace-normal! flex flex-col"} key={group.unit_id} value={group.unit_id}>
           <span>{group.unit_name}</span>
         </TabsTrigger>
-    )).toArray();
-    const entries = groups.entries().map(([unit, notifs]) => {
-      const data = notifs.map((item) => (
+    ));
+
+    const system_entries = (data.system_notifications.length === 0 ? (<Empty>
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <Sticker/>
+        </EmptyMedia>
+        <EmptyTitle>You have no notifications.</EmptyTitle>
+        <EmptyDescription>
+          You have no system notifications yet. Check back soon!
+        </EmptyDescription>
+      </EmptyHeader>
+    </Empty>) : ( data.system_notifications.map((notification) => (
+        <NotificationMessage key={notification.id} data={notification}></NotificationMessage>
+    ))));
+
+    const entries = groups.map((notifs) => {
+      notifs.notifications = notifs.notifications.sort((a, b) => {return (new Date(a.created_at).getTime() - new Date(b.created_at).getTime())}).reverse()
+      const data = notifs.notifications.map((item) => (
               <NotificationMessage key={item.id} data={item}></NotificationMessage>
           ));
-      return (<TabsContent key={unit.unit_id} value={unit.unit_id}>
+      return (<TabsContent className={"flex flex-col gap-2"} key={notifs.unit_id} value={notifs.unit_id}>
         {data}
       </TabsContent>)
-    }).toArray();
+    });
+    console.log(entries.length)
     return (
         <div>
-            {notifs.length === 0 ? (
+            {groups.length === 0 && data.system_notifications.length === 0 ? (
                 <Empty>
                     <EmptyHeader>
                         <EmptyMedia variant="icon">
@@ -83,8 +103,14 @@ export default async function NotificationsContents() {
                 <div>
                   <Tabs orientation={"vertical"}>
                     <TabsList className={"max-w-1/3"}>
+                      <TabsTrigger className={"whitespace-normal! flex flex-col"} key={"system"} value={"system"}>
+                        <span>System Notifications</span>
+                      </TabsTrigger>
                       {tabs}
                     </TabsList>
+                    <TabsContent value={"system"}>
+                      {system_entries}
+                    </TabsContent>
                     {entries}
                   </Tabs>
                 </div>

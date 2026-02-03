@@ -19,8 +19,19 @@ class Notification(BaseModel):
 class NotificationAllInfo(Notification):
     recipient_id: str
 
+class ReadNotification(BaseModel):
+    id: UUID
+    title: str
+    body: str
+    created_at: datetime
+    viewed: bool
+
+class UnitWithNotifs(UnitInfo):
+    notifications: list[ReadNotification]
+
 class Notifications(BaseModel):
-    notifications: list[Notification]
+    system_notifications: list[ReadNotification]
+    notifications: list[UnitWithNotifs]
 
 class CreateNotification(BaseModel):
     unit_id: str | None

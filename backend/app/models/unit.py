@@ -27,6 +27,8 @@ class Unit(SQLModel, table=True):
 
     notifications: List["Notification"] = Relationship(back_populates="unit", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
 
+    def __hash__(self):
+        return self.id.__hash__()
 class UnitWithCourseworks(SQLModel):
     id: uuid.UUID
     unit_code: str
