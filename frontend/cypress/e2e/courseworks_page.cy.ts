@@ -1,4 +1,4 @@
-describe("Coursework page", () => {
+describe("Coursework listing page", () => {
   before(() => {
     cy.exec("npm run db:reset && npm run db:seed");
   });
@@ -35,5 +35,12 @@ describe("Coursework page", () => {
     cy.visit("/coursework");
     cy.get('#radix-_R_9bneitmlb_-trigger-finished').click();
     cy.get("p").should("contain", "Power to the People in 2025"); 
+  });
+
+  it("Allows navigation through the finsihed coursework tabslist", () => {
+    cy.visit("/coursework");
+    cy.get('#radix-_R_9bneitmlb_-trigger-finished').click();
+    cy.contains('[role="tab"]', "2024-2025").click();
+    cy.get("p").should("contain", "Power to the People in 2024"); 
   });
 });

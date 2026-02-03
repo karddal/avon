@@ -1,4 +1,4 @@
-describe("Coursework page", () => {
+describe("Coursework listing page - admin tests", () => {
   before(() => {
     cy.exec("npm run db:reset && npm run db:seed");
   });
@@ -53,5 +53,16 @@ describe("Coursework page", () => {
     cy.get('#radix-_R_9bneitmlb_-trigger-finished').click();
     cy.contains('[role="tab"]', "Imperative and Functional Programming").click();
     cy.get("p").should("contain", "Power to the People in 2024"); 
+  });
+
+  // Deletion
+  it("admin can delete coursework", () => {
+    cy.visit("/coursework");
+    cy.contains("p", "Encrypt").should("be.visible").closest(".bg-muted").as("courseworkCard")
+    cy.get("@courseworkCard").find('button[data-slot="dropdown-menu-trigger"]').click()
+    cy.get(`[data-slot="dropdown-menu-item"]`).click();
+    cy.get(`[data-slot="button"]`).click();
+    cy.get('[data-content=""] > div').contains("Coursework deleted successfully");
+    cy.get("p").should("not.contain", "Encrypt");
   });
 });
