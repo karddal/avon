@@ -12,6 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { SidebarLink } from "@/components/sidebar/sidebar-link";
 import { Kbd, KbdGroup } from "@/components/ui/kbd";
+import { requireSession } from "@/lib/auth-utils";
 import LogoutButton from "../logout-button";
 import {
   DropdownMenu,
@@ -28,7 +29,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "../ui/sidebar";
-import { requireSession } from "@/lib/auth-utils";
 
 const adminItems = [
   {

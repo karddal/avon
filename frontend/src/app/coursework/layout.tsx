@@ -7,7 +7,6 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { requireSession } from "@/lib/auth-utils";
 
 export default async function Layout({
   children,
