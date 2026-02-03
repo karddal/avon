@@ -4,7 +4,12 @@ describe("Coursework page", () => {
   });
 
   beforeEach(() => {
-    cy.login("admin@bris.ac.uk", "changeme");
+    cy.visit("/login");
+    cy.get("#email").type("admin@bris.ac.uk");
+    cy.get("#password").type("changeme");
+    cy.get("button[type=submit]").click();
+    cy.url({ timeout: 10000 }).should("include", "/dashboard")
+    cy.getCookie("__Secure-better-auth.session_token").should("exist");
   });
 
   it("successfully loads", () => {

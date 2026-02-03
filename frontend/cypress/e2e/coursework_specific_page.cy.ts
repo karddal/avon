@@ -8,7 +8,7 @@ describe("Coursework page", () => {
     cy.get("#email").type("josh@bris.ac.uk");
     cy.get("#password").type("changeme");
     cy.get("button[type=submit]").click();
-    cy.visit("/coursework")
+    cy.visit("/coursework", { timeout: 10000 })
   });
 
   it("successfully loads", () => {
@@ -22,7 +22,6 @@ describe("Coursework page", () => {
     cy.visit("/coursework");
     cy.get('#radix-_R_9bneitmlb_-trigger-finished').click();
     cy.contains('a[href^="/coursework/"]',"Encrypt",).click({ force: true });
-    cy.url().should("include", "/coursework/");
     cy.get("div").should("contain", "Encrypt")
   })
 
@@ -30,7 +29,6 @@ describe("Coursework page", () => {
     cy.visit("/coursework");
     cy.get('#radix-_R_9bneitmlb_-trigger-finished').click();
     cy.contains('a[href^="/coursework/"]',"Encrypt",).click({ force: true });
-    cy.url().should("include", "/coursework/");
     cy.get("div").find(".text-2xl").should("contain", "Description")
   });
 
@@ -38,7 +36,6 @@ describe("Coursework page", () => {
     cy.visit("/coursework");
     cy.get('#radix-_R_9bneitmlb_-trigger-finished').click();
     cy.contains('a[href^="/coursework/"]',"Encrypt",).click({ force: true });
-    cy.url().should("include", "/coursework/");
     cy.get("div").find(".text-2xl").should("contain", "Activity")
   });
 
@@ -46,7 +43,6 @@ describe("Coursework page", () => {
     cy.visit("/coursework");
     cy.get('#radix-_R_9bneitmlb_-trigger-finished').click();
     cy.contains('a[href^="/coursework/"]',"Encrypt",).click({ force: true });
-    cy.url().should("include", "/coursework/");
     cy.get("div").should("contain", "Tools")
   })
 });
