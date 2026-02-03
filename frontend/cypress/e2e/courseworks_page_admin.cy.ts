@@ -48,7 +48,7 @@ describe("Coursework listing page - admin tests", () => {
     cy.get("p").should("contain", "Encrypt"); 
   });
 
-    it("Allows navigation through the finsihed coursework tabslist", () => {
+  it("Allows navigation through the finsihed coursework tabslist", () => {
     cy.visit("/coursework");
     cy.get('#radix-_R_9bneitmlb_-trigger-finished').click();
     cy.contains('[role="tab"]', "Imperative and Functional Programming").click();
