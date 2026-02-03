@@ -41,7 +41,7 @@ Cypress.Commands.add("login", (username: string, password: string) => {
   cy.get("#email").type(username);
   cy.get("#password").type(password);
   cy.get("button[type=submit]").click();
-  cy.url().should("include", "/dashboard")
+  cy.url({ timeout: 10000 }).should("include", "/dashboard");
   // cy.get("span").should("contain", "One");
   cy.getCookie("__Secure-better-auth.session_token").should("exist");
 });
