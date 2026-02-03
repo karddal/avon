@@ -56,7 +56,7 @@ describe("Coursework listing page - admin tests", () => {
   });
 
   // Deletion
-  it("admin can delete coursework", () => {
+  it("Admin can delete coursework", () => {
     cy.visit("/coursework");
     cy.contains("p", "Encrypt").should("be.visible").closest(".bg-muted").as("courseworkCard")
     cy.get("@courseworkCard").find('button[data-slot="dropdown-menu-trigger"]').click()
