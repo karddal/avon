@@ -1,4 +1,4 @@
-import { Bell } from "lucide-react";
+import {Bell, Mail, Mailbox} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,8 +19,8 @@ export default function NotificationBar() {
       <DropdownMenuContent className={"w-full"}>
           <Card className={"w-[75vw]"}>
             <CardHeader>
-              <CardTitle>Notification center</CardTitle>
-              <CardDescription>You can view your notifications here</CardDescription>
+              <CardTitle className={"flex flex-row items-center gap-2"}><Mailbox/>Notification center</CardTitle>
+              <CardDescription>You can view your notifications here.</CardDescription>
             </CardHeader>
             <CardContent>
               <Suspense>

@@ -49,7 +49,6 @@ export default async function NotificationsContents() {
     const tabs = groups.keys().map((group) => (
         <TabsTrigger className={"whitespace-normal! flex flex-col"} key={group.unit_id} value={group.unit_id}>
           <span>{group.unit_name}</span>
-          <span className={"font-mono text-light"}>{group.unit_code}</span>
         </TabsTrigger>
     )).toArray();
     const entries = groups.entries().map(([unit, notifs]) => {

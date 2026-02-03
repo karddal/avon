@@ -104,10 +104,12 @@ async def me_active_courseworks(
 
 @router.get("/notifications", response_model=Notifications)
 async def me_notifications(session: session_dependency, me: str = Depends(get_current_user)):
+    """Sends notifications from active units"""
     my_notifications = list(session.exec(
         select(Notification).where(Notification.recipient_id == me)
     ).all())
-
+    today = datetime.date.today()
+    filtered = filter(lambda notification: notification.unit.programme.start_date <= today <= notification.unit.programme.end_date, my_notifications)
     my = []
     for notification in my_notifications:
         my.append(NotificationSchema(
