@@ -1,3 +1,4 @@
+import uuid
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
@@ -7,7 +8,8 @@ from starlette import status
 from app.core.security import get_current_user
 from app.db.session import get_session
 from app.models.notification import Notification
-from app.schemas.notification import NotificationAllInfo, CreateNotification
+from app.models.unit import Unit
+from app.schemas.notification import NotificationAllInfo, CreateNotification, UnitInfo
 
 router = APIRouter(prefix="/notification", tags=["notification"])
 session_dependency = Annotated[Session, Depends(get_session)]
@@ -15,23 +17,26 @@ session_dependency = Annotated[Session, Depends(get_session)]
 @router.get("/{id}", response_model=NotificationAllInfo)
 async def get_notification(id: int, session: session_dependency):
     notif = session.get(Notification, id)
-    return notif
+    return NotificationAllInfo(
 
-@router.post("/create", response_model=NotificationAllInfo, status_code=status.HTTP_201_CREATED)
+    id=notif.id, unit=UnitInfo(
+
+        unit_id=notif.unit.id, unit_name=notif.unit.name, unit_code=notif.unit.unit_code), title=notif.title, body=notif.body, created_at=notif.created_at, viewed=notif.viewed, recipient_id=notif.recipient_id)
+
+@router.post("/create", status_code=status.HTTP_201_CREATED)
 async def create_notification(notification: CreateNotification, session: session_dependency, me: str = Depends(get_current_user)):
-    if not notification.author_id:
-        author = me
-    else:
-        author = notification.author_id
+    print("HELLO ----")
+    print(notification)
+    unit = session.get(Unit, uuid.UUID(notification.unit_id))
+    for user in unit.enrollments:
+        if user.type == "student":
+            to_add = Notification(
+                recipient_id=user.user_id,
+                unit=unit,
+                title=notification.title,
+                body=notification.body,
+            )
+            session.add(to_add)
 
-    to_add = Notification(
-        recipient_id=notification.recipient_id,
-        author_id=author,
-        title=notification.title,
-        body=notification.body,
-    )
-    session.add(to_add)
-
-    session.refresh(to_add)
-
-    return to_add
+    session.commit()
+    return status.HTTP_201_CREATED

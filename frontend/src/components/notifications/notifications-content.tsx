@@ -7,27 +7,25 @@ import NotificationMessage from "@/components/notifications/notification-message
 import {JSX} from "react";
 import {Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty";
 import {BookDashed, Sticker} from "lucide-react";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/new_tabs";
 
-type Notification = {
+export type UnitInfo = {
+    unit_id: string;
+    unit_name: string;
+    unit_code: string;
+}
+
+export type Notification2 = {
     id: string
-    author_id: string
+    unit: UnitInfo
     title: string
     body: string
     created_at: string
     viewed: boolean
 }
 
-export type PopulatedNotification = {
-    id: string
-    author_name: string
-    title: string
-    body: string
-    created_at: Date
-    viewed: boolean
-}
-
 type NotificationsResponse = {
-    notifications: Notification[];
+    notifications: Notification2[];
 }
 
 export default async function NotificationsContents() {
@@ -46,28 +44,25 @@ export default async function NotificationsContents() {
 
     // convert the notification user ids to names
 
-    let notifs = data.notifications;
-    let populated: Promise<PopulatedNotification>[] = notifs.map(async (notification) => {
-        const author_name = await get_username_from_id(notification.author_id);
-        return {
-            id: notification.id,
-            author_name: author_name,
-            title: notification.title,
-            body: notification.body,
-            created_at: new Date(notification.created_at),
-            viewed: notification.viewed
-        };
-    })
-
-    let items: PopulatedNotification[] = []
-    for (const item of populated) {
-        let data = await item
-        items.push(data);
-    }
-
+    const notifs = data.notifications;
+    const groups = Map.groupBy(notifs, ((item) => item.unit))
+    const tabs = groups.keys().map((group) => (
+        <TabsTrigger className={"whitespace-normal! flex flex-col"} key={group.unit_id} value={group.unit_id}>
+          <span>{group.unit_name}</span>
+          <span className={"font-mono text-light"}>{group.unit_code}</span>
+        </TabsTrigger>
+    )).toArray();
+    const entries = groups.entries().map(([unit, notifs]) => {
+      const data = notifs.map((item) => (
+              <NotificationMessage key={item.id} data={item}></NotificationMessage>
+          ));
+      return (<TabsContent key={unit.unit_id} value={unit.unit_id}>
+        {data}
+      </TabsContent>)
+    }).toArray();
     return (
         <div>
-            {items.length === 0 ? (
+            {notifs.length === 0 ? (
                 <Empty>
                     <EmptyHeader>
                         <EmptyMedia variant="icon">
@@ -81,9 +76,12 @@ export default async function NotificationsContents() {
                 </Empty>
                 ) : (
                 <div>
-                {items.map((item) => (
-                    <NotificationMessage data={item}></NotificationMessage>
-                ))}
+                  <Tabs orientation={"vertical"}>
+                    <TabsList className={"max-w-1/3"}>
+                      {tabs}
+                    </TabsList>
+                    {entries}
+                  </Tabs>
                 </div>
             )}
         </div>

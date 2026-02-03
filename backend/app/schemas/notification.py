@@ -3,9 +3,14 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
+class UnitInfo(BaseModel):
+    unit_id: UUID
+    unit_name: str
+    unit_code: str
+
 class Notification(BaseModel):
     id: UUID
-    author_id: str
+    unit: UnitInfo | None
     title: str
     body: str
     created_at: datetime
@@ -18,9 +23,6 @@ class Notifications(BaseModel):
     notifications: list[Notification]
 
 class CreateNotification(BaseModel):
-    author_id: str | None
-    recipient_id: str
+    unit_id: str | None
     title: str
     body: str
-    created_at: datetime
-    viewed: bool
