@@ -45,7 +45,7 @@ export default async function Lecturers({ unit_id }: { unit_id: string }) {
   }
 
   return (
-    <>
+    <div className="flex flex-col gap-2 h-full">
       {results.map((lecturer) => (
         <UserCard
           key={lecturer.id}
@@ -54,6 +54,6 @@ export default async function Lecturers({ unit_id }: { unit_id: string }) {
           image={lecturer.image}
         ></UserCard>
       ))}
-    </>
+    </div>
   );
 }
