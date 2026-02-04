@@ -52,11 +52,10 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
         description=unit.description,
         unit_code=unit.unit_code,
         colour=unit.colour,
-        start_date=None,
-        end_date=None,
         programme_id=unit.programme_id,
         gitlab_id=gl_data["gitlabGroupId"]
     )
+    # Add validation for the start and end dates below
 
     statement = select(Unit.id).where(Unit.name==unit.name or Unit.unit_code==unit.unit_code)
     existing_units = session.exec(statement).all()
@@ -66,7 +65,6 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
     session.add(db_unit)
     session.commit()
     session.refresh(db_unit)
-
     return db_unit
 
 @router.get("/units-by-programme", response_model=UnitAllByGroup)

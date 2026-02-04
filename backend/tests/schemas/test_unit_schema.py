@@ -53,7 +53,7 @@ def test_create_unit_with_code(session, code, expected):
     ("a", pytest.raises(ValidationError)),
     ("12cc34", does_not_raise()),
     ("abcdef", does_not_raise()),
-    ("afbadsf" * 100, pytest.raises(ValidationError))
+    ("#afbadsf" * 100, pytest.raises(ValidationError))
 ],
                          ids=["empty", "a", "12cc34", "abcdef", "length too high"])
 def test_create_unit_with_colour(session, colour, expected):

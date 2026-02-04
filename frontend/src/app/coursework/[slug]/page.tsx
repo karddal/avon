@@ -43,7 +43,9 @@ async function CourseworkPageContent({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const { slug } = await params;
+  const p = await params;
+  const slug = p.slug;
+  console.log("CW", slug);
   const s = await requireSession();
   const token = await getRequestJWT();
   const me = s.user.role;
