@@ -8,7 +8,7 @@ const fetcher = (url: string) => fetch(url).then(r => r.json())
 export function useCalendarEvents(from?: string, to?: string, unit_ids?: string[]) {
     const parameters = new URLSearchParams()
 
-    if (from) parameters.set("from", from)
+    if (from) parameters.set("from_", from)
     if (to) parameters.set("to", to)
     if (unit_ids?.length) {
         for (const id of unit_ids) {
@@ -17,7 +17,7 @@ export function useCalendarEvents(from?: string, to?: string, unit_ids?: string[
     }
 
     const query = parameters.toString()
-    const key = query ? `/api/events?${query}` : "/api/events"
+    const key = query ? `/api/calendar/events?${query}` : "/api/calendar/events"
 
     const {data, error, isLoading, mutate} = useSWR(key, fetcher, {
         keepPreviousData: true,
@@ -25,8 +25,9 @@ export function useCalendarEvents(from?: string, to?: string, unit_ids?: string[
         dedupingInterval: 30 * 1000 // 30 seconds
     })
 
-    const events = (data ?? []).map(toEvent)
-    const eventsMap = groupEventsByDay(events)
+    const events = Array.isArray(data) ? data : []
+    const eventsList = (events ?? []).map(toEvent)
+    const eventsMap = groupEventsByDay(eventsList)
 
     return {
         events,
