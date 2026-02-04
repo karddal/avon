@@ -101,8 +101,8 @@ export default async function NotificationsContents() {
                 </Empty>
                 ) : (
                 <div>
-                  <Tabs orientation={"vertical"}>
-                    <TabsList className={"max-w-1/3"}>
+                  <Tabs orientation={"vertical"} className={"flex md:flex-row flex-col"}>
+                    <TabsList className={"md:max-w-1/3"}>
                       <TabsTrigger className={"whitespace-normal! flex flex-col"} key={"system"} value={"system"}>
                         <span>System Notifications</span>
                       </TabsTrigger>

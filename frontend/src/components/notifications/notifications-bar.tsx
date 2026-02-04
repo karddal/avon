@@ -9,29 +9,39 @@ import {Suspense} from "react";
 import NotificationsContents from "@/components/notifications/notifications-content";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import NotificationsBellIcon from "@/components/notifications/bell-icon";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from "@/components/ui/dialog";
 
 export default function NotificationBar() {
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger className="p-2 hover:cursor-pointer hover:bg-accent hover:ease-in-out">
+    <Dialog>
+      <DialogTrigger className="p-2 hover:cursor-pointer hover:bg-accent hover:ease-in-out">
         <Suspense>
           <NotificationsBellIcon/>
         </Suspense>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className={"w-full"}>
-          <Card className={"w-[75vw] max-h-[75vh] overflow-y-scroll"}>
-            <CardHeader>
-              <CardTitle className={"flex flex-row items-center gap-2"}><Mailbox/>Notification center</CardTitle>
-              <CardDescription>You can view your notifications here.</CardDescription>
-            </CardHeader>
-            <CardContent>
+      </DialogTrigger>
+      <DialogContent className={""}>
+        <DialogHeader>
+          <DialogTitle className={"flex flex-row items-center gap-2"}>
+            <Mailbox/>Notification center
+          </DialogTitle>
+          <DialogDescription>You can view your notifications here.</DialogDescription>
+        </DialogHeader>
+          <Card className={"no-scrollbar -mx-4 max-h-[50vh] overflow-y-auto px-4"}>
+            <CardContent className={"w-full"}>
               <Suspense>
                 <NotificationsContents/>
               </Suspense>
             </CardContent>
           </Card>
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </DialogContent>
+    </Dialog>
   );
 }
