@@ -7,6 +7,7 @@ from sqlalchemy import exists
 from sqlalchemy.orm import with_loader_criteria
 from sqlalchemy.orm.strategy_options import selectinload
 from sqlmodel import Session, select
+from starlette import status
 
 from app.core.security import get_current_user
 from app.db.session import get_session
@@ -144,3 +145,26 @@ async def me_have_unread_notifications(session: session_dependency, me: str = De
     return NotificationsUnreadExist(
         have_unread_notifications=result
     )
+
+
+@router.get("/notifications/mark_all_read", status_code=status.HTTP_200_OK)
+async def me_mark_all_notifications_read(session: session_dependency, me: str = Depends(get_current_user)):
+    me_notifs = list(session.exec(
+        select(Notification).where(Notification.recipient_id == me)
+        .where(Notification.viewed == False)
+    ).all())
+    print("Notifs before")
+    print(me_notifs)
+
+    for notification in me_notifs:
+        notification.viewed = True
+        session.add(notification)
+        session.commit()
+
+    print("notifs after")
+    me_notifs = list(session.exec(
+        select(Notification).where(Notification.recipient_id == me)
+        .where(Notification.viewed == False)
+    ).all())
+    print(me_notifs)
+    return status.HTTP_200_OK

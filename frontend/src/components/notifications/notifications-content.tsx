@@ -8,6 +8,7 @@ import {JSX} from "react";
 import {Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty";
 import {BookDashed, Cog, Sticker} from "lucide-react";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/new_tabs";
+import MarkAllAsRead from "@/components/notifications/mark-all-read";
 
 export type UnitInfo = {
     unit_id: string;
@@ -58,6 +59,9 @@ export default async function NotificationsContents() {
     const tabs = groups.map((group) => (
         <TabsTrigger className={"whitespace-normal! flex flex-col"} key={group.unit_id} value={group.unit_id}>
           <span>{group.unit_name}</span>
+          {group.notifications.filter((notification) => notification.viewed == false).length > 0 && (
+              <span className={"absolute -top-2 -right-2 h-5 w-5 rounded-full bg-red-500 flex justify-center items-center items"}>{group.notifications.filter((notification) => notification.viewed == false).length}</span>
+          )}
         </TabsTrigger>
     ));
 
@@ -103,8 +107,13 @@ export default async function NotificationsContents() {
                 <div>
                   <Tabs orientation={"vertical"} className={"flex md:flex-row flex-col"}>
                     <TabsList className={"md:max-w-1/3"}>
+                      {/*Mark all as read button*/}
+                      <MarkAllAsRead/>
                       <TabsTrigger className={"whitespace-normal! flex flex-col"} key={"system"} value={"system"}>
                         <span>System Notifications</span>
+                        {data.system_notifications.filter((notification) => notification.viewed == false).length > 0 && (
+                            <span className={"absolute -top-2 -right-2 h-5 w-5 rounded-full bg-red-500 flex justify-center items-center items"}>{data.system_notifications.filter((notification) => notification.viewed == false).length}</span>
+                        )}
                       </TabsTrigger>
                       {tabs}
                     </TabsList>
