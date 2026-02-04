@@ -29,6 +29,11 @@ export default async function Lecturers({ unit_id }: { unit_id: string }) {
 
   const lecturerResponse: Response = await response.json();
   const lecturers = lecturerResponse.lecturers;
+
+  if (lecturers === undefined) {
+    return <></>;
+  }
+
   const results: Lecturer[] = [];
   for (const lecturer of lecturers) {
     console.log(lecturer);
