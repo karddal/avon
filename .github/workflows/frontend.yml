@@ -2,7 +2,7 @@ name: Frontend Lints, Run Tests
 on:
   pull_request:
     paths:
-      - 'frontend/**'
+      - "frontend/**"
 
 jobs:
   lint-and-format-check:
@@ -21,6 +21,8 @@ jobs:
         run: npm i
       - name: Run lints
         run: npx biome ci
+      - name: Build Frontend
+        run: npm run build
       # - name: Run tests
       #   run: bun test
       # - name: Publish Test Report
@@ -28,7 +30,7 @@ jobs:
       #   if: success() || failure() # always run even if the previous step fails
       #   with:
       #     report_paths: '**/ci/*.xml'
-  
+
   run-frontend-tests:
     runs-on: ubuntu-latest
     steps:
@@ -55,9 +57,7 @@ jobs:
         with:
           working-directory: ./frontend
           env: NODE_ENV=test
-          start:  |
+          start: |
             npm run start:backend
             npm run dev
-          wait-on: 'http://localhost:8000/check/health'
-
-      
+          wait-on: "http://localhost:8000/check/health"
