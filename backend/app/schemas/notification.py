@@ -1,7 +1,8 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+
 
 class UnitInfo(BaseModel):
     unit_id: UUID
@@ -35,8 +36,8 @@ class Notifications(BaseModel):
 
 class CreateNotification(BaseModel):
     unit_id: str | None
-    title: str
-    body: str
+    title: str = Field(min_length=1, max_length=60)
+    body: str = Field(min_length=1, max_length=1000)
 
 class NotificationsUnreadExist(BaseModel):
     have_unread_notifications: bool

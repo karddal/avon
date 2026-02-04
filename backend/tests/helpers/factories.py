@@ -1,5 +1,6 @@
 from sqlmodel import Session
 from app.models.coursework import Coursework
+from app.models.notification import Notification
 from app.models.programme import Programme
 from uuid import uuid4, UUID
 from datetime import datetime, timedelta
@@ -46,3 +47,18 @@ def create_coursework(session, unit_id) -> Coursework:
     session.add(coursework)
     session.commit()
     return coursework
+
+def create_notification(session, user_id) -> Notification:
+    notification_id = uuid4()
+    unit = create_unit(session)
+    notification = Notification(
+        id=notification_id,
+        recipient_id=user_id,
+        unit_id=unit,
+        title="Test Notification",
+        body="Test Body",
+        created_at=datetime.now(), viewed=False)
+
+    session.add(notification)
+    session.commit()
+    return notification
