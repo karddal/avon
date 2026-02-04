@@ -36,7 +36,7 @@ export default function CalendarDashboard() {
     const to = useMemo(() => addDays(weekStart, 7).toISOString(), [weekStart])
 
     const {eventsMap, isLoading, error} = useCalendarEvents(from, to, unitIds)
-    const {unitOptions} = useUnits()
+    const {unitOptionsList} = useUnits()
 
     return (
         <Tabs defaultValue="timetable">
@@ -44,7 +44,7 @@ export default function CalendarDashboard() {
                 weekStartDate={weekStartDate}
                 onWeekStartDateChange={setWeekStartDate}
                 onUnitIdsChange={onUnitIdsChange}
-                unitOptions={unitOptions}
+                unitOptions={unitOptionsList}
             />
 
             <TabsContent value="timetable">
