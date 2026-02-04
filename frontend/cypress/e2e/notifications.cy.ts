@@ -5,7 +5,10 @@ describe("Notifications", () => {
   it("shows no notifications with no notifications in the system", () => {
     cy.login("rohan@bris.ac.uk", "changeme");
     cy.get("button.p-2:nth-child(2)").click();
-    cy.get('.max-w-sm > .text-lg').should("contain.text", "You have no notifications")
+    cy.get(".max-w-sm > .text-lg").should(
+      "contain.text",
+      "You have no notifications",
+    );
   });
 
   it("shows a notification when a notification has been added", () => {
@@ -22,11 +25,13 @@ describe("Notifications", () => {
 
     cy.login("rohan@bris.ac.uk", "changeme");
     cy.get("button.p-2:nth-child(2)").click();
-    cy.get('span.absolute').contains("1")
-    cy.contains("button", "Imperative and Functional Programming").should("exist");
+    cy.get("span.absolute").contains("1");
+    cy.contains("button", "Imperative and Functional Programming").should(
+      "exist",
+    );
     cy.contains("button", "Imperative and Functional Programming").click();
     cy.contains("Test notification").should("exist");
-  })
+  });
 
   it("successfully marks a notification as read", () => {
     cy.login("one@bris.ac.uk", "changeme");
@@ -42,12 +47,16 @@ describe("Notifications", () => {
 
     cy.login("rohan@bris.ac.uk", "changeme");
     cy.get("button.p-2:nth-child(2)").click();
-    cy.get('span.absolute').contains("1")
-    cy.contains("button", "Imperative and Functional Programming").should("exist");
+    cy.get("span.absolute").contains("1");
+    cy.contains("button", "Imperative and Functional Programming").should(
+      "exist",
+    );
     cy.contains("button", "Imperative and Functional Programming").click();
     cy.contains("Test notification").should("exist");
     cy.get('[data-slot="item-actions"] > .inline-flex').click();
-    cy.get("svg.lucide.lucide-loader-circle.size-4.animate-spin").should("not.be.visible");
-    cy.get('span.absolute').should("not.exist");
-  })
-})
+    cy.get("svg.lucide.lucide-loader-circle.size-4.animate-spin").should(
+      "not.be.visible",
+    );
+    cy.get("span.absolute").should("not.exist");
+  });
+});

@@ -37,11 +37,11 @@
 // }
 
 Cypress.Commands.add("login", (username: string, password: string) => {
-      cy.visit("/login");
-      cy.get("#email").type(username);
-      cy.get("#password").type(password);
+  cy.visit("/login");
+  cy.get("#email").type(username);
+  cy.get("#password").type(password);
 
-      cy.get("button[type=submit]").click();
-      cy.url().should("not.include", "/login")
-      cy.getCookie("__Secure-better-auth.session_token").should("exist");
+  cy.get("button[type=submit]").click();
+  cy.url().should("not.include", "/login");
+  cy.getCookie("__Secure-better-auth.session_token").should("exist");
 });

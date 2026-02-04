@@ -141,7 +141,8 @@ async def me_notifications(session: session_dependency, me: str = Depends(get_cu
 
 @router.get("/notifications/unread_exists", response_model=NotificationsUnreadExist)
 async def me_have_unread_notifications(session: session_dependency, me: str = Depends(get_current_user)):
-    result = session.scalar(exists().where(Notification.recipient_id == me).where(not Notification.viewed).select())
+    # ruff: noqa e712
+    result = session.scalar(exists().where(Notification.recipient_id == me).where(Notification.viewed == False).select())
     return NotificationsUnreadExist(
         have_unread_notifications=result
     )
@@ -151,7 +152,7 @@ async def me_have_unread_notifications(session: session_dependency, me: str = De
 async def me_mark_all_notifications_read(session: session_dependency, me: str = Depends(get_current_user)):
     me_notifs = list(session.exec(
         select(Notification).where(Notification.recipient_id == me)
-        .where(not Notification.viewed)
+        .where(Notification.viewed == False)
     ).all())
     print("Notifs before")
     print(me_notifs)
@@ -164,7 +165,8 @@ async def me_mark_all_notifications_read(session: session_dependency, me: str = 
     print("notifs after")
     me_notifs = list(session.exec(
         select(Notification).where(Notification.recipient_id == me)
-        .where(not Notification.viewed)
+        # ruff: noqa e712
+        .where(Notification.viewed == False)
     ).all())
     print(me_notifs)
     return status.HTTP_200_OK
