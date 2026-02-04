@@ -30,12 +30,12 @@ export default function NotificationBar() {
       <DialogContent className={""}>
         <DialogHeader>
           <DialogTitle className={"flex flex-row items-center gap-2"}>
-            <Mailbox/>Notification center
+            <Mailbox/>Postbox
           </DialogTitle>
-          <DialogDescription>You can view your notifications here.</DialogDescription>
+          <DialogDescription>You can view your notifications here, and mark them as read.</DialogDescription>
         </DialogHeader>
           <Card className={"no-scrollbar -mx-4 max-h-[50vh] overflow-y-auto px-4"}>
-            <CardContent className={"w-full"}>
+            <CardContent className={"w-full px-0"}>
               <Suspense>
                 <NotificationsContents/>
               </Suspense>

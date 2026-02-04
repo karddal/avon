@@ -2,7 +2,7 @@
 
 import {Check, Dot, Mail} from "lucide-react";
 import {Notification2} from "@/components/notifications/notifications-content";
-import {Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle} from "../ui/item";
+import {Item, ItemActions, ItemContent, ItemDescription, ItemFooter, ItemMedia, ItemTitle} from "../ui/item";
 import {Button} from "@/components/ui/button";
 import {Dispatch, SetStateAction, useState} from "react";
 import {set_as_read} from "@/lib/actions/set_as_read";
@@ -34,7 +34,7 @@ export default function NotificationMessage({
   const [submittedState, setSubmittedState] = useState<boolean>(false);
   const router = useRouter();
   return (
-    <Item variant={"outline"}>
+    <Item className={"mb-2"} variant={"outline"}>
       <ItemContent>
         <ItemTitle>
           {!data.viewed && (<Dot className={"text-red-500"}/>)}
@@ -42,8 +42,10 @@ export default function NotificationMessage({
         </ItemTitle>
         <ItemDescription className={"flex flex-col max-h-[50ex] overflow-y-scroll"}>
           {data.body}
-          <span className={"font-light"}>Received on {new Date(data.created_at).toLocaleString()}</span>
         </ItemDescription>
+        <ItemFooter>
+          <span className={"font-light"}>Received {new Date(data.created_at).toLocaleString()}</span>
+        </ItemFooter>
       </ItemContent>
       <ItemActions>
         {submittedState && (
