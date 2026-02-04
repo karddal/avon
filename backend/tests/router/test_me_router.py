@@ -8,6 +8,8 @@ from app.models.unit import Unit
 from app.models.unit_enrollment import UnitEnrollment
 from app.main import app
 from app.core.security import get_current_user
+from helpers.factories import create_notification as notification_create_helper
+
 
 def create_programme(session) -> Programme:
     programme = Programme(id=uuid4(), name="Test Programme",start_date=datetime.now(), end_date=datetime.today() + timedelta(days=365))
@@ -126,6 +128,73 @@ def test_me_active_courseworks(session, client):
     data = response.json()
     assert data[0]["name"] == coursework.name
     
+def test_me_notifications_with_added(session, client):
+    notification = notification_create_helper(session)
+    # mock the auth so we get the right me routes
+    app.dependency_overrides[get_current_user] = lambda: notification.recipient_id
+    response = client.get("/me/notifications")
+    assert response.status_code == 200
+
+    data = response.json()
+    assert data["notifications"][0]["unit_name"] == "Test Unit"
+    assert data["notifications"][0]["notifications"][0]["title"] == "Test Notification"
+
+def test_me_unread_notifications(session, client):
+    notification = notification_create_helper(session)
+    # mock the auth so we get the right me routes
+    app.dependency_overrides[get_current_user] = lambda: notification.recipient_id
+    response = client.get("/me/notifications/unread_exists")
+    assert response.status_code == 200
+
+    data = response.json()
+    assert data["have_unread_notifications"] == True
+
+def test_me_mark_all_read(session, client):
+    notification = notification_create_helper(session)
+    # mock the auth so we get the right me routes
+    app.dependency_overrides[get_current_user] = lambda: notification.recipient_id
+    response = client.get("/me/notifications/unread_exists")
+    assert response.status_code == 200
+
+    data = response.json()
+    assert data["have_unread_notifications"] == True
+
+    client.get("/me/notifications/mark_all_read")
+    response = client.get("/me/notifications/unread_exists")
+    assert response.status_code == 200
+
+    data = response.json()
+    assert data["have_unread_notifications"] == False
+
+def test_me_unread_notifications_no_unread(session, client):
+    # mock the auth so we get the right me routes
+    programme = create_programme(session)
+    unit = create_unit(session, programme.id)
+    coursework = create_coursework(session, unit.id)
+
+    user = create_students(session, unit.id)
+    app.dependency_overrides[get_current_user] = lambda: user.user_id
+    response = client.get("/me/notifications/unread_exists")
+    assert response.status_code == 200
+
+    data = response.json()
+    assert data["have_unread_notifications"] == False
+
+def test_me_notifications_empty(session, client):
+    # mock the auth so we get the right me routes
+    programme = create_programme(session)
+    unit = create_unit(session, programme.id)
+    coursework = create_coursework(session, unit.id)
+
+    user = create_students(session, unit.id)
+    app.dependency_overrides[get_current_user] = lambda: user.user_id
+    response = client.get("/me/notifications")
+    assert response.status_code == 200
+
+    data = response.json()
+    assert len(data["notifications"]) == 0
+    assert len(data["system_notifications"]) == 0
+
 
 
 

@@ -48,12 +48,13 @@ def create_coursework(session, unit_id) -> Coursework:
     session.commit()
     return coursework
 
-def create_notification(session, user_id) -> Notification:
+def create_notification(session) -> Notification:
     notification_id = uuid4()
+    user_id = uuid4()
     unit = create_unit(session)
     notification = Notification(
         id=notification_id,
-        recipient_id=user_id,
+        recipient_id=str(user_id),
         unit_id=unit,
         title="Test Notification",
         body="Test Body",
