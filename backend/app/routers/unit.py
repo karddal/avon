@@ -80,6 +80,26 @@ async def active_units(session: session_dependency):
         units=filtered
     )
 
+# this function is quite duplicate to other units get
+#but for not causing problem when merging I will use a new one and possibility combine later
+@router.get("/units", response_model=list[UnitEventRead])
+def list_units_for_events(
+        session: session_dependency,
+        current_user_id: str = Depends(get_current_user),
+    ):
+    statement = (select(Unit)
+                 .join(UnitEnrollment)
+                 .where(UnitEnrollment.user_id == current_user_id))
+
+    units = session.exec(statement).all()
+
+    return [
+        {
+            "id": unit.id,
+            "name": unit.name,
+        }
+        for unit in units
+    ]
 
 @router.get("/{unit_id}", response_model=UnitRead, status_code=status.HTTP_200_OK)
 async def get_unit_details(unit_id: UUID, session: session_dependency):
@@ -205,22 +225,3 @@ async def get_units(session: session_dependency):
     statement = select(Unit)
     units = session.exec(statement).all()
     return {"units":units}
-
-# this function is quite duplicate to other units get
-#but for not causing problem when merging I will use a new one and possibility combine later
-@router.get("/units", response_model=list[UnitEventRead])
-def list_units_for_events(
-        session: session_dependency,
-        current_user_id: str = Depends(get_current_user),
-    ):
-    statement = select(Unit).join(UnitEnrollment).where(UnitEnrollment.user_id == current_user_id)
-
-    units = session.exec(statement).all()
-
-    return [
-        {
-            "id": unit.id,
-            "name": unit.name,
-        }
-        for unit in units
-    ]
