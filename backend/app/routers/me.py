@@ -15,7 +15,7 @@ from app.models.notification import Notification
 from app.models.programme import Programme
 from app.models.unit import Unit, UnitWithCourseworks
 from app.models.unit_enrollment import UnitEnrollment
-from app.schemas.notification import UnitInfo as UnitInfoSchema, Notifications, ReadNotification, UnitWithNotifs, \
+from app.schemas.notification import Notifications, ReadNotification, UnitWithNotifs, \
     NotificationsUnreadExist
 from app.schemas.unit import UnitAll, UnitAllByGroup
 
@@ -141,7 +141,7 @@ async def me_notifications(session: session_dependency, me: str = Depends(get_cu
 
 @router.get("/notifications/unread_exists", response_model=NotificationsUnreadExist)
 async def me_have_unread_notifications(session: session_dependency, me: str = Depends(get_current_user)):
-    result = session.scalar(exists().where(Notification.recipient_id == me).where(Notification.viewed == False).select())
+    result = session.scalar(exists().where(Notification.recipient_id == me).where(not Notification.viewed).select())
     return NotificationsUnreadExist(
         have_unread_notifications=result
     )
@@ -151,7 +151,7 @@ async def me_have_unread_notifications(session: session_dependency, me: str = De
 async def me_mark_all_notifications_read(session: session_dependency, me: str = Depends(get_current_user)):
     me_notifs = list(session.exec(
         select(Notification).where(Notification.recipient_id == me)
-        .where(Notification.viewed == False)
+        .where(not Notification.viewed)
     ).all())
     print("Notifs before")
     print(me_notifs)
@@ -164,7 +164,7 @@ async def me_mark_all_notifications_read(session: session_dependency, me: str = 
     print("notifs after")
     me_notifs = list(session.exec(
         select(Notification).where(Notification.recipient_id == me)
-        .where(Notification.viewed == False)
+        .where(not Notification.viewed)
     ).all())
     print(me_notifs)
     return status.HTTP_200_OK

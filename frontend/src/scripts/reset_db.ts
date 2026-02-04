@@ -1,6 +1,5 @@
 import { readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
-import { auth } from "@/lib/auth";
 
 interface User {
   name: string;
@@ -16,7 +15,7 @@ async function seed() {
   const db = new DatabaseSync("../sqlite.db");
   const _session = db.createSession();
   const statement = readFileSync("./src/scripts/drop.sql", "utf-8");
-  const result = db.exec(statement);
+  const _result = db.exec(statement);
 
   console.log("Dropped DB");
 }

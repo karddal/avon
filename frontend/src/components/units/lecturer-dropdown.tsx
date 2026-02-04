@@ -1,6 +1,6 @@
 "use client";
 
-import {Menu, Siren, SquarePen, SquareX, Users} from "lucide-react";
+import { Menu, Siren, SquarePen, SquareX, Users } from "lucide-react";
 import { useState } from "react";
 import {
   AlertDialog,
@@ -93,7 +93,12 @@ export default function LecturerDropdown({
         set_open_state={setShowEdit}
       />
 
-      <SendNotification unit_id={slug} me={me} openState={showSendNotif} setOpenState={setShowSendNotif}></SendNotification>
+      <SendNotification
+        unit_id={slug}
+        me={me}
+        openState={showSendNotif}
+        setOpenState={setShowSendNotif}
+      ></SendNotification>
 
       <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
         <AlertDialogContent>

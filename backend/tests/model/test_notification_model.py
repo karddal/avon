@@ -21,6 +21,6 @@ def test_notification_model_auto_populates(session):
 
     assert isinstance(notification.id, UUID)
     assert isinstance(notification.created_at, datetime)
-    assert notification.viewed == False
+    assert not notification.viewed
 
 

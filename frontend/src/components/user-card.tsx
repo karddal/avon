@@ -16,7 +16,7 @@ export function getInitials(name: string) {
 
   const first = allNames[0].charAt(0);
   const last =
-      allNames.length > 1 ? allNames[allNames.length - 1].charAt(0) : "";
+    allNames.length > 1 ? allNames[allNames.length - 1].charAt(0) : "";
   return (first + last).toUpperCase();
 }
 

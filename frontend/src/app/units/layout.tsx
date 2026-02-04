@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { ModeToggle } from "@/components/mode-toggle";
 import NotificationBar from "@/components/notifications/notifications-bar";
 import AppSidebar from "@/components/sidebar/app-sidebar-wrapper";
@@ -7,7 +8,6 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import {Suspense} from "react";
 
 export default async function Layout({
   children,

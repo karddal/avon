@@ -2,7 +2,7 @@ import uuid
 from uuid import UUID
 
 from sqlmodel import Field, SQLModel, Relationship
-from datetime import datetime, timezone
+from datetime import datetime
 
 from app.models.unit import Unit
 

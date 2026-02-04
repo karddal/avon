@@ -1,9 +1,9 @@
 from typing import Annotated
 
-from fastapi import BackgroundTasks, Depends, FastAPI
+from fastapi import Depends
 from sqlalchemy.orm import Session
 
-from app.db.session import SessionDep, get_session
+from app.db.session import get_session
 from app.models.notification import Notification
 
 session_dependency = Annotated[Session, Depends(get_session)]

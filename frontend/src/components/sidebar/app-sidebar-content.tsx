@@ -4,11 +4,23 @@ import {
   Layers,
   LayoutDashboard,
   NotepadText,
-  Settings, SettingsIcon,
+  Settings,
+  SettingsIcon,
   SwatchBook,
   User,
 } from "lucide-react";
 import Link from "next/link";
+import SettingsContents from "@/components/settings/settings-contents";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Kbd, KbdGroup } from "@/components/ui/kbd";
 import { requireSession } from "@/lib/auth-utils";
 import LogoutButton from "../logout-button";
@@ -26,17 +38,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "../ui/sidebar";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from "@/components/ui/dialog";
-import {Button} from "@/components/ui/button";
-import SettingsContents from "@/components/settings/settings-contents";
 
 const adminItems = [
   {
@@ -178,29 +179,24 @@ export default async function AppSideBarContent() {
           <Dialog>
             <div className="flex flex-col border-t">
               <SidebarMenuButton asChild key={"Settings"} className={"w-full"}>
-                  <DialogTrigger
-                      className="h-full flex flex-row items-center"
-                  >
-                    <SettingsIcon strokeWidth={1} className="size-8!" />
-                    <span className="text-accent-foreground">
-                  {"Settings"}
-                </span>
+                <DialogTrigger className="h-full flex flex-row items-center">
+                  <SettingsIcon strokeWidth={1} className="size-8!" />
+                  <span className="text-accent-foreground">{"Settings"}</span>
                 </DialogTrigger>
               </SidebarMenuButton>
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Settings</DialogTitle>
                 </DialogHeader>
-                  <SettingsContents/>
+                <SettingsContents />
                 <DialogFooter>
                   <DialogClose asChild>
                     <Button variant={"outline"}>Close</Button>
                   </DialogClose>
                 </DialogFooter>
               </DialogContent>
-                </div>
+            </div>
           </Dialog>
-
         </SidebarMenu>
         <SidebarMenuItem key={"Account"} className="w-full">
           <SidebarMenuButton className="h-full" asChild>
