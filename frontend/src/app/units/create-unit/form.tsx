@@ -45,6 +45,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { getProgrammes } from "@/lib/actions/get_all_programmes";
 import { multistep_unit_flow } from "./multistep_unit_flow";
+import { create_unit } from "@/lib/actions/create_unit";
 
 interface FormProps {
   slug: Promise<{ slug: string }>;
@@ -138,42 +139,73 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     // do something with values, submit here
-    console.log(values);
-    setSubmitState(true);
-    loadSlug().then((s) => {
+    try {
+      const s = await loadSlug();
       console.log(s);
-      const req = {
+
+      const payload = {
         name: values.name,
         description: values.description,
         unit_code: values.unitCode,
         colour: colour.substring(1),
         programme_id: values.programme,
       };
-      console.log(req);
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/units/create`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(req),
-      }).then((r) => {
-        if (!r.ok) {
-          r.json().then((data) => {
-            setAlertText(data.detail);
-            setShowAlert(true);
-            setSubmitState(false);
-          });
-        } else {
-          toast.success("Unit created. You will be redirected in 1 second.");
-          const delay = new Promise((resolve) => setTimeout(resolve, 1000));
-          delay.then(() => {
-            window.location.href = `/units/`;
-          });
-          setSubmitState(false);
-        }
-      });
-    });
+
+      console.log(payload);
+      const result = await create_unit(payload);
+
+      if (!result.success) {
+        setAlertText(result.data.detail);
+        setShowAlert(true);
+        setSubmitState(false);
+      } else {
+        toast.success("Unit created. You will be redirected in 1 second.");
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        window.location.href = `/units/`;
+        setSubmitState(false);
+      }
+    } catch (error) {
+      toast.error("An error occurred");
+      setSubmitState(false);
+    }
+
+    // console.log(values);
+    // setSubmitState(true);
+    // loadSlug().then((s) => {
+    //   console.log(s);
+    //   const payload = {
+    //     name: values.name,
+    //     description: values.description,
+    //     unit_code: values.unitCode,
+    //     colour: colour.substring(1),
+    //     programme_id: values.programme,
+    //   };
+    //   console.log(payload);
+    //   const req = await create_unit(payload)
+    //   // fetch(`${process.env.NEXT_PUBLIC_API_URL}/units/create`, {
+    //   //   method: "POST",
+    //   //   credentials: "include",
+    //   //   headers: {
+    //   //     "Content-Type": "application/json",
+    //   //   },
+    //   //   body: JSON.stringify(req),
+    //   // }).then((r) => {
+    //   //   if (!r.ok) {
+    //   //     r.json().then((data) => {
+    //   //       setAlertText(data.detail);
+    //   //       setShowAlert(true);
+    //   //       setSubmitState(false);
+    //   //     });
+    //   //   } else {
+    //   //     toast.success("Unit created. You will be redirected in 1 second.");
+    //   //     const delay = new Promise((resolve) => setTimeout(resolve, 1000));
+    //   //     delay.then(() => {
+    //   //       window.location.href = `/units/`;
+    //   //     });
+    //   //     setSubmitState(false);
+    //   //   }
+    //   // });
+    // });
   }
 
   const name = form.watch("name");
