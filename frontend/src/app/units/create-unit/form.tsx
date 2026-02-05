@@ -44,6 +44,7 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { multistep_unit_flow } from "./multistep_unit_flow";
+import { getProgrammes } from "@/lib/actions/get_all_programmes";
 
 interface FormProps {
   slug: Promise<{ slug: string }>;
@@ -64,23 +65,18 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
   const [programmes, setProgrammes] = useState<Programme[]>([]);
   const [programmeName, setProgrammeName] = useState<string>("");
 
-  useEffect(() => {
-    async function loadProgrammes() {
-      const r = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/programmes/`, {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await r.json();
-      if (!r.ok) {
-        toast.error("Could not fetch programmes");
-      }
-      setProgrammes(data.programmes);
-      console.log();
+  async function loadProgrammes() {
+    const programmesReq = await getProgrammes()
+    if (programmesReq.success) {
+      setProgrammes(programmesReq.data.programmes)
+    }
+    else {
+      toast.error("Failed to load programmes")
     }
 
+  }
+
+  useEffect(() => {
     loadProgrammes();
   }, []);
 
