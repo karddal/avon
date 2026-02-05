@@ -168,44 +168,6 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
       toast.error("An error occurred");
       setSubmitState(false);
     }
-
-    // console.log(values);
-    // setSubmitState(true);
-    // loadSlug().then((s) => {
-    //   console.log(s);
-    //   const payload = {
-    //     name: values.name,
-    //     description: values.description,
-    //     unit_code: values.unitCode,
-    //     colour: colour.substring(1),
-    //     programme_id: values.programme,
-    //   };
-    //   console.log(payload);
-    //   const req = await create_unit(payload)
-    //   // fetch(`${process.env.NEXT_PUBLIC_API_URL}/units/create`, {
-    //   //   method: "POST",
-    //   //   credentials: "include",
-    //   //   headers: {
-    //   //     "Content-Type": "application/json",
-    //   //   },
-    //   //   body: JSON.stringify(req),
-    //   // }).then((r) => {
-    //   //   if (!r.ok) {
-    //   //     r.json().then((data) => {
-    //   //       setAlertText(data.detail);
-    //   //       setShowAlert(true);
-    //   //       setSubmitState(false);
-    //   //     });
-    //   //   } else {
-    //   //     toast.success("Unit created. You will be redirected in 1 second.");
-    //   //     const delay = new Promise((resolve) => setTimeout(resolve, 1000));
-    //   //     delay.then(() => {
-    //   //       window.location.href = `/units/`;
-    //   //     });
-    //   //     setSubmitState(false);
-    //   //   }
-    //   // });
-    // });
   }
 
   const name = form.watch("name");
