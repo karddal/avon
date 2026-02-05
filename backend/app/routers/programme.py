@@ -10,6 +10,8 @@ from app.schemas.programme import ProgrammeCreate, ProgrammeRead, ProgrammeDelet
 from app.schemas.programme import ProgrammeUpdate
 
 
+from app.schemas.programme import ProgrammeAll
+
 router = APIRouter(prefix="/programmes", tags=["programmes"])
 session_dependency = Annotated[Session, Depends(get_session)]
 
@@ -68,3 +70,10 @@ async def update_programme(id: UUID, programme: ProgrammeUpdate, session: sessio
     session.commit()
     session.refresh(programme_db)
     return programme_db
+
+
+@router.get("/", response_model=ProgrammeAll, status_code=status.HTTP_200_OK)
+async def get_programmes(session: session_dependency):
+    statement = select(Programme)
+    programmes = session.exec(statement).all()
+    return {"programmes":programmes}
