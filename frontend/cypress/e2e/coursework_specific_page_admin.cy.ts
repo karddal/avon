@@ -6,7 +6,7 @@ describe("Coursework page", () => {
     cy.get("#email").type("admin@bris.ac.uk");
     cy.get("#password").type("changeme");
     cy.get("button[type=submit]").click();
-    cy.url({ timeout: 10000 }).should("include", "/dashboard");
+    cy.url().should("include", "/dashboard");
     cy.getCookie("__Secure-better-auth.session_token").should("exist");
   });
 

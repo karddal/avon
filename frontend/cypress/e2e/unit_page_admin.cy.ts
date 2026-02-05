@@ -1,6 +1,7 @@
 describe("Unit page", () => {
   beforeEach(() => {
     cy.exec("npm run db:reset && npm run db:seed");
+    cy.wait(500);
     cy.login("admin@bris.ac.uk", "changeme");
   });
 
@@ -58,7 +59,7 @@ describe("Unit page", () => {
       .should("be.visible");
     cy.get("#radix-_R_35mpbneitmlb_").click();
     cy.get(`[data-slot="dropdown-menu-item"]`).click();
-    cy.get(`[data-slot="button"]`).click();
+    cy.contains(`button`, "Delete").click();
     cy.get('[data-content=""] > div').contains("Unit deleted successfully");
     cy.get("p").should("not.contain", "Mathematics for Computer Science A");
   });

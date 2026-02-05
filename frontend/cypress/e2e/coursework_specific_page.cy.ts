@@ -9,7 +9,7 @@ describe("Coursework page", () => {
     cy.get("#email").type("josh@bris.ac.uk");
     cy.get("#password").type("changeme");
     cy.get("button[type=submit]").click();
-    cy.visit("/coursework", { timeout: 10000 });
+    cy.visit("/coursework");
   });
 
   it("successfully loads", () => {
