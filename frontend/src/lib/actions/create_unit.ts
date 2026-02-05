@@ -10,14 +10,6 @@ type createUnitReq = {
 
 export async function create_unit(req: createUnitReq) {
     "use server";
-    // do something with values, submit here
-    // const payload = {
-    //     name: req.name,
-    //     description: req.description,
-    //     unit_code: req.unit_code,
-    //     colour: req.colour.substring(1),
-    //     programme_id: req.programme_id,
-    // };
     console.log(req);
     const r = await fetch(`
         ${process.env.NEXT_PUBLIC_API_URL}/units/create`,
