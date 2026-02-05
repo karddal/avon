@@ -43,8 +43,8 @@ import {
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
-import { multistep_unit_flow } from "./multistep_unit_flow";
 import { getProgrammes } from "@/lib/actions/get_all_programmes";
+import { multistep_unit_flow } from "./multistep_unit_flow";
 
 interface FormProps {
   slug: Promise<{ slug: string }>;
@@ -66,19 +66,17 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
   const [programmeName, setProgrammeName] = useState<string>("");
 
   async function loadProgrammes() {
-    const programmesReq = await getProgrammes()
+    const programmesReq = await getProgrammes();
     if (programmesReq.success) {
-      setProgrammes(programmesReq.data.programmes)
+      setProgrammes(programmesReq.data.programmes);
+    } else {
+      toast.error("Failed to load programmes");
     }
-    else {
-      toast.error("Failed to load programmes")
-    }
-
   }
 
   useEffect(() => {
     loadProgrammes();
-  }, []);
+  }, [loadProgrammes]);
 
   async function loadSlug(): Promise<string> {
     const s = await slug;
