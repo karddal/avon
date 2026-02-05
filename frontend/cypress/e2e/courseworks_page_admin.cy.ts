@@ -1,9 +1,7 @@
 describe("Coursework listing page - admin tests", () => {
-  before(() => {
-    cy.exec("npm run db:reset && npm run db:seed");
-  });
-
   beforeEach(() => {
+    cy.exec("npm run db:reset && npm run db:seed");
+    cy.wait(500);
     cy.login("admin@bris.ac.uk", "changeme");
   });
 

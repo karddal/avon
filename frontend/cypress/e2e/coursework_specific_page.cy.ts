@@ -1,6 +1,7 @@
 describe("Coursework page", () => {
   before(() => {
     cy.exec("npm run db:reset && npm run db:seed");
+    cy.wait(500);
   });
 
   beforeEach(() => {

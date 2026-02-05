@@ -1,9 +1,7 @@
 describe("Coursework page", () => {
-  before(() => {
-    cy.exec("npm run db:reset && npm run db:seed");
-  });
-
   beforeEach(() => {
+    cy.exec("npm run db:reset && npm run db:seed");
+    cy.wait(500);
     cy.visit("/login");
     cy.get("#email").type("admin@bris.ac.uk");
     cy.get("#password").type("changeme");
@@ -57,6 +55,7 @@ describe("Coursework page", () => {
       .click();
     cy.get('[name="name"]').clear().type("Encrypt 2");
     cy.get(".mt-auto > .flex > .inline-flex").click();
+    cy.wait(5000);
     cy.visit("/coursework");
     cy.get("p").contains("Encrypt 2").should("be.visible");
   });
@@ -70,6 +69,7 @@ describe("Coursework page", () => {
       .click();
     cy.get("#form-flow-description").clear().type("UNique Text 2837t37");
     cy.get(".mt-auto > .flex > .inline-flex").click();
+    cy.wait(5000);
     cy.visit("/coursework");
     cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
     cy.get("div").contains("UNique Text 2837t37").should("be.visible");
@@ -84,6 +84,7 @@ describe("Coursework page", () => {
       .click();
     cy.get("#date").clear().type("24 February 2026");
     cy.get(".mt-auto > .flex > .inline-flex").click();
+    cy.wait(5000);
     cy.visit("/coursework");
     cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
     cy.get("div").contains("24/02/26 at 12:00").should("be.visible");
