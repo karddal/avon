@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Send, Terminal } from "lucide-react";
 import { easeIn, easeOut } from "motion";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { HexColorInput, HexColorPicker } from "react-colorful";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -43,6 +43,7 @@ import {
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
+import { getProgrammes } from "@/lib/actions/get_all_programmes";
 import { multistep_unit_flow } from "./multistep_unit_flow";
 
 interface FormProps {
@@ -64,25 +65,18 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
   const [programmes, setProgrammes] = useState<Programme[]>([]);
   const [programmeName, setProgrammeName] = useState<string>("");
 
-  useEffect(() => {
-    async function loadProgrammes() {
-      const r = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/programmes/`, {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await r.json();
-      if (!r.ok) {
-        toast.error("Could not fetch programmes");
-      }
-      setProgrammes(data.programmes);
-      console.log();
+  const loadProgrammes = useCallback(async () => {
+    const programmesReq = await getProgrammes();
+    if (programmesReq.success) {
+      setProgrammes(programmesReq.data.programmes);
+    } else {
+      toast.error("Failed to load programmes");
     }
-
-    loadProgrammes();
   }, []);
+
+  useEffect(() => {
+    loadProgrammes();
+  }, [loadProgrammes]);
 
   async function loadSlug(): Promise<string> {
     const s = await slug;
