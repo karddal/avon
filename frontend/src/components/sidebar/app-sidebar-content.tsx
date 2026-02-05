@@ -12,6 +12,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import SettingsContents from "@/components/settings/settings-contents";
+import { SidebarLink } from "@/components/sidebar/sidebar-link";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -22,7 +23,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { SidebarLink } from "@/components/sidebar/sidebar-link";
 import { Kbd, KbdGroup } from "@/components/ui/kbd";
 import { requireSession } from "@/lib/auth-utils";
 import LogoutButton from "../logout-button";
