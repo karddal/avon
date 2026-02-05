@@ -16,7 +16,7 @@ export async function get_username_from_id(user_id: string): Promise<string> {
     if (!out) {
       throw new Error("cannot find user in db");
     }
-    return out as string;
+    return out.name;
   } else {
     const db = new DatabaseSync("../sqlite.db");
     const _session = db.createSession();

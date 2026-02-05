@@ -1,5 +1,3 @@
-"use server";
-
 import { ClipboardPlus } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -36,14 +34,16 @@ type UnitUpdateData = {
 };
 
 async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
+  const p = await params;
+  const slug = String(p.slug);
+  console.log("UNIT", slug);
   const s = await requireSession();
+  const token = await getRequestJWT();
   let userRole = s.user.role;
   const me = s.user.id;
   if (!userRole) {
     userRole = "user";
   }
-  const token = await getRequestJWT();
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/units/${slug}/`,
     {
@@ -135,37 +135,31 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
                     <TabsTrigger value="ongoing">Ongoing</TabsTrigger>
                     <TabsTrigger value="finished">Finished</TabsTrigger>
                   </TabsList>
-                  {userRole === "lecturer" && (
+                  {(userRole === "lecturer" || userRole === "admin") && (
                     <Button asChild variant={"outline"} size={"sm"}>
-                      <Link
-                        href={{
-                          pathname: `/units/${slug}/create`,
-                        }}
-                      >
+                      <Link href={`/units/${slug}/create-coursework`}>
                         <ClipboardPlus />
                         Assign new coursework
                       </Link>
                     </Button>
                   )}
                 </div>
-                <TabsList className={"w-full"}>
-                  <TabsContent value={"ongoing"}>
-                    <Suspense fallback={<Loading />}>
-                      <UnitsCourseworkList
-                        unit_id={slug}
-                        finished={false}
-                      ></UnitsCourseworkList>
-                    </Suspense>
-                  </TabsContent>
-                  <TabsContent className={"w-full"} value={"finished"}>
-                    <Suspense fallback={<Loading />}>
-                      <UnitsCourseworkList
-                        unit_id={slug}
-                        finished={true}
-                      ></UnitsCourseworkList>
-                    </Suspense>
-                  </TabsContent>
-                </TabsList>
+                <TabsContent value={"ongoing"}>
+                  <Suspense fallback={<Loading />}>
+                    <UnitsCourseworkList
+                      unit_id={slug}
+                      finished={false}
+                    ></UnitsCourseworkList>
+                  </Suspense>
+                </TabsContent>
+                <TabsContent className={"w-full"} value={"finished"}>
+                  <Suspense fallback={<Loading />}>
+                    <UnitsCourseworkList
+                      unit_id={slug}
+                      finished={true}
+                    ></UnitsCourseworkList>
+                  </Suspense>
+                </TabsContent>
               </Tabs>
             </CardContent>
           </Card>
@@ -173,15 +167,19 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
 
         {/* Right column */}
         <div className="flex flex-col xl:col-span-1 lg:col-span-2 gap-4 min-h-0">
+          {/* Create a coursework*/}
+
           {/* Unit Staff */}
-          <DropdownCard
-            openByDefault={true}
-            title="Unit staff"
-            desc="Lecturers and teachers appear here"
-            className={""}
-          >
-            <Lecturers unit_id={slug}></Lecturers>
-          </DropdownCard>
+          <Suspense fallback={<Loading />}>
+            <DropdownCard
+              openByDefault={true}
+              title="Unit staff"
+              desc="Lecturers and teachers appear here"
+              className={""}
+            >
+              <Lecturers unit_id={slug}></Lecturers>
+            </DropdownCard>
+          </Suspense>
 
           {/* Announcements */}
           <DropdownCard
@@ -214,7 +212,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
   );
 }
 
-export default async function UnitPage({
+export default function UnitPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
