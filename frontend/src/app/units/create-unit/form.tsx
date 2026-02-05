@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Send, Terminal } from "lucide-react";
 import { easeIn, easeOut } from "motion";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { HexColorInput, HexColorPicker } from "react-colorful";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -65,14 +65,14 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
   const [programmes, setProgrammes] = useState<Programme[]>([]);
   const [programmeName, setProgrammeName] = useState<string>("");
 
-  async function loadProgrammes() {
+  const loadProgrammes = useCallback(async () => {
     const programmesReq = await getProgrammes();
     if (programmesReq.success) {
       setProgrammes(programmesReq.data.programmes);
     } else {
       toast.error("Failed to load programmes");
     }
-  }
+  }, [])
 
   useEffect(() => {
     loadProgrammes();
