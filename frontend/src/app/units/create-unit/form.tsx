@@ -72,7 +72,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
     } else {
       toast.error("Failed to load programmes");
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     loadProgrammes();
