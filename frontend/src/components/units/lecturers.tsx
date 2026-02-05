@@ -29,6 +29,11 @@ export default async function Lecturers({ unit_id }: { unit_id: string }) {
 
   const lecturerResponse: Response = await response.json();
   const lecturers = lecturerResponse.lecturers;
+
+  if (lecturers === undefined) {
+    return <></>;
+  }
+
   const results: Lecturer[] = [];
   for (const lecturer of lecturers) {
     console.log(lecturer);
@@ -40,7 +45,7 @@ export default async function Lecturers({ unit_id }: { unit_id: string }) {
   }
 
   return (
-    <>
+    <div className="flex flex-col gap-2 h-full">
       {results.map((lecturer) => (
         <UserCard
           key={lecturer.id}
@@ -49,6 +54,6 @@ export default async function Lecturers({ unit_id }: { unit_id: string }) {
           image={lecturer.image}
         ></UserCard>
       ))}
-    </>
+    </div>
   );
 }
