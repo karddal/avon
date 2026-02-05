@@ -43,9 +43,9 @@ import {
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
+import { create_unit } from "@/lib/actions/create_unit";
 import { getProgrammes } from "@/lib/actions/get_all_programmes";
 import { multistep_unit_flow } from "./multistep_unit_flow";
-import { create_unit } from "@/lib/actions/create_unit";
 
 interface FormProps {
   slug: Promise<{ slug: string }>;
@@ -164,7 +164,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
         window.location.href = `/units/`;
         setSubmitState(false);
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("An error occurred");
       setSubmitState(false);
     }
