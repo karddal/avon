@@ -129,7 +129,7 @@ export const IntForm = ({
     defaultValues: {
       name: "",
       description: "",
-      due_date: new Date(new Date(today).setDate(today.getDate() + 1)),
+      due_date: new Date(new Date(today).setHours(today.getHours() + 25)),
       color: "#abcdef",
     },
   });
