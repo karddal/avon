@@ -217,35 +217,58 @@ export default async function AppSidebarContent() {
             </div>
           </Dialog>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <SidebarMenuItem key={"Account"} className="w-full">
-                <SidebarMenuButton className="h-full w-full p-0! hover:bg-accent">
-                  <div className="flex flex-row items-center w-full h-full py-2 gap-2 mx-1">
-                    <User strokeWidth={1} className="size-8! mx-2" />
-                    <div className="flex flex-col items-start overflow-hidden">
-                      <span className="text-accent-foreground text-sm font-medium truncate w-full">
-                        {s.user.name}
-                      </span>
-                      <span className="text-muted-foreground text-xs capitalize">
-                        {type}
-                      </span>
-                    </div>
-                  </div>
+          <div className="flex flex-col border-t">
+            {/* bottom part of sidebar */}
+            <Dialog>
+              <div className="flex flex-col border-t">
+                <SidebarMenuButton asChild key={"Settings"} className={"w-full flex flex-row items-center w-full h-full py-2 gap-2 mx-1"}>
+                  <DialogTrigger className="h-full flex flex-row items-center">
+                    <SettingsIcon strokeWidth={1} className="size-8!" />
+                    <span className="text-accent-foreground">{"Settings"}</span>
+                  </DialogTrigger>
                 </SidebarMenuButton>
-              </SidebarMenuItem>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent side="top" align="center" className="w-56">
-              <DropdownMenuItem className="font-normal">
-                {s.user.name}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <LogoutButton />
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </SidebarMenu>
-    </SidebarGroup>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Settings</DialogTitle>
+                  </DialogHeader>
+                  <SettingsContents />
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant={"outline"}>Close</Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </div>
+            </Dialog>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuItem key={"Account"} className="w-full">
+                  <SidebarMenuButton className="h-full w-full p-0! hover:bg-accent">
+                    <div className="flex flex-row items-center w-full h-full py-2 gap-2 mx-1">
+                      <User strokeWidth={1} className="size-8! mx-2" />
+                      <div className="flex flex-col items-start overflow-hidden">
+                        <span className="text-accent-foreground text-sm font-medium truncate w-full">
+                          {s.user.name}
+                        </span>
+                        <span className="text-muted-foreground text-xs capitalize">
+                          {type}
+                        </span>
+                      </div>
+                    </div>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent side="top" align="center" className="w-56">
+                <DropdownMenuItem className="font-normal">
+                  {s.user.name}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <LogoutButton />
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </SidebarMenu>
+      </SidebarGroup>
     </SidebarContent >
   );
 }

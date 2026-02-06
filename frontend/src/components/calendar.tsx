@@ -69,6 +69,7 @@ export function Calendar29({ props }: { props: calendarProps }) {
               >
                 <Calendar
                   mode="single"
+
                   selected={props.date}
                   captionLayout="dropdown"
                   fromYear={props.date.getFullYear()}
