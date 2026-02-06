@@ -277,7 +277,7 @@ async def gl_delete_coursework(gitlab_group_id):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
     
-    async with httpx.AsyncClient() as client: # No need to get full path as it's lowest group, therefore no subgroups and only delete needed
+    async with httpx.AsyncClient() as client: 
             try:
                 response = await client.delete(
                     f"{BASE_URL}/groups/{gitlab_group_id}",
