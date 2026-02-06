@@ -1,4 +1,4 @@
-from app.core.helpers.gitlab import gl_create_coursework, gl_delete_coursework, gl_update_programme
+from app.core.helpers.gitlab import gl_create_coursework, gl_delete_coursework, gl_update_coursework
 from sqlalchemy.orm import selectinload
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
@@ -127,7 +127,7 @@ async def update_coursework(id: UUID, coursework: CourseworkUpdate, session: ses
     coursework_db.sqlmodel_update(coursework_data)
 
     try:
-        await gl_update_programme(coursework_db.gitlab_id, coursework_db.name)
+        await gl_update_coursework(coursework_db.gitlab_id, coursework_db.name)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY, 
