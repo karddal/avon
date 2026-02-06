@@ -559,8 +559,8 @@ export default function CreateDockerfile({
             </div>
           </div>
 
-          <div className="lg:max-h-[80vh]! flex-1 bg-card border rounded-xl p-8 shadow-lg flex flex-col">
-            <div className="flex justify-start gap-4 items-center mb-6">
+          <div className="lg:max-h-[80vh]! flex-1 bg-background border p-8 shadow-lg flex flex-col">
+            <div className="flex justify-start gap-4  items-center mb-6">
               <DialogTitle className="text-xl">Preview</DialogTitle>
               <Button
                 variant="outline"
