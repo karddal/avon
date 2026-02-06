@@ -28,6 +28,7 @@ import { IMAGES } from "@/lib/docker/image";
 import { TOOLS } from "@/lib/docker/tools";
 import type { Image, Tool } from "@/lib/docker/types";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface DockerConfig {
   baseImage: Image;
@@ -218,6 +219,24 @@ export default function CreateDockerfile({
         </span>
       );
     });
+  };
+
+  const downloadDockerfile = () => {
+    const blob = new Blob([dockerfileContent], {
+      type: "application/octet-stream",
+    });
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "Dockerfile";
+    document.body.appendChild(link);
+    link.click();
+    toast.success("Downloaded Dockerfile!");
+
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -509,7 +528,11 @@ export default function CreateDockerfile({
             </div>
 
             <div className="mt-auto flex flex-col gap-2 p-8 border-t bg-background">
-              <Button variant="outline" className="w-full">
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => downloadDockerfile()}
+              >
                 <Download className="mr-2 w-4 h-4" /> Download Dockerfile
               </Button>
               <Button variant="default" className="w-full">
@@ -524,7 +547,10 @@ export default function CreateDockerfile({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => navigator.clipboard.writeText(dockerfileContent)}
+                onClick={() => {
+                  toast.success("Copied Dockerfile to clipboard!");
+                  navigator.clipboard.writeText(dockerfileContent);
+                }}
               >
                 <Copy className="w-4 h-4 mr-2" /> Copy
               </Button>
