@@ -1,6 +1,13 @@
 "use client";
 
-import { BookCheck, Menu, ServerCog, SquarePen, SquareX } from "lucide-react";
+import {
+  BookCheck,
+  Container,
+  Menu,
+  ServerCog,
+  SquarePen,
+  SquareX,
+} from "lucide-react";
 import { useState } from "react";
 import DeleteCourseworkButton from "@/components/coursework/delete_coursework_button";
 import EditCoursework from "@/components/coursework/edit-coursework";
@@ -21,6 +28,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import CreateDockerfile from "@/components/coursework/create-dockerfile";
 
 type CourseworkUpdateData = {
   id: string;
@@ -46,6 +54,7 @@ export default function CourseworkLectDropdown({
 }) {
   const [showDelete, setShowDelete] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
+  const [showDocker, setShowDocker] = useState(false);
 
   return (
     <div className="aspect-square">
@@ -60,6 +69,14 @@ export default function CourseworkLectDropdown({
           <DropdownMenuItem disabled={true}>
             <ServerCog className="mr-2 h-4 w-4" />
             Engine
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            disabled={false}
+            onSelect={() => setShowDocker(true)}
+          >
+            <Container className="mr-2 h-4 w-4" />
+            Create Dockerfile
           </DropdownMenuItem>
 
           <DropdownMenuItem disabled={true}>
@@ -83,6 +100,11 @@ export default function CourseworkLectDropdown({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <CreateDockerfile
+        open_state={showDocker}
+        set_open_state={setShowDocker}
+      ></CreateDockerfile>
 
       <EditCoursework
         coursework_update_data={coursework_update_data}
