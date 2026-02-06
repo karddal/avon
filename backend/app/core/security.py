@@ -14,6 +14,7 @@ import logging
 import hashlib
 
 from app.core.settings import settings
+from app.schemas.security import CurrentUser
 
 logger = logging.getLogger("auth")
 
@@ -57,11 +58,11 @@ def credentials_exception():
         headers={"WWW-Authenticate": "Bearer"},
     )
 
-def verify_token_and_get_user_id(token_str: str) -> str:
+def verify_token_and_get_user(token_str: str) -> CurrentUser:
     fingerprint = _token_fingerprint(token_str)
 
     try:
-        logger.debug("JWT token fingerprint is %s", fingerprint)
+        logger.debug("JWT token fingerprint=%s", fingerprint)
 
         signing_key = jwks_client.get_signing_key_from_jwt(token_str)
         keyId = getattr(signing_key, "key_id", None)
@@ -76,13 +77,14 @@ def verify_token_and_get_user_id(token_str: str) -> str:
         )
 
         user_id = payload.get("sub") or payload.get("id")
+        role = payload.get("role")
 
         if not user_id:
             logger.warning("JWT missing user_id fingerprint=%s payload_keys=%s", fingerprint, list(payload.keys()))
             raise credentials_exception()
 
-        logger.info("JWT verify success fingerprint=%s user_id=%s",fingerprint, user_id)
-        return user_id
+        logger.info("JWT verify success fingerprint=%s user_id=%s role=%s",fingerprint, user_id, role)
+        return CurrentUser(user_id=user_id, role=role)
 
     except jwt.ExpiredSignatureError:
         logger.warning("JWT expired fp=%s", fingerprint)
@@ -108,7 +110,11 @@ def verify_token_and_get_user_id(token_str: str) -> str:
 
 async def get_current_user(token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]):
     logger.debug("HTTP auth attempt scheme=%s", token.scheme)
-    return verify_token_and_get_user_id(token.credentials)
+    return verify_token_and_get_user(token.credentials).user_id
+
+async def get_current_user_with_role(token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]):
+    logger.debug("HTTP auth attempt scheme=%s", token.scheme)
+    return verify_token_and_get_user(token.credentials)
 
 # async def get_current_user(token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]):
 #     try:

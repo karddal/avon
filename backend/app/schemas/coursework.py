@@ -84,7 +84,7 @@ class CourseworkDelete(BaseModel):
 class CourseworkEventRead(BaseModel):
     id: UUID
     name: Name
-    due_date: DueDate
+    due_date: datetime.datetime
     unit_id: UUID
     unit_name: Name
     colour: Colour | None = None

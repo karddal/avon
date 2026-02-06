@@ -9,6 +9,7 @@ from app.routers import unit
 from app.routers import check, me
 from app.routers import programme
 from app.routers import unit_enrollment
+from app.routers import websocket
 from dotenv import load_dotenv
 import os
 
@@ -37,6 +38,8 @@ app.include_router(me.router)
 app.include_router(programme.router)
 Coursework.model_rebuild()
 UnitWithCourseworks.model_rebuild()
+
+app.include_router(websocket.router)
 
 app.include_router(unit_enrollment.router)
 

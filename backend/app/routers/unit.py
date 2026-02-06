@@ -5,12 +5,15 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlmodel import Session, select
 from sqlalchemy.orm.strategy_options import selectinload
+from sqlalchemy import or_
 
-from app.core.security import get_current_user
+from app.core.security import get_current_user, get_current_user_with_role
 from app.db.session import get_session
 from app.models.programme import Programme
 from app.models.unit import Unit
 from app.models.unit_enrollment import UnitEnrollment
+from app.routers.websocket import manager
+from app.schemas.security import CurrentUser
 from app.schemas.unit import (
     CourseworkAll,
     UnitAll,
@@ -53,7 +56,7 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
             raise HTTPException(status_code=400, detail="Programme id is invalid.")
     
     # Check if the unit already exists either by code or by name
-    statement = select(Unit.id).where(Unit.name==unit.name or Unit.unit_code==unit.unit_code)
+    statement = select(Unit.id).where(or_(Unit.name==unit.name, Unit.unit_code==unit.unit_code))
     existing_units = session.exec(statement).all()
     if len(existing_units) > 0:
         raise HTTPException(status_code=400, detail="Unit already exists with same name or unit code")
@@ -85,14 +88,18 @@ async def active_units(session: session_dependency):
 @router.get("/units", response_model=list[UnitEventRead])
 def list_units_for_events(
         session: session_dependency,
-        current_user_id: str = Depends(get_current_user),
+        current_user: CurrentUser = Depends(get_current_user_with_role),
     ):
-    statement = (select(Unit)
-                 .join(UnitEnrollment)
-                 .where(UnitEnrollment.user_id == current_user_id))
 
-    units = session.exec(statement).all()
+    if current_user.role == "admin":
+        statement = (select(Unit))
 
+        units = session.exec(statement).all()
+    else:
+        statement = (select(Unit)
+                     .join(UnitEnrollment)
+                     .where(UnitEnrollment.user_id == current_user))
+        units = session.exec(statement).all()
     return [
         {
             "id": unit.id,
@@ -158,7 +165,12 @@ async def get_unit_students(unit_id: UUID, session: session_dependency):
     )
 
 @router.put("/{unit_id}", response_model=UnitUpdate, status_code=status.HTTP_200_OK)
-async def update_unit(unit_id: UUID, unit: UnitUpdate, session: session_dependency):
+async def update_unit(
+        unit_id: UUID,
+        unit: UnitUpdate,
+        session: session_dependency,
+        current_user_id: str = Depends(get_current_user),
+):
     if not unit.name:
         raise HTTPException(status_code=400, detail="Name of unit is required.")
 
@@ -180,6 +192,12 @@ async def update_unit(unit_id: UUID, unit: UnitUpdate, session: session_dependen
 
     session.commit()
     session.refresh(db_unit)
+
+    await manager.emit_to_user_if_subscribed(
+        current_user_id,
+        "units_changed",
+        {"type": "units_changed", "unit_id": str(unit_id)},
+    )
 
     return db_unit
 

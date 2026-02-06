@@ -3,7 +3,12 @@
 import useSWR from "swr"
 
 
-const fetcher = (url: string) => fetch(url).then(r => r.json())
+const fetcher = async (url: string) => {
+    const json = await fetch(url).then(r => r.json())
+    if (Array.isArray(json)) return json
+    if (json && Array.isArray(json.data)) return json.data
+    return []
+}
 
 export type UnitEvent = { id: string; name: string }
 
@@ -13,11 +18,10 @@ export function useUnits() {
         revalidateOnFocus: false,
     })
 
-    const unitOptions = Array.isArray(data) ? data : []
-    const unitOptionsList = (unitOptions ?? []).map(unit => ({
+    const unitOptions = (data ?? []).map(unit => ({
         value: unit.id,
         label: unit.name,
     }))
 
-    return {unitOptionsList, isLoading, error}
+    return {unitOptions, isLoading, error}
 }

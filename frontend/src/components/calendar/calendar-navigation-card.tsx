@@ -58,7 +58,7 @@ export function CalendarNavigationCard(
                             prefix="Units"
                             placeholder="All units"
                             options={unitOptions}
-                            defaultValues={[]}
+                            values={selectedUnitIds}
                             onChangeMultiple={(ids) => setSelectedUnitIds(ids)}
                         />
 

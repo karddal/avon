@@ -3,8 +3,9 @@ import datetime
 from sqlalchemy.orm import selectinload
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
+from sqlalchemy import exists, and_
 
-from app.core.security import get_current_user
+from app.core.security import get_current_user, get_current_user_with_role
 from app.db.session import get_session
 from typing import Annotated, Optional
 from uuid import UUID
@@ -13,6 +14,7 @@ from app.models.coursework import Coursework
 from app.models.unit import Unit, UnitWithCourseworks
 from app.models.unit_enrollment import UnitEnrollment
 from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkUpdate, CourseworkDelete, CourseworkEventRead, CourseworkUpdateFormData
+from app.schemas.security import CurrentUser
 
 router = APIRouter(prefix = "/coursework", tags=["coursework"])
 session_dependency = Annotated[Session, Depends(get_session)]
@@ -63,9 +65,22 @@ async def list_coursework_events(
         from_: Optional[datetime.datetime] = None,
         to: Optional[datetime.datetime] = None,
         unit_ids: Optional[list[UUID]] = None,
-        current_user_id: str = Depends(get_current_user)
+        current_user: CurrentUser = Depends(get_current_user_with_role)
         ):
-    statement = select(Coursework, Unit).join(Unit).join(UnitEnrollment).where(UnitEnrollment.user_id == current_user_id)
+    print("from_:", from_, type(from_))
+    print("to:", to, type(to))
+    statement = (select(Coursework, Unit)
+                 .join(Unit, Unit.id == Coursework.unit_id))
+
+    if current_user.role != "admin":
+        statement = statement.where(
+            exists().where(
+                and_(
+                    UnitEnrollment.unit_id == Coursework.unit_id,
+                    UnitEnrollment.user_id == current_user.id,
+                )
+            )
+        )
 
     # TODO: currently useless code, I thought that we might need a function that can hide some coursework to student
     # enrollment_type = Optional[Literal["student", "lecturer"]] = None
@@ -87,7 +102,7 @@ async def list_coursework_events(
             "name": coursework.name,
             "due_date": coursework.due_date,
             "unit_id": str(unit.id),
-            "unit_name": unit.unit_name,
+            "unit_name": unit.name,
             "colour": coursework.colour,
         }
         for coursework, unit in rows

@@ -3,7 +3,12 @@ import useSWR from "swr"
 import {toEvent} from "@/lib/calendar/to-event";
 import {groupEventsByDay} from "@/lib/calendar/group-by-day";
 
-const fetcher = (url: string) => fetch(url).then(r => r.json())
+const fetcher = async (url: string) => {
+    const json = await fetch(url).then(r => r.json())
+    if (Array.isArray(json)) return json
+    if (json && Array.isArray(json.data)) return json.data
+    return []
+}
 
 export function useCalendarEvents(from?: string, to?: string, unit_ids?: string[]) {
     const parameters = new URLSearchParams()
@@ -25,9 +30,8 @@ export function useCalendarEvents(from?: string, to?: string, unit_ids?: string[
         dedupingInterval: 30 * 1000 // 30 seconds
     })
 
-    const events = Array.isArray(data) ? data : []
-    const eventsList = (events ?? []).map(toEvent)
-    const eventsMap = groupEventsByDay(eventsList)
+    const events = (data ?? []).map(toEvent)
+    const eventsMap = groupEventsByDay(events)
 
     return {
         events,
