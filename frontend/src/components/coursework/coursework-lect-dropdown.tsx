@@ -63,7 +63,7 @@ export default function CourseworkLectDropdown({
           <Menu size={32} />
         </DropdownMenuTrigger>
         <DropdownMenuContent className="flex flex-col">
-          <DropdownMenuLabel>Courswork Options</DropdownMenuLabel>
+          <DropdownMenuLabel>Coursework Options</DropdownMenuLabel>
           <DropdownMenuSeparator />
 
           <DropdownMenuItem disabled={true}>
