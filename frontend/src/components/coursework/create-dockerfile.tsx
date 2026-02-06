@@ -1,7 +1,21 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import {
+  Check,
+  ChevronDown,
+  ChevronRight,
+  Copy,
+  Download,
+  FileCheck,
+  Plus,
+  Search,
+  Trash2,
+} from "lucide-react";
+import { type Dispatch, type SetStateAction, useMemo, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -10,24 +24,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import {
-  Plus,
-  Trash2,
-  ChevronDown,
-  ChevronRight,
-  Download,
-  FileCheck,
-  Check,
-  Search,
-  Copy,
-} from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import { Image, Tool } from "@/lib/docker/types";
 import { IMAGES } from "@/lib/docker/image";
 import { TOOLS } from "@/lib/docker/tools";
+import type { Image, Tool } from "@/lib/docker/types";
+import { cn } from "@/lib/utils";
 
 interface DockerConfig {
   baseImage: Image;
@@ -38,7 +38,15 @@ interface DockerConfig {
   finalCommands: string[];
 }
 
-export default function CreateDockerfile({ open_state, set_open_state }: any) {
+type DockerProps = {
+  open_state: boolean;
+  set_open_state: Dispatch<SetStateAction<boolean>>;
+};
+
+export default function CreateDockerfile({
+  open_state,
+  set_open_state,
+}: DockerProps) {
   const [config, setConfig] = useState<DockerConfig>({
     baseImage: IMAGES[0],
     workDir: "/work",
@@ -196,16 +204,16 @@ export default function CreateDockerfile({ open_state, set_open_state }: any) {
   const highlightDockerfile = (code: string) => {
     const keywords =
       /^(FROM|WORKDIR|RUN|COPY|EXPOSE|CMD|ENV|ENTRYPOINT|ADD|VOLUME|USER|LABEL|ARG|CD)/gm;
-    return code.split(keywords).map((part, i) => {
+    return code.split(keywords).map((part, _i) => {
       if (part.match(keywords)) {
         return (
-          <span key={i} className="text-blue-400 font-bold">
+          <span key={crypto.randomUUID()} className="text-blue-400 font-bold">
             {part}
           </span>
         );
       }
       return (
-        <span key={i} className="text-white">
+        <span key={crypto.randomUUID()} className="text-white">
           {part}
         </span>
       );
@@ -265,6 +273,7 @@ export default function CreateDockerfile({ open_state, set_open_state }: any) {
 
                 <div className="space-y-3">
                   <button
+                    type="button"
                     onClick={() => setShowTools(!showTools)}
                     className="flex items-center gap-2 w-full hover:opacity-80 transition-opacity"
                   >
@@ -334,6 +343,7 @@ export default function CreateDockerfile({ open_state, set_open_state }: any) {
 
                 <div className="space-y-3">
                   <button
+                    type="button"
                     onClick={() => setShowBuildCommands(!showBuildCommands)}
                     className="flex items-center gap-2 w-full hover:opacity-80 transition-opacity"
                   >
@@ -364,7 +374,7 @@ export default function CreateDockerfile({ open_state, set_open_state }: any) {
                       </Button>
                       <div className="space-y-2 max-h-32 overflow-y-auto bg-accent p-4 border">
                         {config.additionalCommands.map((cmd, index) => (
-                          <div key={index} className="flex gap-2">
+                          <div key={crypto.randomUUID()} className="flex gap-2">
                             <Input
                               value={cmd}
                               onChange={(e) =>
@@ -389,6 +399,7 @@ export default function CreateDockerfile({ open_state, set_open_state }: any) {
 
                 <div className="space-y-3">
                   <button
+                    type="button"
                     onClick={() => setShowEnvVars(!showEnvVars)}
                     className="flex items-center gap-2 w-full hover:opacity-80 transition-opacity"
                   >
@@ -418,7 +429,7 @@ export default function CreateDockerfile({ open_state, set_open_state }: any) {
                       </Button>
                       <div className="space-y-2 max-h-32 overflow-y-auto p-4 bg-accent border">
                         {config.envVars.map((env, index) => (
-                          <div key={index} className="flex gap-2">
+                          <div key={crypto.randomUUID()} className="flex gap-2">
                             <Input
                               placeholder="Key"
                               value={env.key}
@@ -472,7 +483,7 @@ export default function CreateDockerfile({ open_state, set_open_state }: any) {
 
                   <div className="space-y-2 max-h-40 overflow-y-auto bg-accent p-4 border rounded-md">
                     {config.finalCommands.map((cmd, index) => (
-                      <div key={index} className="flex gap-2">
+                      <div key={crypto.randomUUID()} className="flex gap-2">
                         <Input
                           value={cmd}
                           onChange={(e) =>

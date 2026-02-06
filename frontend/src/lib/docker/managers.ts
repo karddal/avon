@@ -1,4 +1,4 @@
-import { Manager } from "./types";
+import type { Manager } from "./types";
 
 export const MANAGERS: Record<string, Manager> = {
   apk: {

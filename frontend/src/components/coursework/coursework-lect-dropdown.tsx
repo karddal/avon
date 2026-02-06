@@ -9,6 +9,7 @@ import {
   SquareX,
 } from "lucide-react";
 import { useState } from "react";
+import CreateDockerfile from "@/components/coursework/create-dockerfile";
 import DeleteCourseworkButton from "@/components/coursework/delete_coursework_button";
 import EditCoursework from "@/components/coursework/edit-coursework";
 import {
@@ -28,7 +29,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import CreateDockerfile from "@/components/coursework/create-dockerfile";
 
 type CourseworkUpdateData = {
   id: string;

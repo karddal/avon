@@ -1,5 +1,5 @@
-import { Image } from "./types";
 import { MANAGERS } from "./managers";
+import type { Image } from "./types";
 
 export const IMAGES: Image[] = [
   {

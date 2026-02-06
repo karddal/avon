@@ -1,5 +1,5 @@
 import { MANAGERS } from "@/lib/docker/managers";
-import { Tool } from "./types";
+import type { Tool } from "./types";
 
 export const TOOLS: Tool[] = [
   {
@@ -55,19 +55,6 @@ export const TOOLS: Tool[] = [
     },
   },
   {
-    id: "mvn",
-    name: "Maven",
-    category: "tool",
-    install: {
-      type: "package",
-      packages: {
-        [MANAGERS.dnf.id]: "maven",
-        [MANAGERS.apt.id]: "maven",
-        [MANAGERS.apk.id]: "maven",
-      },
-    },
-  },
-  {
     id: "python3",
     name: "Python 3.11",
     category: "lang",
@@ -94,19 +81,6 @@ export const TOOLS: Tool[] = [
     },
   },
   {
-    id: "ocaml",
-    name: "OCaml",
-    category: "lang",
-    install: {
-      type: "package",
-      packages: {
-        [MANAGERS.dnf.id]: "opam",
-        [MANAGERS.apt.id]: "opam",
-        [MANAGERS.apk.id]: "opam",
-      },
-    },
-  },
-  {
     id: "uv",
     name: "UV",
     category: "tool",
@@ -114,7 +88,7 @@ export const TOOLS: Tool[] = [
       type: "script",
       script: "curl -LsSf https://astral.sh/uv/install.sh | sh",
       postInstall: {
-        env: { PATH: "/root/.local/bin:${PATH}" },
+        env: { PATH: "/root/.local/bin:$PATH" },
       },
     },
   },
