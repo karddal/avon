@@ -25,68 +25,9 @@ import {
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-
-type Image = {
-  id: string;
-  name: string;
-  manager: string;
-  updateCmd: string;
-  installCmd: string;
-};
-
-const IMAGES: Image[] = [
-  {
-    id: "rockylinux:8.9",
-    name: "MVB Lab",
-    manager: "dnf",
-    updateCmd: "dnf update -y",
-    installCmd: "install -y",
-  },
-  {
-    id: "ubuntu:latest",
-    name: "Ubuntu",
-    manager: "apt-get",
-    updateCmd: "apt-get update",
-    installCmd: "install -y",
-  },
-  {
-    id: "alpine:latest",
-    name: "alpine",
-    manager: "apk",
-    updateCmd: "apk update",
-    installCmd: "add --no-cache",
-  },
-];
-
-const TOOLS = [
-  {
-    id: "gcc",
-    name: "C / C++",
-    command: "install -y gcc gcc-c++",
-    type: "lang",
-  },
-  {
-    id: "ghc",
-    name: "Haskell",
-    command: "install -y ghc",
-    type: "lang",
-  },
-  { id: "go", name: "Go", command: "install -y golang", type: "lang" },
-  {
-    id: "java",
-    name: "Java 21",
-    command: "install -y java-21-openjdk-devel",
-    type: "lang",
-  },
-  { id: "mvn", name: "Maven", command: "install -y maven", type: "tool" },
-  {
-    id: "python3",
-    name: "Python 3.11",
-    command: "install -y python3.11",
-    type: "lang",
-  },
-  { id: "uv", name: "UV", command: "install -y uv", type: "tool" },
-];
+import { Image, Tool } from "@/lib/docker/types";
+import { IMAGES } from "@/lib/docker/image";
+import { TOOLS } from "@/lib/docker/tools";
 
 interface DockerConfig {
   baseImage: Image;
@@ -126,40 +67,42 @@ export default function CreateDockerfile({ open_state, set_open_state }: any) {
     const sections = [];
 
     sections.push(`FROM ${config.baseImage.id}`);
-
     sections.push(`WORKDIR ${config.workDir}`);
 
     const envStrings = config.envVars
       .filter((env) => env.key.trim() !== "")
       .map((env) => `ENV ${env.key}=${env.value}`)
       .join("\n");
-    if (envStrings) sections.push(envStrings);
+    if (envStrings) sections.push(`${envStrings}`);
 
     const manager = config.baseImage.manager;
-    const updateCmd = config.baseImage.updateCmd;
-    const installCmd = config.baseImage.installCmd;
+    const regularPackages: string[] = [];
 
-    const cleanInstallCmds = config.installCommands
-      .filter((cmd) => {
-        const trimmed = cmd.trim();
-        return trimmed !== "" && !trimmed.toLowerCase().includes("update");
-      })
-      .map((cmd) => {
-        const cleanCmd = cmd
-          .replace(
-            /^(dnf install -y|apt-get install -y|apt install -y|install -y|sudo|dnf|apt-get|apt)/g,
-            "",
-          )
-          .trim();
-        return `RUN ${manager} ${installCmd} ${cleanCmd}`;
-      });
+    config.installCommands.forEach((id) => {
+      const tool = TOOLS.find((t: Tool) => t.id === id);
+      if (!tool) return;
 
-    if (
-      cleanInstallCmds.length > 0 ||
-      config.installCommands.some((c) => c.toLowerCase().includes("update"))
-    ) {
+      const { install } = tool;
+
+      if (install.type === "package") {
+        const packageName = install.packages[manager.id];
+        if (packageName) {
+          regularPackages.push(packageName);
+        }
+      } else if (install.type === "script") {
+        sections.push(`RUN ${install.script}`);
+        if (install.postInstall?.env) {
+          Object.entries(install.postInstall.env).forEach(([key, value]) => {
+            sections.push(`ENV ${key}="${value}"`);
+          });
+        }
+      }
+    });
+
+    if (regularPackages.length > 0) {
+      const installStr = regularPackages.join(" ");
       sections.push(
-        `# Tools and Languages\nRUN ${updateCmd}\n${cleanInstallCmds.join("\n")}`,
+        `RUN ${manager.updateCmd} && ${manager.installCmd} ${installStr}`,
       );
     }
 
@@ -169,7 +112,7 @@ export default function CreateDockerfile({ open_state, set_open_state }: any) {
       .join("\n");
 
     if (extraCommands) {
-      sections.push(`# Additional Commands\n${extraCommands}`);
+      sections.push(`${extraCommands}`);
     }
 
     sections.push(`COPY . .`);
@@ -185,19 +128,14 @@ export default function CreateDockerfile({ open_state, set_open_state }: any) {
     return sections.join("\n\n");
   }, [config]);
 
-  const toggleTool = (command: string) => {
-    const exists = config.installCommands.includes(command);
-    if (exists) {
-      setConfig({
-        ...config,
-        installCommands: config.installCommands.filter((c) => c !== command),
-      });
-    } else {
-      setConfig({
-        ...config,
-        installCommands: [...config.installCommands, command],
-      });
-    }
+  const toggleTool = (toolId: string) => {
+    const exists = config.installCommands.includes(toolId);
+    setConfig({
+      ...config,
+      installCommands: exists
+        ? config.installCommands.filter((id) => id !== toolId)
+        : [...config.installCommands, toolId],
+    });
   };
 
   const updateImage = (image: Image) => {
@@ -277,7 +215,7 @@ export default function CreateDockerfile({ open_state, set_open_state }: any) {
   return (
     <Dialog open={open_state} onOpenChange={set_open_state}>
       <DialogContent className="max-w-full! lg:max-w-[80%]! xl:max-w-[70%]! w-full max-h-full! lg:max-h-[80vh]! overflow-y-auto p-0 border-none bg-transparent shadow-none">
-        <div className="flex flex-col lg:flex-row gap-6 w-full justify-center items-stretch">
+        <div className="flex flex-col-reverse lg:flex-row gap-6 w-full justify-center items-stretch">
           <div className="lg:max-h-[80vh]! flex-2 lg:overflow-y-auto bg-background border rounded-xl shadow-lg justify-between flex flex-col">
             <div className="p-8 pb-0">
               <DialogTitle className="text-xl">
@@ -359,12 +297,12 @@ export default function CreateDockerfile({ open_state, set_open_state }: any) {
                       <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-4 bg-accent border">
                         {filteredTools.map((tool) => {
                           const isActive = config.installCommands.includes(
-                            tool.command,
+                            tool.id,
                           );
                           return (
                             <Card
                               key={tool.id}
-                              onClick={() => toggleTool(tool.command)}
+                              onClick={() => toggleTool(tool.id)}
                               className={cn(
                                 "px-4 py-3 cursor-pointer transition-all flex items-center gap-2 hover:border-primary select-none flex-row",
                                 isActive
@@ -382,7 +320,7 @@ export default function CreateDockerfile({ open_state, set_open_state }: any) {
                                 )}
                               >
                                 {tool.name}{" "}
-                                <span className="font-mono text-muted-foreground font-thin text-[10px]">
+                                <span className="font-mono text-muted-foreground font-thin text-sm">
                                   {tool.id}
                                 </span>
                               </span>
@@ -409,7 +347,8 @@ export default function CreateDockerfile({ open_state, set_open_state }: any) {
                         Build Commands
                       </DialogTitle>
                       <p className="text-sm text-muted-foreground">
-                        Extra commands that are ran to create the environment.
+                        Extra commands that are ran to create the environment.{" "}
+                        <strong>Dependencies</strong> go here.
                       </p>
                     </div>
                   </button>
@@ -431,7 +370,7 @@ export default function CreateDockerfile({ open_state, set_open_state }: any) {
                               onChange={(e) =>
                                 updateCommand(index, e.target.value)
                               }
-                              placeholder="e.g. vim"
+                              placeholder="e.g. pip install torch"
                               className="font-mono text-sm"
                             />
                             <Button
