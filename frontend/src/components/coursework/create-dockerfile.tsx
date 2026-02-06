@@ -518,19 +518,18 @@ export default function CreateDockerfile({
             </div>
           </div>
 
-          <div className="lg:max-h-[80vh]! flex-1 bg-zinc-950 border border-zinc-800 rounded-xl p-8 shadow-lg flex flex-col">
+          <div className="lg:max-h-[80vh]! flex-1 bg-card border rounded-xl p-8 shadow-lg flex flex-col">
             <div className="flex justify-start gap-4 items-center mb-6">
-              <DialogTitle className="text-xl text-white">Preview</DialogTitle>
+              <DialogTitle className="text-xl">Preview</DialogTitle>
               <Button
                 variant="outline"
                 size="sm"
-                className="text-white border-zinc-700 hover:bg-zinc-800"
                 onClick={() => navigator.clipboard.writeText(dockerfileContent)}
               >
                 <Copy className="w-4 h-4 mr-2" /> Copy
               </Button>
             </div>
-            <pre className="font-mono overflow-y-auto flex-1 whitespace-pre-wrap leading-relaxed text-[13px]">
+            <pre className="font-mono bg-zinc-950 p-4 border border-black overflow-y-auto flex-1 whitespace-pre-wrap leading-relaxed text-[13px]">
               {highlightDockerfile(dockerfileContent)}
             </pre>
           </div>
