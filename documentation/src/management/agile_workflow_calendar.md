@@ -175,6 +175,21 @@ document.addEventListener('DOMContentLoaded', function () {
             start: '2026-01-30',
             url: '/meetings/sprint3/30-01-2026-team.html'
         },
+        {
+            title: 'Initial Sprint 4',
+            start: '2026-02-02',
+            url: '/meetings/sprint4/02-02-2026-team.html'
+        },
+        {
+            title: 'Midweek Sprint 4',
+            start: '2026-02-04',
+            url: '/meetings/sprint4/04-02-2026-team.html'
+        },
+        {
+            title: 'Final Sprint 4',
+            start: '2026-02-06',
+            url: '/meetings/sprint4/06-02-2026-team.html'
+        },
 
     ]
   });

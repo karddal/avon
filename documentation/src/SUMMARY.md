@@ -32,6 +32,8 @@
     - [30-01-2026 Sprint 3 end of week meeting](meetings/sprint3/30-01-2026-team.md)
   - [Sprint 4](meetings/sprint4/README.md)
     - [02-02-2026 Sprint 4 Initial meeting](meetings/sprint4/02-02-2026-team.md)
+    - [04-02-2026 Sprint 4 midweek meeting / mentor](meetings/sprint4/04-02-2026-team.md)
+    - [06-02-2026 Sprint 4 review meeting](meetings/sprint4/06-02-2026-team.md)
 
 # Developer documentation
 
