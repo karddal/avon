@@ -12,6 +12,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { type Dispatch, type SetStateAction, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -28,15 +29,14 @@ import { IMAGES } from "@/lib/docker/image";
 import { TOOLS } from "@/lib/docker/tools";
 import type { Image, Tool } from "@/lib/docker/types";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
 
 interface DockerConfig {
   baseImage: Image;
   workDir: string;
   installCommands: string[];
-  additionalCommands: string[];
-  envVars: { key: string; value: string }[];
-  finalCommands: string[];
+  additionalCommands: { id: string; value: string }[];
+  envVars: { id: string; key: string; value: string }[];
+  finalCommands: { id: string; value: string }[];
 }
 
 type DockerProps = {
@@ -54,7 +54,7 @@ export default function CreateDockerfile({
     installCommands: [],
     additionalCommands: [],
     envVars: [],
-    finalCommands: ["cd /repo"],
+    finalCommands: [{ id: crypto.randomUUID(), value: "cd /repo" }],
   });
 
   const [showBuildCommands, setShowBuildCommands] = useState(false);
@@ -116,8 +116,8 @@ export default function CreateDockerfile({
     }
 
     const extraCommands = config.additionalCommands
-      .filter((cmd: string) => (cmd || "").trim() !== "")
-      .map((cmd: string) => `RUN ${cmd.trim()}`)
+      .filter((cmd) => (cmd.value || "").trim() !== "")
+      .map((cmd) => `RUN ${cmd.value.trim()}`)
       .join("\n");
 
     if (extraCommands) {
@@ -127,7 +127,8 @@ export default function CreateDockerfile({
     sections.push(`COPY . .`);
 
     const chainedCmd = config.finalCommands
-      .filter((c) => c.trim() !== "")
+      .filter((c) => c.value.trim() !== "")
+      .map((c) => c.value)
       .join(" && ");
 
     if (chainedCmd) {
@@ -151,54 +152,71 @@ export default function CreateDockerfile({
     setConfig({ ...config, baseImage: image });
   };
 
-  const updateCommand = (index: number, value: string) => {
-    const newCommands = [...config.additionalCommands];
-    newCommands[index] = value;
+  const updateCommand = (id: string, value: string) => {
+    const newCommands = config.additionalCommands.map((cmd) =>
+      cmd.id === id ? { ...cmd, value } : cmd,
+    );
     setConfig({ ...config, additionalCommands: newCommands });
   };
 
   const addCommand = () => {
     setConfig({
       ...config,
-      additionalCommands: [...config.additionalCommands, ""],
+      additionalCommands: [
+        ...config.additionalCommands,
+        { id: crypto.randomUUID(), value: "" },
+      ],
     });
   };
 
-  const removeCommand = (index: number) => {
-    const newCommands = config.additionalCommands.filter((_, i) => i !== index);
+  const removeCommand = (id: string) => {
+    const newCommands = config.additionalCommands.filter(
+      (cmd) => cmd.id !== id,
+    );
     setConfig({ ...config, additionalCommands: newCommands });
   };
 
   const addFinalCommand = () => {
-    setConfig({ ...config, finalCommands: [...config.finalCommands, ""] });
+    setConfig({
+      ...config,
+      finalCommands: [
+        ...config.finalCommands,
+        { id: crypto.randomUUID(), value: "" },
+      ],
+    });
   };
 
-  const updateFinalCommand = (index: number, value: string) => {
-    const newCmds = [...config.finalCommands];
-    newCmds[index] = value;
+  const updateFinalCommand = (id: string, value: string) => {
+    const newCmds = config.finalCommands.map((cmd) =>
+      cmd.id === id ? { ...cmd, value } : cmd,
+    );
     setConfig({ ...config, finalCommands: newCmds });
   };
 
-  const removeFinalCommand = (index: number) => {
-    const newCmds = config.finalCommands.filter((_, i) => i !== index);
+  const removeFinalCommand = (id: string) => {
+    const newCmds = config.finalCommands.filter((cmd) => cmd.id !== id);
     setConfig({ ...config, finalCommands: newCmds });
   };
 
   const addEnv = () => {
     setConfig({
       ...config,
-      envVars: [...config.envVars, { key: "", value: "" }],
+      envVars: [
+        ...config.envVars,
+        { id: crypto.randomUUID(), key: "", value: "" },
+      ],
     });
   };
 
-  const updateEnv = (index: number, field: "key" | "value", value: string) => {
-    const newEnvs = [...config.envVars];
-    newEnvs[index][field] = value;
+  const updateEnv = (id: string, field: "key" | "value", value: string) => {
+    const newEnvs = config.envVars.map((env) =>
+      env.id === id ? { ...env, [field]: value } : env,
+    );
     setConfig({ ...config, envVars: newEnvs });
   };
 
-  const removeEnv = (index: number) => {
-    const newEnvs = config.envVars.filter((_, i) => i !== index);
+  const removeEnv = (id: string) => {
+    const newEnvs = config.envVars.filter((env) => env.id !== id);
     setConfig({ ...config, envVars: newEnvs });
   };
 
@@ -392,12 +410,12 @@ export default function CreateDockerfile({
                         <Plus className="w-4 h-4" /> Add
                       </Button>
                       <div className="space-y-2 max-h-32 overflow-y-auto bg-accent p-4 border">
-                        {config.additionalCommands.map((cmd, index) => (
-                          <div key={crypto.randomUUID()} className="flex gap-2">
+                        {config.additionalCommands.map((cmd) => (
+                          <div key={cmd.id} className="flex gap-2">
                             <Input
-                              value={cmd}
+                              value={cmd.value}
                               onChange={(e) =>
-                                updateCommand(index, e.target.value)
+                                updateCommand(cmd.id, e.target.value)
                               }
                               placeholder="e.g. pip install torch"
                               className="font-mono text-sm"
@@ -405,7 +423,7 @@ export default function CreateDockerfile({
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={() => removeCommand(index)}
+                              onClick={() => removeCommand(cmd.id)}
                             >
                               <Trash2 className="w-4 h-4 text-destructive" />
                             </Button>
@@ -447,13 +465,13 @@ export default function CreateDockerfile({
                         <Plus className="w-4 h-4" /> Add
                       </Button>
                       <div className="space-y-2 max-h-32 overflow-y-auto p-4 bg-accent border">
-                        {config.envVars.map((env, index) => (
-                          <div key={crypto.randomUUID()} className="flex gap-2">
+                        {config.envVars.map((env) => (
+                          <div key={env.id} className="flex gap-2">
                             <Input
                               placeholder="Key"
                               value={env.key}
                               onChange={(e) =>
-                                updateEnv(index, "key", e.target.value)
+                                updateEnv(env.id, "key", e.target.value)
                               }
                               className="font-mono text-sm flex-1"
                             />
@@ -461,14 +479,14 @@ export default function CreateDockerfile({
                               placeholder="Value"
                               value={env.value}
                               onChange={(e) =>
-                                updateEnv(index, "value", e.target.value)
+                                updateEnv(env.id, "value", e.target.value)
                               }
                               className="font-mono text-sm flex-1"
                             />
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={() => removeEnv(index)}
+                              onClick={() => removeEnv(env.id)}
                             >
                               <Trash2 className="w-4 h-4 text-destructive" />
                             </Button>
@@ -502,11 +520,11 @@ export default function CreateDockerfile({
 
                   <div className="space-y-2 max-h-40 overflow-y-auto bg-accent p-4 border rounded-md">
                     {config.finalCommands.map((cmd, index) => (
-                      <div key={crypto.randomUUID()} className="flex gap-2">
+                      <div key={cmd.id} className="flex gap-2">
                         <Input
-                          value={cmd}
+                          value={cmd.value}
                           onChange={(e) =>
-                            updateFinalCommand(index, e.target.value)
+                            updateFinalCommand(cmd.id, e.target.value)
                           }
                           disabled={index === 0}
                           placeholder="e.g. ./setup.sh"
@@ -515,7 +533,7 @@ export default function CreateDockerfile({
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => removeFinalCommand(index)}
+                          onClick={() => removeFinalCommand(cmd.id)}
                           disabled={index === 0}
                         >
                           <Trash2 className="w-4 h-4 text-destructive" />
