@@ -1,4 +1,5 @@
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/new_tabs";
+import ListMembers from "@/components/settings/list-users";
 import {KeyRound, Palette, SquareUser} from "lucide-react";
 import AccountSettings from "@/components/settings/account-settings";
 
@@ -14,6 +15,9 @@ export default function SettingsContents() {
                     <Palette />
                     Theme
                 </TabsTrigger>
+                <TabsTrigger value="manage">
+                    User Management
+                </TabsTrigger>
             </TabsList>
             <div className={"no-scrollbar max-h-[50vh] w-full overflow-y-auto p-6"}>
                 <TabsContent value={"account"}>
@@ -21,6 +25,9 @@ export default function SettingsContents() {
                 </TabsContent>
                 <TabsContent value={"notifications"}>
 
+                </TabsContent>
+                <TabsContent value={"manage"}>
+                    <ListMembers/>
                 </TabsContent>
             </div>
         </Tabs>
