@@ -32,7 +32,12 @@ import {
   type SearchResponse,
   search_by_name,
 } from "@/lib/actions/search_by_name";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { remove_user_enrollment } from "@/lib/actions/remove_user_enrollment";
 
 function _getInitials(name: string) {
@@ -128,7 +133,7 @@ export default function ListMembers() {
                         >
                             <X className="text-destructive hover:text-destructive"></X>
                             <p className="text-destructive hover:text-destructive">
-                            Remove Student
+                            Delete Student
                             </p>
                         </DropdownMenuItem>
                         </DropdownMenuContent>

@@ -8,6 +8,7 @@ import {
   SettingsIcon,
   SwatchBook,
   User,
+  BookUser,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -79,6 +80,13 @@ const adminItems = [
     icon: Layers,
     bottom: false,
   },
+  {
+    title: "Management",
+    url: "/management",
+    icon: BookUser,
+    bottom: false,
+
+  }
 ];
 
 const lecturerItems = [
@@ -209,7 +217,7 @@ export default async function AppSidebarContent() {
                 >
                   <DialogTrigger className="h-full flex flex-row items-center">
                     <SettingsIcon strokeWidth={1} className="size-8!" />
-                    <span className="text-accent-foreground">{"Settings"}</span>
+                    <span className="text-accent-foreground text-lg">{"Settings"}</span>
                   </DialogTrigger>
                 </SidebarMenuButton>
                 <DialogContent className="w-[95vw] max-w-md sm:max-w-2xl lg:max-w-4xl">
