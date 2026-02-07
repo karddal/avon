@@ -1,11 +1,15 @@
 # Agile workflows
 
 ## Sprints
+
 Each week of the term is split into sprints, led by a rotating project manager. A sprint comprises of:
-- An initial meeting to assign issues to developers and create issues for tasks that need to be completed. 
+
+- An initial meeting to assign issues to developers and create issues for tasks that need to be completed.
 - A mentor meeting to discuss the progress so far and discuss any challenges faced
 - A Sprint Review meeting to evaluate the undertaken work and merge all remaining pull requests. As well as ensuring that any remaining tasks are assigned for extra work over the weekend.
+
 ## Project manager responsibilities
+
 - Lead initial sprint and sprint review meetings
 - Document meeting summary and add corresponding links to the schedule
 - Assign and create issues
@@ -155,6 +159,21 @@ document.addEventListener('DOMContentLoaded', function () {
             title: 'Sprint Review',
             start: '2026-01-23',
             url: '/meetings/sprint2/23-01-2025-team.html'
+        },
+                        {
+            title: 'Initial Sprint 3',
+            start: '2026-01-26',
+            url: '/meetings/sprint3/26-01-2025-team.html'
+        },
+                                {
+            title: 'Midweek Sprint 3',
+            start: '2026-01-28',
+            url: '/meetings/sprint3/28-01-2025-team.html'
+        },
+                                {
+            title: 'Final Sprint 3',
+            start: '2026-01-30',
+            url: '/meetings/sprint3/30-01-2025-team.html'
         },
 
     ]
