@@ -41,7 +41,7 @@ export function CalendarTimeTableCard({
 
     const inWeek = days.find((d) => format(d, "yyyy-MM-dd") === today);
     return [inWeek ?? days[0]];
-  }, [isMobile, days]);
+  }, [isMobile, days, today]);
 
   return (
     <Card className="w-full">

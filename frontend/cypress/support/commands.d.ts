@@ -5,7 +5,7 @@ type MountReturn = ReturnType<typeof mount>;
 
 declare global {
   namespace Cypress {
-    interface Chainable<Subject = any> {
+    interface Chainable {
       mount(...args: MountParams): MountReturn;
       login(email: string, password: string): Chainable<void>;
     }
