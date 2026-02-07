@@ -1,13 +1,15 @@
 "use client"
 
-import {useCallback, useMemo, useState} from "react";
+import {useCallback, useEffect, useMemo, useState} from "react";
 import {CalendarNavigationCard} from "@/components/calendar/calendar-navigation-card";
 import {Tabs, TabsContent} from "@/components/ui/tabs";
 import {CalendarTimeTableCard} from "@/components/calendar/calendar-timetable-card";
 import {useUnits} from "@/hooks/calendar/use-units";
-import {useCalendarEvents} from "@/hooks/calendar/use-calendar-events";
-import {addDays, startOfWeek} from "date-fns";
+import {buildEventQuery, useCalendarEvents} from "@/hooks/calendar/use-calendar-events";
+import {addDays, format, startOfWeek} from "date-fns";
 import {EventsListingCard} from "@/components/calendar/events-listing-card";
+import {useUnitsRealtime} from "@/hooks/calendar/use-units-realtime";
+import {useSWRConfig} from "swr";
 
 export type CalendarEvent = {
     id: string;
@@ -21,6 +23,7 @@ export type CalendarEvent = {
 };
 
 export default function CalendarDashboard() {
+    const [tab, setTab] = useState<"timetable" | "events">("timetable")
     const [weekStartDate, setWeekStartDate] = useState<Date>(new Date())
     const [unitIds, setUnitIds] = useState<string[]>([])
 
@@ -28,36 +31,81 @@ export default function CalendarDashboard() {
         setUnitIds(ids)
     }, [])
 
+    const defaultAcademicYearStart = useMemo(() => {
+        const {fromY} = getAcademicYear()
+        return fromY.getFullYear()
+    }, [])
+
+    const [academicYearStart, setAcademicYearStart] = useState<number>(defaultAcademicYearStart)
+
     const weekStart = useMemo(
         () => startOfWeek(weekStartDate, { weekStartsOn: 1 }),
         [weekStartDate]
     )
-    const from = useMemo(() => weekStart.toISOString(), [weekStart])
-    const to = useMemo(() => addDays(weekStart, 7).toISOString(), [weekStart])
+    const fromWeek = useMemo(() => format(weekStart, "yyyy-MM-dd"), [weekStart])
+    const toWeek = useMemo(() => format(addDays(weekStart, 7), "yyyy-MM-dd"), [weekStart])
 
-    const {eventsMap, isLoading, error} = useCalendarEvents(from, to, unitIds)
-    const {unitOptionsList} = useUnits()
+    const { fromY, toY } = useMemo(() => {
+        const year = new Date(academicYearStart, 7, 1)
+        return getAcademicYear(year)
+    }, [academicYearStart])
+
+    const fromYear = useMemo(() => format(fromY, "yyyy-MM-dd"), [fromY])
+    const toYear = useMemo(() => format(toY, "yyyy-MM-dd"), [toY])
+
+    const from = tab === "timetable" ? fromWeek : fromYear;
+    const to   = tab === "timetable" ? toWeek   : toYear;
+
+    const {eventsMap} = useCalendarEvents(from, to)
+    useUnitsRealtime()
+    const {unitOptions} = useUnits()
+
+    const filteredEventsMap = useMemo(() => {
+        if (unitIds.length === 0) return eventsMap
+
+        const allowed = new Set(unitIds)
+        const out = new Map<string, CalendarEvent[]>()
+
+        for (const [day, list] of eventsMap.entries()) {
+            const filtered = list.filter((event) => allowed.has(event.unit_id))
+            if (filtered.length) out.set(day, filtered)
+        }
+        return out
+    }, [unitIds, eventsMap])
 
     return (
-        <Tabs defaultValue="timetable">
+        <Tabs value={tab} onValueChange={(value) => setTab(value as "timetable" | "events")}>
             <CalendarNavigationCard
                 weekStartDate={weekStartDate}
                 onWeekStartDateChange={setWeekStartDate}
                 onUnitIdsChange={onUnitIdsChange}
-                unitOptions={unitOptionsList}
+                unitOptions={unitOptions}
+                tab={tab}
+                academicYearStart={academicYearStart}
+                onAcademicYearStartChange={setAcademicYearStart}
             />
 
             <TabsContent value="timetable">
                 <CalendarTimeTableCard
                     weekStartDate={weekStartDate}
-                    eventsMap={eventsMap}
+                    eventsMap={filteredEventsMap}
                 />
             </TabsContent>
 
             <TabsContent value="events">
-                <EventsListingCard eventsMap={eventsMap} />
+                <EventsListingCard eventsMap={filteredEventsMap} />
             </TabsContent>
         </Tabs>
 
     )
+}
+
+function getAcademicYear(now = new Date()) {
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1; // 1-12
+    const startYear = month < 8 ? year - 1 : year;
+
+    const fromY = new Date(startYear, 7, 1, 0, 0, 0, 0);      // Aug 1
+    const toY = new Date(startYear + 1, 7, 1, 0, 0, 0, 0);    // next Aug 1 (exclusive)
+    return {fromY, toY};
 }
