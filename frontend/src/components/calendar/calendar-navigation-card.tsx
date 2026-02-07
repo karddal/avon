@@ -9,6 +9,8 @@ import {CalendarIcon, ChevronLeft, ChevronRight} from "lucide-react";
 import {Calendar} from "@/components/ui/calendar";
 import {TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {SearchableSelect, type SearchableSelectOption} from "@/components/searchableSelect";
+import YearSelector from "@/components/year-selector";
+import AcademicYearStepper from "@/components/academic-year-stepper";
 
 export function CalendarNavigationCard(
     {
@@ -16,11 +18,17 @@ export function CalendarNavigationCard(
         onWeekStartDateChange,
         unitOptions = [],
         onUnitIdsChange,
+        tab,
+        academicYearStart,
+        onAcademicYearStartChange,
     }:{
         weekStartDate: Date;
         onWeekStartDateChange: (date: Date) => void
         unitOptions?: SearchableSelectOption[]
         onUnitIdsChange: (unitIds: string[]) => void
+        tab: "timetable" | "events"
+        academicYearStart: number
+        onAcademicYearStartChange: (yearStart: number) => void
     }
 ) {
     const weekStart = useMemo(() =>startOfWeek(weekStartDate, {weekStartsOn: 1}), [weekStartDate])
@@ -29,9 +37,6 @@ export function CalendarNavigationCard(
     const weekRange = `${format(weekStart, "MMM d")} – ${format(weekEnd, "MMM d")}`
 
     const [selectedUnitIds, setSelectedUnitIds] = useState<string[]>([])
-    useEffect(() => {
-        onUnitIdsChange(selectedUnitIds)
-    }, [selectedUnitIds, onUnitIdsChange])
 
     return (
         <Card className= "w-full">
@@ -48,8 +53,17 @@ export function CalendarNavigationCard(
                         </TabsList>
                     </div>
 
-                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-base font-semibold leading-none">
-                        {weekRange}
+                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                        {tab === "timetable" ? (
+                            <div className="text-base font-semibold leading-none">
+                                {weekRange}
+                            </div>
+                        ):(
+                            <AcademicYearStepper
+                                value={academicYearStart}
+                                onChange={onAcademicYearStartChange}
+                            />
+                        )}
                     </div>
 
                     <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[260px]">
@@ -59,7 +73,10 @@ export function CalendarNavigationCard(
                             placeholder="All units"
                             options={unitOptions}
                             values={selectedUnitIds}
-                            onChangeMultiple={(ids) => setSelectedUnitIds(ids)}
+                            onChangeMultiple={(ids) => {
+                                setSelectedUnitIds(ids)
+                                onUnitIdsChange(ids)
+                            }}
                         />
 
                         <Button
@@ -74,60 +91,62 @@ export function CalendarNavigationCard(
                     </div>
                 </div>
 
-                <div className="relative mt-2 h-10">
-                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                        <div className="flex justify-center items-center gap-3">
-                            <Button
-                                variant="outline"
-                                size="icon-lg"
-                                onClick={() => onWeekStartDateChange(addWeeks(weekStart, -1))}
-                                title="Last week"
-                            >
-                                <ChevronLeft />
-                            </Button>
+                {tab === "timetable" && (
+                    <div className="relative mt-2 h-10">
+                        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                            <div className="flex justify-center items-center gap-3">
+                                <Button
+                                    variant="outline"
+                                    size="icon-lg"
+                                    onClick={() => onWeekStartDateChange(addWeeks(weekStart, -1))}
+                                    title="Last week"
+                                >
+                                    <ChevronLeft />
+                                </Button>
 
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => onWeekStartDateChange(startOfWeek(new Date(), {weekStartsOn: 1}))}
-                                title="Today"
-                            >
-                                Today
-                            </Button>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => onWeekStartDateChange(startOfWeek(new Date(), {weekStartsOn: 1}))}
+                                    title="Today"
+                                >
+                                    Today
+                                </Button>
 
-                            <Button
-                                variant="outline"
-                                size="icon-lg"
-                                onClick={() => onWeekStartDateChange(addWeeks(weekStart, 1))}
-                                title="Next week"
-                            >
-                                <ChevronRight />
-                            </Button>
+                                <Button
+                                    variant="outline"
+                                    size="icon-lg"
+                                    onClick={() => onWeekStartDateChange(addWeeks(weekStart, 1))}
+                                    title="Next week"
+                                >
+                                    <ChevronRight />
+                                </Button>
 
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        size="icon-lg"
-                                        title="Jump to date"
-                                    >
-                                        <CalendarIcon />
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="p-2 w-auto" align="end">
-                                    <Calendar
-                                        mode="single"
-                                        selected={weekStartDate}
-                                        onSelect={(date) => {
-                                            if (!date) return
-                                            onWeekStartDateChange(startOfWeek(date, {weekStartsOn: 1}));
-                                        }}
-                                    />
-                                </PopoverContent>
-                            </Popover>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            size="icon-lg"
+                                            title="Jump to date"
+                                        >
+                                            <CalendarIcon />
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="p-2 w-auto" align="end">
+                                        <Calendar
+                                            mode="single"
+                                            selected={weekStartDate}
+                                            onSelect={(date) => {
+                                                if (!date) return
+                                                onWeekStartDateChange(startOfWeek(date, {weekStartsOn: 1}));
+                                            }}
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
                         </div>
                     </div>
-                </div>
+                )}
             </CardContent>
         </Card>
     )
