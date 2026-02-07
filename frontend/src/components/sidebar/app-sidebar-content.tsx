@@ -1,12 +1,13 @@
 import {
-    BookCheck, Calendar,
-    ChartLine,
-    Layers,
-    LayoutDashboard,
-    NotepadText,
-    Settings,
-    SwatchBook,
-    User,
+  BookCheck,
+  Calendar,
+  ChartLine,
+  Layers,
+  LayoutDashboard,
+  NotepadText,
+  Settings,
+  SwatchBook,
+  User,
 } from "lucide-react";
 import Link from "next/link";
 import { Kbd, KbdGroup } from "@/components/ui/kbd";
@@ -70,12 +71,12 @@ const adminItems = [
     icon: Layers,
     bottom: false,
   },
-    {
-        title: "Calendar",
-        url: "/calendar",
-        icon: Calendar,
-        bottom: false,
-    },
+  {
+    title: "Calendar",
+    url: "/calendar",
+    icon: Calendar,
+    bottom: false,
+  },
 ];
 
 const lecturerItems = [
@@ -115,12 +116,12 @@ const lecturerItems = [
     icon: NotepadText,
     bottom: false,
   },
-    {
-        title: "Calendar",
-        url: "/calendar",
-        icon: Calendar,
-        bottom: false,
-    },
+  {
+    title: "Calendar",
+    url: "/calendar",
+    icon: Calendar,
+    bottom: false,
+  },
 ];
 const studentItems = [
   {
@@ -141,12 +142,12 @@ const studentItems = [
     icon: Settings,
     bottom: true,
   },
-    {
-        title: "Calendar",
-        url: "/calendar",
-        icon: Calendar,
-        bottom: false,
-    },
+  {
+    title: "Calendar",
+    url: "/calendar",
+    icon: Calendar,
+    bottom: false,
+  },
 ];
 
 export default async function AppSideBarContent() {
