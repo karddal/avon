@@ -7,6 +7,7 @@ import { Button } from "../ui/button";
 export default async function AccountSettings() {
   const s = await requireSession();
   const image = s.user.image ?? "";
+  const role = s.user.role === "admin" ? "Admin" : (s.user.role === "student" ? "Student" : "Lecturer")
 
   return (
     <div className="w-full">
@@ -66,6 +67,37 @@ export default async function AccountSettings() {
             Reset Password
             </Button>
         </div>
+        <div className="rounded-md border border-border p-4">
+            <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+              Role
+            </h3>
+            <p className="text-base font-medium">{role}</p>
+
+            {role === "Admin" && (
+                <Button
+                variant="outline"
+                className="w-fit justify-self-end mt-3"
+                >
+                Change Role
+                </Button>
+            )}
+        </div>
+        {role === "Admin" ? (
+            <div className="rounded-md border border-border p-4">
+                <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                Deletion
+                </h3>   
+                    <Button
+                    variant="outline"
+                    className="mt-3 w-full sm:w-fit"
+                    // onClick={}
+                    >
+                    Delete User
+                    </Button>
+            </div>
+        ) : (
+            <></>
+        )}
       </div>
 
     </div>
