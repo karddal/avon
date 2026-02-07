@@ -10,21 +10,14 @@ export default function SettingsContents() {
                     <SquareUser />
                     Account
                 </TabsTrigger>
-                <TabsTrigger value="password">
-                    <KeyRound />
-                    Security
-                </TabsTrigger>
                 <TabsTrigger value="notifications">
                     <Palette />
                     Theme
                 </TabsTrigger>
             </TabsList>
-            <div className={"no-scrollbar -mx-4 max-h-[50vh] w-full overflow-y-auto px-4"}>
+            <div className={"no-scrollbar max-h-[50vh] w-full overflow-y-auto p-6"}>
                 <TabsContent value={"account"}>
                     <AccountSettings/>
-                </TabsContent>
-                <TabsContent value={"password"}>
-
                 </TabsContent>
                 <TabsContent value={"notifications"}>
 
