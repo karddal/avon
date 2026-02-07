@@ -103,6 +103,7 @@ function TimeGridBody({
     sort: true,
     maxCols,
   });
+  const HOURS = Array.from({ length: 24 }, (_, i) => i);
 
   return (
     <ScrollArea ref={scrollRef} className={cn("h-[70vh]")}>
@@ -111,16 +112,16 @@ function TimeGridBody({
         <div ref={gridRef} className="grid" style={{ gridTemplateColumns }}>
           <div className="relative border-r bg-background">
             <div style={{ height: dayHeight }}>
-              {Array.from({ length: 24 }, (_, h) => (
+              {HOURS.map((hour) => (
                 <div
-                  key={h}
+                  key={hour}
                   className="absolute left-0 w-full pr-2 text-right text-xs text-muted-foreground flex items-center justify-end"
                   style={{
-                    top: h * hourStepPx,
+                    top: hour * hourStepPx,
                     height: hourStepPx,
                   }}
                 >
-                  {String(h).padStart(2, "0")}:00
+                  {String(hour).padStart(2, "0")}:00
                 </div>
               ))}
             </div>
@@ -628,9 +629,11 @@ function useWeeklyEvents({
 
       flushGroup();
 
+      const isDefined = <T,>(v: T | undefined | null): v is T => v != null;
+
       return items
-        .map((candidate) => layoutMap.get(candidate.event.id)!)
-        .filter(Boolean);
+        .map((candidate) => layoutMap.get(candidate.event.id))
+        .filter(isDefined);
     };
 
     const getEventsForKey = (key: string) => {

@@ -140,6 +140,7 @@ export function SearchableSelect(props: SearchableSelectProps) {
           <div
             role={"combobox"}
             aria-expanded={open}
+            tabIndex={0}
             className={cn(
               buttonVariants({ variant: "outline" }),
               "flex w-full items-center justify-center text-center",
