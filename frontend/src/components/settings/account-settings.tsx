@@ -24,9 +24,9 @@ export default async function AccountSettings() {
 
 
       <div className="-mt-12 sm:-mt-10 md:-mt-12 lg:-mt-14 flex justify-center">
-        <Avatar className="size-16 sm:size-20 md:size-24 lg:size-28 border-4 border-background bg-background">
-          <AvatarImage src={image} />
-          <AvatarFallback>
+        <Avatar className="size-16 sm:size-20 md:size-24 lg:size-28 border-4 border-background bg-background rounded-none">
+          <AvatarImage src={image} className="rounded-none"/>
+          <AvatarFallback className="rounded-none">
             {getInitials(s.user.name)}
           </AvatarFallback>
         </Avatar>

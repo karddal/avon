@@ -1,32 +1,23 @@
 import { Suspense } from "react";
 import CourseworkList from "@/components/coursework/coursework-list";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
+import AccountSettings from "@/components/settings/account-settings"
+import ListMembers from "@/components/settings/list-users";
 async function PageContent() {
   return (
-    <div className="space-y-6">
-      <Tabs defaultValue="ongoing" className={""}>
-        <TabsList className="flex flex-row gap-4 bg-background my-4">
-          <div className="bg-accent p-1">
-            <TabsTrigger value="ongoing" className="bg-accent px-4 py-2">
-              Ongoing
-            </TabsTrigger>
-            <TabsTrigger value="finished" className="bg-accent px-4 py-2">
-              Finished
-            </TabsTrigger>
-          </div>
-        </TabsList>
-        <TabsContent value="ongoing" className="">
-          <Suspense>
-            <CourseworkList finished={false} />
-          </Suspense>
-        </TabsContent>
-        <TabsContent value="finished" className={""}>
-          <Suspense>
-            <CourseworkList finished={true} />
-          </Suspense>
-        </TabsContent>
-      </Tabs>
+    <div className="mt-6 px-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="rounded-md border border-border p-4">
+            <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+              Search
+            </h3>
+            <ListMembers/>
+        </div>
+        <div className="rounded-md border border-border p-4">
+            <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+              Account
+            </h3>
+            <AccountSettings/>
+        </div>
     </div>
   );
 }

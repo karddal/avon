@@ -106,8 +106,8 @@ export default function ListMembers() {
       {searchQuery.length === 0 ? (
         <></>
       ) : (
-        <div className="flex flex-col gap-2 overflow-y-scroll max-h-128 bg-accent p-2">
-          {response.users.length > 0 ? (
+      <div className="flex flex-col gap-2 overflow-y-scroll p-2">
+        {response.users.length > 0 ? (
             response.users.map((user: User) => (
               <div className="group relative w-full" key={user.id}>
                 <UserCard
