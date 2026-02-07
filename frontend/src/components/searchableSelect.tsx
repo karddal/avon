@@ -1,6 +1,6 @@
 import type React from "react";
 import { useMemo, useState } from "react";
-import { Button } from "@/components/ui/button";
+import {Button, buttonVariants} from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -14,6 +14,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {cn} from "@/lib/utils";
 
 export type SearchableSelectOption = {
     value: string
@@ -129,12 +130,14 @@ export function SearchableSelect(props: SearchableSelectProps) {
     <div className="flex-1">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button
-            type={"button"}
-            variant={"outline"}
+          <div
             role={"combobox"}
             aria-expanded={open}
-            className="flex w-full text-center justify-center"
+              className={cn(
+                  buttonVariants({ variant: "outline" }),
+                  "flex w-full items-center justify-center text-center",
+                  "cursor-pointer select-none"
+              )}
           >
             <div className={"flex min-w-0 gap-1 truncate text-center"}>
               {prefix && (
@@ -153,14 +156,18 @@ export function SearchableSelect(props: SearchableSelectProps) {
                 <button
                   type="button"
                   className={"cursor-pointer text-base"}
-                  onClick={(event) => multiple ? clearMultiple(event) : clearSingleSelection(event)}
+                  onClick={(event) => {
+                      event.preventDefault()
+                      event.stopPropagation()
+                      multiple ? clearMultiple(event) : clearSingleSelection(event)
+                  }}
                   aria-label="Clear selection"
                 >
                   ×
                 </button>
               )}
             </div>
-          </Button>
+          </div>
         </PopoverTrigger>
         <PopoverContent
           className={"w-[--radix-popover-trigger-width] p-0"}

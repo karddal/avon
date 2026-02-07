@@ -24,6 +24,7 @@ export function EventsListingCard(
         ] as const)
     }, [eventsMap])
 
+    // not use
     const total = useMemo(
         () => Array.from(eventsMap.values()).reduce(
             (acc, v) => acc + (v?.length ?? 0), 0

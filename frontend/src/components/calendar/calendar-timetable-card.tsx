@@ -8,6 +8,7 @@ import {RefObject, useEffect, useMemo, useRef, useState} from "react";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {useIsMobile} from "@/hooks/use-mobile";
 import {CalendarEvent} from "@/components/calendar/calendar-dashboard";
+import Link from "next/link";
 
 function useMounted() {
     const [mounted, setMounted] = useState(false);
@@ -149,25 +150,59 @@ function TimeGridBody(
 
                                 {/* event */}
                                 {visibleEvents.map(({event, top, height, leftPct, widthPct}) => {
-                                    return (
-                                        <div
-                                            key={event.id}
-                                            className={cn(
-                                                "absolute rounded-md border bg-card shadow-sm min-w-0 overflow-hidden",
-                                                "px-2 py-1 text-xs",
-                                                "max-sm:px-1.5 max-sm:py-1 max-sm:text-[11px]",
-                                            )}
-                                            style={{
-                                                top, height,
-                                                left: `calc(${leftPct}% + 4px)`,
-                                                width: `calc(${widthPct}% - 8px)`
-                                            }}
-                                            title={`${format(event.start, "HH:mm")} - ${format(event.end, "HH:mm")}`}
-                                        >
-                                            <div className="font-medium truncate leading-4">{event.name}</div>
+                                    const href = event.href?.trim()
+
+                                    const props = {
+                                        className: cn(
+                                            "absolute rounded-md border bg-card shadow-sm min-w-0 overflow-hidden",
+                                            "px-2 py-1 text-xs",
+                                            "max-sm:px-1.5 max-sm:py-1 max-sm:text-[11px]",
+                                            href
+                                                ? "cursor-pointer hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-ring"
+                                                : "cursor-default opacity-80"
+                                        ),
+                                        style: {
+                                            top, height,
+                                            left: `calc(${leftPct}% + 4px)`,
+                                            width: `calc(${widthPct}% - 8px)`
+                                        },
+                                        title: `${format(event.start, "HH:mm")} - ${format(event.end, "HH:mm")}`
+                                    }
+
+                                    const content = (
+                                        <>
+                                            <div className="font-medium truncate leading-4">
+                                                {event.name}
+                                            </div>
+
                                             <div className="text-muted-foreground truncate leading-4">
                                                 {format(event.start, "HH:mm")} - {format(event.end, "HH:mm")}
                                             </div>
+
+                                            <div className="text-muted-foreground truncate leading-4">
+                                                {event.unit_name}
+                                            </div>
+                                        </>
+                                    )
+
+                                    if (href) {
+                                        return (
+                                            <Link
+                                                key={event.id}
+                                                {...props}
+                                                href={href}
+                                            >
+                                                {content}
+                                            </Link>
+                                        )
+                                    }
+
+                                    return (
+                                        <div
+                                            key={event.id}
+                                            {...props}
+                                        >
+                                            {content}
                                         </div>
                                     )
                                 })}
@@ -201,18 +236,46 @@ function TimeGridBody(
                                                 </div>
 
                                                 <div className="space-y-1">
-                                                    {group.hidden.map(({event}) => (
-                                                        <div
-                                                            key={event.id}
-                                                            className="rounded-md border bg-card px-2 py-1 text-xs"
-                                                            title={`${format(event.start, "HH:mm")} - ${format(event.end, "HH:mm")}`}
-                                                        >
-                                                            <div className="font-medium truncate">{event.name}</div>
-                                                            <div className="text-muted-foreground">
-                                                                {format(event.start, "HH:mm")}–{format(event.end, "HH:mm")}
+                                                    {group.hidden.map(({event}) => {
+                                                        const href = event.href?.trim()
+
+                                                        const content = (
+                                                            <>
+                                                                <div className="font-medium truncate">
+                                                                    {event.name}
+                                                                </div>
+
+                                                                <div className="text-muted-foreground">
+                                                                    {format(event.start, "HH:mm")} - {format(event.end, "HH:mm")}
+                                                                </div>
+
+                                                                <div className="text-muted-foreground truncate">
+                                                                    {event.unit_name}
+                                                                </div>
+                                                            </>
+                                                        )
+
+                                                        if (href) {
+                                                            return (
+                                                                <Link
+                                                                    key={event.id}
+                                                                    href={href}
+                                                                    className="block rounded-md border bg-card px-2 py-1 text-xs hover:bg-muted/50"
+                                                                >
+                                                                    {content}
+                                                                </Link>
+                                                            )
+                                                        }
+
+                                                        return (
+                                                            <div
+                                                                key={event.id}
+                                                                className="block rounded-md border bg-card px-2 py-1 text-xs opacity-80"
+                                                            >
+
                                                             </div>
-                                                        </div>
-                                                    ))}
+                                                        )
+                                                    })}
                                                 </div>
                                             </PopoverContent>
                                         </Popover>
