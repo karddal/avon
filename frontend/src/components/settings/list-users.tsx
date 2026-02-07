@@ -22,6 +22,20 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import UserCard from "@/components/user-card";
@@ -53,8 +67,13 @@ function _getInitials(name: string) {
   
 
 export default function ListMembers() {
+    const units = [
+        { id: "u1", name: "Math 101" },
+        { id: "u2", name: "Physics 202" },
+    ];
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
   const [response, setResponse] = useState<SearchResponse>({
     users: [],
     total: 0,
@@ -82,6 +101,29 @@ export default function ListMembers() {
 
   return (
     <div className="flex flex-col gap-4">
+      <Select
+        value={selectedUnitId ?? "all"}
+        onValueChange={(value) => {
+            setSelectedUnitId(value === "all" ? null : value);
+        }}
+        >
+        <SelectTrigger className="w-full max-w-64">
+            <SelectValue placeholder="Filter by unit" />
+        </SelectTrigger>
+
+        <SelectContent>
+            <SelectGroup>
+            <SelectItem value="all">All units</SelectItem>
+
+            {units.map((unit) => (
+                <SelectItem key={unit.id} value={unit.id}>
+                {unit.name}
+                </SelectItem>
+            ))}
+            </SelectGroup>
+        </SelectContent>
+      </Select>
+
       <div className="flex flex-row gap-2">
         <Input
           className="w-full"
@@ -94,6 +136,28 @@ export default function ListMembers() {
           }}
         />
       </div>
+      <div className="flex flex-wrap gap-2">
+        <Button
+            size="sm"
+            variant={disabledUsers.length ? "outline" : "ghost"}
+            onClick={() =>
+            setDisabledUsers((prev) => (prev.length ? [] : disabledUsers))
+            }
+        >
+            Hide existing
+        </Button>
+
+        <Button
+            size="sm"
+            variant={selectedUsers.length ? "outline" : "ghost"}
+            onClick={() =>
+            setSelectedUsers((prev) => (prev.length ? [] : selectedUsers))
+            }
+        >
+            Selected only ({selectedUsers.length})
+        </Button>
+      </div>
+
       {loading && searchQuery.length === 0 ? (
         <div className="flex flex-col items-center gap-4 w-full">
           <Skeleton className="bg-accent w-full h-12" />
