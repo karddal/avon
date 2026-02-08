@@ -11,13 +11,15 @@ type CreateCourseworkRequest = {
 
 export async function create_coursework(req: CreateCourseworkRequest) {
   "use server";
-  const token = await getRequestJWT();
   const data = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/coursework/create`,
+      `http://localhost:8000/coursework/create`,
       {
         method: "POST",
         cache: "no-cache",
         body: JSON.stringify(req),
+        headers: {
+          "Content-Type": "application/json",
+        },
       },
   );
   if (!data.ok) {

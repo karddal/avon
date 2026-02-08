@@ -5,10 +5,8 @@ export async function batch_add_students_to_unit(
     unit_id: string,
     users: string[],
 ) {
-  const token = await getRequestJWT();
-
   const data = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/unit_enrollment/batch`,
+      `http://localhost:8000/unit_enrollment/batch`,
       {
         method: "POST",
         cache: "no-cache",
@@ -16,6 +14,9 @@ export async function batch_add_students_to_unit(
           unit_id: unit_id,
           user_ids: users,
         }),
+        headers: {
+          "Content-Type": "application/json",
+        },
       },
   );
   if (!data.ok) {

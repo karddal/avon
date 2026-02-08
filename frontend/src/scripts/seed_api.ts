@@ -7,11 +7,16 @@ export async function api_seed(db: DatabaseSync) {
   const rows = db.prepare("SELECT id FROM user").all();
   const userIds: string[] = rows.map((row) => String(row.id));
 
-  await create_programme({
+  let r = await create_programme({
     name: "Year 1 Computer Science 2025-2026",
     start_date: "2025-09-10",
     end_date: "2026-05-30",
   });
+
+  if (!r.success) {
+    console.log(r.data)
+    throw new Error("Failed to create coursework")
+  }
 
   const prog = db
     .prepare("SELECT id FROM programme WHERE name = ?")

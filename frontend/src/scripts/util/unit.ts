@@ -12,12 +12,14 @@ export async function create_unit(req: createUnitReq) {
   "use server";
   console.log(req);
   const r = await fetch(
-      `
-        ${process.env.NEXT_PUBLIC_API_URL}/units/create`,
+      `http://localhost:8000/units/create`,
       {
         method: "POST",
         credentials: "include",
         body: JSON.stringify(req),
+        headers: {
+          "Content-Type": "application/json",
+        },
       },
   );
 

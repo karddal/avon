@@ -3,18 +3,6 @@
 CREATE TABLE "jwks" ("id" text not null primary key, "publicKey" text not null, "privateKey" text not null, "createdAt" date not null, "expiresAt" date);
 
 
--- programme definition
-
-CREATE TABLE programme (
-                           id UUID NOT NULL,
-                           name VARCHAR NOT NULL,
-                           start_date DATE NOT NULL,
-                           end_date DATE NOT NULL,
-                           gitlab_id VARCHAR NOT NULL,
-                           PRIMARY KEY (id)
-);
-
-
 -- "user" definition
 
 CREATE TABLE "user" ("id" text not null primary key, "name" text not null, "email" text not null unique, "emailVerified" integer not null, "image" text, "createdAt" date not null, "updatedAt" date not null, "role" text, "banned" integer, "banReason" text, "banExpires" date);
@@ -39,57 +27,6 @@ CREATE INDEX "account_userId_idx" on "account" ("userId");
 CREATE TABLE "session" ("id" text not null primary key, "expiresAt" date not null, "token" text not null unique, "createdAt" date not null, "updatedAt" date not null, "ipAddress" text, "userAgent" text, "userId" text not null references "user" ("id") on delete cascade, "impersonatedBy" text);
 
 CREATE INDEX "session_userId_idx" on "session" ("userId");
-
-
--- unit definition
-
-CREATE TABLE unit (
-                      id UUID NOT NULL,
-                      name VARCHAR NOT NULL,
-                      description VARCHAR NOT NULL,
-                      creation_date TIMESTAMP NOT NULL,
-                      unit_code VARCHAR NOT NULL,
-                      colour VARCHAR NOT NULL,
-                      programme_id UUID NOT NULL,
-                      gitlab_id VARCHAR NOT NULL,
-                      PRIMARY KEY (id),
-                      FOREIGN KEY(programme_id) REFERENCES programme (id) ON DELETE CASCADE
-);
-
-CREATE INDEX ix_unit_name ON unit (name);
-CREATE INDEX ix_unit_description ON unit (description);
-CREATE INDEX ix_unit_unit_code ON unit (unit_code);
-
-
--- unitenrollment definition
-
-CREATE TABLE unitenrollment (
-                                unit_id UUID NOT NULL,
-                                user_id VARCHAR NOT NULL,
-                                type VARCHAR NOT NULL,
-                                PRIMARY KEY (unit_id, user_id),
-                                FOREIGN KEY(unit_id) REFERENCES unit (id)
-);
-
-
--- coursework definition
-
-CREATE TABLE coursework (
-                            id UUID NOT NULL,
-                            name VARCHAR NOT NULL,
-                            description VARCHAR NOT NULL,
-                            unit_id UUID NOT NULL,
-                            due_date TIMESTAMP NOT NULL,
-                            creation_date TIMESTAMP NOT NULL,
-                            colour VARCHAR NOT NULL,
-                            gitlab_id VARCHAR NOT NULL,
-                            PRIMARY KEY (id),
-                            FOREIGN KEY(unit_id) REFERENCES unit (id) ON DELETE CASCADE
-);
-
-CREATE INDEX ix_coursework_name ON coursework (name);
-CREATE INDEX ix_coursework_due_date ON coursework (due_date);
-CREATE INDEX ix_coursework_unit_id ON coursework (unit_id);
 
 INSERT INTO "user" (id,name,email,"emailVerified",image,"createdAt","updatedAt","role",banned,"banReason","banExpires") VALUES
                                                                                                                   ('8AteGbdJyVodlUBwQGSxcN7h58aKNjRe','Foo Bar','admin@bris.ac.uk',0,NULL,'2026-01-03T19:22:57.491Z','2026-01-03T19:22:57.491Z','admin',0,NULL,NULL),
