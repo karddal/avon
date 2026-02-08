@@ -33,6 +33,11 @@ Backend - used more rarely here, mostly for architecture deisions. One area wher
 Engine prototyping - For the initial prototype test runner (not merged), used to help design the initial prototype, such as doing research to help me work out the best practice way of doing the test running, due to the very complicated domain area, and implications including security, sandboxing etc. Using it I was able to discover technologies that I haven't heard of before. Because of how complicated Kubernetes is, and the complexity and verbosity of task definitions, as well as how the client libraries I was using are poorly documented, I used it to show me how to run a kubernetes task for the proof of concept, as well as how to use tooling like Dockerfiles and setting up a local kubernetes cluster, and debugging these. I used this, along with an example from Temporal, the scheduler stack I was using, to get a proof of concept working. Without it, I wouldn't have been able to get the proof of concept working because I had little knowledge of this area before. Now that I have a base, I will probably redesign this in a cleaner way for the final product, now that I know that it is feasible.
 
 Debugging and setting up deployment - Very helpful when setting up deployment to AWS to explain things like how to setup the connections. A specific example was when I was trying to debug why sql queries weren't working with a cryptic error. With the error message and the code, it identified that in Postges you can't use ? for placeholders, you have to use $1. This is something that I didn't know about and wouldn't have found. It also suggested an improved way of sharing Postgres pools using a global variable.
+
+Used also when debugging and fixing the seed script - example prompt: ```What does this error mean? detail: [ { type: 'model_attributes_type', loc: [Array], msg: 'Input should be a valid dictionary or object to extract fields from', input: '{"name":"Year 1 Computer Science 2025-2026","start_date":"2025-09-10","end_date":"2026-05-30"}' } ] Here is the api spec example { "name": "string", "start_date": "2026-02-08", "end_date": "2026-02-08" }``` 
+
+```How can I clean out a full subgroup in Gitlab without deleting it using the API? So all subgroups and projects in it should be deleted.```
+
 ### Josh
 
 **Tools used**
