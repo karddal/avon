@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.db.session import get_session
 from sqlmodel import Session, select
 from uuid import UUID
+from app.core.settings import settings
 
 from app.models.programme import Programme
 from app.schemas.programme import ProgrammeCreate, ProgrammeRead, ProgrammeDelete
@@ -26,7 +27,11 @@ async def create_programme(programme: ProgrammeCreate, session: session_dependen
     
     print(programme.name)
     try:
-        gl_data = await gl_create_programme(programme.name)
+        if settings.testing_mode:
+            # ignore gitlab if in testing mode, set gitlab id to dummy
+            gl_data = {"gitlabGroupId": 12345678}
+        else:
+            gl_data = await gl_create_programme(programme.name)
         print(gl_data)
     except Exception:
         raise HTTPException(

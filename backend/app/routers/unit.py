@@ -6,6 +6,7 @@ from app.core.helpers.gitlab import gl_create_unit
 from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlmodel import Session, select
 from sqlalchemy.orm.strategy_options import selectinload
+from app.core.settings import settings
 
 from app.db.session import get_session
 from app.models.programme import Programme
@@ -40,7 +41,11 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
             raise HTTPException(status_code=400, detail="Programme id is invalid.")
     
     try:
-        gl_data = await gl_create_unit(unit.name, programme.gitlab_id)
+        if settings.testing_mode:
+            # ignore gitlab if in testing mode, set gitlab id to dummy
+            gl_data = {"gitlabGroupId": 12345678}
+        else:
+            gl_data = await gl_create_unit(unit.name, programme.gitlab_id)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
