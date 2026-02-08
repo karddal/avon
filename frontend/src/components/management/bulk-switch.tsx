@@ -13,10 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@/components/ui/toggle-group";
 import { ArrowRight, ArrowRightLeft } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -29,12 +25,12 @@ import { useEffect, useState } from "react";
 export default function BulkSwitch() {
     const [mounted, setMounted] = useState(false);
     const programmes = [
-          { id: "u1", name: "Year 1 Computer Science 2025/2026" },
-          { id: "u2", name: "Year 2 Computer Science 2025/2026" },
+          { id: "p1", name: "Year 1 Computer Science 2025/2026" },
+          { id: "p2", name: "Year 2 Computer Science 2025/2026" },
       ];
     const units = [
-          { id: "u1", name: "Year 1 Computer Science 2025/2026" },
-          { id: "u2", name: "Year 2 Computer Science 2025/2026" },
+          { id: "u1", name: "Algorithms 1" },
+          { id: "u2", name: "Mathematics 2" },
       ];
     const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
     const [selectedProgrammeIdFrom, setSelectedProgrammeIdFrom] = useState<string | null>(null);
@@ -43,9 +39,25 @@ export default function BulkSwitch() {
     const programmeSelectedFrom = selectedProgrammeIdFrom !== null;
     const programmeSelectedTo = selectedProgrammeIdTo !== null;
     const selectedCount = selectedUnitIds.length
+    const canTransfer = selectedUnitId !== null && selectedUnitIds.length > 0;
+    const canOmit = selectedUnitId !== null;
+
     useEffect(() => {
         setMounted(true);
     }, []);
+
+    useEffect(() => {
+        if (selectedProgrammeIdFrom === null) {
+            setSelectedUnitId(null);
+        }
+    }, [selectedProgrammeIdFrom]);
+
+    useEffect(() => {
+        if (selectedProgrammeIdTo === null) {
+            setSelectedUnitIds([]);
+        }
+    }, [selectedProgrammeIdTo]);
+
 
     if (!mounted) return null;
     return (
@@ -57,7 +69,6 @@ export default function BulkSwitch() {
                 md:flex-row md:items-center md:gap-6
             "
             >
-            {/* FROM */}
             <div className="flex-1 rounded-md border border-border p-4">
                 <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                 From
@@ -107,7 +118,6 @@ export default function BulkSwitch() {
                 </Select>
             </div>
 
-            {/* ARROW */}
             <div className="flex shrink-0 justify-center md:flex-col">
                 <ArrowRight
                 className="
@@ -117,7 +127,6 @@ export default function BulkSwitch() {
                 />
             </div>
 
-            {/* TO */}
             <div className="flex-1 rounded-md border border-border p-4">
                 <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                 To
@@ -171,19 +180,15 @@ export default function BulkSwitch() {
                         ))}
                     </DropdownMenuContent>
                 </DropdownMenu>
-
             </div>
         </div>
         <div className="mt-auto rounded-md border border-border p-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <Button
-                variant="outline"
-                className="w-full sm:w-fit"
-                >
+                <Button variant="outline" className="w-full sm:w-fit"disabled={!canOmit}>
                 Omit User From Transfer
                 </Button>
 
-                <Button variant="outline" className="flex items-center gap-2">
+                <Button variant="outline" className="flex items-center gap-2" disabled={!canTransfer}>
                     <ArrowRightLeft className="h-4 w-4" />
                     Transfer
                 </Button>
