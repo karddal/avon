@@ -28,7 +28,7 @@ async function PageContent() {
         </div>
         <div className="rounded-md border border-border p-4">
             <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-              Bulk Transfer Users
+              Bulk User Transfer
             </h3>
             <BulkSwitch/>
         </div>

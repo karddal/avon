@@ -189,7 +189,7 @@ export default function BulkSwitch() {
                     value={selectedProgrammeIdTo ?? "all"}
                     onValueChange={(value) =>
                         setSelectedProgrammeIdTo(value === "all" ? null : value)
-                    }
+                    }   
                     >
                     <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select programme" />
@@ -204,35 +204,37 @@ export default function BulkSwitch() {
                         ))}
                         </SelectGroup>
                     </SelectContent>
-                    </Select>
+                </Select>
 
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild disabled={!programmeSelectedTo}>
-                        <Button variant="outline" className="w-full justify-between">
-                        {selectedCount === 0
-                            ? "Select Unit"
-                            : `${selectedCount} unit${selectedCount > 1 ? "s" : ""} selected`}
-                        </Button>
-                    </DropdownMenuTrigger>
+                <div className="mt-3">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild disabled={!programmeSelectedTo}>
+                            <Button variant="outline" className="w-full justify-between">
+                            {selectedCount === 0
+                                ? "Select Units"
+                                : `${selectedCount} unit${selectedCount > 1 ? "s" : ""} selected`}
+                            </Button>
+                        </DropdownMenuTrigger>
 
-                    <DropdownMenuContent className="w-64">
-                        {toUnits.map((u) => (
-                        <div key={u.id} className="flex items-center space-x-2 p-2">
-                            <Checkbox
-                            checked={selectedUnitIds.includes(u.id)}
-                            onCheckedChange={(checked) => {
-                                setSelectedUnitIds((prev) =>
-                                checked
-                                    ? [...prev, u.id]
-                                    : prev.filter((id) => id !== u.id)
-                                )
-                            }}
-                            />
-                            <span>{u.name}</span>
-                        </div>
-                        ))}
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                        <DropdownMenuContent className="w-64">
+                            {toUnits.map((u) => (
+                            <div key={u.id} className="flex items-center space-x-2 p-2">
+                                <Checkbox
+                                checked={selectedUnitIds.includes(u.id)}
+                                onCheckedChange={(checked) => {
+                                    setSelectedUnitIds((prev) =>
+                                    checked
+                                        ? [...prev, u.id]
+                                        : prev.filter((id) => id !== u.id)
+                                    )
+                                }}
+                                />
+                                <span>{u.name}</span>
+                            </div>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
             </div>
         </div>
         <div className="mt-auto rounded-md border border-border p-4">

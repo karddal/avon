@@ -17,6 +17,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
@@ -24,6 +33,7 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { getProgrammes } from "@/lib/actions/get_all_programmes";
+import BulkDeleteButton from "./bulk-delete-button";
 
 interface Programme {
   id: UUID;
@@ -47,6 +57,8 @@ export default function BulkDelete() {
   const [selectedUnitIds, setSelectedUnitIds] = useState<string[]>([]);
   const [programmes, setProgrammes] = useState<Programme[]>([]);
   const [units, setUnits] = useState<Unit[]>([]);
+  const [omittedMembers, setOmittedMembers] = useState<string[]>([]);
+  const [showDelete, setShowDelete] = useState(false);
   const programmeSelectedTo = selectedProgrammeId !== null;
   const selectedCount = selectedUnitIds.length
   const canDeleteAndOmit = selectedCount > 0;
@@ -123,7 +135,7 @@ export default function BulkDelete() {
                 <DropdownMenuTrigger asChild disabled={!programmeSelectedTo}>
                     <Button variant="outline" className="w-full justify-between">
                     {selectedCount === 0
-                        ? "Select Unit"
+                        ? "Select Units"
                         : `${selectedCount} unit${selectedCount > 1 ? "s" : ""} selected`}
                     </Button>
                 </DropdownMenuTrigger>
@@ -161,13 +173,28 @@ export default function BulkDelete() {
                 variant="destructive"
                 className="w-full sm:w-fit"
                 disabled={!canDeleteAndOmit}
+                onSelect={() => setShowDelete(true)}
                 >
                   Delete Users
                 </Button>
             </div>
         </div>
-
       </div>
+      <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the
+              unit and all of its data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
+            <BulkDeleteButton idList={selectedUnitIds} omittedMembers={omittedMembers}/>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
