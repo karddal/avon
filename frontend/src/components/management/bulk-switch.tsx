@@ -13,11 +13,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState } from "react";
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@/components/ui/toggle-group";
 import { ArrowRight, ArrowRightLeft } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { useEffect, useState } from "react";
 
 export default function BulkSwitch() {
-  const programmes = [
+    const [mounted, setMounted] = useState(false);
+    const programmes = [
           { id: "u1", name: "Year 1 Computer Science 2025/2026" },
           { id: "u2", name: "Year 2 Computer Science 2025/2026" },
       ];
@@ -26,9 +37,18 @@ export default function BulkSwitch() {
           { id: "u2", name: "Year 2 Computer Science 2025/2026" },
       ];
     const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
-    const [selectedProgrammeId, setSelectedProgrammeId] = useState<string | null>(null);
+    const [selectedProgrammeIdFrom, setSelectedProgrammeIdFrom] = useState<string | null>(null);
+    const [selectedProgrammeIdTo, setSelectedProgrammeIdTo] = useState<string | null>(null);
+    const [selectedUnitIds, setSelectedUnitIds] = useState<string[]>([]);
+    const programmeSelectedFrom = selectedProgrammeIdFrom !== null;
+    const programmeSelectedTo = selectedProgrammeIdTo !== null;
+    const selectedCount = selectedUnitIds.length
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
-  return (
+    if (!mounted) return null;
+    return (
     <div className="w-full">
       <div className="grid grid-cols-1 mt-6 gap-4">
        <div
@@ -44,9 +64,9 @@ export default function BulkSwitch() {
                 </h3>
 
                 <Select
-                value={selectedProgrammeId ?? "all"}
+                value={selectedProgrammeIdFrom ?? "all"}
                 onValueChange={(value) =>
-                    setSelectedProgrammeId(value === "all" ? null : value)
+                    setSelectedProgrammeIdFrom(value === "all" ? null : value)
                 }
                 >
                 <SelectTrigger className="w-full">
@@ -54,7 +74,7 @@ export default function BulkSwitch() {
                 </SelectTrigger>
                 <SelectContent>
                     <SelectGroup>
-                    <SelectItem value="all">All programmes</SelectItem>
+                    <SelectItem value="all">Select Programme</SelectItem>
                     {programmes.map((p) => (
                         <SelectItem key={p.id} value={p.id}>
                         {p.name}
@@ -69,13 +89,14 @@ export default function BulkSwitch() {
                 onValueChange={(value) =>
                     setSelectedUnitId(value === "all" ? null : value)
                 }
+                disabled={!programmeSelectedFrom}
                 >
                 <SelectTrigger className="mt-3 w-full">
                     <SelectValue placeholder="Select unit" />
                 </SelectTrigger>
                 <SelectContent>
                     <SelectGroup>
-                    <SelectItem value="all">All units</SelectItem>
+                    <SelectItem value="all">Select Unit</SelectItem>
                     {units.map((u) => (
                         <SelectItem key={u.id} value={u.id}>
                         {u.name}
@@ -103,9 +124,9 @@ export default function BulkSwitch() {
                 </h3>
 
                 <Select
-                    value={selectedProgrammeId ?? "all"}
+                    value={selectedProgrammeIdTo ?? "all"}
                     onValueChange={(value) =>
-                        setSelectedProgrammeId(value === "all" ? null : value)
+                        setSelectedProgrammeIdTo(value === "all" ? null : value)
                     }
                     >
                     <SelectTrigger className="w-full">
@@ -113,7 +134,7 @@ export default function BulkSwitch() {
                     </SelectTrigger>
                     <SelectContent>
                         <SelectGroup>
-                        <SelectItem value="all">All programmes</SelectItem>
+                        <SelectItem value="all">Select Programme</SelectItem>
                         {programmes.map((p) => (
                             <SelectItem key={p.id} value={p.id}>
                             {p.name}
@@ -123,26 +144,34 @@ export default function BulkSwitch() {
                     </SelectContent>
                     </Select>
 
-                <Select
-                    value={selectedUnitId ?? "all"}
-                    onValueChange={(value) =>
-                        setSelectedUnitId(value === "all" ? null : value)
-                    }
-                    >
-                    <SelectTrigger className="mt-3 w-full">
-                        <SelectValue placeholder="Select unit" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectGroup>
-                        <SelectItem value="all">All units</SelectItem>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild disabled={!programmeSelectedTo}>
+                        <Button variant="outline" className="w-full justify-between">
+                        {selectedCount === 0
+                            ? "Select Unit"
+                            : `${selectedCount} unit${selectedCount > 1 ? "s" : ""} selected`}
+                        </Button>
+                    </DropdownMenuTrigger>
+
+                    <DropdownMenuContent className="w-64">
                         {units.map((u) => (
-                            <SelectItem key={u.id} value={u.id}>
-                            {u.name}
-                            </SelectItem>
+                        <div key={u.id} className="flex items-center space-x-2 p-2">
+                            <Checkbox
+                            checked={selectedUnitIds.includes(u.id)}
+                            onCheckedChange={(checked) => {
+                                setSelectedUnitIds((prev) =>
+                                checked
+                                    ? [...prev, u.id]
+                                    : prev.filter((id) => id !== u.id)
+                                )
+                            }}
+                            />
+                            <span>{u.name}</span>
+                        </div>
                         ))}
-                        </SelectGroup>
-                    </SelectContent>
-                </Select>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+
             </div>
         </div>
         <div className="mt-auto rounded-md border border-border p-4">
