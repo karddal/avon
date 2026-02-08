@@ -135,9 +135,9 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
                     <TabsTrigger value="ongoing">Ongoing</TabsTrigger>
                     <TabsTrigger value="finished">Finished</TabsTrigger>
                   </TabsList>
-                  {userRole === "lecturer" && (
+                  {(userRole === "lecturer" || userRole === "admin") && (
                     <Button asChild variant={"outline"} size={"sm"}>
-                      <Link href={`/units/${slug}/create`}>
+                      <Link href={`/units/${slug}/create-coursework`}>
                         <ClipboardPlus />
                         Assign new coursework
                       </Link>

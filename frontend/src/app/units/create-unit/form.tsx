@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Send, Terminal } from "lucide-react";
 import { easeIn, easeOut } from "motion";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { HexColorInput, HexColorPicker } from "react-colorful";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -43,6 +43,8 @@ import {
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
+import { create_unit } from "@/lib/actions/create_unit";
+import { getProgrammes } from "@/lib/actions/get_all_programmes";
 import { multistep_unit_flow } from "./multistep_unit_flow";
 
 interface FormProps {
@@ -64,25 +66,18 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
   const [programmes, setProgrammes] = useState<Programme[]>([]);
   const [programmeName, setProgrammeName] = useState<string>("");
 
-  useEffect(() => {
-    async function loadProgrammes() {
-      const r = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/programmes/`, {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await r.json();
-      if (!r.ok) {
-        toast.error("Could not fetch programmes");
-      }
-      setProgrammes(data.programmes);
-      console.log();
+  const loadProgrammes = useCallback(async () => {
+    const programmesReq = await getProgrammes();
+    if (programmesReq.success) {
+      setProgrammes(programmesReq.data.programmes);
+    } else {
+      toast.error("Failed to load programmes");
     }
-
-    loadProgrammes();
   }, []);
+
+  useEffect(() => {
+    loadProgrammes();
+  }, [loadProgrammes]);
 
   async function loadSlug(): Promise<string> {
     const s = await slug;
@@ -144,42 +139,35 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     // do something with values, submit here
-    console.log(values);
-    setSubmitState(true);
-    loadSlug().then((s) => {
+    try {
+      const s = await loadSlug();
       console.log(s);
-      const req = {
+
+      const payload = {
         name: values.name,
         description: values.description,
         unit_code: values.unitCode,
         colour: colour.substring(1),
         programme_id: values.programme,
       };
-      console.log(req);
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/units/create`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(req),
-      }).then((r) => {
-        if (!r.ok) {
-          r.json().then((data) => {
-            setAlertText(data.detail);
-            setShowAlert(true);
-            setSubmitState(false);
-          });
-        } else {
-          toast.success("Unit created. You will be redirected in 1 second.");
-          const delay = new Promise((resolve) => setTimeout(resolve, 1000));
-          delay.then(() => {
-            window.location.href = `/units/`;
-          });
-          setSubmitState(false);
-        }
-      });
-    });
+
+      console.log(payload);
+      const result = await create_unit(payload);
+
+      if (!result.success) {
+        setAlertText(result.data.detail);
+        setShowAlert(true);
+        setSubmitState(false);
+      } else {
+        toast.success("Unit created. You will be redirected in 1 second.");
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        window.location.href = `/units/`;
+        setSubmitState(false);
+      }
+    } catch (_error) {
+      toast.error("An error occurred");
+      setSubmitState(false);
+    }
   }
 
   const name = form.watch("name");

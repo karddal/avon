@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { requireSession } from "@/lib/auth-utils";
 import { IntForm } from "./form";
 
-export default async function CreateUnit({
+async function CreateUnitContent({
   params,
 }: {
   params: Promise<{ slug: string }>;
@@ -20,5 +20,17 @@ export default async function CreateUnit({
         <IntForm slug={params}></IntForm>
       </Suspense>
     </>
+  );
+}
+
+export default function CreateUnit({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  return (
+    <Suspense>
+      <CreateUnitContent params={params}></CreateUnitContent>
+    </Suspense>
   );
 }
