@@ -1,42 +1,7 @@
 import type { DatabaseSync } from "node:sqlite";
-import { batch_add_students_to_unit } from "@/lib/actions/batch_add_students_to_unit";
-import { create_coursework } from "@/lib/actions/create_coursework";
-import { create_programme } from "@/lib/actions/create_programme";
-import { create_unit } from "@/lib/actions/create_unit";
-
-async function createUnitWithStudents(
-  db: DatabaseSync,
-  programmeId: string,
-  unitData: {
-    name: string;
-    description: string;
-    colour: string;
-    unit_code: string;
-  },
-  userIds: string[],
-): Promise<string | null> {
-  await create_unit({
-    name: unitData.name,
-    description: unitData.description,
-    colour: unitData.colour,
-    unit_code: unitData.unit_code,
-    programme_id: programmeId,
-  });
-
-  const unit = db
-    .prepare("SELECT id FROM unit WHERE name = ?")
-    .get(unitData.name);
-
-  if (!unit) {
-    return null;
-  }
-
-  const unitId = String(unit.id);
-
-  await batch_add_students_to_unit(unitId, userIds);
-
-  return unitId;
-}
+import {createUnitWithStudents} from "@/scripts/util/create-unit-w-students";
+import {create_coursework} from "@/scripts/util/coursework";
+import {create_programme} from "@/scripts/util/programme";
 
 export async function api_seed(db: DatabaseSync) {
   const rows = db.prepare("SELECT id FROM user").all();

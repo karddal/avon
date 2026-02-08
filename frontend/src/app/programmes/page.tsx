@@ -3,7 +3,6 @@ import Link from "next/dist/client/link";
 import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
 import ProgrammeList from "@/components/programme/programme-list";
-import { SeedButton } from "@/components/seed-db-button";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { requireAdminSession } from "@/lib/auth-utils";
@@ -33,7 +32,6 @@ async function PageContent() {
                   Finished
                 </TabsTrigger>
               </div>
-              <SeedButton></SeedButton>
             </TabsList>
 
             <Button asChild variant="outline" size="sm" className="mt-2">
