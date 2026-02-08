@@ -1,5 +1,5 @@
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/new_tabs";
-import ListMembers from "@/components/settings/list-users";
+import ListMembers from "@/components/management/list-users";
 import {KeyRound, Palette, SquareUser} from "lucide-react";
 import AccountSettings from "@/components/settings/account-settings";
 

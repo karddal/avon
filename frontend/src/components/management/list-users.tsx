@@ -10,6 +10,7 @@ import {
   TextSearch,
   UserIcon,
   X,
+  Pencil,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -68,8 +69,8 @@ function _getInitials(name: string) {
 
 export default function ListMembers() {
     const units = [
-        { id: "u1", name: "Math 101" },
-        { id: "u2", name: "Physics 202" },
+        { id: "u1", name: "Year 1 Computer Science 2025/2026" },
+        { id: "u2", name: "Year 2 Computer Science 2025/2026" },
     ];
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [loading, setLoading] = useState(false);
@@ -99,31 +100,12 @@ export default function ListMembers() {
     setResponse(response);
   }
 
+  async function usersbyProgramme(programme: string){
+    const usersByPrograme = "";
+  }
+
   return (
     <div className="flex flex-col gap-4">
-      <Select
-        value={selectedUnitId ?? "all"}
-        onValueChange={(value) => {
-            setSelectedUnitId(value === "all" ? null : value);
-        }}
-        >
-        <SelectTrigger className="w-full max-w-64">
-            <SelectValue placeholder="Filter by unit" />
-        </SelectTrigger>
-
-        <SelectContent>
-            <SelectGroup>
-            <SelectItem value="all">All units</SelectItem>
-
-            {units.map((unit) => (
-                <SelectItem key={unit.id} value={unit.id}>
-                {unit.name}
-                </SelectItem>
-            ))}
-            </SelectGroup>
-        </SelectContent>
-      </Select>
-
       <div className="flex flex-row gap-2">
         <Input
           className="w-full"
@@ -136,28 +118,6 @@ export default function ListMembers() {
           }}
         />
       </div>
-      <div className="flex flex-wrap gap-2">
-        <Button
-            size="sm"
-            variant={disabledUsers.length ? "outline" : "ghost"}
-            onClick={() =>
-            setDisabledUsers((prev) => (prev.length ? [] : disabledUsers))
-            }
-        >
-            Hide existing
-        </Button>
-
-        <Button
-            size="sm"
-            variant={selectedUsers.length ? "outline" : "ghost"}
-            onClick={() =>
-            setSelectedUsers((prev) => (prev.length ? [] : selectedUsers))
-            }
-        >
-            Selected only ({selectedUsers.length})
-        </Button>
-      </div>
-
       {loading && searchQuery.length === 0 ? (
         <div className="flex flex-col items-center gap-4 w-full">
           <Skeleton className="bg-accent w-full h-12" />
@@ -181,27 +141,39 @@ export default function ListMembers() {
                   email={user.email}
                 />
 
-                <div className="absolute top-2 right-2 w-8 h-8">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger className="bg-card aspect-square! shadow border h-8 w-8 items-center justify-center flex hover:bg-card/50 hover:transition">
-                        <Menu className="p-0"></Menu>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                        <DropdownMenuItem>
-                            <TextSearch></TextSearch>
-                            View Student
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                            // onClick={() => handleDelete(user.id)}
-                            className="text-destructive hover:text-destructive"
-                        >
-                            <X className="text-destructive hover:text-destructive"></X>
-                            <p className="text-destructive hover:text-destructive">
-                            Delete Student
-                            </p>
-                        </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+               <div className="absolute top-2 right-2 w-8 h-8">
+                  <Checkbox
+                    disabled={disabledUsers.includes(user.id)}
+                    checked={selectedUsers.some((u) => u.id === user.id)}
+                    onCheckedChange={(checked) => {
+                      if (!checked) {
+                        const newList = selectedUsers.filter(
+                          (u) => u.id !== user.id,
+                        );
+                        setSelectedUsers(newList);
+                        setLength(newList.length);
+                      } else {
+                        const newList = [...selectedUsers, user];
+                        setSelectedUsers(newList);
+                        setLength(newList.length);
+                      }
+                    }}
+                    className="peer w-full h-full z-10 bg-card/80 shadow rounded-none border data-[state=checked]:bg-primary"
+                  />
+                  <div
+                    className="
+      absolute inset-0 flex items-center justify-center 
+      pointer-events-none 
+      transition-all 
+      duration-400
+      ease-in-out
+      peer-data-[state=checked]:opacity-0 
+      peer-data-[state=checked]:scale-0
+      peer-data-[state=checked]:rotate-90
+    "
+                  >
+                    <Pencil size={20} className="text-muted-foreground" />
+                  </div>
                 </div>
               </div>
             ))

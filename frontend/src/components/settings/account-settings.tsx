@@ -88,11 +88,10 @@ export default async function AccountSettings() {
                 Deletion
                 </h3>   
                     <Button
-                    variant="outline"
+                    variant="destructive"
                     className="mt-3 w-full sm:w-fit"
-                    // onClick={}
                     >
-                    Delete User
+                        Delete User
                     </Button>
             </div>
         ) : (
