@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useCallback, useEffect, useState } from "react";
+import { ArrowRight } from "lucide-react";
 
 export default function BulkDelete() {
   const programmes = [
@@ -59,7 +60,7 @@ export default function BulkDelete() {
         </div>
         <div className="rounded-md border border-border p-4">
             <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                Select Unit
+                Select Units
             </h3>
             <Select
                 value={selectedProgrammeId ?? "all"}
