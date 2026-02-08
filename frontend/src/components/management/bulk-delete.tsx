@@ -30,6 +30,7 @@ interface Programme {
   name: string;
   start_date: string;
   end_date: string;
+  units: Unit[];
 }
 
 interface Unit {
@@ -59,7 +60,8 @@ export default function BulkDelete() {
   const loadProgrammes = useCallback(async () => {
     const programmesReq = await getProgrammes();
     if (programmesReq.success) {
-      setProgrammes(programmesReq.data.programmes);
+        console.log("Programmes array:", programmesReq.data.programmes);
+        setProgrammes(programmesReq.data.programmes);
     } else {
       toast.error("Failed to load programmes");
     }
@@ -68,6 +70,22 @@ export default function BulkDelete() {
   useEffect(() => {
     loadProgrammes();
   }, [loadProgrammes]);
+
+  useEffect(() => {
+        if (!selectedProgrammeId) {
+            setUnits([]);
+            setSelectedUnitIds([]);
+            return;
+        }
+
+        const programme = programmes.find(
+            (p) => p.id === selectedProgrammeId
+        );
+
+        setUnits(programme?.units ?? []);
+        setSelectedUnitIds([]);
+    }, [selectedProgrammeId, programmes]);
+
 
   return (
     <div className="w-full">

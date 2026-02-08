@@ -1,5 +1,6 @@
 "use client"
 
+import type { UUID } from "node:crypto";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { requireSession } from "@/lib/auth-utils";
 import { getInitials } from "@/components/user-card";
@@ -13,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "sonner";
 import { ArrowRight, ArrowRightLeft } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -20,22 +22,35 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { getProgrammes } from "@/lib/actions/get_all_programmes";
+
+interface Programme {
+  id: UUID;
+  name: string;
+  start_date: string;
+  end_date: string;
+  units: Unit[];
+}
+
+interface Unit {
+    id: UUID
+    name : string;
+    description: string;
+    creation_date: string;
+    unit_code: string;
+    colour: string;
+}
 
 export default function BulkSwitch() {
     const [mounted, setMounted] = useState(false);
-    const programmes = [
-          { id: "p1", name: "Year 1 Computer Science 2025/2026" },
-          { id: "p2", name: "Year 2 Computer Science 2025/2026" },
-      ];
-    const units = [
-          { id: "u1", name: "Algorithms 1" },
-          { id: "u2", name: "Mathematics 2" },
-      ];
     const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
     const [selectedProgrammeIdFrom, setSelectedProgrammeIdFrom] = useState<string | null>(null);
     const [selectedProgrammeIdTo, setSelectedProgrammeIdTo] = useState<string | null>(null);
     const [selectedUnitIds, setSelectedUnitIds] = useState<string[]>([]);
+    const [programmes, setProgrammes] = useState<Programme[]>([]);
+    const [fromUnits, setFromUnits] = useState<Unit[]>([]);
+    const [toUnits, setToUnits] = useState<Unit[]>([]);
     const programmeSelectedFrom = selectedProgrammeIdFrom !== null;
     const programmeSelectedTo = selectedProgrammeIdTo !== null;
     const selectedCount = selectedUnitIds.length
@@ -52,11 +67,49 @@ export default function BulkSwitch() {
         }
     }, [selectedProgrammeIdFrom]);
 
-    useEffect(() => {
-        if (selectedProgrammeIdTo === null) {
-            setSelectedUnitIds([]);
+    const loadProgrammes = useCallback(async () => {
+        const programmesReq = await getProgrammes();
+        if (programmesReq.success) {
+            console.log("Programmes array:", programmesReq.data.programmes);
+            setProgrammes(programmesReq.data.programmes);
+        } else {
+        toast.error("Failed to load programmes");
         }
-    }, [selectedProgrammeIdTo]);
+    }, []);
+
+    useEffect(() => {
+        loadProgrammes();
+    }, [loadProgrammes]);
+
+    useEffect(() => {
+        if (!selectedProgrammeIdFrom) {
+            setFromUnits([]);
+            setSelectedUnitId(null);
+            return;
+        }
+
+        const programme = programmes.find(
+            (p) => p.id === selectedProgrammeIdFrom
+        );
+
+        setFromUnits(programme?.units ?? []);
+        setSelectedUnitId(null);
+    }, [selectedProgrammeIdFrom, programmes]);
+
+    useEffect(() => {
+        if (!selectedProgrammeIdTo) {
+            setToUnits([]);
+            setSelectedUnitIds([]);
+            return;
+        }
+
+        const programme = programmes.find(
+            (p) => p.id === selectedProgrammeIdTo
+        );
+
+        setToUnits(programme?.units ?? []);
+        setSelectedUnitIds([]);
+    }, [selectedProgrammeIdTo, programmes]);
 
 
     if (!mounted) return null;
@@ -108,7 +161,7 @@ export default function BulkSwitch() {
                 <SelectContent>
                     <SelectGroup>
                     <SelectItem value="all">Select Unit</SelectItem>
-                    {units.map((u) => (
+                    {fromUnits.map((u) => (
                         <SelectItem key={u.id} value={u.id}>
                         {u.name}
                         </SelectItem>
@@ -163,7 +216,7 @@ export default function BulkSwitch() {
                     </DropdownMenuTrigger>
 
                     <DropdownMenuContent className="w-64">
-                        {units.map((u) => (
+                        {toUnits.map((u) => (
                         <div key={u.id} className="flex items-center space-x-2 p-2">
                             <Checkbox
                             checked={selectedUnitIds.includes(u.id)}
