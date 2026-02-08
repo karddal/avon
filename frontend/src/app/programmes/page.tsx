@@ -6,6 +6,7 @@ import ProgrammeList from "@/components/programme/programme-list";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { requireAdminSession } from "@/lib/auth-utils";
+import { SeedButton } from "@/components/seed-db-button";
 
 async function PageContent() {
   const s = await requireAdminSession();
@@ -32,6 +33,7 @@ async function PageContent() {
                   Finished
                 </TabsTrigger>
               </div>
+              <SeedButton></SeedButton>
             </TabsList>
 
             <Button asChild variant="outline" size="sm" className="mt-2">

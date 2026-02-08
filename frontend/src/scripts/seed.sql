@@ -10,6 +10,7 @@ CREATE TABLE programme (
                            name VARCHAR NOT NULL,
                            start_date DATE NOT NULL,
                            end_date DATE NOT NULL,
+                           gitlab_id VARCHAR NOT NULL,
                            PRIMARY KEY (id)
 );
 
@@ -50,6 +51,7 @@ CREATE TABLE unit (
                       unit_code VARCHAR NOT NULL,
                       colour VARCHAR NOT NULL,
                       programme_id UUID NOT NULL,
+                      gitlab_id VARCHAR NOT NULL,
                       PRIMARY KEY (id),
                       FOREIGN KEY(programme_id) REFERENCES programme (id) ON DELETE CASCADE
 );
@@ -80,6 +82,7 @@ CREATE TABLE coursework (
                             due_date TIMESTAMP NOT NULL,
                             creation_date TIMESTAMP NOT NULL,
                             colour VARCHAR NOT NULL,
+                            gitlab_id VARCHAR NOT NULL,
                             PRIMARY KEY (id),
                             FOREIGN KEY(unit_id) REFERENCES unit (id) ON DELETE CASCADE
 );
@@ -87,63 +90,6 @@ CREATE TABLE coursework (
 CREATE INDEX ix_coursework_name ON coursework (name);
 CREATE INDEX ix_coursework_due_date ON coursework (due_date);
 CREATE INDEX ix_coursework_unit_id ON coursework (unit_id);
-
-INSERT INTO programme (id,name,start_date,end_date) VALUES
-                                                        ('d4c5c627fbdb49c9a7e2d6cd752f28e9','Year 1 Computer Science 2025/2026','2025-09-10','2026-05-30'),
-                                                        ('b0e39f39a74a431b85c7114bb68b462e','Year 2 Computer Science 2025/2026','2025-09-10','2026-05-30'),
-                                                        ('1d67ce657fa24d1b87eb1a1cf0ebb946','Year 1 Computer Science 2024/2025','2024-09-10','2025-05-30'),
-                                                        ('bba4fc25705a47f9b696eb03819e43bd','Year 2 Computer Science 2024/2025','2024-09-10','2025-05-30');
-
-INSERT INTO unit (id,name,description,creation_date,unit_code,colour,programme_id) VALUES
-                                                                                       ('81efad2afe0448c9857b3d3f5d224076','Mathematics for Computer Science A','I love maths A','2026-01-04 12:12:09.640705','COMS10014','abcdef','1d67ce657fa24d1b87eb1a1cf0ebb946'),
-                                                                                       ('ed54152ccf7b4b509b4900c130dde7a9','Mathematics for Computer Science A','I love maths A, now in 2025!!','2026-01-04 12:12:09.641178','COMS10014','abcdef','d4c5c627fbdb49c9a7e2d6cd752f28e9'),
-                                                                                       ('cf16626c5f034105a2f390c7f05ffc51','Computer Architecture','Encrypt coursework very hard','2026-01-04 12:12:09.641496','COMS10015','343434','1d67ce657fa24d1b87eb1a1cf0ebb946'),
-                                                                                       ('1bf1ac7b0a2144c29961df0aec42f237','Computer Architecture','Encrypt coursework very hard','2026-01-04 12:12:09.641821','COMS10015','343434','d4c5c627fbdb49c9a7e2d6cd752f28e9'),
-                                                                                       ('e1fafad9d408481ca93570281b133649','Imperative and Functional Programming','malloc() and memory leaks','2026-01-04 12:12:09.642160','COMS10016','565656','1d67ce657fa24d1b87eb1a1cf0ebb946'),
-                                                                                       ('0c7bf34a0a204e07bede31ddf10caef0','Imperative and Functional Programming','malloc() and memory leaks','2026-01-04 12:12:09.642481','COMS10016','565656','d4c5c627fbdb49c9a7e2d6cd752f28e9'),
-                                                                                       ('dbec3ffdde024709a0b2ccf4840e81c4','Software Engineering Project','Agile agile agile','2026-01-04 12:12:09.642858','COMS20006','112233','b0e39f39a74a431b85c7114bb68b462e'),
-                                                                                       ('d04893c3398c431db391c1aa1efa3455','Programming Languages and Computation','Very hard unit','2026-01-04 12:12:09.643204','COMS20007','454545','b0e39f39a74a431b85c7114bb68b462e'),
-                                                                                       ('1d7774b1e38f4520bc0305ffce942882','Computer Systems A','Go go go go go & Game of Life','2026-01-04 12:12:09.645979','COMS20017','676767','b0e39f39a74a431b85c7114bb68b462e');
-INSERT INTO unitenrollment (unit_id,user_id,"type") VALUES
-                                                        ('ed54152ccf7b4b509b4900c130dde7a9','xaegpXv0lUvOsYsjugz7g8zjrzCHiI60','student'),
-                                                        ('1bf1ac7b0a2144c29961df0aec42f237','xaegpXv0lUvOsYsjugz7g8zjrzCHiI60','student'),
-                                                        ('0c7bf34a0a204e07bede31ddf10caef0','xaegpXv0lUvOsYsjugz7g8zjrzCHiI60','student'),
-                                                        ('ed54152ccf7b4b509b4900c130dde7a9','VLQvrE4gwqC9JGjE1uJNIVUUxcqt7cQ3','student'),
-                                                        ('1bf1ac7b0a2144c29961df0aec42f237','VLQvrE4gwqC9JGjE1uJNIVUUxcqt7cQ3','student'),
-                                                        ('0c7bf34a0a204e07bede31ddf10caef0','VLQvrE4gwqC9JGjE1uJNIVUUxcqt7cQ3','student'),
-                                                        ('81efad2afe0448c9857b3d3f5d224076','ZKT8bk57VK62LD6dxV2EgJasOfUDAidy','student'),
-                                                        ('cf16626c5f034105a2f390c7f05ffc51','ZKT8bk57VK62LD6dxV2EgJasOfUDAidy','student'),
-                                                        ('e1fafad9d408481ca93570281b133649','ZKT8bk57VK62LD6dxV2EgJasOfUDAidy','student'),
-                                                        ('dbec3ffdde024709a0b2ccf4840e81c4','ZKT8bk57VK62LD6dxV2EgJasOfUDAidy','student');
-INSERT INTO unitenrollment (unit_id,user_id,"type") VALUES
-                                                        ('d04893c3398c431db391c1aa1efa3455','ZKT8bk57VK62LD6dxV2EgJasOfUDAidy','student'),
-                                                        ('1d7774b1e38f4520bc0305ffce942882','ZKT8bk57VK62LD6dxV2EgJasOfUDAidy','student'),
-                                                        ('81efad2afe0448c9857b3d3f5d224076','3w5k7h8ajrAownl24CAhDG3EOnleWpAA','student'),
-                                                        ('cf16626c5f034105a2f390c7f05ffc51','3w5k7h8ajrAownl24CAhDG3EOnleWpAA','student'),
-                                                        ('e1fafad9d408481ca93570281b133649','3w5k7h8ajrAownl24CAhDG3EOnleWpAA','student'),
-                                                        ('dbec3ffdde024709a0b2ccf4840e81c4','3w5k7h8ajrAownl24CAhDG3EOnleWpAA','student'),
-                                                        ('d04893c3398c431db391c1aa1efa3455','3w5k7h8ajrAownl24CAhDG3EOnleWpAA','student'),
-                                                        ('1d7774b1e38f4520bc0305ffce942882','3w5k7h8ajrAownl24CAhDG3EOnleWpAA','student'),
-                                                        ('e1fafad9d408481ca93570281b133649','w2sHUIT6tdX4BI5nWL5LnRMjf0K9NYix','lecturer'),
-                                                        ('0c7bf34a0a204e07bede31ddf10caef0','w2sHUIT6tdX4BI5nWL5LnRMjf0K9NYix','lecturer');
-INSERT INTO unitenrollment (unit_id,user_id,"type") VALUES
-                                                        ('81efad2afe0448c9857b3d3f5d224076','972ac4ugeobSVJMXtnA6kg5gjjdVnChj','lecturer'),
-                                                        ('ed54152ccf7b4b509b4900c130dde7a9','Oa2fXEbuOLX1ppSLNzcHopSn1tvYgTNo','lecturer'),
-                                                        ('d04893c3398c431db391c1aa1efa3455','Oa2fXEbuOLX1ppSLNzcHopSn1tvYgTNo','lecturer'),
-                                                        ('cf16626c5f034105a2f390c7f05ffc51','cVliv2WYp49VHTX8P4NfNHU74ZhBNwzW','lecturer'),
-                                                        ('1bf1ac7b0a2144c29961df0aec42f237','cVliv2WYp49VHTX8P4NfNHU74ZhBNwzW','lecturer'),
-                                                        ('dbec3ffdde024709a0b2ccf4840e81c4','JuP6rqIofgOwoEQQARdNRLJQ6htc6zea','lecturer'),
-                                                        ('d04893c3398c431db391c1aa1efa3455','IFvdr1GBzO6SCOiPswaPpHznqbeSOlnw','lecturer'),
-                                                        ('1d7774b1e38f4520bc0305ffce942882','4xgSUVKUjrBgLBV5TYNtNxCEjNyQO8M1','lecturer');
-
-INSERT INTO coursework (id,name,description,unit_id,due_date,creation_date,colour) VALUES
-                                                                                       ('72045d692995493d8d4415e97a5666ed','Power to the People in 2024','Easy Haskell 1','e1fafad9d408481ca93570281b133649','2024-12-15 23:59:00.000000','2026-01-04 12:12:09.663718','676767'),
-                                                                                       ('b95c92dba6bd40b49ddecf2cd04d3d52','Power to the People in 2025','Easy Haskell 1','0c7bf34a0a204e07bede31ddf10caef0','2025-12-15 23:59:00.000000','2026-01-04 12:12:09.664129','abcdef'),
-                                                                                       ('3a5a47c66b0540e58a3ad6405efbf00d','Double Linked List 2024','literally the title','e1fafad9d408481ca93570281b133649','2024-10-30 23:59:00.000000','2026-01-04 12:12:09.664417','b01c2e'),
-                                                                                       ('af355b1e96f54a20a0a56e9f0515f3e3','AI Bill Splitter','Splitvise but with Vibes, should have been called splitvibes','dbec3ffdde024709a0b2ccf4840e81c4','2026-04-20 17:00:00.000000','2026-01-04 12:12:09.664943','f1d2c3'),
-                                                                                       ('38ad86d6f86b461dbe36e7bf9a697c63','Encrypt','Did you know you can encrypt with binary?','1bf1ac7b0a2144c29961df0aec42f237','2026-05-10 14:00:00.000000','2026-01-04 12:12:09.665208','1a2b3c'),
-                                                                                       ('65e3e7bc2ed946b58b1c32f740868a48','Encrypt','Did you know you can encrypt with binary? Includes v1 v2 v3','cf16626c5f034105a2f390c7f05ffc51','2024-11-10 14:00:00.000000','2026-01-04 12:12:09.665437','1a2b3c');
-
 
 INSERT INTO "user" (id,name,email,"emailVerified",image,"createdAt","updatedAt","role",banned,"banReason","banExpires") VALUES
                                                                                                                   ('8AteGbdJyVodlUBwQGSxcN7h58aKNjRe','Foo Bar','admin@bris.ac.uk',0,NULL,'2026-01-03T19:22:57.491Z','2026-01-03T19:22:57.491Z','admin',0,NULL,NULL),

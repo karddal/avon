@@ -1,21 +1,14 @@
 import { readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
-
-// interface User {
-//   name: string;
-//   email: string;
-//   password: string;
-//   role: string;
-// }
+import { api_seed } from "@/scripts/seed_api";
 
 async function seed() {
   console.log(process.env);
 
-  // run seeding
   const db = new DatabaseSync("../sqlite.db");
-  const _session = db.createSession();
-  const statement = readFileSync("./src/scripts/seed prod.sql", "utf-8");
-  const _result = db.exec(statement);
+  db.createSession();
+  const statement = readFileSync("./src/scripts/seed.sql", "utf-8");
+  db.exec(statement);
 
   console.log("Seeded DB");
 }
