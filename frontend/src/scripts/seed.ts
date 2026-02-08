@@ -1,6 +1,5 @@
 import { readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
-import { api_seed } from "@/scripts/seed_api";
 
 async function seed() {
   console.log(process.env);

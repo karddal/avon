@@ -1,12 +1,11 @@
 "use server";
 
 import { DatabaseSync } from "node:sqlite";
-import { api_seed } from "@/scripts/seed_api";
-import { headers } from "next/headers";
 import { requireAdminSession } from "@/lib/auth-utils";
+import { api_seed } from "@/scripts/seed_api";
 
 export async function seedDatabase() {
-  const s = await requireAdminSession();
+  const _s = await requireAdminSession();
 
   try {
     const db = new DatabaseSync("../sqlite.db");

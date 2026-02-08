@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { seedDatabase } from "@/lib/actions/seed";
-import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { seedDatabase } from "@/lib/actions/seed";
 
 export function SeedButton() {
   const [loading, setLoading] = useState(false);

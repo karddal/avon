@@ -1,8 +1,8 @@
+import type { DatabaseSync } from "node:sqlite";
 import { batch_add_students_to_unit } from "@/lib/actions/batch_add_students_to_unit";
 import { create_coursework } from "@/lib/actions/create_coursework";
 import { create_programme } from "@/lib/actions/create_programme";
 import { create_unit } from "@/lib/actions/create_unit";
-import { DatabaseSync } from "node:sqlite";
 
 async function createUnitWithStudents(
   db: DatabaseSync,
