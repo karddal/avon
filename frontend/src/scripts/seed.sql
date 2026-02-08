@@ -1,32 +1,32 @@
 -- jwks definition
 
-CREATE TABLE "jwks" ("id" text not null primary key, "publicKey" text not null, "privateKey" text not null, "createdAt" date not null, "expiresAt" date);
+CREATE TABLE if not exists "jwks" ("id" text not null primary key, "publicKey" text not null, "privateKey" text not null, "createdAt" date not null, "expiresAt" date);
 
 
 -- "user" definition
 
-CREATE TABLE "user" ("id" text not null primary key, "name" text not null, "email" text not null unique, "emailVerified" integer not null, "image" text, "createdAt" date not null, "updatedAt" date not null, "role" text, "banned" integer, "banReason" text, "banExpires" date);
+CREATE TABLE if not exists "user" ("id" text not null primary key, "name" text not null, "email" text not null unique, "emailVerified" integer not null, "image" text, "createdAt" date not null, "updatedAt" date not null, "role" text, "banned" integer, "banReason" text, "banExpires" date);
 
 
 -- verification definition
 
-CREATE TABLE "verification" ("id" text not null primary key, "identifier" text not null, "value" text not null, "expiresAt" date not null, "createdAt" date not null, "updatedAt" date not null);
+CREATE TABLE if not exists "verification" ("id" text not null primary key, "identifier" text not null, "value" text not null, "expiresAt" date not null, "createdAt" date not null, "updatedAt" date not null);
 
-CREATE INDEX "verification_identifier_idx" on "verification" ("identifier");
+CREATE INDEX if not exists "verification_identifier_idx" on "verification" ("identifier");
 
 
 -- account definition
 
-CREATE TABLE "account" ("id" text not null primary key, "accountId" text not null, "providerId" text not null, "userId" text not null references "user" ("id") on delete cascade, "accessToken" text, "refreshToken" text, "idToken" text, "accessTokenExpiresAt" date, "refreshTokenExpiresAt" date, "scope" text, "password" text, "createdAt" date not null, "updatedAt" date not null);
+CREATE TABLE if not exists "account" ("id" text not null primary key, "accountId" text not null, "providerId" text not null, "userId" text not null references "user" ("id") on delete cascade, "accessToken" text, "refreshToken" text, "idToken" text, "accessTokenExpiresAt" date, "refreshTokenExpiresAt" date, "scope" text, "password" text, "createdAt" date not null, "updatedAt" date not null);
 
-CREATE INDEX "account_userId_idx" on "account" ("userId");
+CREATE INDEX if not exists "account_userId_idx" on "account" ("userId");
 
 
 -- "session" definition
 
-CREATE TABLE "session" ("id" text not null primary key, "expiresAt" date not null, "token" text not null unique, "createdAt" date not null, "updatedAt" date not null, "ipAddress" text, "userAgent" text, "userId" text not null references "user" ("id") on delete cascade, "impersonatedBy" text);
+CREATE TABLE if not exists "session" ("id" text not null primary key, "expiresAt" date not null, "token" text not null unique, "createdAt" date not null, "updatedAt" date not null, "ipAddress" text, "userAgent" text, "userId" text not null references "user" ("id") on delete cascade, "impersonatedBy" text);
 
-CREATE INDEX "session_userId_idx" on "session" ("userId");
+CREATE INDEX if not exists "session_userId_idx" on "session" ("userId");
 
 INSERT INTO "user" (id,name,email,"emailVerified",image,"createdAt","updatedAt","role",banned,"banReason","banExpires") VALUES
                                                                                                                   ('8AteGbdJyVodlUBwQGSxcN7h58aKNjRe','Foo Bar','admin@bris.ac.uk',0,NULL,'2026-01-03T19:22:57.491Z','2026-01-03T19:22:57.491Z','admin',0,NULL,NULL),
