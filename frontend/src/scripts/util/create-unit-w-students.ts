@@ -1,17 +1,17 @@
-import {DatabaseSync} from "node:sqlite";
-import {create_unit} from "@/scripts/util/unit";
-import {batch_add_students_to_unit} from "@/scripts/util/add-students";
+import type { DatabaseSync } from "node:sqlite";
+import { batch_add_students_to_unit } from "@/scripts/util/add-students";
+import { create_unit } from "@/scripts/util/unit";
 
 export async function createUnitWithStudents(
-    db: DatabaseSync,
-    programmeId: string,
-    unitData: {
-      name: string;
-      description: string;
-      colour: string;
-      unit_code: string;
-    },
-    userIds: string[],
+  db: DatabaseSync,
+  programmeId: string,
+  unitData: {
+    name: string;
+    description: string;
+    colour: string;
+    unit_code: string;
+  },
+  userIds: string[],
 ): Promise<string | null> {
   await create_unit({
     name: unitData.name,
@@ -22,8 +22,8 @@ export async function createUnitWithStudents(
   });
 
   const unit = db
-      .prepare("SELECT id FROM unit WHERE name = ?")
-      .get(unitData.name);
+    .prepare("SELECT id FROM unit WHERE name = ?")
+    .get(unitData.name);
 
   if (!unit) {
     return null;

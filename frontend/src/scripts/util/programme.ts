@@ -15,17 +15,14 @@ type _CreateProgrammeResponse = {
 export async function create_programme(req: CreateProgrammeRequest) {
   "use server";
   console.log(req);
-  const data = await fetch(
-      `http://localhost:8000/programmes/create`,
-      {
-        method: "POST",
-        cache: "no-cache",
-        body: JSON.stringify(req),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-  );
+  const data = await fetch(`http://localhost:8000/programmes/create`, {
+    method: "POST",
+    cache: "no-cache",
+    body: JSON.stringify(req),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
   if (!data.ok) {
     const json = await data.json();
     return {

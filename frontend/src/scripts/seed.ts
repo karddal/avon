@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
-import {api_seed} from "@/scripts/seed_api";
+import { api_seed } from "@/scripts/seed_api";
 
 async function seed() {
   console.log(process.env);
@@ -9,7 +9,7 @@ async function seed() {
   db.createSession();
   const statement = readFileSync("./src/scripts/seed.sql", "utf-8");
   db.exec(statement);
-  await api_seed(db)
+  await api_seed(db);
 
   console.log("Seeded DB");
 }

@@ -1,5 +1,4 @@
 "use server";
-import { getRequestJWT } from "@/lib/auth-utils";
 
 type CreateCourseworkRequest = {
   name: string;
@@ -11,17 +10,14 @@ type CreateCourseworkRequest = {
 
 export async function create_coursework(req: CreateCourseworkRequest) {
   "use server";
-  const data = await fetch(
-      `http://localhost:8000/coursework/create`,
-      {
-        method: "POST",
-        cache: "no-cache",
-        body: JSON.stringify(req),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-  );
+  const data = await fetch(`http://localhost:8000/coursework/create`, {
+    method: "POST",
+    cache: "no-cache",
+    body: JSON.stringify(req),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
   if (!data.ok) {
     const json = await data.json();
     return {
