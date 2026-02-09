@@ -18,7 +18,7 @@ async function fetchWsToken() {
 }
 
 export function useUnitsRealtime(opts?: { mutate?: typeof swrMutate }) {
-    const mutate = opts?.mutate ?? swrMutate
+  const mutate = opts?.mutate ?? swrMutate;
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
@@ -50,7 +50,7 @@ export function useUnitsRealtime(opts?: { mutate?: typeof swrMutate }) {
       if (msg.type === "units_changed") {
         void mutate("/api/calendar/units");
       }
-    }, []),
+    }, [mutate]),
   );
 
   useEffect(() => {
