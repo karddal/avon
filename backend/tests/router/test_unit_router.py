@@ -140,7 +140,7 @@ def test_get_unit_lecturers(client, session):
 
 
 # Tests to update units
-def test_update_units(client, session):
+def test_update_units(client, session, auth_override):
     programme = create_programme(session)
     unit = create_unit(session, programme.id)
     update_payload = valid_update_payload(str(programme.id))

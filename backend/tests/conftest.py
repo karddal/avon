@@ -50,3 +50,9 @@ def client(session):
     app.dependency_overrides.clear() # Clean up after it's finished
 
 
+@pytest.fixture(scope="function")
+def auth_override():
+    from app.core.security import get_current_user
+    app.dependency_overrides[get_current_user] = lambda: "test-user"
+    yield "test-user"
+    app.dependency_overrides.pop(get_current_user, None)
