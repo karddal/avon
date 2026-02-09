@@ -9,9 +9,8 @@ from pwdlib import PasswordHash
 from pydantic import BaseModel
 from starlette import status
 import jwt
-from jwt import PyJWKClient
 import logging
-import hashlib
+from app.core.jwt_utils import verify_token_and_get_user, _token_fingerprint
 
 from app.core.settings import settings
 from app.schemas.security import CurrentUser
@@ -46,11 +45,6 @@ class PasswordIncorrectError(Exception):
 
 get_bearer = HTTPBearer(auto_error=True)
 
-jwks_client = PyJWKClient(settings.jwks_url)
-
-def _token_fingerprint(token: str) -> str:
-    return hashlib.sha256(token.encode("utf-8")).hexdigest()[:8]
-
 def credentials_exception():
     return HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -58,33 +52,10 @@ def credentials_exception():
         headers={"WWW-Authenticate": "Bearer"},
     )
 
-def verify_token_and_get_user(token_str: str) -> CurrentUser:
-    fingerprint = _token_fingerprint(token_str)
-
+async def get_current_user_with_role(token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]) -> CurrentUser:
+    fingerprint = _token_fingerprint(token.credentials)
     try:
-        logger.debug("JWT token fingerprint=%s", fingerprint)
-
-        signing_key = jwks_client.get_signing_key_from_jwt(token_str)
-        keyId = getattr(signing_key, "key_id", None)
-        logger.debug("JWT key selected fingerprint=%s key_id=%s", fingerprint, keyId)
-
-        payload = jwt.decode(
-            token_str,
-            signing_key.key if hasattr(signing_key, "key") else signing_key,
-            audience=settings.jwt_audience,
-            issuer=settings.jwt_issuer,
-            algorithms=["EdDSA"]
-        )
-
-        user_id = payload.get("sub") or payload.get("id")
-        role = payload.get("role")
-
-        if not user_id:
-            logger.warning("JWT missing user_id fingerprint=%s payload_keys=%s", fingerprint, list(payload.keys()))
-            raise credentials_exception()
-
-        logger.info("JWT verify success fingerprint=%s user_id=%s role=%s",fingerprint, user_id, role)
-        return CurrentUser(user_id=user_id, role=role)
+        return verify_token_and_get_user(token.credentials)
 
     except jwt.ExpiredSignatureError:
         logger.warning("JWT expired fp=%s", fingerprint)
@@ -108,13 +79,8 @@ def verify_token_and_get_user(token_str: str) -> CurrentUser:
         logger.exception("JWT verify unexpected error fingerprint=%s error=%s", fingerprint, repr(e))
         raise credentials_exception()
 
-async def get_current_user(token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]):
-    logger.debug("HTTP auth attempt scheme=%s", token.scheme)
-    return verify_token_and_get_user(token.credentials).user_id
-
-async def get_current_user_with_role(token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]):
-    logger.debug("HTTP auth attempt scheme=%s", token.scheme)
-    return verify_token_and_get_user(token.credentials)
+async def get_current_user(user: Annotated[CurrentUser, Depends(get_current_user_with_role)]) -> str:
+    return user.user_id
 
 # async def get_current_user(token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]):
 #     try:
