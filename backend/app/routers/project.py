@@ -3,11 +3,11 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 
-from app.core.helpers.gitlab import gl_create_project, gl_create_template_group, gl_create_template_project
+from app.core.helpers.gitlab import gl_create_project, gl_create_template_group, gl_create_template_project, gl_delete_projects
 from app.db.session import get_session
 from app.models.coursework import Coursework
 from app.models.unit_enrollment import UnitEnrollment
-from app.schemas.project import ProjectCreate, TemplateCreate
+from app.schemas.project import ProjectCreate, ProjectDelete, TemplateCreate
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 session_dependency = Annotated[Session, Depends(get_session)]
@@ -67,3 +67,10 @@ async def create_projects(project: ProjectCreate, session: session_dependency):
     # Make an API call to gitlab to create a project using a helper function for those many students
     print(gl_project)
     return {"unit id": students_enrolled}
+
+@router.delete("/delete")
+async def delete_projects(project: ProjectDelete, session: session_dependency):
+    # Collect all the projects
+    projects = await gl_delete_projects(project.group_id)
+    print(projects)
+    
