@@ -1,27 +1,29 @@
 "use client";
 
-import { XIcon } from "lucide-react";
+import { ArrowRightLeft, XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { delete_unit_members } from "@/lib/actions/delete_unit_members";
+import { transfer_unit_members } from "@/lib/actions/transfer_unit_members";
 interface TransferUnitMembersProps {
-  unitIdTo: string;
-  unitIdsFrom: string[];
+  unitIdFrom: string;
+  unitIdsTo: string[];
   omittedMembers: string[];
 }
 
-export default function BulkTransferButton({ unitIdTo, unitIdsFrom, omittedMembers }: TransferUnitMembersProps) {
+export default function BulkTransferButton({ unitIdFrom, unitIdsTo, omittedMembers }: TransferUnitMembersProps) {
   const [status, setStatus] = useState<number>(0);
   const router = useRouter();
 
   const handleDelete = async () => {
     try {
       setStatus(1);
-
-      const result = await transfer_unit_members({unitIdTo, unitIdsFrom, omittedMembers});
+      console.log("unitIdFrom:", unitIdFrom);
+      console.log("unitIdsTo:", unitIdsTo);
+      console.log("OmittedMembers:", omittedMembers);
+      const result = await transfer_unit_members({unitIdFrom, unitIdsTo, omittedMembers});
 
     //   if (result) {
     //     toast.success("Unit Members deleted successfully");
@@ -40,20 +42,18 @@ export default function BulkTransferButton({ unitIdTo, unitIdsFrom, omittedMembe
   return (
     <div className="h-full">
       {status === 1 && (
-        <Button size="lg" variant="destructive" disabled className="w-full">
-          <Spinner className="mr-2 h-4 w-4" />
-          Deleting...
+        <Button variant="outline" disabled >
+            <Spinner className="mr-2 h-4 w-4" />
+            {/* <ArrowRightLeft className="h-4 w-4" /> */}
+            Transferring...
         </Button>
+        
       )}
 
       {status === 0 && (
-        <Button
-          variant="destructive"
-          size="lg"
-          className="w-full"
-          onClick={handleDelete}
-        >
-          Delete
+        <Button variant="outline" onClick={handleDelete}>
+            <ArrowRightLeft className="h-4 w-4" />
+            Transfer
         </Button>
       )}
 

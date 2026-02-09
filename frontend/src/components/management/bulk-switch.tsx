@@ -285,29 +285,36 @@ export default function BulkSwitch() {
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                    <AlertDialogDescription className="flex flex-wrap items-center gap-1">
-                        <span>This will transfer all students from:</span>
+                    <AlertDialogDescription className="space-y-3">
+                        <div>
+                            <span>This will transfer all students from:</span>
+                            <div className="mt-1 font-bold text-foreground">
+                            {fromLabel ?? (
+                                <span className="text-muted-foreground">select unit first</span>
+                            )}
+                            </div>
+                        </div>
 
-                        {fromLabel ? (
-                            <span className="font-bold text-foreground">{fromLabel}</span>
-                        ) : (
-                            <span className="text-muted-foreground">select unit first</span>
-                        )}
+                        <div className="flex justify-center">
+                            <ArrowRight className="h-6 w-6 rotate-90 text-muted-foreground" />
+                        </div>
 
-                        <ArrowRight className="h-5 w-5 rotate-90 text-muted-foreground" />
-
-                        {toLabel ? (
-                            <span className="font-semibold text-foreground">{toLabel}</span>
-                        ) : (
-                            <span className="text-muted-foreground">selected units</span>
-                        )}
+                        <div>
+                            <div className="font-semibold text-foreground">
+                            {toLabel ?? (
+                                <span className="text-muted-foreground">selected units</span>
+                            )}
+                            </div>
+                        </div>
                     </AlertDialogDescription>
+
+
 
 
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
-                    <BulkTransferButton unitIdTo={selectedUnitId!} unitIdsFrom={selectedUnitIds} omittedMembers={omittedMembers}/> 
+                    <BulkTransferButton unitIdFrom={selectedUnitId!} unitIdsTo={selectedUnitIds} omittedMembers={omittedMembers}/> 
                     {/*selecetd Unit Id can never be null here anyway, as form doesn't allow it*/}
                 </AlertDialogFooter>
             </AlertDialogContent>
