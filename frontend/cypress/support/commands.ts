@@ -39,14 +39,12 @@
 
 import { makeUnmountFn, mount } from "cypress/react";
 
-const unmount = makeUnmountFn({ log: false });
-
 Cypress.Commands.add("mount", (...args: Parameters<typeof mount>) => {
   return mount(...args);
 });
 
 Cypress.Commands.add("unmount", () => {
-  return unmount;
+  return makeUnmountFn({ log: false });
 });
 
 Cypress.Commands.add("login", (username: string, password: string) => {
