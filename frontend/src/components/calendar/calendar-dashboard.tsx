@@ -8,7 +8,6 @@ import { EventsListingCard } from "@/components/calendar/events-listing-card";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useCalendarEvents } from "@/hooks/calendar/use-calendar-events";
 import { useUnits } from "@/hooks/calendar/use-units";
-import { useUnitsRealtime } from "@/hooks/calendar/use-units-realtime";
 
 export type CalendarEvent = {
   id: string;
@@ -61,7 +60,7 @@ export default function CalendarDashboard() {
   const to = tab === "timetable" ? toWeek : toYear;
 
   const { eventsMap } = useCalendarEvents(from, to);
-  useUnitsRealtime();
+
   const { unitOptions } = useUnits();
 
   const filteredEventsMap = useMemo(() => {

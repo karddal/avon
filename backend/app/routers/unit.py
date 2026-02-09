@@ -169,7 +169,6 @@ async def update_unit(
         unit_id: UUID,
         unit: UnitUpdate,
         session: session_dependency,
-        current_user_id: str = Depends(get_current_user),
 ):
     if not unit.name:
         raise HTTPException(status_code=400, detail="Name of unit is required.")
@@ -192,12 +191,6 @@ async def update_unit(
 
     session.commit()
     session.refresh(db_unit)
-
-    await manager.emit_to_user_if_subscribed(
-        current_user_id,
-        "units_changed",
-        {"type": "units_changed", "unit_id": str(unit_id)},
-    )
 
     return db_unit
 
