@@ -5,9 +5,10 @@ import BulkDelete from "@/components/management/bulk-delete"
 import BulkSwitch from "@/components/management/bulk-switch";
 import AccountSettings from "@/components/settings/account-settings"
 import ListMembers from "@/components/management/list-users";
+
 async function PageContent() {
   return (
-    <div className="mt-6 px-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+    <div className="mt-6 px-6 grid grid-cols-1 gap-4 xl:grid-cols-2">
         <div className="rounded-md border border-border p-4">
             <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
               Search

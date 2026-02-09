@@ -7,12 +7,13 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { delete_unit_members } from "@/lib/actions/delete_unit_members";
-interface DeleteUnitMembersProps {
-  unitIds: string[];
+interface TransferUnitMembersProps {
+  unitIdTo: string;
+  unitIdsFrom: string[];
   omittedMembers: string[];
 }
 
-export default function BulkDeleteButton({ unitIds, omittedMembers }: DeleteUnitMembersProps) {
+export default function BulkTransferButton({ unitIdTo, unitIdsFrom, omittedMembers }: TransferUnitMembersProps) {
   const [status, setStatus] = useState<number>(0);
   const router = useRouter();
 
@@ -20,7 +21,7 @@ export default function BulkDeleteButton({ unitIds, omittedMembers }: DeleteUnit
     try {
       setStatus(1);
 
-      const result = await delete_unit_members({unitIds, omittedMembers});
+      const result = await transfer_unit_members({unitIdTo, unitIdsFrom, omittedMembers});
 
     //   if (result) {
     //     toast.success("Unit Members deleted successfully");
@@ -30,7 +31,7 @@ export default function BulkDeleteButton({ unitIds, omittedMembers }: DeleteUnit
     //   }
     } catch (_error) {
       setStatus(2);
-      toast.error("Failed to delete the unit members");
+      toast.error("Failed to transfer the unit members");
 
       setTimeout(() => setStatus(0), 3000);
     }

@@ -173,11 +173,14 @@ export default function BulkDelete() {
                 variant="destructive"
                 className="w-full sm:w-fit"
                 disabled={!canDeleteAndOmit}
-                onSelect={() => setShowDelete(true)}
+                onClick={() => setShowDelete(true)}
                 >
                   Delete Users
                 </Button>
             </div>
+        </div>
+        <div className="justify-center">
+        You Cannot delete any Lecturers from a unit here
         </div>
       </div>
       <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
@@ -185,13 +188,12 @@ export default function BulkDelete() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              unit and all of its data.
+              This action cannot be undone. This will permanently delete all students from a unit
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
-            <BulkDeleteButton idList={selectedUnitIds} omittedMembers={omittedMembers}/>
+            <BulkDeleteButton unitIds={selectedUnitIds} omittedMembers={omittedMembers}/>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
