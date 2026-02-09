@@ -75,6 +75,7 @@ export function CalendarNavigationCard({
 
           <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[260px]">
             <SearchableSelect
+                data-cy="units-select"
               multiple={true}
               prefix="Units"
               placeholder="All units"

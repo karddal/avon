@@ -78,31 +78,33 @@ export default function CalendarDashboard() {
   }, [unitIds, eventsMap]);
 
   return (
-    <Tabs
-      value={tab}
-      onValueChange={(value) => setTab(value as "timetable" | "events")}
-    >
-      <CalendarNavigationCard
-        weekStartDate={weekStartDate}
-        onWeekStartDateChange={setWeekStartDate}
-        onUnitIdsChange={onUnitIdsChange}
-        unitOptions={unitOptions}
-        tab={tab}
-        academicYearStart={academicYearStart}
-        onAcademicYearStartChange={setAcademicYearStart}
-      />
+      <div data-cy="calendar-dashboard">
+          <Tabs
+              value={tab}
+              onValueChange={(value) => setTab(value as "timetable" | "events")}
+          >
+              <CalendarNavigationCard
+                  weekStartDate={weekStartDate}
+                  onWeekStartDateChange={setWeekStartDate}
+                  onUnitIdsChange={onUnitIdsChange}
+                  unitOptions={unitOptions}
+                  tab={tab}
+                  academicYearStart={academicYearStart}
+                  onAcademicYearStartChange={setAcademicYearStart}
+              />
 
-      <TabsContent value="timetable">
-        <CalendarTimeTableCard
-          weekStartDate={weekStartDate}
-          eventsMap={filteredEventsMap}
-        />
-      </TabsContent>
+              <TabsContent value="timetable">
+                  <CalendarTimeTableCard
+                      weekStartDate={weekStartDate}
+                      eventsMap={filteredEventsMap}
+                  />
+              </TabsContent>
 
-      <TabsContent value="events">
-        <EventsListingCard eventsMap={filteredEventsMap} />
-      </TabsContent>
-    </Tabs>
+              <TabsContent value="events">
+                  <EventsListingCard eventsMap={filteredEventsMap} />
+              </TabsContent>
+          </Tabs>
+      </div>
   );
 }
 
