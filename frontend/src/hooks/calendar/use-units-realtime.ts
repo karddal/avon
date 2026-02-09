@@ -39,18 +39,21 @@ export function useUnitsRealtime(opts?: { mutate?: typeof swrMutate }) {
 
   const wsRef = useWs(
     token,
-    useCallback((msg: WSMsg) => {
-      if (msg.type === "auth_ok") {
-        wsRef.current?.send(
-          JSON.stringify({ type: "subscribe", event: "units_changed" }),
-        );
-        return;
-      }
+    useCallback(
+      (msg: WSMsg) => {
+        if (msg.type === "auth_ok") {
+          wsRef.current?.send(
+            JSON.stringify({ type: "subscribe", event: "units_changed" }),
+          );
+          return;
+        }
 
-      if (msg.type === "units_changed") {
-        void mutate("/api/calendar/units");
-      }
-    }, [mutate]),
+        if (msg.type === "units_changed") {
+          void mutate("/api/calendar/units");
+        }
+      },
+      [mutate],
+    ),
   );
 
   useEffect(() => {
