@@ -61,6 +61,5 @@ jobs:
           env: NODE_ENV=test
           start: |
             npm run db:seed
-            npm run start:backend
-            npm run dev
+            start-server-and-test start:backend http-get://localhost:8000/check/health dev http://localhost:3000
           wait-on: "http://localhost:8000/check/health"
