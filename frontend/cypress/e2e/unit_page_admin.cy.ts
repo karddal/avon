@@ -17,7 +17,7 @@ describe("Unit page", () => {
 
   it("admin has default finished programmes", () => {
     cy.visit("/units");
-    cy.get("#radix-_R_9bneitmlb_-trigger-finished").click();
+    cy.get("#tabs-finished").click();
     cy.get("span").should("contain", "Year 1 Computer Science 2024/2025");
     cy.get("span").should("contain", "Year 2 Computer Science 2024/2025");
   });
@@ -29,7 +29,7 @@ describe("Unit page", () => {
 
   it("admin has default finished unit", () => {
     cy.visit("/units");
-    cy.get("#radix-_R_9bneitmlb_-trigger-finished").click();
+    cy.get("#tabs-finished").click();
 
     cy.get("p").should("contain", "Mathematics for Computer Science A");
   });
@@ -57,7 +57,7 @@ describe("Unit page", () => {
     cy.get("p")
       .should("contain", "Mathematics for Computer Science A")
       .should("be.visible");
-    cy.get("#radix-_R_35mpbneitmlb_").click();
+    cy.get("#unit-dropdown-button").click();
     cy.get(`[data-slot="dropdown-menu-item"]`).click();
     cy.contains(`button`, "Delete").click();
     cy.get('[data-content=""] > div').contains("Unit deleted successfully");

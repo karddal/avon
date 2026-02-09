@@ -29,13 +29,13 @@ describe("Unit page", () => {
 
   it("has default finished programme", () => {
     cy.visit("/units");
-    cy.get("#radix-_R_9bneitmlb_-trigger-finished").click();
+    cy.get("#tabs-finished").click();
     cy.get("span").should("contain", "Year 1 Computer Science 2024/2025");
   });
 
   it("has default finished unit", () => {
     cy.visit("/units");
-    cy.get("#radix-_R_9bneitmlb_-trigger-finished").click();
+    cy.get("#tabs-finished").click();
     cy.get("p").should("contain", "Imperative and Functional Programming");
   });
 });
