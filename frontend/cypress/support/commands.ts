@@ -37,10 +37,14 @@
 // }
 /// <reference path="./commands.d.ts" />
 
-import { mount } from "cypress/react";
+import { makeUnmountFn, mount } from "cypress/react";
 
 Cypress.Commands.add("mount", (...args: Parameters<typeof mount>) => {
   return mount(...args);
+});
+
+Cypress.Commands.add("unmount", () => {
+  return makeUnmountFn({ log: false });
 });
 
 Cypress.Commands.add("login", (username: string, password: string) => {
@@ -57,6 +61,35 @@ Cypress.Commands.add("login", (username: string, password: string) => {
       validate: () => {
         cy.getCookie("__Secure-better-auth.session_token").should("exist");
       },
+    },
+  );
+});
+
+// cypress/support/commands.ts
+Cypress.Commands.add("loginNew", (username: string, password: string) => {
+  cy.session(
+    `better-auth:${username}`,
+    () => {
+      cy.visit("/login");
+      cy.get("#email").clear().type(username);
+      cy.get("#password").clear().type(password);
+      cy.get("button[type=submit]").click();
+
+      cy.url().should("include", "/dashboard");
+      cy.getCookie("__Secure-better-auth.session_token").should("exist");
+    },
+    {
+      validate: () => {
+        cy.request({
+          url: "/dashboard",
+          failOnStatusCode: false,
+          followRedirect: false,
+        }).then((res) => {
+          expect([200]).to.include(res.status);
+          expect(res.body).to.not.include('id="email"');
+        });
+      },
+      cacheAcrossSpecs: true,
     },
   );
 });

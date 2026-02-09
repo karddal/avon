@@ -8,6 +8,8 @@ declare global {
     interface Chainable {
       mount(...args: MountParams): MountReturn;
       login(email: string, password: string): Chainable<void>;
+      unmount(): Chainable<void>;
+      loginNew(email: string, password: string): Chainable<void>;
     }
   }
 }

@@ -1,5 +1,5 @@
-import type { CalendarEvent } from "@/src/components/calendar/calendar-dashboard";
-import { CalendarTimeTableCard } from "@/src/components/calendar/calendar-timetable-card";
+import type { CalendarEvent } from "@/components/calendar/calendar-dashboard";
+import { CalendarTimeTableCard } from "@/components/calendar/calendar-timetable-card";
 
 function makeEvent(
   id: string,
