@@ -1,0 +1,135 @@
+"use client"
+
+import * as React from "react"
+import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from "@/components/ui/collapsible"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import {
+  ChevronRight,
+  Folder,
+  FileText,
+  FileCode,
+} from "lucide-react"
+
+/* ------------------------------------------------------------------ */
+/* Fake repo data                                                      */
+/* ------------------------------------------------------------------ */
+
+type RepoNode = {
+  name: string
+  path: string
+  type: "tree" | "blob"
+  children?: RepoNode[]
+}
+
+const FAKE_REPO: RepoNode[] = [
+  {
+    name: "src",
+    path: "src",
+    type: "tree",
+    children: [
+      {
+        name: "app",
+        path: "src/app",
+        type: "tree",
+        children: [
+          {
+            name: "layout.tsx",
+            path: "src/app/layout.tsx",
+            type: "blob",
+          },
+          {
+            name: "page.tsx",
+            path: "src/app/page.tsx",
+            type: "blob",
+          },
+        ],
+      },
+      {
+        name: "components",
+        path: "src/components",
+        type: "tree",
+        children: [
+          {
+            name: "button.tsx",
+            path: "src/components/button.tsx",
+            type: "blob",
+          },
+          {
+            name: "repo-tree.tsx",
+            path: "src/components/repo-tree.tsx",
+            type: "blob",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    name: "package.json",
+    path: "package.json",
+    type: "blob",
+  },
+  {
+    name: "README.md",
+    path: "README.md",
+    type: "blob",
+  },
+]
+
+
+function TreeNode({ node }: { node: RepoNode }) {
+  // File (leaf)
+  if (node.type === "blob") {
+    const Icon =
+      node.name.endsWith(".tsx") || node.name.endsWith(".ts")
+        ? FileCode
+        : FileText
+
+    return (
+      <div className="flex items-center gap-2 pl-6 py-1 text-sm text-muted-foreground hover:bg-accent rounded">
+        <Icon className="h-4 w-4" />
+        <span className="truncate">{node.name}</span>
+      </div>
+    )
+  }
+
+  // Folder
+  return (
+    <Collapsible>
+      <CollapsibleTrigger className="group flex w-full items-center gap-2 rounded px-2 py-1 text-sm hover:bg-accent">
+        <ChevronRight className="h-4 w-4 transition-transform group-data-[state=open]:rotate-90" />
+        <Folder className="h-4 w-4 text-primary" />
+        <span className="truncate">{node.name}</span>
+      </CollapsibleTrigger>
+
+      <CollapsibleContent className="pl-4">
+        {node.children?.map((child) => (
+          <TreeNode key={child.path} node={child} />
+        ))}
+      </CollapsibleContent>
+    </Collapsible>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/* Exported example component                                          */
+/* ------------------------------------------------------------------ */
+
+export default function RepoTreeExample() {
+  return (
+    <div>
+      <div className="mb-2 text-sm font-medium">Repository</div>
+
+      <ScrollArea className="rounded-md border p-2">
+        <div className="space-y-1">
+          {FAKE_REPO.map((node) => (
+                <TreeNode key={node.path} node={node} />
+          ))}
+        </div>
+      </ScrollArea>
+    </div>
+  )
+}
