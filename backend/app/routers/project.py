@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 
-from app.core.helpers.gitlab import gl_create_project, gl_create_template_group, gl_create_template_project, gl_get_project, gl_get_projects
+from app.core.helpers.gitlab import gl_create_project, gl_create_template_group, gl_create_template_project, gl_delete_project, gl_get_project, gl_get_projects
 from app.db.session import get_session
 from app.models.coursework import Coursework
 from app.models.unit_enrollment import UnitEnrollment
@@ -80,6 +80,6 @@ async def get_project(project_id: int):
     project = await gl_get_project(project_id)
     return project
 
-# @router.delete("/{group_id}/{project_id}", status_code=201)
-# async def delete_specific_project(group_id: int, project_id: int):
-#     return await gl_delete_project(group_id, project_id)
+@router.delete("/{project_id}", status_code=201)
+async def delete_specific_project(project_id: int):
+    return await gl_delete_project(project_id)

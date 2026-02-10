@@ -294,6 +294,30 @@ async def gl_get_project(project_id):
     
     project_data = {"id": data["id"], "name": data["name"], "path": data["path"], "web_url": data["web_url"]}
     return project_data
+
+async def gl_delete_project(project_id):
+    if not TOKEN or not BASE_URL:
+        raise HTTPException(status_code=500, detail="Missing GitLab configuration")
+
+    async with httpx.AsyncClient(base_url=BASE_URL) as client:
+        try:
+            response = await client.delete(
+                f"/projects/{project_id}",
+                headers={
+                    "PRIVATE-TOKEN": TOKEN,
+                    "Content-Type": "application/json"
+                },
+                timeout=10.0
+            )
+            data = response.json()
+        except httpx.RequestError as err:
+            print(3)
+            print(f"Network Error: {err}")
+            raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
+    
+    return data
+    
+
 async def gl_get_projects(group_id):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
