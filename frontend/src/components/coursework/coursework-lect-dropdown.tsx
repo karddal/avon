@@ -7,6 +7,7 @@ import {
   ServerCog,
   SquarePen,
   SquareX,
+  BookDashed, 
 } from "lucide-react";
 import { useState } from "react";
 import CreateDockerfile from "@/components/coursework/create-dockerfile";
@@ -29,6 +30,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import CreateTemplate from "./create-templates";
 
 type CourseworkUpdateData = {
   id: string;
@@ -55,6 +57,7 @@ export default function CourseworkLectDropdown({
   const [showDelete, setShowDelete] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showDocker, setShowDocker] = useState(false);
+  const [showTemplates, setShowTemplate] = useState(false);
 
   return (
     <div className="aspect-square">
@@ -65,6 +68,11 @@ export default function CourseworkLectDropdown({
         <DropdownMenuContent className="flex flex-col">
           <DropdownMenuLabel>Coursework Options</DropdownMenuLabel>
           <DropdownMenuSeparator />
+
+          <DropdownMenuItem disabled={false} onSelect={() => setShowTemplate(true)}>
+            <BookDashed className="mr-2 h-4 w-4" />
+            Templates
+          </DropdownMenuItem>
 
           <DropdownMenuItem disabled={true}>
             <ServerCog className="mr-2 h-4 w-4" />
@@ -100,6 +108,8 @@ export default function CourseworkLectDropdown({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <CreateTemplate open_state={showTemplates} set_open_state={setShowTemplate}/>
 
       <CreateDockerfile
         open_state={showDocker}
