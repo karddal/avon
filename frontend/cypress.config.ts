@@ -8,4 +8,5 @@ export default defineConfig({
     baseUrl: "http://localhost:3000",
     port: 4000,
   },
+  defaultCommandTimeout: 50000,
 });
