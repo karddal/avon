@@ -14,35 +14,35 @@ describe("Coursework page", () => {
 
   it("successfully loads", () => {
     cy.visit("/coursework");
-    cy.get("#radix-_R_9bneitmlb_-trigger-finished").click();
+    cy.contains("button", "Finished").click();
     cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
     cy.url().should("include", "/coursework/");
   });
 
   it("Contains a Title", () => {
     cy.visit("/coursework");
-    cy.get("#radix-_R_9bneitmlb_-trigger-finished").click();
+    cy.contains("button", "Finished").click();
     cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
     cy.get("div").should("contain", "Encrypt");
   });
 
   it("Contains a Description", () => {
     cy.visit("/coursework");
-    cy.get("#radix-_R_9bneitmlb_-trigger-finished").click();
+    cy.contains("button", "Finished").click();
     cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
     cy.get("div").find(".text-2xl").should("contain", "Description");
   });
 
   it("Conatins an Activity section", () => {
     cy.visit("/coursework");
-    cy.get("#radix-_R_9bneitmlb_-trigger-finished").click();
+    cy.contains("button", "Finished").click();
     cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
     cy.get("div").find(".text-2xl").should("contain", "Activity");
   });
 
   it("Contains a Tools section", () => {
     cy.visit("/coursework");
-    cy.get("#radix-_R_9bneitmlb_-trigger-finished").click();
+    cy.contains("button", "Finished").click();
     cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
     cy.get("div").should("contain", "Tools");
   });

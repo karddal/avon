@@ -12,35 +12,35 @@ describe("Coursework page", () => {
 
   it("successfully loads", () => {
     cy.visit("/coursework");
-    cy.get("#radix-_R_9bneitmlb_-trigger-finished").click();
+    cy.contains("button", "Finished").click();
     cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
     cy.url().should("include", "/coursework/");
   });
 
   it("Contains a Title", () => {
     cy.visit("/coursework");
-    cy.get("#radix-_R_9bneitmlb_-trigger-finished").click();
+    cy.contains("button", "Finished").click();
     cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
     cy.get("div").should("contain", "Encrypt");
   });
 
   it("Contains a Description", () => {
     cy.visit("/coursework");
-    cy.get("#radix-_R_9bneitmlb_-trigger-finished").click();
+    cy.contains("button", "Finished").click();
     cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
     cy.get("div").find(".text-2xl").should("contain", "Description");
   });
 
   it("Conatins an Activity section", () => {
     cy.visit("/coursework");
-    cy.get("#radix-_R_9bneitmlb_-trigger-finished").click();
+    cy.contains("button", "Finished").click();
     cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
     cy.get("div").find(".text-2xl").should("contain", "Activity");
   });
 
   it("Contains a Tools section", () => {
     cy.visit("/coursework");
-    cy.get("#radix-_R_9bneitmlb_-trigger-finished").click();
+    cy.contains("button", "Finished").click();
     cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
     cy.get("div").should("contain", "Tools");
   });
@@ -59,6 +59,7 @@ describe("Coursework page", () => {
     cy.visit("/coursework");
     cy.get("p").contains("Encrypt 2").should("be.visible");
   });
+
   it("Admin can edit a coursework description", () => {
     cy.visit("/coursework");
     cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
@@ -74,6 +75,7 @@ describe("Coursework page", () => {
     cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
     cy.get("div").contains("UNique Text 2837t37").should("be.visible");
   });
+
   it("Admin can edit a coursework date", () => {
     cy.visit("/coursework");
     cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });

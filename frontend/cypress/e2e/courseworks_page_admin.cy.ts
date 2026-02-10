@@ -36,19 +36,19 @@ describe("Coursework listing page - admin tests", () => {
   // Finsihed coursework stuff
   it("has default finished unit", () => {
     cy.visit("/coursework");
-    cy.get("#radix-_R_9bneitmlb_-trigger-finished").click();
+    cy.contains("button", "Finished").click();
     cy.get("span").should("contain", "Computer Architecture");
   });
 
   it("has default finished coursework", () => {
     cy.visit("/coursework");
-    cy.get("#radix-_R_9bneitmlb_-trigger-finished").click();
+    cy.contains("button", "Finished").click();
     cy.get("p").should("contain", "Encrypt");
   });
 
   it("Allows navigation through the finsihed coursework tabslist", () => {
     cy.visit("/coursework");
-    cy.get("#radix-_R_9bneitmlb_-trigger-finished").click();
+    cy.contains("button", "Finished").click();
     cy.contains(
       '[role="tab"]',
       "Imperative and Functional Programming",
