@@ -2,7 +2,7 @@ describe("Unit page", () => {
   beforeEach(() => {
     cy.exec("npm run db:reset && npm run db:seed");
     cy.wait(500);
-    cy.login("admin@bris.ac.uk", "changeme");
+    cy.login("admin@bris.ac.uk", "changeme", false);
   });
 
   it("admin can visit units", () => {
