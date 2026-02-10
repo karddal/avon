@@ -7,7 +7,7 @@ from app.core.helpers.gitlab import gl_create_project, gl_create_template_group,
 from app.db.session import get_session
 from app.models.coursework import Coursework
 from app.models.unit_enrollment import UnitEnrollment
-from app.schemas.project import ProjectCreate, ProjectDelete, TemplateCreate
+from app.schemas.project import ProjectCreate, ProjectDelete, ProjectsInCoursework, TemplateCreate
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 session_dependency = Annotated[Session, Depends(get_session)]
@@ -68,9 +68,9 @@ async def create_projects(project: ProjectCreate, session: session_dependency):
     print(gl_project)
     return {"unit id": students_enrolled}
 
-@router.get("/{group_id}")
-async def delete_projects(group_id: int, session: session_dependency):
+@router.get("/{group_id}", response_model=ProjectsInCoursework)
+async def get_projects(group_id: int, session: session_dependency):
     # Collect all the projects
     projects = await gl_get_projects(group_id)
     # print(projects)
-    return projects
+    return ProjectsInCoursework(projects=projects)

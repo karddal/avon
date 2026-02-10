@@ -10,8 +10,13 @@ class ProjectCreate(BaseModel):
     coursework_id: uuid.UUID
 
 class ProjectRead(BaseModel):
-    name: str
-    coursework_id: uuid.UUID
+    id: int
+    name: str 
+    path: str
+    web_url: str
 
 class ProjectDelete(BaseModel):
     group_id: int
+
+class ProjectsInCoursework(BaseModel):
+    projects: list[ProjectRead]

@@ -273,7 +273,7 @@ async def gl_create_project(name, user_id, group_id, template_group_id, template
     return data
 
 async def gl_get_projects(group_id):
-    print("inside", TOKEN, BASE_URL)
+    # print("inside", TOKEN, BASE_URL)
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
 
@@ -303,5 +303,5 @@ async def gl_get_projects(group_id):
 
     coursework_data = []
     for coursework in data:
-        coursework_data.append({"id": coursework["id"], "name": coursework["name"]})
+        coursework_data.append({"id": coursework["id"], "name": coursework["name"], "path":coursework["path"], "web_url":coursework["web_url"]})
     return coursework_data
