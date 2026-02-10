@@ -6,38 +6,46 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { delete_coursework } from "@/lib/actions/delete_coursework";
+import { activate_template_repo } from "@/lib/actions/activate_template_repo";
 
-export default function ActivateTemplateRepo() {
-//   console.log(courseworkId);
+interface ActivateTemplateRepo {
+    courseworkGitlabId: string;
+    onActivated: () => void;
+}
+
+export default function ActivateTemplateRepo({courseworkGitlabId, onActivated} : ActivateTemplateRepo) {
   const [status, setStatus] = useState<number>(0);
-  const router = useRouter();
 
-  const handleDelete = async () => {
-    // try {
+
+  const handleActivate = async () => {
+    try {
       setStatus(1);
 
-    //   const result = await delete_coursework({ id: courseworkId });
+      const result = await activate_template_repo({courseworkGitlabId});
 
-    //   if (result) {
-    //     toast.success("Coursework deleted successfully");
-    //     setStatus(0);
-    //     router.push("/coursework");
-    //   } else {
-    //     throw new Error();
-    //   }
-    // } catch (error) {
-    //   setStatus(2);
-    //   toast.error("Failed to delete the coursework");
-    //   console.log(error);
-    //   console.log(courseworkId);
+      if (result) {
+        toast.success("Template Repository activated successfully");
+        setStatus(2);
+        onActivated();
+      } else {
+        throw new Error();
+      }
+    } catch (error) {
+      setStatus(2);
+      toast.error("Template Repository failed to Acivate");
 
-    //   setTimeout(() => setStatus(0), 3000);
-    // }
+      setTimeout(() => setStatus(0), 3000);
+    }
   };
 
   return (
     <div className="h-full">
+      {status === 0 && (
+        <Button size="lg" className="w-full" onClick={handleActivate}>
+          Activate Template Repo
+        </Button>
+      )}
+
       {status === 1 && (
         <Button size="lg" disabled className="w-full">
           <Spinner className="mr-2 h-4 w-4" />
@@ -45,31 +53,11 @@ export default function ActivateTemplateRepo() {
         </Button>
       )}
 
-      {status === 0 && (
-        <Button
-          size="lg"
-          className="w-full"
-          onClick={handleDelete}
-        >
-          Activate Template Repo
+      {status === 2 &&(
+        <Button size="lg" variant="outline" className="w-full border-green-500 text-green-600 cursor-default" disabled>
+            ✓ Template Repo Activated
         </Button>
       )}
-
-      {status === 2 && (
-        <Button
-          variant="outline"
-          size="lg"
-          disabled
-          className="w-full border-destructive text-destructive"
-        >
-          <XIcon className="mr-2 h-4 w-4" />
-          Failed
-        </Button>
-      )}
-
-      {
-        
-      }
     </div>
   );
 }

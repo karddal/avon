@@ -43,6 +43,7 @@ type CourseworkUpdateData = {
   unit_name: string;
   unit_code: string;
   max_end_date: Date;
+  gitlabId: string;
 };
 
 export default function CourseworkLectDropdown({
@@ -109,7 +110,7 @@ export default function CourseworkLectDropdown({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <CreateTemplate open_state={showTemplates} set_open_state={setShowTemplate}/>
+      <CreateTemplate open_state={showTemplates} set_open_state={setShowTemplate} courseworkGitlabId={coursework_update_data.gitlabId}/>
 
       <CreateDockerfile
         open_state={showDocker}

@@ -35,11 +35,13 @@ import { cn } from "@/lib/utils";
 type Props = {
   open_state: boolean;
   set_open_state: Dispatch<SetStateAction<boolean>>;
+  courseworkGitlabId: string;
 };
 
 export default function CreateTemplate({
   open_state,
-  set_open_state
+  set_open_state,
+  courseworkGitlabId
 }: Props) {
   const [notActivatedRepo, setNotActivatedRepo] = useState(true);
 
@@ -82,7 +84,7 @@ export default function CreateTemplate({
                         Push templates for the coursework straight to GitLab
                     </p>
                     <div className="flex items-center gap-4">
-                        <ActivateTemplateRepo/>
+                        <ActivateTemplateRepo courseworkGitlabId={courseworkGitlabId} onActivated={() => setNotActivatedRepo(false)}/>
 
                         <Input
                             id={"form-flow-name"}
