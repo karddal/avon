@@ -11,13 +11,14 @@ import {
   Search,
   Trash2,
 } from "lucide-react";
-import { type Dispatch, type SetStateAction, useMemo, useState } from "react";
+import { type Dispatch, type SetStateAction, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import ZipUploadPage from "./upload-zip";  
 import ActivateTemplateRepo from "./activate-templateRepo-button";
+import RepoAccessBox from "./repo-access-box"
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -44,6 +45,11 @@ export default function CreateTemplate({
   courseworkGitlabId
 }: Props) {
   const [notActivatedRepo, setNotActivatedRepo] = useState(true);
+  const [gitlabRepoUrl, setGitlabRepoUrl] = useState<string | null>(null)
+
+  useEffect(() => {
+    setNotActivatedRepo(true)
+  }, [])
 
 
   return (
@@ -84,14 +90,16 @@ export default function CreateTemplate({
                         Push templates for the coursework straight to GitLab
                     </p>
                     <div className="flex items-center gap-4">
-                        <ActivateTemplateRepo courseworkGitlabId={courseworkGitlabId} onActivated={() => setNotActivatedRepo(false)}/>
-
-                        <Input
-                            id={"form-flow-name"}
-                            placeholder={"My amazing coursework"}
-                            autoComplete={"off"}
-                            disabled={notActivatedRepo}
-                        />
+                          <ActivateTemplateRepo
+                                courseworkGitlabId={courseworkGitlabId}
+                                onActivated={(repoUrl) => {
+                                setGitlabRepoUrl(repoUrl)
+                                setNotActivatedRepo(false)
+                                }}
+                            />
+                        {!notActivatedRepo && (
+                            <RepoAccessBox repoUrl={gitlabRepoUrl} />
+                        )}
                     </div>
                   </div>
                 </div>

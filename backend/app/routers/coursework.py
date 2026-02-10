@@ -82,6 +82,7 @@ async def get_coursework_update_form_data(id: UUID, session: session_dependency)
         colour=coursework.colour,
         unit_name=unit.name,
         unit_code=unit.unit_code,
+        gitlabId=coursework.gitlab_id,
         max_end_date=unit.programme.end_date,
     )
 

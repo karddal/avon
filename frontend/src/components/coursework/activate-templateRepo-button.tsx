@@ -10,7 +10,7 @@ import { activate_template_repo } from "@/lib/actions/activate_template_repo";
 
 interface ActivateTemplateRepo {
     courseworkGitlabId: string;
-    onActivated: () => void;
+    onActivated: (gitlabRepoUrl: string) => void;
 }
 
 export default function ActivateTemplateRepo({courseworkGitlabId, onActivated} : ActivateTemplateRepo) {
@@ -26,7 +26,7 @@ export default function ActivateTemplateRepo({courseworkGitlabId, onActivated} :
       if (result) {
         toast.success("Template Repository activated successfully");
         setStatus(2);
-        onActivated();
+        onActivated("testyyyyyyy");
       } else {
         throw new Error();
       }

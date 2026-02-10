@@ -21,6 +21,7 @@ type CourseworkUpdateReqResponse = {
   colour: string;
   unit_name: string;
   unit_code: string;
+  gitlabId: string;
   max_end_date: string;
 };
 
@@ -34,6 +35,7 @@ type CourseworkUpdateData = {
   colour: string;
   unit_name: string;
   unit_code: string;
+  gitlabId: string;
   max_end_date: Date;
 };
 
@@ -70,6 +72,7 @@ async function CourseworkPageContent({
     colour: c.colour,
     unit_name: c.unit_name,
     unit_code: c.unit_code,
+    gitlabId: c.gitlabId,
     max_end_date: end,
   };
 
