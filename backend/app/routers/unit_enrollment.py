@@ -106,7 +106,7 @@ def unenroll_unit(payload: UnitEnrollmentBatchDelete, session: session_dependenc
 
     return {"message": "users un-enrolled successfully, excluding omitted "}
 
-@router.post("/batch/transfer", status_code=201)
-def transfer_unit_members(payload: UnitEnrollmentBatchTransfer, session: session_dependency):
-    if (not session.get(Unit, payload.unitIdsTo)) or (not )
+# @router.post("/batch/transfer", status_code=201)
+# def transfer_unit_members(payload: UnitEnrollmentBatchTransfer, session: session_dependency):
+#     if (not session.get(Unit, payload.unitIdsTo)) or (not )
 
