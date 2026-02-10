@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, List
 from uuid import UUID
 from datetime import date
 
@@ -46,3 +46,6 @@ class ProgrammeUpdate(BaseModel):
 class ProgrammeDelete(BaseModel):
     id: UUID
     deletion_successful: bool
+
+class ProgrammeAll(BaseModel):
+    programmes: List[ProgrammeRead]

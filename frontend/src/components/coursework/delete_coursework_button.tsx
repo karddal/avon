@@ -2,7 +2,7 @@
 
 import { XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { type Dispatch, type SetStateAction, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -10,13 +10,12 @@ import { delete_coursework } from "@/lib/actions/delete_coursework";
 
 interface DeleteCourseworkButtonProps {
   courseworkId: string;
-  setAlertState: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function DeleteCourseworkButton({
   courseworkId,
-  setAlertState,
 }: DeleteCourseworkButtonProps) {
+  console.log(courseworkId);
   const [status, setStatus] = useState<number>(0);
   const router = useRouter();
 
@@ -29,8 +28,7 @@ export default function DeleteCourseworkButton({
       if (result) {
         toast.success("Coursework deleted successfully");
         setStatus(0);
-        setAlertState(false);
-        router.refresh();
+        router.push("/coursework");
       } else {
         throw new Error();
       }

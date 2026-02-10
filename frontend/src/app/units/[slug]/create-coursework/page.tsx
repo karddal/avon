@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { IntForm } from "@/app/units/[slug]/create/form";
+import { IntForm } from "@/app/units/[slug]/create-coursework/form";
 // import { IntForm } from "./form";
 import { getRequestJWT } from "@/lib/auth-utils";
 
