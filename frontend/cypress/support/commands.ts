@@ -37,16 +37,6 @@
 // }
 /// <reference path="./commands.d.ts" />
 
-import { makeUnmountFn, mount } from "cypress/react";
-
-Cypress.Commands.add("mount", (...args: Parameters<typeof mount>) => {
-  return mount(...args);
-});
-
-Cypress.Commands.add("unmount", () => {
-  return makeUnmountFn({ log: false });
-});
-
 Cypress.Commands.add("login", (username: string, password: string) => {
   cy.session(
     username,

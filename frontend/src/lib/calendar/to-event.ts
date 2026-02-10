@@ -1,4 +1,4 @@
-import type { CalendarEvent } from "@/components/calendar/calendar-timetable-card";
+import type { CalendarEvent } from "@/components/calendar/calendar-dashboard";
 
 type CourseworkEvent = {
   id: string;

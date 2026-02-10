@@ -17,6 +17,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {useIsMobile} from "@/hooks/use-mobile";
 
 export function CalendarNavigationCard({
   weekStartDate,
@@ -35,6 +36,8 @@ export function CalendarNavigationCard({
   academicYearStart: number;
   onAcademicYearStartChange: (yearStart: number) => void;
 }) {
+    const isMobile = useIsMobile()
+
   const weekStart = useMemo(
     () => startOfWeek(weekStartDate, { weekStartsOn: 1 }),
     [weekStartDate],
@@ -42,6 +45,8 @@ export function CalendarNavigationCard({
   const weekEnd = addDays(weekStart, 6);
 
   const weekRange = `${format(weekStart, "MMM d")} – ${format(weekEnd, "MMM d")}`;
+
+    const dayLabel = format(weekStartDate, "MMM d")
 
   const [selectedUnitIds, setSelectedUnitIds] = useState<string[]>([]);
 
@@ -106,8 +111,14 @@ export function CalendarNavigationCard({
                 <Button
                   variant="outline"
                   size="icon-lg"
-                  onClick={() => onWeekStartDateChange(addWeeks(weekStart, -1))}
-                  title="Last week"
+                  onClick={() =>{
+                      onWeekStartDateChange(
+                          isMobile
+                              ? addDays(weekStartDate, -1)
+                              : addWeeks(weekStart, -1)
+                      )
+                  }}
+                  title={isMobile ? "Previous day" : "Last week"}
                 >
                   <ChevronLeft />
                 </Button>
@@ -117,7 +128,9 @@ export function CalendarNavigationCard({
                   size="sm"
                   onClick={() =>
                     onWeekStartDateChange(
-                      startOfWeek(new Date(), { weekStartsOn: 1 }),
+                        isMobile
+                            ? new Date()
+                            : startOfWeek(new Date(), { weekStartsOn: 1 }),
                     )
                   }
                   title="Today"
@@ -128,8 +141,14 @@ export function CalendarNavigationCard({
                 <Button
                   variant="outline"
                   size="icon-lg"
-                  onClick={() => onWeekStartDateChange(addWeeks(weekStart, 1))}
-                  title="Next week"
+                  onClick={() => {
+                      onWeekStartDateChange(
+                          isMobile
+                            ? addDays(weekStartDate, 1)
+                            : addWeeks(weekStart, 1)
+                      )
+                  }}
+                  title={isMobile ? "Next day" : "Next week"}
                 >
                   <ChevronRight />
                 </Button>
@@ -151,7 +170,9 @@ export function CalendarNavigationCard({
                       onSelect={(date) => {
                         if (!date) return;
                         onWeekStartDateChange(
-                          startOfWeek(date, { weekStartsOn: 1 }),
+                            isMobile
+                                ? date
+                                : startOfWeek(date, { weekStartsOn: 1 }),
                         );
                       }}
                     />

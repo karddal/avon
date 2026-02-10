@@ -1,5 +1,5 @@
-import { format } from "date-fns";
-import type { CalendarEvent } from "@/components/calendar/calendar-timetable-card";
+import { format } from "date-fns/format";
+import type { CalendarEvent } from "@/components/calendar/calendar-dashboard";
 
 export function groupEventsByDay(events: CalendarEvent[]) {
   const map = new Map<string, CalendarEvent[]>();

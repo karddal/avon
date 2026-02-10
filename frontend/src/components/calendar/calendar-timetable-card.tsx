@@ -39,9 +39,8 @@ export function CalendarTimeTableCard({
   const visibleDays = useMemo(() => {
     if (!isMobile) return days;
 
-    const inWeek = days.find((d) => format(d, "yyyy-MM-dd") === today);
-    return [inWeek ?? days[0]];
-  }, [isMobile, days, today]);
+    return [weekStartDate]
+  }, [isMobile, days, weekStartDate]);
 
   return (
     <Card className="w-full">
@@ -92,7 +91,7 @@ function TimeGridBody({
     gridRef,
     gutterWidth,
     daysCount: days.length,
-    minColPx: 120, // minim length for one event in a column
+    minColPx: 80, // minim length for one event in a column
     maxColsCap: 3,
   });
   const { getEventsForKey } = useWeeklyEvents({
@@ -290,7 +289,9 @@ function TimeGridBody({
                               <div
                                 key={event.id}
                                 className="block rounded-md border bg-card px-2 py-1 text-xs opacity-80"
-                              ></div>
+                              >
+                                  {content}
+                              </div>
                             );
                           })}
                         </div>
