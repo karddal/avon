@@ -5,7 +5,7 @@ describe("Coursework listing page", () => {
   });
 
   beforeEach(() => {
-    cy.login("one@bris.ac.uk", "changeme");
+    cy.login("one@bris.ac.uk", "changeme", false);
   });
 
   it("successfully loads", () => {
