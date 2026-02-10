@@ -18,7 +18,7 @@ export async function transfer_unit_members(req: TransferUnitMembersRequest) {
   console.log(req);
 
   const data = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/programmes/create`,
+    `${process.env.NEXT_PUBLIC_API_URL}/unit_enrollment/batch/transfer`,
     {
       method: "POST",
       headers: {
