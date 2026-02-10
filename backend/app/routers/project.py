@@ -3,11 +3,11 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 
-from app.core.helpers.gitlab import gl_create_project, gl_create_template_group, gl_create_template_project, gl_get_projects
+from app.core.helpers.gitlab import gl_create_project, gl_create_template_group, gl_create_template_project, gl_get_project, gl_get_projects
 from app.db.session import get_session
 from app.models.coursework import Coursework
 from app.models.unit_enrollment import UnitEnrollment
-from app.schemas.project import ProjectCreate, ProjectDelete, ProjectsInCoursework, TemplateCreate
+from app.schemas.project import ProjectCreate, ProjectDelete, ProjectRead, ProjectsInCoursework, TemplateCreate
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 session_dependency = Annotated[Session, Depends(get_session)]
@@ -68,9 +68,18 @@ async def create_projects(project: ProjectCreate, session: session_dependency):
     print(gl_project)
     return {"unit id": students_enrolled}
 
-@router.get("/{group_id}", response_model=ProjectsInCoursework)
-async def get_projects(group_id: int, session: session_dependency):
+@router.get("/groups/{group_id}", response_model=ProjectsInCoursework)
+async def get_projects(group_id: int):
     # Collect all the projects
     projects = await gl_get_projects(group_id)
     # print(projects)
     return ProjectsInCoursework(projects=projects)
+
+@router.get("/{project_id}", response_model=ProjectRead)
+async def get_project(project_id: int):
+    project = await gl_get_project(project_id)
+    return project
+
+# @router.delete("/{group_id}/{project_id}", status_code=201)
+# async def delete_specific_project(group_id: int, project_id: int):
+#     return await gl_delete_project(group_id, project_id)
