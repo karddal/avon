@@ -272,7 +272,7 @@ async def gl_create_project(name, user_id, group_id, template_group_id, template
     
     return data
 
-async def gl_delete_projects(group_id):
+async def gl_get_projects(group_id):
     print("inside", TOKEN, BASE_URL)
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
@@ -280,27 +280,28 @@ async def gl_delete_projects(group_id):
     async with httpx.AsyncClient(base_url=BASE_URL) as client:
         try:
             response = await client.get(
-                "/groups/:id/projects/",
+                f"/groups/{group_id}/projects/",
                 headers={
                     "PRIVATE-TOKEN": TOKEN,
                     "Content-Type": "application/json",
                 },
-                params={
-                    "id": group_id
-                },
                 timeout=10.0
             )
             data = response.json()
-            print(data)
-            if response.status_code != 201:
+            # print(data[0]["id"], data[0]["name"])
+            # print(data.name, data.id)
+            if response.status_code != 200:
                 return {
                     "success": False,
-                    "error": data.get("message") or "Failed to create GitLab group"
+                    "error": "Failed to find "
                 }
 
         except httpx.RequestError as err:
             print(3)
             print(f"Network Error: {err}")
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
-    
-    return data 
+
+    coursework_data = []
+    for coursework in data:
+        coursework_data.append({"id": coursework["id"], "name": coursework["name"]})
+    return coursework_data
