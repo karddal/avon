@@ -42,5 +42,5 @@ class UnitEnrollmentBatchCreate(BaseModel):
     user_ids: List[UserId]
 
 class UnitEnrollmentBatchDelete(BaseModel):
-    unit_id: UUID
-    user_ids: List[UserId]
+    unit_id: UUID # already do type checking on enrollment
+    omitted_user_ids: List[UUID]

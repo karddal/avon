@@ -54,18 +54,17 @@ interface Unit {
 
 export default function BulkDelete() {
   const [selectedProgrammeId, setSelectedProgrammeId] = useState<string | null>(null);
-  const [selectedUnitIds, setSelectedUnitIds] = useState<string[]>([]);
+  const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
   const [programmes, setProgrammes] = useState<Programme[]>([]);
   const [units, setUnits] = useState<Unit[]>([]);
-  const [omittedMembers, setOmittedMembers] = useState<string[]>([]);
+  const [omittedMemberIds, setOmittedMembersIds] = useState<string[]>([]);
   const [showDelete, setShowDelete] = useState(false);
   const programmeSelectedTo = selectedProgrammeId !== null;
-  const selectedCount = selectedUnitIds.length
-  const canDeleteAndOmit = selectedCount > 0;
+  const canDeleteAndOmit = selectedUnitId !== null;
 
   useEffect(() => {
         if (selectedProgrammeId === null) {
-            setSelectedUnitIds([]);
+            setSelectedUnitId(null);
         }
     }, [selectedProgrammeId]);
 
@@ -86,7 +85,7 @@ export default function BulkDelete() {
   useEffect(() => {
         if (!selectedProgrammeId) {
             setUnits([]);
-            setSelectedUnitIds([]);
+            setSelectedUnitId(null);
             return;
         }
 
@@ -95,7 +94,7 @@ export default function BulkDelete() {
         );
 
         setUnits(programme?.units ?? []);
-        setSelectedUnitIds([]);
+        setSelectedUnitId(null);
     }, [selectedProgrammeId, programmes]);
 
 
@@ -131,33 +130,26 @@ export default function BulkDelete() {
             <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                 Select Units
             </h3>
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild disabled={!programmeSelectedTo}>
-                    <Button variant="outline" className="w-full justify-between">
-                    {selectedCount === 0
-                        ? "Select Units"
-                        : `${selectedCount} unit${selectedCount > 1 ? "s" : ""} selected`}
-                    </Button>
-                </DropdownMenuTrigger>
-
-                <DropdownMenuContent className="w-64">
-                    {units.map((u) => (
-                    <div key={u.id} className="flex items-center space-x-2 p-2">
-                        <Checkbox
-                        checked={selectedUnitIds.includes(u.id)}
-                        onCheckedChange={(checked) => {
-                            setSelectedUnitIds((prev) =>
-                            checked
-                                ? [...prev, u.id]
-                                : prev.filter((id) => id !== u.id)
-                            )
-                        }}
-                        />
-                        <span>{u.name}</span>
-                    </div>
-                    ))}
-                </DropdownMenuContent>
-            </DropdownMenu>
+            <Select value={selectedUnitId ?? "all"}
+                onValueChange={(value) =>
+                    setSelectedUnitId(value === "all" ? null : value)
+                }
+                disabled={!programmeSelectedTo}
+                >
+                <SelectTrigger className="mt-3 w-full">
+                    <SelectValue placeholder="Select unit" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectGroup>
+                        <SelectItem value="all">Select Unit</SelectItem>
+                        {units.map((unit) => (
+                          <SelectItem key={unit.id} value={unit.id}>
+                              {unit.name}
+                          </SelectItem>
+                        ))}
+                    </SelectGroup>
+                </SelectContent>
+              </Select>
         </div>
         <div className="rounded-md border border-border p-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -193,7 +185,7 @@ export default function BulkDelete() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
-            <BulkDeleteButton unitIds={selectedUnitIds} omittedMembers={omittedMembers}/>
+            <BulkDeleteButton unit_id={selectedUnitId!} omitted_user_ids={omittedMemberIds} closeDialog={()=>setShowDelete(false)}/>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

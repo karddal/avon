@@ -8,11 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { delete_unit_members } from "@/lib/actions/delete_unit_members";
 interface DeleteUnitMembersProps {
-  unitIds: string[];
-  omittedMembers: string[];
+  unit_id : string;
+  omitted_user_ids: string[];
+  closeDialog: () => void;
 }
 
-export default function BulkDeleteButton({ unitIds, omittedMembers }: DeleteUnitMembersProps) {
+export default function BulkDeleteButton({ unit_id, omitted_user_ids, closeDialog }: DeleteUnitMembersProps) {
   const [status, setStatus] = useState<number>(0);
   const router = useRouter();
 
@@ -20,15 +21,17 @@ export default function BulkDeleteButton({ unitIds, omittedMembers }: DeleteUnit
     try {
       setStatus(1);
 
-      const result = await delete_unit_members({unitIds, omittedMembers});
+      const result = await delete_unit_members({unit_id, omitted_user_ids});
 
-    //   if (result) {
-    //     toast.success("Unit Members deleted successfully");
-    //     router.push("/units");
-    //   } else {
-    //     throw new Error();
-    //   }
-    } catch (_error) {
+      if (result) {
+        toast.success("Unit Members deleted successfully");
+        setStatus(0);
+        router.push("/management");
+        closeDialog();
+      } else {
+        throw new Error();
+      }
+    } catch (error) {
       setStatus(2);
       toast.error("Failed to delete the unit members");
 

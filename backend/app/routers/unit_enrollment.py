@@ -1,6 +1,6 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
-from sqlalchemy import delete
+from sqlalchemy import delete, not_
 from sqlmodel import Session, select
 
 from app.db.session import get_session
@@ -81,35 +81,30 @@ def enroll_unit_batch(payload: UnitEnrollmentBatchCreate, session: session_depen
     
     return {"message": f"{len(new_enrollments)} users enrolled successfully"}
 
-@router.post("/batch", status_code=201)
-def unenroll_unit_batch(payload: UnitEnrollmentBatchDelete, session: session_dependency):
+@router.delete("/batch", status_code=201)
+def unenroll_unit(payload: UnitEnrollmentBatchDelete, session: session_dependency):
     if not session.get(Unit, payload.unit_id):
         raise HTTPException(status_code=404, detail="Unit not found")
     
     # find in bulk if they don't exist
-    statement = select(UnitEnrollment.user_id).where(
-        UnitEnrollment.unit_id == payload.unit_id,
-        UnitEnrollment.user_id.in_(payload.user_ids)
-    )
+    statement = select(UnitEnrollment.user_id).where(UnitEnrollment.unit_id == payload.unit_id)
+    filteredStmt = select(UnitEnrollment.user_id).where(UnitEnrollment.user_id.notin_(payload.omitted_user_ids), UnitEnrollment.type == "student")
 
-    existing_user_ids = set(session.exec(statement).all())
-    requested_user_ids = set(payload.user_ids)
+    exists = session.exec(filteredStmt.limit(1)).first()
 
-    missing_user_ids = requested_user_ids - existing_user_ids
-
-    if missing_user_ids: #Want to check they ALL exist, to ensure consistency
+    if not exists: # Want to check some people exist, to ensure consistency
         raise HTTPException(
             status_code=409, 
-            detail=f"Users {list(missing_user_ids)} aren't enrolled on given unit"
+            detail=f"No Users are enrolled on given unit, that aren't excluded / omitted"
         )
     
     # unenroll in bulk, will just 
-    delete_process = delete(UnitEnrollment).where(UnitEnrollment.unit.id == payload.unit_id, UnitEnrollment.user_id.in_(payload.user_ids))
+    delete_process = delete(UnitEnrollment).where(UnitEnrollment.user_id.in_(filteredStmt))
 
     session.exec(delete_process)
     session.commit()
 
-    return {"message": f"{len(payload.unit_id)} users un-enrolled successfully"}
+    return {"message": "users un-enrolled successfully, excluding omitted "}
 
 
 

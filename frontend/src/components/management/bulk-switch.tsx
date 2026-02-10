@@ -66,7 +66,7 @@ export default function BulkSwitch() {
 
     // To feed as inputs to buttons and dropdowns
     const [programmes, setProgrammes] = useState<Programme[]>([]);
-    const [fromUnit, setFromUnit] = useState<Unit | null>(null);
+    const [fromUnits, setFromUnits] = useState<Unit[]>([]);
     const [toUnits, setToUnits] = useState<Unit[]>([]);
 
     // Miscallenous form states and variables
@@ -79,18 +79,20 @@ export default function BulkSwitch() {
 
     // Helper for alert dialog
     const fromProgramme = programmes.find((p) => p.id === selectedProgrammeIdFrom);
+    const fromUnitTemp = fromUnits.find((unit) => unit.id === selectedUnitId)
     const toProgramme = programmes.find((p) => p.id === selectedProgrammeIdTo);
-    const fromLabel = fromUnit && fromProgramme ? (
+    const fromUnitsTemp = toUnits.filter((unit) => selectedUnitIds.includes(unit.id))
+    const fromLabel = fromUnitTemp && fromProgramme ? (
             <>
-            {fromUnit.name}
+            {fromUnitTemp.name}
             <span className="mx-1 text-muted-foreground">|</span>
             <span className="text-muted-foreground">{fromProgramme.name}</span>
             </>
         ) : null;
 
-    const toLabel = toUnits.length > 0 && toProgramme ? (
+    const toLabel = fromUnitsTemp.length > 0 && toProgramme ? (
             <>
-            {toUnits.map((u) => u.name).join(", ")}
+            {fromUnitsTemp.map((u) => u.name).join(", ")}
             <span className="mx-1 text-muted-foreground">|</span>
             <span className="text-muted-foreground">{toProgramme.name}</span>
             </>
@@ -128,7 +130,7 @@ export default function BulkSwitch() {
     // Keeps fromUnit and selectedUnitId in sync with the selected programme and the newly loaded programmes data.
     useEffect(() => {
         if (!selectedProgrammeIdFrom) {
-            setFromUnit(null);
+            setFromUnits([]);
             setSelectedUnitId(null);
             return;
         }
@@ -137,7 +139,7 @@ export default function BulkSwitch() {
             (p) => p.id === selectedProgrammeIdFrom
         );
 
-        setFromUnit(programme?.units?.[0] ?? null);
+        setFromUnits(programme?.units ?? []);
         setSelectedUnitId(null);
     }, [selectedProgrammeIdFrom, programmes]);
 
@@ -202,11 +204,11 @@ export default function BulkSwitch() {
                 <SelectContent>
                     <SelectGroup>
                         <SelectItem value="all">Select Unit</SelectItem>
-                        {fromUnit && (
-                        <SelectItem value={fromUnit.id}>
-                            {fromUnit.name}
-                        </SelectItem>
-                        )}
+                        {fromUnits.map((unit) => (
+                          <SelectItem key={unit.id} value={unit.id}>
+                              {unit.name}
+                          </SelectItem>
+                        ))}
                     </SelectGroup>
                 </SelectContent>
                 </Select>
@@ -252,7 +254,7 @@ export default function BulkSwitch() {
                             </Button>
                         </DropdownMenuTrigger>
 
-                        <DropdownMenuContent className="w-64">
+                        <DropdownMenuContent className="w-64" side="top">
                             {toUnits.map((u) => (
                             <div key={u.id} className="flex items-center space-x-2 p-2">
                                 <Checkbox
@@ -314,7 +316,7 @@ export default function BulkSwitch() {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
-                    <BulkTransferButton unitIdFrom={selectedUnitId!} unitIdsTo={selectedUnitIds} omittedMembers={omittedMembers}/> 
+                    <BulkTransferButton unitIdFrom={selectedUnitId!} unitIdsTo={selectedUnitIds.filter((unitId) => unitId !== selectedUnitId)} omittedMembers={omittedMembers}/> {/*Filtering out transferring to same unit e.g. programme x unit y -> programme x unit y/*}
                     {/*selecetd Unit Id can never be null here anyway, as form doesn't allow it*/}
                 </AlertDialogFooter>
             </AlertDialogContent>
