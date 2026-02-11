@@ -226,6 +226,46 @@ async def gl_create_template_project(group_id):
     
     return data
 
+async def gl_create_fork(name, user_id, group_id, template_id):
+    if not TOKEN or not BASE_URL:
+        raise HTTPException(status_code=500, detail="Missing GitLab configuration")
+    
+    print("point")
+    name = name+"-"+user_id
+    path = generate_gitlab_path(name)
+    async with httpx.AsyncClient(base_url=BASE_URL) as client:
+        print("par")
+        try:
+            print("a")
+            response = await client.post(
+                f"/projects/"+template_id+"/fork",
+                headers={
+                    "PRIVATE-TOKEN": TOKEN,
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "name": name,
+                    "path": path,
+                    "namespace_id":group_id,
+                    "description":"Project repo for " + user_id,
+                },
+                timeout=10.0
+            )
+            print("b")
+            data = response.json()
+            if response.status_code != 201:
+                return {
+                    "success": False,
+                    "error": data.get("message") or "Failed to create GitLab group"
+                }
+
+        except httpx.RequestError as err:
+            print(3)
+            print(f"Network Error: {err}")
+            raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
+    
+    return data 
+
 async def gl_create_project(name, user_id, group_id, template_group_id, template_id):
     print("inside", TOKEN, BASE_URL)
     print(template_group_id, template_id)
@@ -354,11 +394,12 @@ async def gl_get_projects(group_id):
 
 async def gl_delete_projects(group_id: int):
     status = {"deleted": [], "failed": []}
-    projects_to_delete = await gl_get_projects(group_id)
+    if project["name"] != "skeleton-code":
+        projects_to_delete = await gl_get_projects(group_id)
     print(projects_to_delete)
     for project in projects_to_delete:
-        status_code = await gl_delete_project(project["id"])
-        # print(response)
+        if project["name"] != "skeleton-code":
+            status_code = await gl_delete_project(project["id"])
         if status_code == 202:
             status["deleted"].append(project["name"])
         else:

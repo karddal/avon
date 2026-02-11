@@ -11,6 +11,11 @@ class ProjectCreate(BaseModel):
     template_group_id: int
     template_id: int
 
+class ProjectFork(BaseModel):
+    name: str
+    coursework_id: uuid.UUID
+    template_id: str    
+
 class ProjectRead(BaseModel):
     id: int
     name: str 
