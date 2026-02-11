@@ -1,4 +1,4 @@
-
+import logging
 from typing import Annotated
 
 from fastapi import HTTPException, Depends
@@ -9,11 +9,14 @@ from pwdlib import PasswordHash
 from pydantic import BaseModel
 from starlette import status
 import jwt
-from jwt import PyJWKClient
+from jwt_utils import _token_fingerprint, verify_token_and_get_user
+from app.schemas.security import CurrentUser
 
 from app.core.settings import settings
 
 ALGORITHM = "HS256"
+
+logger = logging.getLogger("security")
 
 password_hash = PasswordHash.recommended()
 def hash_password(password: str) -> str:

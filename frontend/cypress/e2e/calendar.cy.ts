@@ -53,7 +53,7 @@ describe("Calendar e2e test", () => {
 
     cy.intercept("GET", "**/api/calendar/events*", (req) => {
       const url = requestUrl(req.url);
-      const query = (req.query ?? {}) as Record<string, any>;
+      const query = (req.query ?? {}) as Record<string, unknown>;
       for (const [k, v] of Object.entries(query)) {
         if (v == null) continue;
         url.searchParams.set(k, Array.isArray(v) ? String(v[0]) : String(v));
