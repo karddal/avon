@@ -56,10 +56,9 @@ jobs:
         uses: cypress-io/github-action@v6
         env:
           NODE_ENV: test
+          CI: 1
         with:
           working-directory: ./frontend
-          env: NODE_ENV=test
-          start: |
-            npm run start:backend
-            npm run dev
-          wait-on: "http://localhost:8000/check/health"
+          install: false
+          runTests: true
+          command: npm run test
