@@ -12,7 +12,7 @@ const fetcher = async (url: string) => {
 export type UnitEvent = { id: string; name: string };
 
 export function useUnits() {
-  const { data, error, isLoading } = useSWR<UnitEvent[]>(
+  const { data, error, isLoading, mutate} = useSWR<UnitEvent[]>(
     "/api/calendar/units",
     fetcher,
     {
@@ -26,5 +26,5 @@ export function useUnits() {
     label: unit.name,
   }));
 
-  return { unitOptions, isLoading, error };
+  return { unitOptions, isLoading, error, refresh: mutate};
 }

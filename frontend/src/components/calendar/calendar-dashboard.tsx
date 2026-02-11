@@ -92,14 +92,14 @@ export default function CalendarDashboard() {
           onAcademicYearStartChange={setAcademicYearStart}
         />
 
-        <TabsContent value="timetable">
+        <TabsContent value="timetable" data-cy="tab-timetable">
           <CalendarTimeTableCard
             weekStartDate={weekStartDate}
             eventsMap={filteredEventsMap}
           />
         </TabsContent>
 
-        <TabsContent value="events">
+        <TabsContent value="events" data-cy="tab-events">
           <EventsListingCard eventsMap={filteredEventsMap} />
         </TabsContent>
       </Tabs>

@@ -98,6 +98,7 @@ export function CalendarNavigationCard({
               onClick={() => setSelectedUnitIds([])}
               disabled={selectedUnitIds.length === 0}
               title="Clear unit filters"
+              data-cy="units-reset"
             >
               Reset
             </Button>
@@ -126,6 +127,7 @@ export function CalendarNavigationCard({
                 <Button
                   variant="outline"
                   size="sm"
+                  data-cy="nav-today"
                   onClick={() =>
                     onWeekStartDateChange(
                         isMobile

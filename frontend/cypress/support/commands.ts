@@ -54,31 +54,12 @@ Cypress.Commands.add(
   },
 );
 
-// cypress/support/commands.ts
-Cypress.Commands.add("loginNew", (username: string, password: string) => {
-  cy.session(
-    `better-auth:${username}`,
-    () => {
-      cy.visit("/login");
-      cy.get("#email").clear().type(username);
-      cy.get("#password").clear().type(password);
-      cy.get("button[type=submit]").click();
+Cypress.Commands.add("dbPrepare", () => {
+    return cy.exec("npm run e2e:db:prepare", {
+        failOnNonZeroExit: true,
+    })
+})
 
-      cy.url().should("include", "/dashboard");
-      cy.getCookie("__Secure-better-auth.session_token").should("exist");
-    },
-    {
-      validate: () => {
-        cy.request({
-          url: "/dashboard",
-          failOnStatusCode: false,
-          followRedirect: false,
-        }).then((res) => {
-          expect([200]).to.include(res.status);
-          expect(res.body).to.not.include('id="email"');
-        });
-      },
-      cacheAcrossSpecs: true,
-    },
-  );
-});
+Cypress.Commands.add("getByCy", (value: string) => {
+    return cy.get(`[data-cy="${value}"]`)
+})

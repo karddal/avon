@@ -1,6 +1,7 @@
 describe("Unit page", () => {
   beforeEach(() => {
-    cy.exec("npm run db:reset && npm run db:seed");
+    // cy.exec("npm run db:reset && npm run db:seed");
+      cy.dbPrepare()
     cy.wait(500);
     cy.login("admin@bris.ac.uk", "changeme", false);
   });
