@@ -36,7 +36,7 @@ describe("Calendar e2e test", () => {
     unitsCalls = [];
     eventsCalls = [];
 
-    cy.clock(new Date().getTime(), ["Date"]);
+    cy.clock(Date.now(), ["Date"]);
 
     cy.dbPrepare();
 
@@ -173,7 +173,7 @@ describe("Calendar e2e test", () => {
 
     const clickEither = (a: string, b: string) => {
       const selA = `button[title="${a}"]`;
-      const selB = `button[title="${b}"]`;
+      const _selB = `button[title="${b}"]`;
 
       cy.get("body").then(($body) => {
         const pick = $body.find(selA).length ? a : b;
@@ -199,7 +199,7 @@ describe("Calendar e2e test", () => {
         ).to.be.oneOf([before, before + 1]);
 
         if (eventsCalls.length === before + 1) {
-          const url = requestUrl(eventsCalls[eventsCalls.length - 1]!.url);
+          const url = requestUrl(eventsCalls[eventsCalls.length - 1]?.url);
           expect(
             hasFromTo(url),
             "jump-to-date request should include from_/to",

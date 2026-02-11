@@ -68,7 +68,7 @@ export function CalendarNavigationCard({
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             {tab === "timetable" ? (
               <div className="text-base font-semibold leading-none">
-                {weekRange}
+                {isMobile ? dayLabel : weekRange}
               </div>
             ) : (
               <AcademicYearStepper
