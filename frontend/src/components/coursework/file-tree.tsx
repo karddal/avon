@@ -14,10 +14,6 @@ import {
   FileCode,
 } from "lucide-react"
 
-/* ------------------------------------------------------------------ */
-/* Fake repo data                                                      */
-/* ------------------------------------------------------------------ */
-
 type RepoNode = {
   name: string
   path: string
@@ -113,10 +109,6 @@ function TreeNode({ node }: { node: RepoNode }) {
     </Collapsible>
   )
 }
-
-/* ------------------------------------------------------------------ */
-/* Exported example component                                          */
-/* ------------------------------------------------------------------ */
 
 export default function RepoTreeExample() {
   return (

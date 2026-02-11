@@ -34,6 +34,9 @@ import { TOOLS } from "@/lib/docker/tools";
 import type { Image, Tool } from "@/lib/docker/types";
 import { cn } from "@/lib/utils";
 
+// Need to check if anotehr repo is already intialised, if it is then activate repo button has to be green already
+// If this template repo contains stuff already, the upload zip part (WHICH NEEDS A LOADING BAR AND BUTTON FOR SUBMITTTING), must turn it's submit button into an overwrite button, and state that an overwrite will happen (alert / warning menu)
+
 type Props = {
   open_state: boolean;
   set_open_state: Dispatch<SetStateAction<boolean>>;
@@ -45,12 +48,21 @@ export default function CreateTemplate({
   set_open_state,
   courseworkGitlabId
 }: Props) {
-  const [notActivatedRepo, setNotActivatedRepo] = useState(true);
+  const [existingRepo, setExistingRepo] = useState(false);
   const [gitlabRepoUrl, setGitlabRepoUrl] = useState<string | null>(null)
+  const [activateStatus, setActiveStatus] = useState<number>(0);
 
   useEffect(() => {
-    setNotActivatedRepo(true)
+    // result = call to check wether there is an exsitiong tenmplate in that coursework group
+    setExistingRepo(false) // If there is then set to true
   }, [])
+
+  useEffect(() => {
+    if (existingRepo){
+      setActiveStatus(2)
+    }
+  }, [existingRepo])
+
 
 
   return (
@@ -77,7 +89,7 @@ export default function CreateTemplate({
                       <p className="text-sm text-muted-foreground mb-2">
                           Upload templates for the coursework via ZIP here
                       </p>
-                      <ZipUploadPage/>
+                      <ZipUploadPage uploadSetStatus={setActiveStatus}  uploadStatus={activateStatus}/>
                     </div>
                   </div>
 
@@ -92,12 +104,11 @@ export default function CreateTemplate({
                       <div className="flex flex-col-reverse w-full items-center gap-2">
                             <ActivateTemplateRepo
                                   courseworkGitlabId={courseworkGitlabId}
-                                  onActivated={(repoUrl) => {
-                                  setGitlabRepoUrl(repoUrl)
-                                  setNotActivatedRepo(false)
-                                  }}
+                                  status={activateStatus}
+                                  setStatus={setActiveStatus}
+                                  setGitlabUrl={setGitlabRepoUrl}
                               />
-                          {!notActivatedRepo && (
+                          {activateStatus === 2 && (
                               <RepoAccessBox repoUrl={gitlabRepoUrl} />
                           )}
                       </div>
@@ -112,7 +123,7 @@ export default function CreateTemplate({
                         Files
                       </DialogTitle>
                       <p className="text-sm text-muted-foreground mb-6">
-                          File structure of each coursework repository
+                          File structure of Template repository
                       </p>
                     </div>
                     <div className="p-8 pt-0">

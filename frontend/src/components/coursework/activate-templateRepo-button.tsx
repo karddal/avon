@@ -10,13 +10,12 @@ import { activate_template_repo } from "@/lib/actions/activate_template_repo";
 
 interface ActivateTemplateRepo {
     courseworkGitlabId: string;
-    onActivated: (gitlabRepoUrl: string) => void;
+    status: number;
+    setStatus: (status: number) => void;
+    setGitlabUrl: (gitlabRepoUrl: string) => void;
 }
 
-export default function ActivateTemplateRepo({courseworkGitlabId, onActivated} : ActivateTemplateRepo) {
-  const [status, setStatus] = useState<number>(0);
-
-
+export default function ActivateTemplateRepo({courseworkGitlabId, status, setStatus, setGitlabUrl} : ActivateTemplateRepo) {
   const handleActivate = async () => {
     try {
       setStatus(1);
@@ -26,7 +25,7 @@ export default function ActivateTemplateRepo({courseworkGitlabId, onActivated} :
       if (result) {
         toast.success("Template Repository activated successfully");
         setStatus(2);
-        onActivated("testyyyyyyy");
+        setGitlabUrl("testyyyyyyy");
       } else {
         throw new Error();
       }
