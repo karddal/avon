@@ -8,13 +8,12 @@
     "start": "next start",
     "lint": "biome check",
     "format": "biome format --write",
-    "start:backend": "cd ../backend && DATABASE_URL=\"sqlite:///../sqlite.db\" CORS_ORIGIN=[\"http://localhost:3000\"] JWKS_URL=\"http://localhost:3000/api/auth/jwks\" JWT_AUDIENCE=\"https://localhost:3000\" JWT_ISSUER=\"https://localhost:3000\" uv run fastapi dev",
-    "start:backend:e2e": "tsx src/scripts/start-backend-e2e.ts",
+    "start:backend": "tsx src/scripts/start-backend.ts",
     "e2e:db:prepare": "cross-env CI=1 tsx src/scripts/e2e-db.ts",
     "cy:run:e2e": "cypress run --e2e",
-    "test": "npm run e2e:db:prepare && start-server-and-test start:backend:e2e http-get://localhost:8000/check/health dev http://localhost:3000 cy:run:e2e",
+    "test": "npm run e2e:db:prepare && start-server-and-test start:backend http-get://localhost:8000/check/health dev http://localhost:3000 cy:run:e2e",
     "db:seed": "tsx src/scripts/seed.ts",
-    "db:reset": "tsx src/scripts/reset_db.ts"
+    "db:clear": "tsx src/scripts/clear_data.ts"
   },
   "dependencies": {
     "16": "^0.0.2",

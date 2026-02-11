@@ -3,8 +3,11 @@ function requestUrl(rawUrl: string) {
   return new URL(rawUrl, base);
 }
 
-function assertString(value: string | null, msg: string): asserts value is string {
-    expect(value, msg).to.not.equal(null);
+function assertString(
+  value: string | null,
+  msg: string,
+): asserts value is string {
+  expect(value, msg).to.not.equal(null);
 }
 
 function isValidTime(timeString: string) {
@@ -20,8 +23,8 @@ function validFromTo(url: URL) {
   const from = url.searchParams.get("from_");
   const to = url.searchParams.get("to");
 
-    assertString(from, "from_ query param should exist");
-    assertString(to, "to query param should exist");
+  assertString(from, "from_ query param should exist");
+  assertString(to, "to query param should exist");
 
   isValidTime(from);
   isValidTime(to);

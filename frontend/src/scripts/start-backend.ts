@@ -13,6 +13,11 @@ const backend = spawn("uv", ["run", "fastapi", "dev"], {
     JWKS_URL: "http://localhost:3000/api/auth/jwks",
     JWT_AUDIENCE: "https://localhost:3000",
     JWT_ISSUER: "https://localhost:3000",
+      GITLAB_BASE_URL: "https://gitlab.com/api/v4",
+      GITLAB_API_TOKEN: "$GITLAB_API_TOKEN",
+    GITLAB_ROOT_ID: "124674879",
+      IGNORE_AUTH: "True",
+      TESTING_MODE: "True",
   },
 });
 
