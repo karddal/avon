@@ -3,11 +3,11 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 
-from app.core.helpers.gitlab import gl_create_fork, gl_create_project, gl_create_template_group, gl_create_template_project, gl_delete_project, gl_delete_projects, gl_get_project, gl_get_projects
+from app.core.helpers.gitlab import gl_create_fork, gl_create_project, gl_create_skeleton_code, gl_create_template_group, gl_create_template_project, gl_delete_project, gl_delete_projects, gl_get_project, gl_get_projects
 from app.db.session import get_session
 from app.models.coursework import Coursework
 from app.models.unit_enrollment import UnitEnrollment
-from app.schemas.project import ProjectCreate, ProjectDelete, ProjectFork, ProjectRead, ProjectsInCoursework, TemplateCreate
+from app.schemas.project import ProjectCreate, ProjectDelete, ProjectFork, ProjectRead, ProjectSkeleton, ProjectsInCoursework, TemplateCreate
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 session_dependency = Annotated[Session, Depends(get_session)]
@@ -69,6 +69,10 @@ async def create_projects(project: ProjectCreate, session: session_dependency):
     # Make an API call to gitlab to create a project using a helper function for those many students
     print(gl_project)
     return {"unit id": students_enrolled}
+
+@router.post("/skeleton-code", status_code=status.HTTP_201_CREATED)
+async def create_skeleton_code(details: ProjectSkeleton):
+    return await gl_create_skeleton_code(details.group_id, details.coursework_name)
 
 @router.post("/create-fork", status_code=status.HTTP_201_CREATED)
 async def create_fork(project: ProjectFork, session: session_dependency):

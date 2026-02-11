@@ -226,6 +226,42 @@ async def gl_create_template_project(group_id):
     
     return data
 
+async def gl_create_skeleton_code(group_id, coursework_name):
+    if not TOKEN or not BASE_URL:
+        raise HTTPException(status_code=500, detail="Missing GitLab configuration")
+    
+    name = "skeleton-code"
+    path = generate_gitlab_path(name)
+    async with httpx.AsyncClient(base_url=BASE_URL) as client:
+        try:
+            print("basic")
+            response = await client.post(
+                f"/projects/",
+                headers={
+                    "PRIVATE-TOKEN": TOKEN,
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "name": name,
+                    "path": path,
+                    "namespace_id": group_id,
+                    "description": "The skeleton code for the " + coursework_name + " coursework"
+                }
+            )
+            data = response.json()
+            if response.status_code != 201:
+                return {
+                    "success": False,
+                    "error": data.get("message") or "Failed to create GitLab group"
+                }
+            
+        except httpx.RequestError as err:
+            print(f"Network Error: {err}")
+            raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
+    
+    return response
+
+
 async def gl_create_fork(name, user_id, group_id, template_id):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")

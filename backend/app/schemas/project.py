@@ -16,6 +16,10 @@ class ProjectFork(BaseModel):
     coursework_id: uuid.UUID
     template_id: str    
 
+class ProjectSkeleton(BaseModel):
+    group_id: int
+    coursework_name: str
+
 class ProjectRead(BaseModel):
     id: int
     name: str 
