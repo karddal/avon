@@ -53,6 +53,7 @@ jobs:
         with:
           node-version: 25
       - name: Clear & Seed Database
+        working-directory: ./frontend
         run: npm run db:clear && npm run db:seed
       - name: Cypress run
         uses: cypress-io/github-action@v6
