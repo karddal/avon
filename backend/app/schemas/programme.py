@@ -5,6 +5,7 @@ from datetime import date
 from pydantic import BaseModel, AfterValidator
 from app.schemas.unit import UnitWithoutProgramme
 
+
 def is_valid_name(name: str) -> str:
     name = name.strip()
     if 1 <= len(name) <= 100:

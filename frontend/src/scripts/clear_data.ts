@@ -7,10 +7,10 @@ async function seed() {
   // run seeding
   const db = new DatabaseSync("../sqlite.db");
   const _session = db.createSession();
-  const statement = readFileSync("./src/scripts/drop.sql", "utf-8");
+  const statement = readFileSync("./src/scripts/clear_data.sql", "utf-8");
   const _result = db.exec(statement);
 
-  console.log("Dropped DB");
+  console.log("Cleared DB");
 }
 
 seed()
