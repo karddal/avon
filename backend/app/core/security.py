@@ -9,7 +9,7 @@ from pwdlib import PasswordHash
 from pydantic import BaseModel
 from starlette import status
 import jwt
-from jwt_utils import _token_fingerprint, verify_token_and_get_user
+from app.core.jwt_utils import _token_fingerprint, verify_token_and_get_user
 from app.schemas.security import CurrentUser
 
 from app.core.settings import settings
