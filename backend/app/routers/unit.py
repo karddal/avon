@@ -64,7 +64,7 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
     statement = select(Unit.id).where(Unit.name==unit.name, Unit.unit_code==unit.unit_code, Unit.programme_id == unit.programme_id)
     existing_units = session.exec(statement).all()
     if len(existing_units) > 0:
-        raise HTTPException(status_code=403, detail="Unit already exists with same name or unit code")
+        raise HTTPException(status_code=400, detail="Unit already exists with same name or unit code")
 
     session.add(db_unit)
     session.commit()

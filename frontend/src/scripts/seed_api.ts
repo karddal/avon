@@ -53,7 +53,7 @@ export async function api_seed(db: DatabaseSync) {
   // --- 2. Create Units & Coursework ---
 
   // Y1 2024/2025 Units
-  const unitMaths24 = await createUnitWithStudents(
+  const _unitMaths24 = await createUnitWithStudents(
     db,
     idY1_2425,
     {
@@ -90,7 +90,7 @@ export async function api_seed(db: DatabaseSync) {
   );
 
   // Y1 2025/2026 Units
-  const unitMaths25 = await createUnitWithStudents(
+  const _unitMaths25 = await createUnitWithStudents(
     db,
     idY1_2526,
     {
