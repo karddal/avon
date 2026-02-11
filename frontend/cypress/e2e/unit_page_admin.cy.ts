@@ -1,6 +1,6 @@
 describe("Unit page", () => {
   beforeEach(() => {
-    cy.exec("npm run db:reset && npm run db:seed");
+    cy.exec("npm run db:seed");
     cy.wait(500);
     cy.login("admin@bris.ac.uk", "changeme", false);
   });
@@ -11,15 +11,15 @@ describe("Unit page", () => {
 
   it("admin has default ongoing programmes", () => {
     cy.visit("/units");
-    cy.get("span").should("contain", "Year 1 Computer Science 2025/2026");
-    cy.get("span").should("contain", "Year 2 Computer Science 2025/2026");
+    cy.get("span").should("contain", "Year 1 Computer Science 2025-2026");
+    cy.get("span").should("contain", "Year 2 Computer Science 2025-2026");
   });
 
   it("admin has default finished programmes", () => {
     cy.visit("/units");
     cy.get("#tabs-finished").click();
-    cy.get("span").should("contain", "Year 1 Computer Science 2024/2025");
-    cy.get("span").should("contain", "Year 2 Computer Science 2024/2025");
+    cy.get("span").should("contain", "Year 1 Computer Science 2024-2025");
+    cy.get("span").should("contain", "Year 2 Computer Science 2024-2025");
   });
 
   it("admin has default ongoing unit", () => {
