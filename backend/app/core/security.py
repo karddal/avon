@@ -9,13 +9,9 @@ from pwdlib import PasswordHash
 from pydantic import BaseModel
 from starlette import status
 import jwt
-import logging
-from app.core.jwt_utils import verify_token_and_get_user, _token_fingerprint
+from jwt import PyJWKClient
 
 from app.core.settings import settings
-from app.schemas.security import CurrentUser
-
-logger = logging.getLogger("auth")
 
 ALGORITHM = "HS256"
 

@@ -1,5 +1,4 @@
 "use server";
-import { getRequestJWT } from "@/lib/auth-utils";
 
 type CreateProgrammeRequest = {
   name: string;
@@ -16,19 +15,14 @@ type _CreateProgrammeResponse = {
 export async function create_programme(req: CreateProgrammeRequest) {
   "use server";
   console.log(req);
-  const token = await getRequestJWT();
-  const data = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/programmes/create`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      cache: "no-cache",
-      body: JSON.stringify(req),
+  const data = await fetch(`http://localhost:8000/programmes/create`, {
+    method: "POST",
+    cache: "no-cache",
+    body: JSON.stringify(req),
+    headers: {
+      "Content-Type": "application/json",
     },
-  );
+  });
   if (!data.ok) {
     const json = await data.json();
     return {

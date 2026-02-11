@@ -2,10 +2,12 @@ from datetime import date
 from typing import Annotated
 from uuid import UUID
 
+from app.core.helpers.gitlab import gl_create_unit
 from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlmodel import Session, select
 from sqlalchemy.orm.strategy_options import selectinload
 from sqlalchemy import or_
+from app.core.settings import settings
 
 from app.core.security import get_current_user_with_role
 from app.db.session import get_session
@@ -19,10 +21,10 @@ from app.schemas.unit import (
     UnitAllByGroup,
     UnitCreate,
     UnitRead,
-    UnitUpdate, 
-    UnitLecturers, 
-    UnitReadWithDates, 
-    UnitEventRead, 
+    UnitUpdate,
+    UnitLecturers,
+    UnitReadWithDates,
+    UnitEventRead,
     UnitStudents
 )
 
@@ -36,27 +38,38 @@ session_dependency = Annotated[Session, Depends(get_session)]
     status_code=status.HTTP_201_CREATED,
 )
 async def create_unit(unit: UnitCreate, session: session_dependency):
-    print("Unit", unit)
+
+    if unit.programme_id:
+        programme = session.exec(
+            select(Programme).where(Programme.id == unit.programme_id)
+        ).first()
+
+        if not programme:
+            raise HTTPException(status_code=400, detail="Programme id is invalid.")
     
+    try:
+        if settings.testing_mode:
+            # ignore gitlab if in testing mode, set gitlab id to dummy
+            gl_data = {"gitlabGroupId": 12345678}
+        else:
+            gl_data = await gl_create_unit(unit.name, programme.gitlab_id)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database failed. GitLab group rolled back."
+    )
+
     db_unit = Unit(
         name=unit.name,
         description=unit.description,
         unit_code=unit.unit_code,
         colour=unit.colour,
         programme_id=unit.programme_id,
+        gitlab_id=gl_data["gitlabGroupId"]
     )
     # Add validation for the start and end dates below
 
-    if unit.programme_id:
-        programme = session.exec(
-            select(Programme).where(Programme.id == unit.programme_id)
-        ).all()
-
-        if not programme:
-            raise HTTPException(status_code=400, detail="Programme id is invalid.")
-    
-    # Check if the unit already exists either by code or by name
-    statement = select(Unit.id).where(or_(Unit.name==unit.name, Unit.unit_code==unit.unit_code))
+    statement = select(Unit.id).where(Unit.name==unit.name or Unit.unit_code==unit.unit_code)
     existing_units = session.exec(statement).all()
     if len(existing_units) > 0:
         raise HTTPException(status_code=400, detail="Unit already exists with same name or unit code")
@@ -164,11 +177,7 @@ async def get_unit_students(unit_id: UUID, session: session_dependency):
     )
 
 @router.put("/{unit_id}", response_model=UnitUpdate, status_code=status.HTTP_200_OK)
-async def update_unit(
-        unit_id: UUID,
-        unit: UnitUpdate,
-        session: session_dependency,
-):
+async def update_unit(unit_id: UUID, unit: UnitUpdate, session: session_dependency):
     if not unit.name:
         raise HTTPException(status_code=400, detail="Name of unit is required.")
 

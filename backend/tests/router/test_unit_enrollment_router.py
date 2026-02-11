@@ -6,7 +6,7 @@ from tests.helpers.factories import create_unit
 from uuid import uuid4
 
 def test_router_create_success(client, session: Session):
-    unit_id = create_unit(session)
+    unit_id = create_unit(session).id
 
     response = client.post("/unit_enrollment", json={
         "unit_id": str(unit_id),
@@ -27,7 +27,7 @@ def test_router_create_success(client, session: Session):
     assert db_enrollment.type == "student"
 
 def test_router_invalid_type_422(client, session: Session):
-    unit_id = create_unit(session)
+    unit_id = create_unit(session).id
 
     response = client.post("/unit_enrollment", json={
         "unit_id": str(unit_id),
@@ -38,7 +38,7 @@ def test_router_invalid_type_422(client, session: Session):
     assert response.status_code == 422
 
 def test_router_blank_user_id_422(client, session: Session):
-    unit_id = create_unit(session)
+    unit_id = create_unit(session).id
 
     response = client.post("/unit_enrollment", json={
         "unit_id": str(unit_id),
@@ -58,7 +58,7 @@ def test_router_unit_not_found_404(client, session: Session):
     assert response.json()["detail"] == "Unit not found"
 
 def test_router_duplicate_409(client, session: Session):
-    unit_id = create_unit(session)
+    unit_id = create_unit(session).id
 
     payload = {
         "unit_id": str(unit_id),

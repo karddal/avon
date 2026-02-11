@@ -56,9 +56,7 @@ jobs:
         uses: cypress-io/github-action@v6
         env:
           NODE_ENV: test
-          CI: 1
         with:
           working-directory: ./frontend
-          install: false
-          runTests: true
+          env: NODE_ENV=test
           command: npm run test
