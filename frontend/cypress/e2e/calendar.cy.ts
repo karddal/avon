@@ -3,8 +3,11 @@ function requestUrl(rawUrl: string) {
   return new URL(rawUrl, base);
 }
 
-function assertString(value: string | null, msg: string): asserts value is string {
-    expect(value, msg).to.not.equal(null);
+function assertString(
+  value: string | null,
+  msg: string,
+): asserts value is string {
+  expect(value, msg).to.not.equal(null);
 }
 
 function isValidTime(timeString: string) {
@@ -20,8 +23,8 @@ function validFromTo(url: URL) {
   const from = url.searchParams.get("from_");
   const to = url.searchParams.get("to");
 
-    assertString(from, "from_ query param should exist");
-    assertString(to, "to query param should exist");
+  assertString(from, "from_ query param should exist");
+  assertString(to, "to query param should exist");
 
   isValidTime(from);
   isValidTime(to);
@@ -50,7 +53,7 @@ describe("Calendar e2e test", () => {
 
     cy.intercept("GET", "**/api/calendar/events*", (req) => {
       const url = requestUrl(req.url);
-      const query = (req.query ?? {}) as Record<string, any>;
+      const query = (req.query ?? {}) as Record<string, unknown>;
       for (const [k, v] of Object.entries(query)) {
         if (v == null) continue;
         url.searchParams.set(k, Array.isArray(v) ? String(v[0]) : String(v));

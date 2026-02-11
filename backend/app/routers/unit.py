@@ -6,7 +6,6 @@ from app.core.helpers.gitlab import gl_create_unit
 from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlmodel import Session, select
 from sqlalchemy.orm.strategy_options import selectinload
-from sqlalchemy import or_
 from app.core.settings import settings
 
 from app.core.security import get_current_user_with_role

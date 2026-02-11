@@ -19,8 +19,9 @@ if not db_url:
 is_e2e = os.getenv("CI") in ("1", "true", "True") or os.getenv("ENV") == "e2e"
 
 engine_kwargs = {}
-#for db testing
-# currently only work in sqlite need to fix when use other
+
+# For db testing
+# Currently only work in sqlite need to fix when use other database
 if db_url.startswith("sqlite"):
     engine_kwargs["connect_args"] = {"check_same_thread": False}
 
