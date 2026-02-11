@@ -16,5 +16,4 @@
 // Import commands.ts using ES2015 syntax:
 import "./commands";
 
-beforeEach(() => {
-});
+beforeEach(() => {});

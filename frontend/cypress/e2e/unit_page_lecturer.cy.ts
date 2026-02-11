@@ -1,7 +1,7 @@
 describe("Unit page", () => {
   before(() => {
     // cy.exec("npm run db:reset && npm run db:seed");
-      cy.dbPrepare()
+    cy.dbPrepare();
   });
 
   beforeEach(() => {

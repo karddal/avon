@@ -55,11 +55,11 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add("dbPrepare", () => {
-    return cy.exec("npm run e2e:db:prepare", {
-        failOnNonZeroExit: true,
-    })
-})
+  return cy.exec("npm run e2e:db:prepare", {
+    failOnNonZeroExit: true,
+  });
+});
 
 Cypress.Commands.add("getByCy", (value: string) => {
-    return cy.get(`[data-cy="${value}"]`)
-})
+  return cy.get(`[data-cy="${value}"]`);
+});

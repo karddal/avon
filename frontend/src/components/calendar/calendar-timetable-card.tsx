@@ -39,7 +39,7 @@ export function CalendarTimeTableCard({
   const visibleDays = useMemo(() => {
     if (!isMobile) return days;
 
-    return [weekStartDate]
+    return [weekStartDate];
   }, [isMobile, days, weekStartDate]);
 
   return (
@@ -290,7 +290,7 @@ function TimeGridBody({
                                 key={event.id}
                                 className="block rounded-md border bg-card px-2 py-1 text-xs opacity-80"
                               >
-                                  {content}
+                                {content}
                               </div>
                             );
                           })}
