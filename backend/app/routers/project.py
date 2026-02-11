@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 
-from app.core.helpers.gitlab import gl_create_project, gl_create_template_group, gl_create_template_project, gl_delete_project, gl_get_project, gl_get_projects
+from app.core.helpers.gitlab import gl_create_project, gl_create_template_group, gl_create_template_project, gl_delete_project, gl_delete_projects, gl_get_project, gl_get_projects
 from app.db.session import get_session
 from app.models.coursework import Coursework
 from app.models.unit_enrollment import UnitEnrollment
@@ -56,8 +56,10 @@ async def create_projects(project: ProjectCreate, session: session_dependency):
 
     for student in students_enrolled:
         try:
-            gl_project = await gl_create_project(name, student, gitlab_id)
+            print(2)
+            gl_project = await gl_create_project(name, student, gitlab_id, project.template_group_id, project.template_id)
             # Call helper function to create project
+            print("1")
         except Exception:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
@@ -68,6 +70,15 @@ async def create_projects(project: ProjectCreate, session: session_dependency):
     print(gl_project)
     return {"unit id": students_enrolled}
 
+@router.get("/{project_id}", response_model=ProjectRead)
+async def get_specific_project(project_id: int):
+    project = await gl_get_project(project_id)
+    return project
+
+@router.delete("{project_id}", status_code=201)
+async def delete_specific_project(project_id: int):
+    return await gl_delete_project(project_id)
+
 @router.get("/groups/{group_id}", response_model=ProjectsInCoursework)
 async def get_projects(group_id: int):
     # Collect all the projects
@@ -75,11 +86,7 @@ async def get_projects(group_id: int):
     # print(projects)
     return ProjectsInCoursework(projects=projects)
 
-@router.get("/{project_id}", response_model=ProjectRead)
-async def get_project(project_id: int):
-    project = await gl_get_project(project_id)
-    return project
-
-@router.delete("/{project_id}", status_code=201)
-async def delete_specific_project(project_id: int):
-    return await gl_delete_project(project_id)
+@router.delete("/groups/{group_id}")
+async def delete_projects(group_id: int):
+    response = await gl_delete_projects(group_id)
+    return response

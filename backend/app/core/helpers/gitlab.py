@@ -41,8 +41,8 @@ async def gl_create_programme(name):
             )
 
             data = response.json()
-
             if response.status_code != 201:
+                print("inside")
                 return {
                     "success": False,
                     "error": data.get("message") or "Failed to create GitLab group"
@@ -228,6 +228,7 @@ async def gl_create_template_project(group_id):
 
 async def gl_create_project(name, user_id, group_id, template_group_id, template_id):
     print("inside", TOKEN, BASE_URL)
+    print(template_group_id, template_id)
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
     
@@ -237,7 +238,7 @@ async def gl_create_project(name, user_id, group_id, template_group_id, template
     async with httpx.AsyncClient(base_url=BASE_URL) as client:
         print("par")
         try:
-            print(1)
+            print("a")
             response = await client.post(
                 "/projects/",
                 headers={
@@ -250,14 +251,14 @@ async def gl_create_project(name, user_id, group_id, template_group_id, template
                     "namespace_id":group_id,
                     "description":"Project repo for " + user_id,
                     "use_custom_template": "true",
+                    # "group_with_project_templates_id": 124803838,
+                    # "template_project_id": 79388377
                     "group_with_project_templates_id": template_group_id,
                     "template_project_id": template_id
-                    # "group_with_project_templates_id": 123229851,
-                    # "template_project_id": 78128649
                 },
                 timeout=10.0
             )
-            print(2)
+            print("b")
             data = response.json()
             if response.status_code != 201:
                 return {
@@ -309,13 +310,13 @@ async def gl_delete_project(project_id):
                 },
                 timeout=10.0
             )
-            data = response.json()
+            
         except httpx.RequestError as err:
             print(3)
             print(f"Network Error: {err}")
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
     
-    return data
+    return response.status_code
     
 
 async def gl_get_projects(group_id):
@@ -350,3 +351,16 @@ async def gl_get_projects(group_id):
     for coursework in data:
         coursework_data.append({"id": coursework["id"], "name": coursework["name"], "path":coursework["path"], "web_url":coursework["web_url"]})
     return coursework_data
+
+async def gl_delete_projects(group_id: int):
+    status = {"deleted": [], "failed": []}
+    projects_to_delete = await gl_get_projects(group_id)
+    print(projects_to_delete)
+    for project in projects_to_delete:
+        status_code = await gl_delete_project(project["id"])
+        # print(response)
+        if status_code == 202:
+            status["deleted"].append(project["name"])
+        else:
+            status["failed"].append(project["name"])
+    return status

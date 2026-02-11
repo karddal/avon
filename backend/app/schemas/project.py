@@ -8,6 +8,8 @@ class TemplateCreate(BaseModel):
 class ProjectCreate(BaseModel):
     name: str
     coursework_id: uuid.UUID
+    template_group_id: int
+    template_id: int
 
 class ProjectRead(BaseModel):
     id: int
