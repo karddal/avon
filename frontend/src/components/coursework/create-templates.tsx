@@ -36,6 +36,7 @@ import { cn } from "@/lib/utils";
 
 // Need to check if anotehr repo is already intialised, if it is then activate repo button has to be green already
 // If this template repo contains stuff already, the upload zip part (WHICH NEEDS A LOADING BAR AND BUTTON FOR SUBMITTTING), must turn it's submit button into an overwrite button, and state that an overwrite will happen (alert / warning menu)
+// Maybe have a timeline for setting up coursework, CRUD -> Templates -> Tests -> TestingTests -> Provisioning and permissions
 
 type Props = {
   open_state: boolean;

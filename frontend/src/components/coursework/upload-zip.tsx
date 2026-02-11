@@ -5,6 +5,15 @@ import { Button } from "@/components/ui/button";
 import { useDropzone } from 'react-dropzone';
 import { Spinner } from "@/components/ui/spinner";
 import { FolderSync } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface UploadZip {
   uploadStatus: number;
@@ -15,6 +24,7 @@ export default function ZipUploadPage({uploadStatus, uploadSetStatus} : UploadZi
   const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState('Idle');
   const [uploading, setUploading] = useState(false);
+  const [showOverwrite, setShowOverwrite] = useState(false);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const selected = acceptedFiles[0];
@@ -85,11 +95,8 @@ export default function ZipUploadPage({uploadStatus, uploadSetStatus} : UploadZi
           {isDragActive
             ? 'Drop the ZIP file here'
             : file
-              ? `Selected: ${file.name}`
+              ? `${file.name}`
               : 'Drop ZIP file here or click to select'}
-        </p>
-        <p className="text-sm text-center text-gray-500 mt-1">
-          Only .zip files are accepted
         </p>
       </div>
       {uploadStatus === 0 && (
@@ -107,7 +114,7 @@ export default function ZipUploadPage({uploadStatus, uploadSetStatus} : UploadZi
       )}
 
       {uploadStatus === 2 && (
-        <Button variant="destructive" size="lg" className="w-full destructive" disabled={!file || uploading}>
+        <Button variant="destructive" size="lg" className="w-full destructive" disabled={!file || uploading} onClick={() => setShowOverwrite(true)}>
           <FolderSync className="mr-2 h-4 w-4" />
           Overwrite
         </Button>
@@ -116,6 +123,22 @@ export default function ZipUploadPage({uploadStatus, uploadSetStatus} : UploadZi
       {status !== 'Idle' && (
         <p className="text-sm text-center text-gray-600">{status}</p>
       )}
+
+      <AlertDialog open={showOverwrite} onOpenChange={setShowOverwrite}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently overwrite the
+              contents of the template repository for this.s
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
+              <Button>Overwrite Buton brev</Button> {/* Onclik do some shit, like handleUpload just overwrite version brev */}
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
