@@ -39,7 +39,7 @@ export default function ActivateTemplateRepo({courseworkGitlabId, onActivated} :
   };
 
   return (
-    <div className="h-full">
+    <div className="h-full w-full">
       {status === 0 && (
         <Button size="lg" className="w-full" onClick={handleActivate}>
           Activate Template Repo
