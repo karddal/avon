@@ -14,6 +14,10 @@ import {
   FileCode,
 } from "lucide-react"
 
+interface RepoTree {
+  repoId: string;
+}
+
 type RepoNode = {
   name: string
   path: string
@@ -110,7 +114,8 @@ function TreeNode({ node }: { node: RepoNode }) {
   )
 }
 
-export default function RepoTreeExample() {
+export default function RepoTree({repoId} : RepoTree) {
+  const isEmpty = FAKE_REPO.length === 0
   return (
     <div>
       <div className="mb-2 text-sm font-medium">Repository</div>
@@ -118,8 +123,13 @@ export default function RepoTreeExample() {
       <ScrollArea className="rounded-md border p-2">
         <div className="space-y-1">
           {FAKE_REPO.map((node) => (
-                <TreeNode key={node.path} node={node} />
+            <TreeNode key={node.path} node={node} />
           ))}
+          {isEmpty && (
+            <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
+              Repository is empty at the moment.
+            </div>
+          )}
         </div>
       </ScrollArea>
     </div>

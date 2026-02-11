@@ -19,7 +19,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import ZipUploadPage from "./upload-zip";  
 import ActivateTemplateRepo from "./activate-templateRepo-button";
 import RepoAccessBox from "./repo-access-box"
-import RepoTreeExample from "./file-tree"
+import RepoTree from "./file-tree"
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -48,20 +48,13 @@ export default function CreateTemplate({
   set_open_state,
   courseworkGitlabId
 }: Props) {
-  const [existingRepo, setExistingRepo] = useState(false);
   const [gitlabRepoUrl, setGitlabRepoUrl] = useState<string | null>(null)
   const [activateStatus, setActiveStatus] = useState<number>(0);
 
   useEffect(() => {
     // result = call to check wether there is an exsitiong tenmplate in that coursework group
-    setExistingRepo(false) // If there is then set to true
+    setActiveStatus(2) // If there is then set to 2, and otherwise to 0
   }, [])
-
-  useEffect(() => {
-    if (existingRepo){
-      setActiveStatus(2)
-    }
-  }, [existingRepo])
 
 
 
@@ -75,7 +68,7 @@ export default function CreateTemplate({
                   Templates
                 </DialogTitle>
                 <p className="text-sm text-muted-foreground mb-6">
-                  Create, Edit and Provision coursework templates here
+                  Create and Edit coursework templates here
                 </p>
               </div>
 
@@ -127,7 +120,17 @@ export default function CreateTemplate({
                       </p>
                     </div>
                     <div className="p-8 pt-0">
-                          <RepoTreeExample/>
+                          {activateStatus !== 2 && (
+                            <div className="h-64 rounded-md bg-gray-100 flex items-center justify-center">
+                              <p className="text-sm text-gray-400">
+                                Repository preview unavailable until activation
+                              </p>
+                            </div>
+                          )}
+
+                          {activateStatus === 2 &&(
+                            <RepoTree repoId={"should be id of template repo"}/>
+                          )}
                     </div>
                 </div>
             </div>
