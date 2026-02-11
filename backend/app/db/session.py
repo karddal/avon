@@ -4,6 +4,7 @@ from typing import Annotated
 
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI
+from sqlalchemy.pool import NullPool
 from sqlmodel import Session, SQLModel, create_engine
 
 
@@ -14,7 +15,14 @@ if os.getenv("ENV") == "dev":
 db_url = os.getenv("DATABASE_URL")
 if not db_url:
     raise RuntimeError("No database url found")
-engine = create_engine(db_url)
+
+engine_kwargs = {}
+
+if db_url.startswith("sqlite"):
+    engine_kwargs["connect_args"] = {"check_same_thread": False}
+    engine_kwargs["poolclass"] = NullPool
+
+engine = create_engine(db_url, **engine_kwargs)
 
 
 # Create session dependency so that you use only one session per request

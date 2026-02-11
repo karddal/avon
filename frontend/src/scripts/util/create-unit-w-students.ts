@@ -22,8 +22,8 @@ export async function createUnitWithStudents(
   });
 
   const unit = db
-    .prepare("SELECT id FROM unit WHERE name = ?")
-    .get(unitData.name);
+    .prepare("SELECT id FROM unit WHERE name = ? AND programme_id = ?")
+    .get(unitData.name, programmeId);
 
   if (!unit) {
     return null;
