@@ -21,7 +21,7 @@ async def test_create_access_token_and_get_current_user(session):
 
     fake_signing_key = MagicMock()
 
-    with patch("app.core.security.PyJWKClient") as mock_jwks, \
+    with patch("app.core.security.jwks_client") as mock_jwks, \
          patch("app.core.security.jwt.decode") as mock_decode:
 
         mock_jwks.return_value.get_signing_key_from_jwt.return_value = fake_signing_key
