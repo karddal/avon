@@ -31,11 +31,11 @@ describe("Coursework page", () => {
     cy.get("div").find(".text-2xl").should("contain", "Description");
   });
 
-  it("Conatins an Activity section", () => {
+  it("Conatins an Information section", () => {
     cy.visit("/coursework");
     cy.contains("button", "Finished").click();
     cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
-    cy.get("div").find(".text-2xl").should("contain", "Activity");
+    cy.get("div").find(".text-2xl").should("contain", "Information");
   });
 
   it("Contains a Tools section", () => {
