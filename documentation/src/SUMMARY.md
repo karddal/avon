@@ -39,7 +39,6 @@
     - [01-10-2025 Mentor Meeting](agendas/mentor/01-10-25.md)
     - [08-10-2025 Mentor Meeting](agendas/mentor/08-10-25.md)
  - [Standups](agendas/standups/README.md)
-    - [01-10-2025 Team Standup](agendas/standups/01-10-25.md)
     - [06-10-2025 Team Standup](agendas/standups/06-10-25.md)
     - [10-10-2025 Team Standup](agendas/standups/10-10-25.md)
 
