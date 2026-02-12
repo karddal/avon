@@ -61,3 +61,4 @@
 - [Deployment](deployment/README.md)
 - [Testing](testing/README.md)
 - [CI/CD](ci_cd/README.md)
+- [AI Usage Policy](ai_usage/README.MD)

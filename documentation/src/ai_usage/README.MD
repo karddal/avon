@@ -1,0 +1,108 @@
+# AI Usage Policy
+# AI in 2025-ContinuousAssessment
+
+AI tools have been used in the following ways
+ - Understanding best practices for architecting systems
+ - Used to help with debugging and writing some of the frontend and backend
+ - Help with complex SQL queries and how to use FastAPI/SQLModel etc idiomatically, e.g. how to model the domain
+ - Template / template script for agendas
+ - Used to debug code
+
+AI tools used
+ - ChatGPT
+ - Claude
+ - Gemini
+ - Perplexity
+
+## Everyone
+- Used when setting up AWS, how to do it, creating Dockerfiles
+
+## Specifics per person
+### Mihaly
+**Tools used**
+- ChatGPT
+- Claude
+- Gemini
+
+**Where did you use AI tools and why**
+Research and architecture best practices - this is one area where they have been really helpful. In areas where I have little konwledge, for example how to set up security properly, how to verify JWTs, how to use Kubernetes and how to write a job description, especially where documentation for libraries is poor. Also helped when architecting the system, how to lay out the project etc.
+
+Frontend - I mostly used AI here for debugging purposes - NextJS can be really complicated, and it often isn't clear why it isn't working. For example, why is this code not working, how do I fix this fetch, etc. AI can help to look and see things that I have missed. In addition, it also helped with telling me the best practices for the application, like when to use client components, how to fetch, etc, as well as debugging these. Also helped with CSS, how to do things like running SQL queries against the BA database, how to set up BetterAuth, how to set up typing for sql, etc. often I will see how it works, and then I have to refine what it gives into something that will work for our situation. It is useful to give me a rough idea though.
+
+Backend - used more rarely here, mostly for architecture deisions. One area where it helped was with debugging SQLModel and how to define relationships between tables, as well as how to fetch these. Helped with complicated SQL queries. Also at the very start, used to debug why pytest wasn't working.
+
+Engine prototyping - For the initial prototype test runner (not merged), used to help design the initial prototype, such as doing research to help me work out the best practice way of doing the test running, due to the very complicated domain area, and implications including security, sandboxing etc. Using it I was able to discover technologies that I haven't heard of before. Because of how complicated Kubernetes is, and the complexity and verbosity of task definitions, as well as how the client libraries I was using are poorly documented, I used it to show me how to run a kubernetes task for the proof of concept, as well as how to use tooling like Dockerfiles and setting up a local kubernetes cluster, and debugging these. I used this, along with an example from Temporal, the scheduler stack I was using, to get a proof of concept working. Without it, I wouldn't have been able to get the proof of concept working because I had little knowledge of this area before. Now that I have a base, I will probably redesign this in a cleaner way for the final product, now that I know that it is feasible.
+
+Debugging and setting up deployment - Very helpful when setting up deployment to AWS to explain things like how to setup the connections. A specific example was when I was trying to debug why sql queries weren't working with a cryptic error. With the error message and the code, it identified that in Postges you can't use ? for placeholders, you have to use $1. This is something that I didn't know about and wouldn't have found. It also suggested an improved way of sharing Postgres pools using a global variable.
+
+Used also when debugging and fixing the seed script - example prompt: ```What does this error mean? detail: [ { type: 'model_attributes_type', loc: [Array], msg: 'Input should be a valid dictionary or object to extract fields from', input: '{"name":"Year 1 Computer Science 2025-2026","start_date":"2025-09-10","end_date":"2026-05-30"}' } ] Here is the api spec example { "name": "string", "start_date": "2026-02-08", "end_date": "2026-02-08" }``` 
+
+```How can I clean out a full subgroup in Gitlab without deleting it using the API? So all subgroups and projects in it should be deleted.```
+
+### Josh
+
+**Tools used**
+- ChatGPT
+- Claude
+- Gemini
+
+**Where did you use AI tools and why**
+
+Blueprinting / Concepting - I used AI (specifically it's image creation tools) to brainstorm ideas for what the frontend could look like, taking inspiration from some of the components that ChatGPT or Gemini suggested. This allowed me to see how a visual UI change could look like, without the need to code the entire component myself first.
+
+Frontend - TailwindCSS issues and more complex Typescript functions or methods were where I utilised generative AI the most, as I am familiar with Typescript to a certain degree, but not to a stage where I could code these harder functions that would take time away from actually developing. TailwindCSS was also a larger part of the frontend AI use, as CSS doesn't always behave nice, and once again, I used AI to save myself time in development, rather than going through the docs finding the specific Tailwind keyword for positioning items etc. Finally, I used AI as advice for the best way(s) to achieve a layout or feature, as I like to know the most common / industry standard way of developing a feature such as searching through a large number of students before coding the feature. This allowed me to learn and get examples about how to do something, but gives me the freedom to combine pieces of AI's code with my own to create a more readable codebase, as sometimes AI's code works well, but isn't professional or readable when revisiting in the future.
+
+Backend - I have used AI in the backend to produce repeatable pieces of code, saving me time rewriting similar schemas or methods with slightly different variable names and inputs. I also used it to learn more about the frameworks we were using, such as Spring Boot (before switching), and now FastAPI. FastAPI is simple enough, but some features have multiple ways of being implemented, and sometimes the docs aren't helpful. Since my focus on this project has been mainly on the frontend, my AI use in the backend has been lower than the rest of the project.
+
+Added: Have now used Claude to tell me a better way to refactor the Dockerfile creator, and Claude then helped me rewrite some of the code to use this pattern (see `frontend/src/lib/docker`). An example of a prompt I used was: `Is there a better way to find out if the tool/language is a script or package, and can you architect it please.`
+
+Overall, the use of AI for me has been majority frontend, and has been mostly for time-saving reasons, allowing me to focus more on the actual features that require human insight and reasoning, such as the UI flow and accessibility, as well as the actual codebase looking professional and easy to extend.
+
+### Rishi
+
+**Tools used**
+- ChatGPT
+- Claude
+- Perplexity
+
+**Where did you use AI tools and why**
+Blueprinting / Concepting -
+Frontend - Primarily to fix styling issues in TailwindCSS. To understand concepts in frontend development such as SSR, the use of types and best practises to organise my code. Also used it to refactor code which was not efficient.
+Backend - To debug errors esspecially with regards to schemas. To figure out the best way to implement a certain feature and organise the project. Used it to generate fake users to test my database and other test cases.
+
+Overall, I tried my best to limit the use of AI as I wanted to write code myself. AI was primarily used to help me understand the best practises to write code while also acting as a debugger.
+
+### Jack
+
+**Tools used**
+- ChatGPT
+- Claude
+- Gemini
+
+**Where did you use AI tools and why**
+Research and architecture best practices - When we were discussing and evaluating the best architecture for the backend, I found AI extremely helpful to gather a broad overview of the pros and cons of the feasible architectures in our case (this was mainly for Java before we switched). Whatsmore, it helped me to find articles on these specific architectures and evaluate whether our designs were industry standard. In terms of general research these tools allowed me to understand certain techniques much faster than just searching on the web.
+
+Frontend - The main area I have used generative AI is when making small adjustments to CSS, as certain fields and tags I just don't know, so AI has helped me easily identify which tags and fields I need to add / change to get the desired design. It has also helped me with searching for the correct components for my situation, for example components provided by Shadcn, of which there is 100s, so I use generative AI to identify the needed one in my case.
+
+Backend - When I need to write repetitive functions that do similar tasks with small differences, such as in model or schema testing I will often use AI to give me a base function in which I can copy and then adjust. Additionally, I will use it to make repetitive changes to a file, for example if I need to change the name of a variable in all functions within a file.
+
+Setup - Certain libraries and tools I'm not familiar with, in these cases I have mainly using their respective docs; however when there is a gap in the areas the docs cover, or I am running into an obscure error I will consult AI and google to learn about this gap that isn't covered and/or fix the error. 
+
+Overall, I mainly use AI as a tool for faster, more specific searches for my scenario as opposed to google. I also use it as a tool to do repetitive tasks that would take me an unnecessarily long time to complete.
+
+### Yuxuan
+
+**Tools used**
+- ChatGPT
+- Claude
+- Gemini
+
+**Where did you use AI tools and why**
+
+Preliminary study - When we first discussed the technical architecture that our project should use, I found that these AI tools can help me evaluate the advantages and disadvantages of different frameworks and tools more quickly so that we can choose the most suitable technical framework according to these advantages and disadvantages.
+
+Translation - As a student whose first language is not English, sometimes I have some words tha I don't know. I sometimes use these AI tools instead of traditional translators to help me understand and express these words.
+
+Research framework usage - Some technical framework documents are not easy to understand, while others break down the usage of a method into the more basic and advanced usage. If I miss some content, or sometimes I use search to find the content I need in the document, I will find some more simple introductions to the method I want to use. At those situations, AI can help me understand and use these frameworks more correctly.
+
+Bug fix - Sometimes the error message output by the framework we use is not only lengthy but also difficult to understand. At this time, I will use AI to help me analyze the error information, to better locate the cause and location cause the error. At the times without AI, I found difficult to find the specific location cause the error, and the emergence of AI really help me to faster locate bugs.
