@@ -32,9 +32,9 @@
     - [30-01-2026 Sprint 3 end of week meeting](meetings/sprint3/30-01-2025-team.md)
 
 # Agendas
- - [Client] (agendas/client/notes.md)
- - [Mentor] (dev)
- - [Standups] (dev)
+ - [Client](agendas/client/README.md)
+ - [Mentor](agendas/mentor/README.md)
+ - [Standups](agendas/standups/README.md)
 
 # Developer documentation
 
