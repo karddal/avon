@@ -34,6 +34,7 @@
 # Agendas (Discontinued)
  - [What happened to the agendas?](agendas/README.md)
  - [Client Notes](agendas/client/README.md)
+    - [First Client Meeting Agenda](agendas/client/agenda.md)
     - [First Client Meeting Notes](agendas/client/notes.md)
  - [Mentor](agendas/mentor/README.md)
     - [01-10-2025 Mentor Meeting](agendas/mentor/01-10-25.md)
