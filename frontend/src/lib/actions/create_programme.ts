@@ -4,6 +4,8 @@ import { getRequestJWT } from "@/lib/auth-utils";
 type CreateProgrammeRequest = {
   name: string;
   start_date: string;
+  end_date: string;
+  // gitlab_id: string;
 };
 
 type _CreateProgrammeResponse = {
@@ -13,9 +15,8 @@ type _CreateProgrammeResponse = {
 
 export async function create_programme(req: CreateProgrammeRequest) {
   "use server";
-  const token = await getRequestJWT();
-  console.log("current request");
   console.log(req);
+  const token = await getRequestJWT();
   const data = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/programmes/create`,
     {

@@ -21,3 +21,4 @@ class Coursework(SQLModel, table=True):
         default_factory=datetime.datetime.now
     )  # note: this uses the timezome of the device, not a standard timezone like UTC (which we can't use as this is primarily a uk used program)
     colour: str
+    gitlab_id: str = Field(nullable=False)

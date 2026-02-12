@@ -12,4 +12,5 @@ class Programme(SQLModel, table=True):
     name: str = Field(nullable=False)
     start_date: date = Field(nullable=False)
     end_date: date = Field(nullable=False)
+    gitlab_id: str = Field(nullable=False)
     units: List["Unit"] = Relationship(back_populates="programme", cascade_delete=True)
