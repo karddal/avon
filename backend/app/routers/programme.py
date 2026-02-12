@@ -25,10 +25,8 @@ async def create_programme(programme: ProgrammeCreate, session: session_dependen
     if programmeAlreadyExists:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Programme already exists')
     
-    print(programme.name)
     try:
         if settings.testing_mode:
-            # ignore gitlab if in testing mode, set gitlab id to dummy
             gl_data = {"gitlabGroupId": 12345678}
         else:
             gl_data = await gl_create_programme(programme.name)

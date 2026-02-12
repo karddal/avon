@@ -41,7 +41,6 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
     
     try:
         if settings.testing_mode:
-            # ignore gitlab if in testing mode, set gitlab id to dummy
             gl_data = {"gitlabGroupId": 12345678}
         else:
             gl_data = await gl_create_unit(unit.name, programme.gitlab_id)

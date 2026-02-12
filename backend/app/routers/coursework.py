@@ -30,7 +30,6 @@ async def create_coursework(coursework: CourseworkCreate, session: session_depen
         
     try:
         if settings.testing_mode:
-            # ignore gitlab if in testing mode, set gitlab id to dummy
             gl_data = {"gitlabGroupId": 12345678}
         else:
             gl_data = await gl_create_coursework(coursework.name, unit_exists.gitlab_id)

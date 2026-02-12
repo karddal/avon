@@ -43,6 +43,7 @@ describe("Coursework listing page - admin tests", () => {
   it("has default finished coursework", () => {
     cy.visit("/coursework");
     cy.contains("button", "Finished").click();
+    cy.contains('[role="tab"]', "Computer Architecture").click();
     cy.get("p").should("contain", "Encrypt");
   });
 
@@ -51,7 +52,7 @@ describe("Coursework listing page - admin tests", () => {
     cy.contains("button", "Finished").click();
     cy.contains(
       '[role="tab"]',
-      "Imperative and Functional Programming",
+      "Imperative and Functional Programming 2024-2025",
     ).click();
     cy.get("p").should("contain", "Power to the People in 2024");
   });

@@ -15,6 +15,7 @@ describe("Coursework page", () => {
   it("successfully loads", () => {
     cy.visit("/coursework");
     cy.contains("button", "Finished").click();
+    cy.contains('[role="tab"]', "Computer Architecture").click();
     cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
     cy.url().should("include", "/coursework/");
   });
@@ -22,6 +23,7 @@ describe("Coursework page", () => {
   it("Contains a Title", () => {
     cy.visit("/coursework");
     cy.contains("button", "Finished").click();
+    cy.contains('[role="tab"]', "Computer Architecture").click();
     cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
     cy.get("div").should("contain", "Encrypt");
   });
@@ -29,6 +31,7 @@ describe("Coursework page", () => {
   it("Contains a Description", () => {
     cy.visit("/coursework");
     cy.contains("button", "Finished").click();
+    cy.contains('[role="tab"]', "Computer Architecture").click();
     cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
     cy.get("div").find(".text-2xl").should("contain", "Description");
   });
@@ -36,6 +39,7 @@ describe("Coursework page", () => {
   it("Conatins an Information section", () => {
     cy.visit("/coursework");
     cy.contains("button", "Finished").click();
+    cy.contains('[role="tab"]', "Computer Architecture").click();
     cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
     cy.get("div").find(".text-2xl").should("contain", "Information");
   });
@@ -43,6 +47,7 @@ describe("Coursework page", () => {
   it("Contains a Tools section", () => {
     cy.visit("/coursework");
     cy.contains("button", "Finished").click();
+    cy.contains('[role="tab"]', "Computer Architecture").click();
     cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
     cy.get("div").should("contain", "Tools");
   });

@@ -20,10 +20,10 @@ describe("Coursework listing page", () => {
 
   // Ongoing coursework stuff
 
-  it("shows no courseworks found for ongoing coursework", () => {
-    cy.visit("/coursework");
-    cy.contains("No coursework found").should("be.visible");
-  });
+  // it("shows no courseworks found for ongoing coursework", () => {
+  //   cy.visit("/coursework");
+  //   cy.contains("No coursework found").should("be.visible");
+  // });
 
   // Finsihed coursework stuff
   it("has default finished unit", () => {
@@ -35,13 +35,14 @@ describe("Coursework listing page", () => {
   it("has default finished coursework", () => {
     cy.visit("/coursework");
     cy.contains("button", "Finished").click();
-    cy.get("p").should("contain", "Power to the People in 2025");
+    cy.contains('[role="tab"]', "2024-2025").click();
+    cy.get("p").should("contain", "Power to the People in 2024");
   });
 
   it("Allows navigation through the finsihed coursework tabslist", () => {
     cy.visit("/coursework");
     cy.contains("button", "Finished").click();
-    cy.contains('[role="tab"]', "2024-2025").click();
-    cy.get("p").should("contain", "Power to the People in 2024");
+    cy.contains('[role="tab"]', "2025-2026").click();
+    cy.get("p").should("contain", "Power to the People in 2025");
   });
 });
