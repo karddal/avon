@@ -19,7 +19,7 @@ if not db_url:
 engine_kwargs = {}
 
 if db_url.startswith("sqlite"):
-    engine_kwargs["connect_args"] = {"check_same_thread": False}
+    engine_kwargs["connect_args"] = {"check_same_thread": False, "timeout": 20}
     engine_kwargs["poolclass"] = NullPool
 
 engine = create_engine(db_url, **engine_kwargs)

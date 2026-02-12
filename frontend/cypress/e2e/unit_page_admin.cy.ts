@@ -1,7 +1,9 @@
 describe("Unit page", () => {
-  beforeEach(() => {
+  before(() => {
     cy.exec("npm run db:seed");
-    cy.wait(500);
+  });
+
+  beforeEach(() => {
     cy.login("admin@bris.ac.uk", "changeme", false);
   });
 
@@ -36,6 +38,7 @@ describe("Unit page", () => {
 
   it("admin can edit unit", () => {
     cy.visit("/units");
+    cy.contains('[role="tab"]', "Year 1 Computer Science 2025-2026").click();
     cy.contains(
       'a[href^="/units/"]',
       "Mathematics for Computer Science A",
@@ -46,7 +49,6 @@ describe("Unit page", () => {
     cy.get(`[data-slot="dropdown-menu-item"]`).contains("Edit Unit").click();
     cy.get('[name="name"]').clear().type("Mathematics for Computer Science B");
     cy.get(".mt-auto > .flex > .inline-flex").click();
-    cy.wait(5000);
     cy.visit("/units");
     cy.get("p")
       .contains("Mathematics for Computer Science B")
@@ -55,13 +57,14 @@ describe("Unit page", () => {
 
   it("admin can delete unit", () => {
     cy.visit("/units");
+    cy.contains('[role="tab"]', "Year 1 Computer Science 2025-2026").click();
     cy.get("p")
-      .should("contain", "Mathematics for Computer Science A")
+      .should("contain", "Mathematics for Computer Science B")
       .should("be.visible");
     cy.get("#unit-dropdown-button").click();
     cy.get(`[data-slot="dropdown-menu-item"]`).click();
     cy.contains(`button`, "Delete").click();
     cy.get('[data-content=""] > div').contains("Unit deleted successfully");
-    cy.get("p").should("not.contain", "Mathematics for Computer Science A");
+    cy.get("p").should("not.contain", "Mathematics for Computer Science B");
   });
 });

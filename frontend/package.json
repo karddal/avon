@@ -10,7 +10,7 @@
     "lint": "biome check",
     "format": "biome format --write",
     "start:backend": "cd ../backend && IGNORE_AUTH=False TESTING_MODE=True GITLAB_API_TOKEN=\"$GITLAB_API_TOKEN\" GITLAB_BASE_URL=https://gitlab.com/api/v4 GITLAB_ROOT_ID=124674879 DATABASE_URL=\"sqlite:///../sqlite.db\" CORS_ORIGIN=[\"http://localhost:3000\"] JWKS_URL=\"http://localhost:3000/api/auth/jwks\" JWT_AUDIENCE=\"https://localhost:3000\" JWT_ISSUER=\"https://localhost:3000\" uv run fastapi dev",
-    "cy:run": "cypress run",
+    "cy:run": "cypress run --headed",
     "test": "npm run db:seed && CI_MODE=True TESTING_MODE=True NEXT_PUBLIC_API_URL=http://localhost:8000 NEXT_PUBLIC_CDN_PATH= npm run build && npm run test:run",
     "test:run": "CI_MODE=True TESTING_MODE=True ENV=development BETTER_AUTH_SECRET=wwZgZ19qBU3L0Rxf4oVzAbpw7xkmDOLG BETTER_AUTH_URL=https://localhost:3000 start-server-and-test start:backend http-get://localhost:8000/check/health start http://localhost:3000 cy:run",
     "db:seed": "start-server-and-test start:backend http-get://localhost:8000/check/health 'tsx src/scripts/seed.ts'"
