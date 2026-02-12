@@ -1,3 +1,6 @@
+
+# First Client Meeting Notes
+
 ## Hates how bad blackboard, moodle, canvas are (sounds like More VLE)
 
 Wants more coursework and assessment involved (obv) but on the blackboard overall thing.
@@ -53,5 +56,4 @@ Handle it well and shield it well from attackers or others that shouldn't have a
 Create one - support from AI to automarking. Accessible via analytics.
 Start at Computer Science students.
 Give a weekend for marking of the MVP.
-
 
