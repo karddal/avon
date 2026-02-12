@@ -41,6 +41,8 @@
  - [Standups](agendas/standups/README.md)
     - [06-10-2025 Team Standup](agendas/standups/06-10-25.md)
     - [10-10-2025 Team Standup](agendas/standups/10-10-25.md)
+    - [Template Markdown](agendas/standups/template_markdown.md)
+    - [Template Script](agendas/standups/template_script.md)
 
 # Developer documentation
 
