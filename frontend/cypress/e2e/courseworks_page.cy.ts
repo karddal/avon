@@ -29,6 +29,7 @@ describe("Coursework listing page", () => {
   it("has default finished unit", () => {
     cy.visit("/coursework");
     cy.contains("button", "Finished").click();
+    cy.contains('[role="tab"]', "2024-2025").click();
     cy.get("span").should("contain", "Imperative and Functional Programming");
   });
 

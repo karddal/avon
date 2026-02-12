@@ -2,12 +2,13 @@ describe("Coursework page", () => {
   beforeEach(() => {
     cy.exec("npm run db:seed");
     cy.wait(500);
-    cy.visit("/login");
-    cy.get("#email").type("admin@bris.ac.uk");
-    cy.get("#password").type("changeme");
-    cy.get("button[type=submit]").click();
-    cy.url().should("include", "/dashboard");
-    cy.getCookie("__Secure-better-auth.session_token").should("exist");
+    // cy.visit("/login");
+    // cy.get("#email").type("admin@bris.ac.uk");
+    // cy.get("#password").type("changeme");
+    // cy.get("button[type=submit]").click();
+    // cy.url().should("include", "/dashboard");
+    // cy.getCookie("__Secure-better-auth.session_token").should("exist");
+    cy.login("admin@bris.ac.uk", "changeme", false);
   });
 
   it("successfully loads", () => {
