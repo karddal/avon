@@ -31,10 +31,17 @@
     - [28-01-2026 Sprint 3 midweek meeting](meetings/sprint3/28-01-2025-team.md)
     - [30-01-2026 Sprint 3 end of week meeting](meetings/sprint3/30-01-2025-team.md)
 
-# Agendas
- - [Client](agendas/client/README.md)
+# Agendas (Discontinued)
+ - [What happened to the agendas?](agendas/README.md)
+ - [Client Notes](agendas/client/README.md)
+    - [First Client Meeting Notes](agendas/client/notes.md)
  - [Mentor](agendas/mentor/README.md)
+    - [01-10-2025 Mentor Meeting](agendas/mentor/01-10-25.md)
+    - [08-10-2025 Mentor Meeting](agendas/mentor/08-10-25.md)
  - [Standups](agendas/standups/README.md)
+    - [01-10-2025 Team Standup](agendas/standups/01-10-25.md)
+    - [06-10-2025 Team Standup](agendas/standups/06-10-25.md)
+    - [10-10-2025 Team Standup](agendas/standups/10-10-25.md)
 
 # Developer documentation
 
