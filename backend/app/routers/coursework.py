@@ -1,4 +1,4 @@
-from app.core.helpers.gitlab import gl_create_coursework
+from app.core.helpers.gitlab import gl_create_coursework, gl_template_existance
 from sqlalchemy.orm import selectinload
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
@@ -9,7 +9,7 @@ from app.core.settings import settings
 
 from app.models.coursework import Coursework
 from app.models.unit import Unit, UnitWithCourseworks
-from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkUpdate, CourseworkDelete
+from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkUpdate, CourseworkDelete, CourseworkTemplateExists
 from app.schemas.coursework import CourseworkUpdateFormData
 
 router = APIRouter(prefix = "/coursework", tags=["coursework"])
@@ -130,3 +130,13 @@ async def update_coursework(id: UUID, coursework: CourseworkUpdate, session: ses
     session.refresh(coursework_db)
     return coursework_db
 
+@router.get('/template/exists', response_model=CourseworkTemplateExists)
+async def template_exists(gitLabId: str, session: session_dependency):
+    try:
+        templateExists = await gl_template_existance(gitLabId)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail="GitLab request failed"
+    )
+    return templateExists

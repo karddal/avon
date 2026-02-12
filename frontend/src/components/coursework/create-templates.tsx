@@ -53,9 +53,29 @@ export default function CreateTemplate({
   const [activateStatus, setActiveStatus] = useState<number>(0);
 
   useEffect(() => {
-    // result = call to check wether there is an exsitiong tenmplate in that coursework group
-    setActiveStatus(2) // If there is then set to 2, and otherwise to 0
-  }, [])
+    const checkTemplate = async () => {
+      try {
+        const response = await template_existance({
+          courseworkGitLabId: courseworkGitlabId,
+        })
+
+        if (!response.result) {
+          setActiveStatus(0)
+        } else {
+          setActiveStatus(2)
+        }
+
+      } catch (error) {
+        toast.error("An unknown error occurred.")
+      }
+    }
+
+    if (courseworkGitlabId) {
+      checkTemplate()
+    }
+  }, [courseworkGitlabId])
+
+
 
 
 

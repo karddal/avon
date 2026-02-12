@@ -144,3 +144,65 @@ async def gl_create_coursework(name, unit_id):
         "webUrl": data.get("web_url"),
         "path": data.get("path"),
     }
+
+from urllib.parse import quote
+
+async def gl_template_existance(coursework_id):
+    if not TOKEN or not BASE_URL:
+        raise HTTPException(status_code=500, detail="Missing GitLab configuration")
+
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.get(
+                f"{BASE_URL}/groups/{coursework_id}",
+                headers={
+                    "PRIVATE-TOKEN": TOKEN,
+                },
+                timeout=10.0,
+            )
+
+            if response.status_code != 200:
+                return {
+                    "success": False,
+                    "error": response.json().get("message") or "Failed to get GitLab group"
+                }
+
+            data = response.json()
+            full_path = data["full_path"]
+
+        except httpx.RequestError as err:
+            print(f"Network Error: {err}")
+            raise HTTPException(
+                status_code=500,
+                detail="Internal Server Error when connecting to GitLab"
+            )
+
+        encoded_path = quote(f"{full_path}/template", safe="")
+
+        try:
+            existence_response = await client.get(
+                f"{BASE_URL}/projects/{encoded_path}",
+                headers={
+                    "PRIVATE-TOKEN": TOKEN,
+                },
+                timeout=10.0,
+            )
+
+            if existence_response.status_code == 404:
+                return {"exists": False}
+
+            if existence_response.status_code != 200:
+                raise HTTPException(
+                    status_code=500,
+                    detail="Template lookup failed"
+                )
+
+            return {"exists": True}
+
+        except httpx.RequestError as err:
+            print(f"Network Error: {err}")
+            raise HTTPException(
+                status_code=500,
+                detail="Internal Server Error when connecting to GitLab"
+            )
+

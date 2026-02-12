@@ -67,6 +67,37 @@ export default function ZipUploadPage({uploadStatus, uploadSetStatus} : UploadZi
     }
   };
 
+  const handleOverwrite = async () => {
+    if (!file) return;
+
+    setUploading(true);
+    setStatus('Uploading ZIP...');
+
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      uploadSetStatus(1);
+      const result = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/upload-zip/overwrite`,
+        {
+          method: 'POST',
+          body: formData,
+        }
+      );
+      if (!result.ok) {
+        throw new Error(await result.text());
+      }
+      uploadSetStatus(2);
+      setStatus('Overwrite complete');
+      setFile(null);
+    } catch (err) {
+      console.error(err);
+      setStatus('Overwrite failed.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     multiple: false,
@@ -114,7 +145,7 @@ export default function ZipUploadPage({uploadStatus, uploadSetStatus} : UploadZi
       )}
 
       {uploadStatus === 2 && (
-        <Button variant="destructive" size="lg" className="w-full destructive" disabled={!file || uploading} onClick={() => setShowOverwrite(true)}>
+        <Button variant="destructive" size="lg" className="w-full" disabled={!file || uploading} onClick={() => setShowOverwrite(true)}>
           <FolderSync className="mr-2 h-4 w-4" />
           Overwrite
         </Button>
@@ -135,7 +166,10 @@ export default function ZipUploadPage({uploadStatus, uploadSetStatus} : UploadZi
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
-              <Button>Overwrite Buton brev</Button> {/* Onclik do some shit, like handleUpload just overwrite version brev */}
+              <Button variant="destructive" size="lg" onClick={handleOverwrite}>
+                <FolderSync className="mr-2 h-4 w-4" />
+                Overwrite
+              </Button> {/* Onclik do some shit, like handleUpload just overwrite version brev */}
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

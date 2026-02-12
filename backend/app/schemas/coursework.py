@@ -59,6 +59,7 @@ class CourseworkRead(BaseModel):
 class CourseworkUpdateFormData(CourseworkRead):
     unit_name: str
     unit_code: str
+    gitlabId: str
     max_end_date: datetime.date
 
 class CourseworkCreate(BaseModel):
@@ -80,3 +81,5 @@ class CourseworkDelete(BaseModel):
     id: UUID
     deletion_successful: bool
 
+class CourseworkTemplateExists(BaseModel):
+    exists: bool
