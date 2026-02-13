@@ -75,48 +75,50 @@ export default function CreateTemplate({
   const [templateSshURL, setTemplateSshURL] = useState<string | null>(null)
   const [templateId, setTemplateId] = useState<number | null>(null)
   const [fileTree, setFileTree] = useState<GitLabTreeItem[]>([])
-  
-  // Check state of template repo
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const triggerRefresh = () => {
+    setRefreshKey(prev => prev + 1);
+  };
+
   useEffect(() => {
-    const checkTemplate = async () => {
+    if (!open_state) return;
+
+    const loadAll = async () => {
       const response = await template_existance({
         courseworkGitLabId: courseworkGitlabId,
       });
 
       if (!response.exists || !response.templateProjectId) {
+        setTemplateId(null);
         setActiveStatus(0);
+        setFileTree([]);
+        setTemplatehttpURL(null);
+        setTemplateSshURL(null);
         return;
       }
 
-      setTemplateId(response.templateProjectId);
+      const id = response.templateProjectId;
+
+      setTemplateId(id);
       setActiveStatus(2);
-    };
 
-    checkTemplate();
-  }, [courseworkGitlabId]);
-
-  // Update page accordingly and load data
-  useEffect(() => {
-    console.log("Effect fired:", { activateStatus, templateId });
-    if (activateStatus !== 2 || !templateId) return;
-
-    const loadTemplateData = async () => {
       const templateData = await template_file_tree({
-        templateProjectId: String(templateId),
+        templateProjectId: String(id),
       });
 
       setFileTree(templateData);
 
       const urlResponse = await template_url({
-        templateProjectId: String(templateId),
+        templateProjectId: String(id),
       });
 
       setTemplatehttpURL(urlResponse.http);
       setTemplateSshURL(urlResponse.ssh);
     };
 
-    loadTemplateData();
-  }, [activateStatus, templateId]);
+    loadAll();
+  }, [courseworkGitlabId, refreshKey, open_state]);
 
 
   return (
@@ -159,9 +161,7 @@ export default function CreateTemplate({
                             <ActivateTemplateRepo
                                   courseworkGitlabId={courseworkGitlabId}
                                   status={activateStatus}
-                                  setStatus={setActiveStatus}
-                                  setTemplatehttpURL={setTemplatehttpURL}
-                                  setTemplateSshURL={setTemplateSshURL}
+                                  onRefresh={triggerRefresh}
                               />
                           {activateStatus === 2 && (
                               <RepoAccessBox repoUrl={templatehttpURL} />
@@ -190,9 +190,9 @@ export default function CreateTemplate({
                             </div>
                           )}
 
-                          {/* {activateStatus === 2 &&(
-                            //<RepoTree fileTree={fileTree}/> //repoId={templateId} 
-                          )} */}
+                          {activateStatus === 2 &&(
+                            <RepoTree fileTree={fileTree}/> //repoId={templateId} 
+                          )}
                     </div>
                 </div>
             </div>
