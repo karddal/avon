@@ -1,4 +1,4 @@
-from app.core.helpers.gitlab import gl_create_coursework, gl_template_existance, gl_activate_template_project, gl_template_files
+from app.core.helpers.gitlab import gl_create_coursework, gl_template_existance, gl_activate_template_project, gl_template_files, gl_activate_template_project, gl_template_urls
 from sqlalchemy.orm import selectinload
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
@@ -9,7 +9,7 @@ from app.core.settings import settings
 
 from app.models.coursework import Coursework
 from app.models.unit import Unit, UnitWithCourseworks
-from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkUpdate, CourseworkDelete, CourseworkTemplateExists, CourseworkTemplateActivate, CourseworkTemplateFile
+from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkUpdate, CourseworkDelete, CourseworkTemplateExists, CourseworkTemplateActivate, CourseworkTemplateFile, CourseworkTemplateUrl
 from app.schemas.coursework import CourseworkUpdateFormData
 
 router = APIRouter(prefix = "/coursework", tags=["coursework"])
@@ -150,7 +150,7 @@ async def activate_template(gitLabId: str, session: session_dependency):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
             detail="GitLab request failed"
     )
-    return templateActivation
+    return {"success": True}
 
 @router.get('/template/files', response_model=list[CourseworkTemplateFile])
 async def get_files(templateId: str, session: session_dependency):
@@ -162,3 +162,14 @@ async def get_files(templateId: str, session: session_dependency):
             detail="GitLab request failed"
         )
     return fileData
+
+@router.get('/template/urls', response_model=CourseworkTemplateUrl)
+async def template_urls(templateId: str, session: session_dependency):
+    try:
+        urlData = await gl_template_urls(templateId)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail="GitLab request failed"
+        )
+    return urlData

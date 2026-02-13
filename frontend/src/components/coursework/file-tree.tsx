@@ -22,7 +22,7 @@ type GitLabTreeItem = {
     mode: string;
 }
 
-function TreeNode({ node }: { node: RepoNode }) {
+function TreeNode({ node }: { node: GitLabTreeItem }) {
   // File (leaf)
   if (node.type === "blob") {
     const Icon =

@@ -91,7 +91,10 @@ class CourseworkTemplateExists(BaseModel):
     exists: bool
     templateProjectId: int | None = None
 
-class CourseworkTemplateActivate(BaseModel):
-    httpsCloneUrl: str
-    sshCloneUrl: str
+class CourseworkTemplateActivate(BaseModel):  #Need to simplify this brev
+    success: bool
+
+class CourseworkTemplateUrl(BaseModel):
+    http: str
+    ssh: str
 

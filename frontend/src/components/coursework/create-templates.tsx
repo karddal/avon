@@ -36,6 +36,8 @@ import { TOOLS } from "@/lib/docker/tools";
 import type { Image, Tool } from "@/lib/docker/types";
 import { cn } from "@/lib/utils";
 import { template_file_tree } from "@/lib/actions/template_file_tree";
+import { template_url } from "@/lib/actions/template_url";
+
 
 // Query db to see if template id is none (just see in db) on every page load: 
 // (tho could do all thsi without db just kinda long icl, actualy just need to change how we get the coursework url stuff, with file structure ofc)
@@ -95,9 +97,12 @@ export default function CreateTemplate({
 
         setFileTree(templateData)
 
-        // const urlResponse = await template_url({
-        //   templateProjectId: String(templateId)
-        // })
+        const urlResponse = await template_url({
+          templateProjectId: String(templateId)
+        })
+
+        setTemplatehttpURL(urlResponse.http)
+        setTemplateSshURL(urlResponse.ssh)
       } catch (err) {
         console.error(err)
         toast.error("Failed to load template data")
@@ -149,8 +154,6 @@ export default function CreateTemplate({
                                   courseworkGitlabId={courseworkGitlabId}
                                   status={activateStatus}
                                   setStatus={setActiveStatus}
-                                  setTemplatehttpURL={setTemplatehttpURL}
-                                  setTemplateSshURL={setTemplateSshURL}
                               />
                           {activateStatus === 2 && (
                               <RepoAccessBox repoUrl={templatehttpURL} />
