@@ -49,6 +49,8 @@ import { template_url } from "@/lib/actions/template_url";
 // If this template repo contains stuff already, the upload zip part (WHICH NEEDS A LOADING BAR AND BUTTON FOR SUBMITTTING), must turn it's submit button into an overwrite button, and state that an overwrite will happen (alert / warning menu)
 // Maybe have a timeline for setting up coursework, CRUD -> Templates -> Tests -> TestingTests -> Provisioning and permissions
 
+
+// Maybe tabs for different links to repo, like ssh and https
 type Props = {
   open_state: boolean;
   set_open_state: Dispatch<SetStateAction<boolean>>;
@@ -73,44 +75,48 @@ export default function CreateTemplate({
   const [templateSshURL, setTemplateSshURL] = useState<string | null>(null)
   const [templateId, setTemplateId] = useState<number | null>(null)
   const [fileTree, setFileTree] = useState<GitLabTreeItem[]>([])
+  
+  // Check state of template repo
   useEffect(() => {
     const checkTemplate = async () => {
-      try {
-        const response = await template_existance({
-          courseworkGitLabId: courseworkGitlabId,
-        })
-        console.log(response)
+      const response = await template_existance({
+        courseworkGitLabId: courseworkGitlabId,
+      });
 
-        if (!response.exists || !response.templateProjectId) {
-          setActiveStatus(0)
-          return
-        }
-
-        setActiveStatus(2)
-
-        const templateId = response.templateProjectId
-        setTemplateId(templateId)
-
-        const templateData = await template_file_tree({
-          templateProjectId: String(templateId)
-        })
-
-        setFileTree(templateData)
-
-        const urlResponse = await template_url({
-          templateProjectId: String(templateId)
-        })
-
-        setTemplatehttpURL(urlResponse.http)
-        setTemplateSshURL(urlResponse.ssh)
-      } catch (err) {
-        console.error(err)
-        toast.error("Failed to load template data")
+      if (!response.exists || !response.templateProjectId) {
+        setActiveStatus(0);
+        return;
       }
-    }
 
-    checkTemplate()
-  }, [courseworkGitlabId])
+      setTemplateId(response.templateProjectId);
+      setActiveStatus(2);
+    };
+
+    checkTemplate();
+  }, [courseworkGitlabId]);
+
+  // Update page accordingly and load data
+  useEffect(() => {
+    console.log("Effect fired:", { activateStatus, templateId });
+    if (activateStatus !== 2 || !templateId) return;
+
+    const loadTemplateData = async () => {
+      const templateData = await template_file_tree({
+        templateProjectId: String(templateId),
+      });
+
+      setFileTree(templateData);
+
+      const urlResponse = await template_url({
+        templateProjectId: String(templateId),
+      });
+
+      setTemplatehttpURL(urlResponse.http);
+      setTemplateSshURL(urlResponse.ssh);
+    };
+
+    loadTemplateData();
+  }, [activateStatus, templateId]);
 
 
   return (
@@ -154,6 +160,8 @@ export default function CreateTemplate({
                                   courseworkGitlabId={courseworkGitlabId}
                                   status={activateStatus}
                                   setStatus={setActiveStatus}
+                                  setTemplatehttpURL={setTemplatehttpURL}
+                                  setTemplateSshURL={setTemplateSshURL}
                               />
                           {activateStatus === 2 && (
                               <RepoAccessBox repoUrl={templatehttpURL} />

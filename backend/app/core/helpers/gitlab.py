@@ -242,7 +242,8 @@ async def gl_activate_template_project(coursework_id):
                 detail="Internal Server Error when connecting to GitLab",
             )
     return {
-        "success" : True
+        "httpsCloneUrl": data["http_url_to_repo"],
+        "sshCloneUrl": data["ssh_url_to_repo"],
     }
 
 async def gl_template_files(template_id):

@@ -150,7 +150,7 @@ async def activate_template(gitLabId: str, session: session_dependency):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
             detail="GitLab request failed"
     )
-    return {"success": True}
+    return templateActivation
 
 @router.get('/template/files', response_model=list[CourseworkTemplateFile])
 async def get_files(templateId: str, session: session_dependency):

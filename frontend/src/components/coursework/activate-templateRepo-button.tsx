@@ -12,9 +12,11 @@ interface ActivateTemplateRepo {
     courseworkGitlabId: string;
     status: number;
     setStatus: (status: number) => void;
+    setTemplatehttpURL: (templatehttpURL : string) => void;
+    setTemplateSshURL: (templateSshURL : string) => void;
 }
 
-export default function ActivateTemplateRepo({courseworkGitlabId, status, setStatus} : ActivateTemplateRepo) {
+export default function ActivateTemplateRepo({courseworkGitlabId, status, setStatus, setTemplatehttpURL, setTemplateSshURL} : ActivateTemplateRepo) {
   const handleActivate = async () => {
     try {
       setStatus(1);
@@ -24,6 +26,8 @@ export default function ActivateTemplateRepo({courseworkGitlabId, status, setSta
       if (result) {
         toast.success("Template Repository activated successfully");
         setStatus(2);
+        setTemplatehttpURL(result.httpsCloneUrl);
+        setTemplateSshURL(result.sshCloneUrl);
       } else {
         throw new Error();
       }
