@@ -35,7 +35,11 @@ import { TOOLS } from "@/lib/docker/tools";
 import type { Image, Tool } from "@/lib/docker/types";
 import { cn } from "@/lib/utils";
 
-// Need to check if anotehr repo is already intialised, if it is then activate repo button has to be green already
+// Query db to see if template id is none (just see in db) on every page load:
+// - If so then need to activate/create then store in db, (id of template);
+// - If not then get data using id for urls and files (maybe need to trigger when state is changed on creation / activation, to start the button changes), do in one so loads up at once and UI sinks, overwrite button shoudl swicth between request types in the button
+
+
 // If this template repo contains stuff already, the upload zip part (WHICH NEEDS A LOADING BAR AND BUTTON FOR SUBMITTTING), must turn it's submit button into an overwrite button, and state that an overwrite will happen (alert / warning menu)
 // Maybe have a timeline for setting up coursework, CRUD -> Templates -> Tests -> TestingTests -> Provisioning and permissions
 
@@ -50,15 +54,14 @@ export default function CreateTemplate({
   set_open_state,
   courseworkGitlabId
 }: Props) {
-  const [gitlabRepoUrl, setGitlabRepoUrl] = useState<string | null>(null)
   const [activateStatus, setActiveStatus] = useState<number>(0);
+  const [templatehttpURL, setTemplatehttpURL] = useState<string | null>(null)
+  const [templateSshURL, setTemplateSshURL] = useState<string | null>(null)
 
   useEffect(() => {
     const checkTemplate = async () => {
       try {
-        const response = await template_existance({
-          courseworkGitLabId: courseworkGitlabId,
-        })
+        const response = await template_existance({courseworkGitLabId: courseworkGitlabId})
         console.log("Response \n\n\n\n\n",response)
 
         if (!response.exists) {
@@ -76,10 +79,6 @@ export default function CreateTemplate({
       checkTemplate()
     }
   }, [courseworkGitlabId])
-
-
-
-
 
   return (
     <Dialog open={open_state} onOpenChange={set_open_state}>
@@ -105,7 +104,7 @@ export default function CreateTemplate({
                       <p className="text-sm text-muted-foreground mb-2">
                           Upload templates for the coursework via ZIP here
                       </p>
-                      <ZipUploadPage uploadSetStatus={setActiveStatus}  uploadStatus={activateStatus}/>
+                      <ZipUploadPage uploadSetStatus={setActiveStatus}  uploadStatus={activateStatus}/> {/*Have to update satte in here now if intialise and upload in one using this button / area brev*/}
                     </div>
                   </div>
 
@@ -122,10 +121,11 @@ export default function CreateTemplate({
                                   courseworkGitlabId={courseworkGitlabId}
                                   status={activateStatus}
                                   setStatus={setActiveStatus}
-                                  setGitlabUrl={setGitlabRepoUrl}
+                                  setTemplatehttpURL={setTemplatehttpURL}
+                                  setTemplateSshURL={setTemplateSshURL}
                               />
                           {activateStatus === 2 && (
-                              <RepoAccessBox repoUrl={gitlabRepoUrl} />
+                              <RepoAccessBox repoUrl={templatehttpURL} />
                           )}
                       </div>
                     </div>

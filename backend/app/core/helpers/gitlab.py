@@ -205,7 +205,7 @@ async def gl_template_existance(coursework_id):
                 detail="Internal Server Error when connecting to GitLab"
             )
 
-async def activate_template_project(coursework_id):
+async def gl_activate_template_project(coursework_id):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
 
@@ -237,16 +237,13 @@ async def activate_template_project(coursework_id):
 
             data = response.json()
 
-            return {
-                "success": True,
-                "projectId": data.get("id"),
-                "webUrl": data.get("web_url"),
-                "path": data.get("path"),
-            }
-
         except httpx.RequestError as err:
             print(f"Network Error: {err}")
             raise HTTPException(
                 status_code=500,
                 detail="Internal Server Error when connecting to GitLab",
             )
+    return {
+        "httpsCloneUrl": data["http_url_to_repo"],
+        "sshCloneUrl": data["ssh_url_to_repo"],
+    }

@@ -6,26 +6,28 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { activate_template_repo } from "@/lib/actions/activate_template_repo";
+import { activate_template_request } from "@/lib/actions/activate_template_project";
 
 interface ActivateTemplateRepo {
     courseworkGitlabId: string;
     status: number;
     setStatus: (status: number) => void;
-    setGitlabUrl: (gitlabRepoUrl: string) => void;
+    setTemplatehttpURL: (templatehttpURL : string) => void;
+    setTemplateSshURL: (templateSshURL : string) => void;
 }
 
-export default function ActivateTemplateRepo({courseworkGitlabId, status, setStatus, setGitlabUrl} : ActivateTemplateRepo) {
+export default function ActivateTemplateRepo({courseworkGitlabId, status, setStatus, setTemplatehttpURL, setTemplateSshURL} : ActivateTemplateRepo) {
   const handleActivate = async () => {
     try {
       setStatus(1);
 
-      const result = await activate_template_repo({courseworkGitlabId});
+      const result = await activate_template_request({courseworkGitLabId: courseworkGitlabId});
 
       if (result) {
         toast.success("Template Repository activated successfully");
         setStatus(2);
-        setGitlabUrl("testyyyyyyy");
+        setTemplatehttpURL(result.httpsCloneUrl);
+        setTemplateSshURL(result.sshCloneUrl);
       } else {
         throw new Error();
       }

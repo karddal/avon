@@ -83,3 +83,7 @@ class CourseworkDelete(BaseModel):
 
 class CourseworkTemplateExists(BaseModel):
     exists: bool
+
+class CourseworkTemplateActivate(BaseModel):
+    httpsCloneUrl: str
+    sshCloneUrl: str
