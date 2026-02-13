@@ -20,6 +20,7 @@ import ZipUploadPage from "./upload-zip";
 import ActivateTemplateRepo from "./activate-templateRepo-button";
 import RepoAccessBox from "./repo-access-box"
 import RepoTree from "./file-tree"
+import { template_existance } from "@/lib/actions/template_existance";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -58,8 +59,9 @@ export default function CreateTemplate({
         const response = await template_existance({
           courseworkGitLabId: courseworkGitlabId,
         })
+        console.log("Response \n\n\n\n\n",response)
 
-        if (!response.result) {
+        if (!response.exists) {
           setActiveStatus(0)
         } else {
           setActiveStatus(2)

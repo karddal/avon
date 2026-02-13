@@ -4,6 +4,7 @@ from fastapi import HTTPException
 import httpx
 from dotenv import load_dotenv
 import os
+from urllib.parse import quote
 
 load_dotenv()
 TOKEN = os.getenv("GITLAB_API_TOKEN")
@@ -145,8 +146,6 @@ async def gl_create_coursework(name, unit_id):
         "path": data.get("path"),
     }
 
-from urllib.parse import quote
-
 async def gl_template_existance(coursework_id):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
@@ -206,3 +205,48 @@ async def gl_template_existance(coursework_id):
                 detail="Internal Server Error when connecting to GitLab"
             )
 
+async def activate_template_project(coursework_id):
+    if not TOKEN or not BASE_URL:
+        raise HTTPException(status_code=500, detail="Missing GitLab configuration")
+
+    path = generate_gitlab_path("Template")
+
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.post(
+                f"{BASE_URL}/projects",
+                headers={
+                    "PRIVATE-TOKEN": TOKEN,
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "name": "Template",
+                    "path": path,
+                    "namespace_id": coursework_id,
+                    "visibility": "private",
+                    "initialize_with_readme": False,
+                },
+                timeout=10.0,
+            )
+
+            if response.status_code != 201:
+                return {
+                    "success": False,
+                    "error": response.json().get("message") or "Failed to create template project",
+                }
+
+            data = response.json()
+
+            return {
+                "success": True,
+                "projectId": data.get("id"),
+                "webUrl": data.get("web_url"),
+                "path": data.get("path"),
+            }
+
+        except httpx.RequestError as err:
+            print(f"Network Error: {err}")
+            raise HTTPException(
+                status_code=500,
+                detail="Internal Server Error when connecting to GitLab",
+            )
