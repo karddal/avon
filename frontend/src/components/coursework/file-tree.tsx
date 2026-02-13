@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react"
 import {
   Collapsible,
   CollapsibleTrigger,
@@ -14,6 +13,7 @@ import {
   FileCode,
 } from "lucide-react"
 import { file } from "bun"
+import React from "react"
 
 interface RepoTree {
   fileTree: GitLabTreeItem[];

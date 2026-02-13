@@ -1,6 +1,7 @@
+import zipfile
 from app.core.helpers.gitlab import gl_create_coursework, gl_template_existance, gl_activate_template_project, gl_template_files, gl_activate_template_project, gl_template_urls
 from sqlalchemy.orm import selectinload
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from sqlmodel import Session, select
 from app.db.session import get_session
 from typing import Annotated
@@ -173,3 +174,8 @@ async def template_urls(templateId: str, session: session_dependency):
             detail="GitLab request failed"
         )
     return urlData
+
+@router.post('/template/upload-zip')
+async def upload_zip(file: UploadFile = File(...)):
+    if not file.filename.endswith(".zip"):
+        raise HTTPException(status_code=400, detail="File must be in ZIP format")

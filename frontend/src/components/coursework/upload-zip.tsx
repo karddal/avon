@@ -130,21 +130,21 @@ export default function ZipUploadPage({uploadStatus, uploadSetStatus} : UploadZi
               : 'Drop ZIP file here or click to select'}
         </p>
       </div>
-      {uploadStatus === 0 && (
+      {uploadStatus === 0 && status !== 'Uploading ZIP...' && (
         <Button size="lg" className="w-full" onClick={handleUpload} disabled={!file || uploading}>
           Upload
         </Button>
 
       )}
 
-      {uploadStatus === 1 && (
+      {status === 'Uploading ZIP...' && (
         <Button size="lg" disabled className="w-full">
           <Spinner className="mr-2 h-4 w-4" />
           Uploading...
         </Button>
       )}
 
-      {uploadStatus === 2 && (
+      {uploadStatus === 2 && status !== 'Uploading ZIP...' && (
         <Button variant="destructive" size="lg" className="w-full" disabled={!file || uploading} onClick={() => setShowOverwrite(true)}>
           <FolderSync className="mr-2 h-4 w-4" />
           Overwrite
