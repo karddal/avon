@@ -13,9 +13,9 @@ type GitLabTreeItem = {
     mode: string;
 }
 
-type TemplateFileTreeResponse = {
-  templateTreeResponse: GitLabTreeItem[];
-};
+// type TemplateFileTreeResponse = {
+//   templateTreeResponse: GitLabTreeItem[];
+// };
 
 export async function template_file_tree(
   req: TemplateFileTreeRequest
@@ -24,7 +24,7 @@ export async function template_file_tree(
   const token = await getRequestJWT();
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/projects/${req.templateProjectId}/repository/tree?recursive=true&per_page=100`,
+    `${process.env.NEXT_PUBLIC_API_URL}/coursework/template/files?templateId=${req.templateProjectId}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,

@@ -159,7 +159,6 @@ async def gl_template_existance(coursework_id):
                 },
                 timeout=10.0,
             )
-
             if response.status_code != 200:
                 return {
                     "success": False,
@@ -186,7 +185,6 @@ async def gl_template_existance(coursework_id):
                 },
                 timeout=10.0,
             )
-
             if existence_response.status_code == 404:
                 return {"exists": False, "templateProjectId": None}
 
@@ -195,7 +193,7 @@ async def gl_template_existance(coursework_id):
                     status_code=500,
                     detail="Template lookup failed"
                 )
-
+            print("templayeproject ODDDSS\n\n\n\n :", existence_response.json()["id"])
             return {"exists": True, "templateProjectId":existence_response.json()["id"]}
 
         except httpx.RequestError as err:
@@ -251,10 +249,10 @@ async def gl_activate_template_project(coursework_id):
 async def gl_template_files(template_id):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
-
+    #print("yyoyo beeping brev")
     async with httpx.AsyncClient() as client:
         try:
-            response = await client.post(
+            response = await client.get(
                 f"{BASE_URL}/projects/{template_id}/repository/tree",
                 headers={
                     "PRIVATE-TOKEN": TOKEN,
@@ -266,13 +264,16 @@ async def gl_template_files(template_id):
                 timeout=10.0,
             )
 
-            if response.status_code != 20:
+            if response.status_code == 404: #If 404 then empty, as we have established that the repo has to exist on the webpage
+                return []
+
+            if response.status_code != 200:
                 raise HTTPException(
-                    status_code=response.status_code
+                    status_code=response.status_code,
+                    detail="gitlab reponse is not status 200"
                 )
-
+            
             data = response.json()
-
         except httpx.RequestError as err:
             print(f"Network Error: {err}")
             raise HTTPException(

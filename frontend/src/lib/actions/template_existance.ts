@@ -26,10 +26,12 @@ export async function template_existance(
       cache: "no-cache",
     }
   );
+  const data = await response.json();
+  console.log("Responssyy:", data);
 
   if (!response.ok) {
     throw new Error("Failed to check template existence");
   }
 
-  return await response.json();
+  return await data;
 }

@@ -70,13 +70,14 @@ export default function CreateTemplate({
   const [templatehttpURL, setTemplatehttpURL] = useState<string | null>(null)
   const [templateSshURL, setTemplateSshURL] = useState<string | null>(null)
   const [templateId, setTemplateId] = useState<number | null>(null)
-  const [fileTree, setFileTree] = useState<GitLabTreeItem[] | null>(null)
+  const [fileTree, setFileTree] = useState<GitLabTreeItem[]>([])
   useEffect(() => {
     const checkTemplate = async () => {
       try {
         const response = await template_existance({
           courseworkGitLabId: courseworkGitlabId,
         })
+        console.log(response)
 
         if (!response.exists || !response.templateProjectId) {
           setActiveStatus(0)
@@ -89,11 +90,14 @@ export default function CreateTemplate({
         setTemplateId(templateId)
 
         const templateData = await template_file_tree({
-          templateProjectId: String(templateId),
+          templateProjectId: String(templateId)
         })
 
         setFileTree(templateData)
 
+        // const urlResponse = await template_url({
+        //   templateProjectId: String(templateId)
+        // })
       } catch (err) {
         console.error(err)
         toast.error("Failed to load template data")
@@ -175,9 +179,9 @@ export default function CreateTemplate({
                             </div>
                           )}
 
-                          {activateStatus === 2 &&(
-                            <RepoTree repoId={"should be id of template repo"} fileTree={fileTree}/>
-                          )}
+                          {/* {activateStatus === 2 &&(
+                            //<RepoTree fileTree={fileTree}/> //repoId={templateId} 
+                          )} */}
                     </div>
                 </div>
             </div>

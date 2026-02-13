@@ -1,4 +1,4 @@
-from app.core.helpers.gitlab import gl_create_coursework, gl_template_existance, gl_activate_template_project
+from app.core.helpers.gitlab import gl_create_coursework, gl_template_existance, gl_activate_template_project, gl_template_files
 from sqlalchemy.orm import selectinload
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
@@ -153,5 +153,12 @@ async def activate_template(gitLabId: str, session: session_dependency):
     return templateActivation
 
 @router.get('/template/files', response_model=list[CourseworkTemplateFile])
-async def get_files(CourseworkGitLabId: str, session: session_dependency):
+async def get_files(templateId: str, session: session_dependency):
     try:
+        fileData = await gl_template_files(templateId)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail="GitLab request failed"
+        )
+    return fileData

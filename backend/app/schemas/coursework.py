@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Literal
 
 import datetime
 from pydantic import BaseModel, AfterValidator
@@ -69,10 +69,10 @@ class CourseworkCreate(BaseModel):
     due_date: DueDate
     colour: str
 
-class CoursewotrkTemplateFile(BaseModel):
+class CourseworkTemplateFile(BaseModel):
     id: str
     name: str
-    type: str
+    type: Literal["blob", "tree"]
     path: str
     mode: str
 
@@ -89,6 +89,7 @@ class CourseworkDelete(BaseModel):
 
 class CourseworkTemplateExists(BaseModel):
     exists: bool
+    templateProjectId: int | None = None
 
 class CourseworkTemplateActivate(BaseModel):
     httpsCloneUrl: str

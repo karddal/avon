@@ -14,7 +14,7 @@ import {
   FileCode,
 } from "lucide-react"
 
-type RepoNode = {
+type GitLabTreeItem = {
     id: string;
     name: string;
     type: "blob" | "tree";
@@ -56,7 +56,7 @@ function TreeNode({ node }: { node: RepoNode }) {
   )
 }
 
-export default function RepoTree({repoId} : RepoTree) {
+export default function RepoTree({fileTree} : RepoNode[]) {
   const isEmpty = FAKE_REPO.length === 0
   return (
     <div>
