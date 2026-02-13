@@ -69,6 +69,12 @@ class CourseworkCreate(BaseModel):
     due_date: DueDate
     colour: str
 
+class CoursewotrkTemplateFile(BaseModel):
+    id: str
+    name: str
+    type: str
+    path: str
+    mode: str
 
 class CourseworkUpdate(BaseModel):
     name: Name | None = None
@@ -87,3 +93,4 @@ class CourseworkTemplateExists(BaseModel):
 class CourseworkTemplateActivate(BaseModel):
     httpsCloneUrl: str
     sshCloneUrl: str
+

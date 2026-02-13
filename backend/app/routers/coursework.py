@@ -9,7 +9,7 @@ from app.core.settings import settings
 
 from app.models.coursework import Coursework
 from app.models.unit import Unit, UnitWithCourseworks
-from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkUpdate, CourseworkDelete, CourseworkTemplateExists, CourseworkTemplateActivate
+from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkUpdate, CourseworkDelete, CourseworkTemplateExists, CourseworkTemplateActivate, CourseworkTemplateFile
 from app.schemas.coursework import CourseworkUpdateFormData
 
 router = APIRouter(prefix = "/coursework", tags=["coursework"])
@@ -151,3 +151,7 @@ async def activate_template(gitLabId: str, session: session_dependency):
             detail="GitLab request failed"
     )
     return templateActivation
+
+@router.get('/template/files', response_model=list[CourseworkTemplateFile])
+async def get_files(CourseworkGitLabId: str, session: session_dependency):
+    try:

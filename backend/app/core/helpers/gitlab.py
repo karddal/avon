@@ -188,7 +188,7 @@ async def gl_template_existance(coursework_id):
             )
 
             if existence_response.status_code == 404:
-                return {"exists": False}
+                return {"exists": False, "templateProjectId": None}
 
             if existence_response.status_code != 200:
                 raise HTTPException(
@@ -196,7 +196,7 @@ async def gl_template_existance(coursework_id):
                     detail="Template lookup failed"
                 )
 
-            return {"exists": True}
+            return {"exists": True, "templateProjectId":existence_response.json()["id"]}
 
         except httpx.RequestError as err:
             print(f"Network Error: {err}")
@@ -247,3 +247,36 @@ async def gl_activate_template_project(coursework_id):
         "httpsCloneUrl": data["http_url_to_repo"],
         "sshCloneUrl": data["ssh_url_to_repo"],
     }
+
+async def gl_template_files(template_id):
+    if not TOKEN or not BASE_URL:
+        raise HTTPException(status_code=500, detail="Missing GitLab configuration")
+
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.post(
+                f"{BASE_URL}/projects/{template_id}/repository/tree",
+                headers={
+                    "PRIVATE-TOKEN": TOKEN,
+                },
+                params={
+                    "recursive":"true",
+                    "per_page":"100"
+                },
+                timeout=10.0,
+            )
+
+            if response.status_code != 20:
+                raise HTTPException(
+                    status_code=response.status_code
+                )
+
+            data = response.json()
+
+        except httpx.RequestError as err:
+            print(f"Network Error: {err}")
+            raise HTTPException(
+                status_code=500,
+                detail="Internal Server Error when connecting to GitLab",
+            )
+    return data

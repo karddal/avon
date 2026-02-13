@@ -7,6 +7,7 @@ type CourseworkTemplateExistanceRequest = {
 
 type CourseworkTemplateExistanceResponse = {
   exists: boolean;
+  templateProjectId: number | null;
 };
 
 export async function template_existance(

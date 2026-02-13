@@ -14,71 +14,13 @@ import {
   FileCode,
 } from "lucide-react"
 
-interface RepoTree {
-  repoId: string;
-}
-
 type RepoNode = {
-  name: string
-  path: string
-  type: "tree" | "blob"
-  children?: RepoNode[]
+    id: string;
+    name: string;
+    type: "blob" | "tree";
+    path: string;
+    mode: string;
 }
-
-const FAKE_REPO: RepoNode[] = [
-  {
-    name: "src",
-    path: "src",
-    type: "tree",
-    children: [
-      {
-        name: "app",
-        path: "src/app",
-        type: "tree",
-        children: [
-          {
-            name: "layout.tsx",
-            path: "src/app/layout.tsx",
-            type: "blob",
-          },
-          {
-            name: "page.tsx",
-            path: "src/app/page.tsx",
-            type: "blob",
-          },
-        ],
-      },
-      {
-        name: "components",
-        path: "src/components",
-        type: "tree",
-        children: [
-          {
-            name: "button.tsx",
-            path: "src/components/button.tsx",
-            type: "blob",
-          },
-          {
-            name: "repo-tree.tsx",
-            path: "src/components/repo-tree.tsx",
-            type: "blob",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    name: "package.json",
-    path: "package.json",
-    type: "blob",
-  },
-  {
-    name: "README.md",
-    path: "README.md",
-    type: "blob",
-  },
-]
-
 
 function TreeNode({ node }: { node: RepoNode }) {
   // File (leaf)

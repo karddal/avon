@@ -7,7 +7,7 @@ type ActivateTemplateRequest = {
 
 type ActivateTemplateResponse = {
   httpsCloneUrl: string;
-  sshCloneUrl: string;
+  sshCloneUrl:string;
 };
 
 export async function activate_template_request(

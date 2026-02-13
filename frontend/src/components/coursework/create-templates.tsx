@@ -21,6 +21,7 @@ import ActivateTemplateRepo from "./activate-templateRepo-button";
 import RepoAccessBox from "./repo-access-box"
 import RepoTree from "./file-tree"
 import { template_existance } from "@/lib/actions/template_existance";
+
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -34,8 +35,11 @@ import { IMAGES } from "@/lib/docker/image";
 import { TOOLS } from "@/lib/docker/tools";
 import type { Image, Tool } from "@/lib/docker/types";
 import { cn } from "@/lib/utils";
+import { template_file_tree } from "@/lib/actions/template_file_tree";
 
-// Query db to see if template id is none (just see in db) on every page load:
+// Query db to see if template id is none (just see in db) on every page load: 
+// (tho could do all thsi without db just kinda long icl, actualy just need to change how we get the coursework url stuff, with file structure ofc)
+// (would need refresh in that case for when uttons get activated, myabe whenever activateStatus == 2)
 // - If so then need to activate/create then store in db, (id of template);
 // - If not then get data using id for urls and files (maybe need to trigger when state is changed on creation / activation, to start the button changes), do in one so loads up at once and UI sinks, overwrite button shoudl swicth between request types in the button
 
@@ -49,36 +53,56 @@ type Props = {
   courseworkGitlabId: string;
 };
 
+type GitLabTreeItem = {
+  id: string;
+  name: string;
+  type: "blob" | "tree";
+  path: string;
+  mode: string;
+};
+
 export default function CreateTemplate({
   open_state,
   set_open_state,
   courseworkGitlabId
 }: Props) {
-  const [activateStatus, setActiveStatus] = useState<number>(0);
+  const [activateStatus, setActiveStatus] = useState<number>(0)
   const [templatehttpURL, setTemplatehttpURL] = useState<string | null>(null)
   const [templateSshURL, setTemplateSshURL] = useState<string | null>(null)
-
+  const [templateId, setTemplateId] = useState<number | null>(null)
+  const [fileTree, setFileTree] = useState<GitLabTreeItem[] | null>(null)
   useEffect(() => {
     const checkTemplate = async () => {
       try {
-        const response = await template_existance({courseworkGitLabId: courseworkGitlabId})
-        console.log("Response \n\n\n\n\n",response)
+        const response = await template_existance({
+          courseworkGitLabId: courseworkGitlabId,
+        })
 
-        if (!response.exists) {
+        if (!response.exists || !response.templateProjectId) {
           setActiveStatus(0)
-        } else {
-          setActiveStatus(2)
+          return
         }
 
-      } catch (error) {
-        toast.error("An unknown error occurred.")
+        setActiveStatus(2)
+
+        const templateId = response.templateProjectId
+        setTemplateId(templateId)
+
+        const templateData = await template_file_tree({
+          templateProjectId: String(templateId),
+        })
+
+        setFileTree(templateData)
+
+      } catch (err) {
+        console.error(err)
+        toast.error("Failed to load template data")
       }
     }
 
-    if (courseworkGitlabId) {
-      checkTemplate()
-    }
+    checkTemplate()
   }, [courseworkGitlabId])
+
 
   return (
     <Dialog open={open_state} onOpenChange={set_open_state}>
@@ -152,7 +176,7 @@ export default function CreateTemplate({
                           )}
 
                           {activateStatus === 2 &&(
-                            <RepoTree repoId={"should be id of template repo"}/>
+                            <RepoTree repoId={"should be id of template repo"} fileTree={fileTree}/>
                           )}
                     </div>
                 </div>
