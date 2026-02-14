@@ -1,5 +1,7 @@
+import base64
+import io
 import zipfile
-from app.core.helpers.gitlab import gl_create_coursework, gl_template_existance, gl_activate_template_project, gl_template_files, gl_activate_template_project, gl_template_urls
+from app.core.helpers.gitlab import gl_create_coursework, gl_template_existance, gl_activate_template_project, gl_template_files, gl_activate_template_project, gl_template_urls, gl_upload_zip
 from sqlalchemy.orm import selectinload
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from sqlmodel import Session, select
@@ -176,6 +178,37 @@ async def template_urls(templateId: str, session: session_dependency):
     return urlData
 
 @router.post('/template/upload-zip')
-async def upload_zip(file: UploadFile = File(...)):
+async def upload_zip(templateId: str, file: UploadFile = File(...)):
     if not file.filename.endswith(".zip"):
         raise HTTPException(status_code=400, detail="File must be in ZIP format")
+    try:
+        contents = await file.read()
+        zip_buffer = io.BytesIO(contents)
+
+        with zipfile.ZipFile(zip_buffer, "r") as zip_ref:
+            print(zip_ref.namelist())
+            file_list = zip_ref.namelist()
+
+            commit_actions = []
+
+            for filename in file_list:
+                if filename.endswith("/"):
+                    continue
+
+                file_bytes = zip_ref.read(filename)
+
+                encoded_content = base64.b64encode(file_bytes).decode("utf-8")
+
+                commit_actions.append({
+                    "action": "create",
+                    "file_path": filename,
+                    "content": encoded_content,
+                    "encoding": "base64",
+                })
+
+        commitsuccess = await gl_upload_zip(templateId, commit_actions)
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+    return {"success" : True}

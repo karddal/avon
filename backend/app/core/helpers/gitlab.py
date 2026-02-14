@@ -315,3 +315,26 @@ async def gl_template_urls(template_id):
         "http": data["http_url_to_repo"],
         "ssh": data["ssh_url_to_repo"],
     }
+
+async def gl_upload_zip(templateId: str, commit_actions: list):
+    if not TOKEN or not BASE_URL:
+        raise HTTPException(status_code=500, detail="Missing GitLab configuration")
+
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            f"{BASE_URL}/projects/{templateId}/repository/commits",
+            headers={"PRIVATE-TOKEN": TOKEN},
+            json={
+                "branch": "main",
+                "commit_message": "Upload template ZIP",
+                "actions": commit_actions,
+            }
+        )
+
+        if response.status_code != 201:
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=response.text
+            )
+
+    return {"success": True}
