@@ -398,32 +398,47 @@ async def gl_overwrite_zip(templateId: str, file: UploadFile):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
     
+    commit_actions = []
+
+
     current_files = await gl_template_files(templateId)
-    curent_paths = set()
+    file_paths = set()
+    dir_paths = set()
     for tempFile in current_files:
         if (tempFile["type"] == "blob"): # Only need fiels in comparison as we only commit files not directories, gitlab infers that (gitlab repository/tree includes directories as type tree)
-            curent_paths.add(tempFile["path"]) 
+            file_paths.add(tempFile["path"]) 
+        else:
+            dir_paths.add(tempFile["path"])
+
+
 
     contents = await file.read()
     zip_buffer = io.BytesIO(contents)
 
-    with zipfile.ZipFile(zip_buffer, "r") as zip_ref:
-    
-        print(zip_ref.namelist())
-        print(curent_paths)
+    with zipfile.ZipFile(zip_buffer, "r") as zip_ref:    
+        # print(zip_ref.namelist())
+        # print(curent_paths)
+
         file_list = zip_ref.namelist()
 
-        commit_actions = []
+        file_entries = set()
+        dir_entries = set()
+        for temp in file_list:
+            if (temp.endswith("/")):
+                dir_entries.add(temp)
+            else:
+                file_entries.add(temp)
 
-        for filename in file_list:
-            if filename.endswith("/"):
-                continue
+        dir_with_files = set() # O(1) lookup
+
+        # Do file entries first
+        for filename in file_entries:
 
             file_bytes = zip_ref.read(filename)
 
             encoded_content = base64.b64encode(file_bytes).decode("utf-8")
 
-            if filename in curent_paths:
+            if filename in file_paths:
                 action_type = "update"
             else:
                 action_type = "create"
@@ -432,6 +447,41 @@ async def gl_overwrite_zip(templateId: str, file: UploadFile):
                 "action": action_type,
                 "file_path": filename,
                 "content": encoded_content,
+                "encoding": "base64",
+            })
+
+            parent_dir = PurePosixPath(filename).parent
+            while str(parent_dir) != ".":
+                dir_with_files.add(str(parent_dir) + "/")
+                parent_dir = parent_dir.parent
+            
+            file_paths.discard(filename)
+
+        for filename in file_paths:
+            commit_actions.append({
+                "action": "delete",
+                "file_path": filename,
+            })
+
+
+        # Which directories don't have anything in them, (gitlab won't handle adding empty dirs, so put .gitkeep in them)
+        empty_dirs = []
+        for directory in dir_entries:
+            if directory not in dir_with_files:
+                empty_dirs.append(directory)
+
+        for directory in empty_dirs:
+            gitkeep_path = directory + ".gitkeep"
+
+            if gitkeep_path in file_paths:
+                action_type = "update"
+            else:
+                action_type = "create"
+                
+            commit_actions.append({
+                "action": "create",
+                "file_path": gitkeep_path,
+                "content": base64.b64encode(b"").decode("utf-8"),
                 "encoding": "base64",
             })
             
