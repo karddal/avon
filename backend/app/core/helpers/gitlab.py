@@ -318,9 +318,33 @@ async def gl_template_urls(template_id):
         "ssh": data["ssh_url_to_repo"],
     }
 
-async def gl_upload_zip(templateId: str, commit_actions: list):
+async def gl_upload_zip(templateId: str, file: UploadFile):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
+    
+    contents = await file.read()
+        zip_buffer = io.BytesIO(contents)
+
+        with zipfile.ZipFile(zip_buffer, "r") as zip_ref:
+            print(zip_ref.namelist())
+            file_list = zip_ref.namelist()
+
+            commit_actions = []
+
+            for filename in file_list:
+                if filename.endswith("/"):
+                    continue
+
+                file_bytes = zip_ref.read(filename)
+
+                encoded_content = base64.b64encode(file_bytes).decode("utf-8")
+
+                commit_actions.append({
+                    "action": "create",
+                    "file_path": filename,
+                    "content": encoded_content,
+                    "encoding": "base64",
+                })
 
     async with httpx.AsyncClient() as client:
         response = await client.post(
