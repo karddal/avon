@@ -206,7 +206,7 @@ async def upload_zip(templateId: str, file: UploadFile = File(...)):
                     "encoding": "base64",
                 })
 
-        commitsuccess = await gl_upload_zip(templateId, commit_actions)
+        await gl_upload_zip(templateId, commit_actions)
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

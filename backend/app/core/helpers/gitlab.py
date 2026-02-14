@@ -1,5 +1,7 @@
 import re
-
+import base64
+import io
+import zipfile
 from fastapi import HTTPException
 import httpx
 from dotenv import load_dotenv
@@ -259,7 +261,7 @@ async def gl_template_files(template_id):
                 },
                 params={
                     "recursive":"true",
-                    "per_page":"100"
+                    "per_page":"1000"
                 },
                 timeout=10.0,
             )
@@ -320,6 +322,65 @@ async def gl_upload_zip(templateId: str, commit_actions: list):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
 
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            f"{BASE_URL}/projects/{templateId}/repository/commits",
+            headers={"PRIVATE-TOKEN": TOKEN},
+            json={
+                "branch": "main",
+                "commit_message": "Upload template ZIP",
+                "actions": commit_actions,
+            }
+        )
+
+        if response.status_code != 201:
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=response.text
+            )
+
+    return {"success": True}
+
+async def gl_overwrite_zip(templateId: str, file: UploadFile):
+    if not TOKEN or not BASE_URL:
+        raise HTTPException(status_code=500, detail="Missing GitLab configuration")
+    
+    current_files = await gl_template_files(templateId)
+    curent_paths = set()
+    for tempFile in current_files:
+        if (tempFile["type"] == "blob"): # Only need fiels in comparison as we only commit files not directories, gitlab infers that (gitlab repository/tree includes directories as type tree)
+            curent_paths.add(tempFile["path"]) 
+
+    contents = await file.read()
+    zip_buffer = io.BytesIO(contents)
+
+    with zipfile.ZipFile(zip_buffer, "r") as zip_ref:
+    
+        print(zip_ref.namelist())
+        file_list = zip_ref.namelist()
+
+        commit_actions = []
+
+        for filename in file_list:
+            if filename.endswith("/"):
+                continue
+
+            file_bytes = zip_ref.read(filename)
+
+            encoded_content = base64.b64encode(file_bytes).decode("utf-8")
+
+            if filename in curent_paths:
+                action_type = "update"
+            else:
+                action_type = "create"
+
+            commit_actions.append({
+                "action": action_type,
+                "file_path": filename,
+                "content": encoded_content,
+                "encoding": "base64",
+            })
+            
     async with httpx.AsyncClient() as client:
         response = await client.post(
             f"{BASE_URL}/projects/{templateId}/repository/commits",
