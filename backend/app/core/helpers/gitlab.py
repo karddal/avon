@@ -2,7 +2,8 @@ import re
 import base64
 import io
 import zipfile
-from fastapi import HTTPException
+from pathlib import PurePosixPath #Just easier path hadnling
+from fastapi import HTTPException, UploadFile
 import httpx
 from dotenv import load_dotenv
 import os
@@ -322,29 +323,57 @@ async def gl_upload_zip(templateId: str, file: UploadFile):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
     
+    commit_actions = []
     contents = await file.read()
-        zip_buffer = io.BytesIO(contents)
+    zip_buffer = io.BytesIO(contents)
 
-        with zipfile.ZipFile(zip_buffer, "r") as zip_ref:
-            print(zip_ref.namelist())
-            file_list = zip_ref.namelist()
+    with zipfile.ZipFile(zip_buffer, "r") as zip_ref:
 
-            commit_actions = []
+        file_list = zip_ref.namelist()
 
-            for filename in file_list:
-                if filename.endswith("/"):
-                    continue
+        file_entries = []
+        dir_entries = []
+        for temp in file_list:
+            if (temp.endswith("/")):
+                dir_entries.append(temp)
+            else:
+                file_entries.append(temp)
 
-                file_bytes = zip_ref.read(filename)
+        dir_with_files = set() # O(1) lookup
 
-                encoded_content = base64.b64encode(file_bytes).decode("utf-8")
+        # Do file entries first
+        for filename in file_entries:
 
-                commit_actions.append({
-                    "action": "create",
-                    "file_path": filename,
-                    "content": encoded_content,
-                    "encoding": "base64",
-                })
+            file_bytes = zip_ref.read(filename)
+
+            encoded_content = base64.b64encode(file_bytes).decode("utf-8")
+
+            commit_actions.append({
+                "action": "create",
+                "file_path": filename,
+                "content": encoded_content,
+                "encoding": "base64",
+            })
+
+            parent_dir = PurePosixPath(filename).parent
+            while str(parent_dir) != ".":
+                dir_with_files.add(str(parent_dir) + "/")
+                parent_dir = parent_dir.parent
+
+        empty_dirs = []
+        for directory in dir_entries:
+            if directory not in dir_with_files:
+                empty_dirs.append(directory)
+
+        for directory in empty_dirs:
+            gitkeep_path = directory + ".gitkeep"
+
+            commit_actions.append({
+                "action": "create",
+                "file_path": gitkeep_path,
+                "content": base64.b64encode(b"").decode("utf-8"),
+                "encoding": "base64",
+            })
 
     async with httpx.AsyncClient() as client:
         response = await client.post(
@@ -381,6 +410,7 @@ async def gl_overwrite_zip(templateId: str, file: UploadFile):
     with zipfile.ZipFile(zip_buffer, "r") as zip_ref:
     
         print(zip_ref.namelist())
+        print(curent_paths)
         file_list = zip_ref.namelist()
 
         commit_actions = []
