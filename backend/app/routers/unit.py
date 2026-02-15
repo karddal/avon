@@ -31,7 +31,6 @@ session_dependency = Annotated[Session, Depends(get_session)]
     status_code=status.HTTP_201_CREATED,
 )
 async def create_unit(unit: UnitCreate, session: session_dependency):
-
     if unit.programme_id:
         programme = session.exec(
             select(Programme).where(Programme.id == unit.programme_id)
@@ -42,7 +41,6 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
     
     try:
         if settings.testing_mode:
-            # ignore gitlab if in testing mode, set gitlab id to dummy
             gl_data = {"gitlabGroupId": 12345678}
         else:
             gl_data = await gl_create_unit(unit.name, programme.gitlab_id)
@@ -62,7 +60,7 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
     )
     # Add validation for the start and end dates below
 
-    statement = select(Unit.id).where(Unit.name==unit.name or Unit.unit_code==unit.unit_code)
+    statement = select(Unit.id).where(Unit.name==unit.name, Unit.unit_code==unit.unit_code, Unit.programme_id == unit.programme_id)
     existing_units = session.exec(statement).all()
     if len(existing_units) > 0:
         raise HTTPException(status_code=400, detail="Unit already exists with same name or unit code")
