@@ -2,35 +2,31 @@
 import { getRequestJWT } from "@/lib/auth-utils";
 
 type uploadZipRequest = {
-  formData: string;
+  courseworkGitLabId: string;
+  formData: FormData;
 };
 
-export async function upload_zip(req: uploadZipRequest) {
+type uploadZipResponse = {
+  templateId: number;
+};
+
+export async function upload_zip(req: uploadZipRequest): Promise<uploadZipResponse> {
   "use server";
   const token = await getRequestJWT();
   const data = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/test`,
+    `${process.env.NEXT_PUBLIC_API_URL}/coursework/template/upload-zip?courseworkGitLabId=${req.courseworkGitLabId}`,
     {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
       },
       cache: "no-cache",
-      body: JSON.stringify(req),
+      body: req.formData,
     },
   );
   if (!data.ok) {
-    const json = await data.json();
-    return {
-      success: false,
-      data: json,
-    };
-  } else {
-    const json = await data.json();
-    return {
-      success: true,
-      data: json,
-    };
+     throw new Error("Failed to upload files");
   }
+
+  return (await data.json()) as uploadZipResponse;
 }

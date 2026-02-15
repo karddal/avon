@@ -12,8 +12,7 @@ from app.core.settings import settings
 
 from app.models.coursework import Coursework
 from app.models.unit import Unit, UnitWithCourseworks
-from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkUpdate, CourseworkDelete, CourseworkTemplateExists, CourseworkTemplateActivate, CourseworkTemplateFile, CourseworkTemplateUrl
-from app.schemas.coursework import CourseworkUpdateFormData
+from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkTemplateUploadZip, CourseworkUpdate, CourseworkDelete, CourseworkTemplateExists, CourseworkTemplateActivate, CourseworkTemplateFile, CourseworkTemplateUrl, CourseworkUpdateFormData
 
 router = APIRouter(prefix = "/coursework", tags=["coursework"])
 session_dependency = Annotated[Session, Depends(get_session)]
@@ -177,12 +176,12 @@ async def template_urls(templateId: str, session: session_dependency):
         )
     return urlData
 
-@router.post('/template/upload-zip')
-async def upload_zip(templateId: str, file: UploadFile = File(...)):
+@router.post('/template/upload-zip', response_model=CourseworkTemplateUploadZip)
+async def upload_zip(courseworkGitLabId: str, file: UploadFile = File(...)):
     if not file.filename.endswith(".zip"):
         raise HTTPException(status_code=400, detail="File must be in ZIP format")
     try:
-        response = await gl_upload_zip(templateId, file)
+        response = await gl_upload_zip(courseworkGitLabId, file)
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

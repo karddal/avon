@@ -21,6 +21,7 @@ import ActivateTemplateRepo from "./activate-templateRepo-button";
 import RepoAccessBox from "./repo-access-box"
 import RepoTree from "./file-tree"
 import { template_existance } from "@/lib/actions/template_existance";
+import { Spinner } from "@/components/ui/spinner";
 
 import { Input } from "@/components/ui/input";
 import {
@@ -76,6 +77,7 @@ export default function CreateTemplate({
   const [templateId, setTemplateId] = useState<number | null>(null)
   const [fileTree, setFileTree] = useState<GitLabTreeItem[]>([])
   const [refreshKey, setRefreshKey] = useState(0);
+  // const [loadingStatus, setLoadingStatus] = useState<boolean>(false) // set to true by components, set to false by main page
 
   const triggerRefresh = () => {
     setRefreshKey(prev => prev + 1);
@@ -83,6 +85,8 @@ export default function CreateTemplate({
 
   useEffect(() => {
     if (!open_state) return;
+
+    setActiveStatus(1);
 
     const loadAll = async () => {
       const response = await template_existance({
@@ -101,7 +105,6 @@ export default function CreateTemplate({
       const id = response.templateProjectId;
 
       setTemplateId(id);
-      setActiveStatus(2);
 
       const templateData = await template_file_tree({
         templateProjectId: String(id),
@@ -115,6 +118,8 @@ export default function CreateTemplate({
 
       setTemplatehttpURL(urlResponse.http);
       setTemplateSshURL(urlResponse.ssh);
+      // setLoadingStatus(false);
+      setActiveStatus(2);
     };
 
     loadAll();
@@ -145,7 +150,7 @@ export default function CreateTemplate({
                       <p className="text-sm text-muted-foreground mb-2">
                           Upload templates for the coursework via ZIP here
                       </p>
-                      <ZipUploadPage uploadSetStatus={setActiveStatus}  uploadStatus={activateStatus}/> {/*Have to update satte in here now if intialise and upload in one using this button / area brev*/}
+                      <ZipUploadPage courseworkGitlabId={courseworkGitlabId} templateGitlabId={templateId} setUploadStatus={setActiveStatus} onRefresh={triggerRefresh}  uploadStatus={activateStatus}/> {/*Have to update satte in here now if intialise and upload in one using this button / area brev*/}
                     </div>
                   </div>
 
@@ -162,6 +167,7 @@ export default function CreateTemplate({
                                   courseworkGitlabId={courseworkGitlabId}
                                   status={activateStatus}
                                   onRefresh={triggerRefresh}
+                                  setStatus={setActiveStatus}
                               />
                           {activateStatus === 2 && (
                               <RepoAccessBox repoUrl={templatehttpURL} />
@@ -182,11 +188,17 @@ export default function CreateTemplate({
                       </p>
                     </div>
                     <div className="p-8 pt-0">
-                          {activateStatus !== 2 && (
+                          {activateStatus === 0 && (
                             <div className="h-64 rounded-md bg-gray-100 flex items-center justify-center">
                               <p className="text-sm text-gray-400">
                                 Repository preview unavailable until activation
                               </p>
+                            </div>
+                          )}
+
+                          {activateStatus === 1 && (
+                            <div className="h-64 rounded-md bg-gray-100 flex items-center justify-center">
+                              <Spinner className="mr-2 h-4 w-4" />
                             </div>
                           )}
 

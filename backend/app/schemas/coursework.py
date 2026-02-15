@@ -92,10 +92,11 @@ class CourseworkTemplateExists(BaseModel):
     templateProjectId: int | None = None
 
 class CourseworkTemplateActivate(BaseModel):
-    httpsCloneUrl: str
-    sshCloneUrl: str
+    templateGitLabId: int
 
 class CourseworkTemplateUrl(BaseModel):
     http: str
     ssh: str
 
+class CourseworkTemplateUploadZip(BaseModel):
+    templateId: int

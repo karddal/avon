@@ -6,8 +6,7 @@ type ActivateTemplateRequest = {
 };
 
 type ActivateTemplateResponse = {
-  httpsCloneUrl: string;
-  sshCloneUrl:string;
+  templateGitLabId: string;
 };
 
 export async function activate_template_request(

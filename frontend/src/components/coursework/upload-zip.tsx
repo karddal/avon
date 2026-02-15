@@ -3,6 +3,7 @@
 import { useCallback, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { useDropzone } from 'react-dropzone';
+import { toast } from 'sonner';
 import { Spinner } from "@/components/ui/spinner";
 import { FolderSync } from 'lucide-react';
 import {
@@ -14,13 +15,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { upload_zip } from '@/lib/actions/upload_zip';
+import { overwrite_zip } from '@/lib/actions/overwrite_zip';
 
 interface UploadZip {
+  courseworkGitlabId: string;
+  templateGitlabId: number | null;
   uploadStatus: number;
-  uploadSetStatus: (status: number) => void;
+  setUploadStatus: (uploadStatus: number) => void;
+  onRefresh: () => void;
 }
 
-export default function ZipUploadPage({uploadStatus, uploadSetStatus} : UploadZip) {
+export default function ZipUploadPage({courseworkGitlabId, templateGitlabId, uploadStatus, onRefresh} : UploadZip) {
   const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState('Idle');
   const [uploading, setUploading] = useState(false);
@@ -44,19 +50,9 @@ export default function ZipUploadPage({uploadStatus, uploadSetStatus} : UploadZi
     formData.append('file', file);
 
     try {
-      uploadSetStatus(1);
-      const result = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/upload-zip`,
-        {
-          method: 'POST',
-          body: formData,
-        }
-      );
+      const result = await upload_zip({courseworkGitLabId: courseworkGitlabId, formData: formData})
 
-      if (!result.ok) {
-        throw new Error(await result.text());
-      }
-      uploadSetStatus(2);
+      onRefresh();
       setStatus('Upload complete. Files committed.');
       setFile(null);
     } catch (err) {
@@ -68,27 +64,20 @@ export default function ZipUploadPage({uploadStatus, uploadSetStatus} : UploadZi
   };
 
   const handleOverwrite = async () => {
-    if (!file) return;
+    if (!file || !templateGitlabId) return;
 
     setUploading(true);
-    setStatus('Uploading ZIP...');
+    setStatus('Overwriting ZIP...');
 
     const formData = new FormData();
     formData.append('file', file);
     try {
-      uploadSetStatus(1);
-      const result = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/upload-zip/overwrite`,
-        {
-          method: 'POST',
-          body: formData,
-        }
-      );
-      if (!result.ok) {
-        throw new Error(await result.text());
-      }
-      uploadSetStatus(2);
+      await overwrite_zip({templateId: templateGitlabId, formData: formData})
+
+      setShowOverwrite(false);
+      onRefresh();
       setStatus('Overwrite complete');
+      toast.success("Template overwritten sucessfully")
       setFile(null);
     } catch (err) {
       console.error(err);
@@ -137,14 +126,27 @@ export default function ZipUploadPage({uploadStatus, uploadSetStatus} : UploadZi
 
       )}
 
-      {status === 'Uploading ZIP...' && (
+      {uploadStatus == 1 && status !== 'Uploading ZIP...' && (
+        <Button size="lg" disabled className="w-full">
+          <Spinner className="mr-2 h-4 w-4" />
+        </Button>
+      )}
+
+      {status === 'Uploading ZIP...' && uploadStatus !== 2 && (
         <Button size="lg" disabled className="w-full">
           <Spinner className="mr-2 h-4 w-4" />
           Uploading...
         </Button>
       )}
 
-      {uploadStatus === 2 && status !== 'Uploading ZIP...' && (
+      {status === 'Overwriting ZIP...' && uploadStatus === 2 && (
+        <Button size="lg" disabled className="w-full" variant="destructive">
+          <Spinner className="mr-2 h-4 w-4" />
+          Overwriting...
+        </Button>
+      )}
+
+      {uploadStatus === 2 && status !== 'Overwriting ZIP...' && (
         <Button variant="destructive" size="lg" className="w-full" disabled={!file || uploading} onClick={() => setShowOverwrite(true)}>
           <FolderSync className="mr-2 h-4 w-4" />
           Overwrite
@@ -165,11 +167,24 @@ export default function ZipUploadPage({uploadStatus, uploadSetStatus} : UploadZi
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
+            {status !== 'Overwriting ZIP...' && (
+              <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
+            )}
+            {status === 'Overwriting ZIP...' && (
+              <AlertDialogCancel className="h-full" disabled >Cancel</AlertDialogCancel>
+            )}
+            {status !== 'Overwriting ZIP...'&& (
               <Button variant="destructive" size="lg" onClick={handleOverwrite}>
                 <FolderSync className="mr-2 h-4 w-4" />
                 Overwrite
-              </Button> {/* Onclik do some shit, like handleUpload just overwrite version brev */}
+              </Button>
+            )}
+            {status === 'Overwriting ZIP...' && (
+              <Button size="lg" disabled variant="destructive">
+                <Spinner className="mr-2 h-4 w-4" />
+                Overwriting...
+              </Button>
+            )}
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

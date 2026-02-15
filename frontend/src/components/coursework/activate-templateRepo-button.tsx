@@ -9,17 +9,19 @@ import { Spinner } from "@/components/ui/spinner";
 import { activate_template_request } from "@/lib/actions/activate_template_project";
 
 interface ActivateTemplateRepo {
-    courseworkGitlabId: string;
-    status: number;
-    onRefresh: () => void;
+  courseworkGitlabId: string;
+  status: number;
+  setStatus: (status: number) => void;
+  onRefresh: () => void;
 }
 
-export default function ActivateTemplateRepo({courseworkGitlabId, status, onRefresh} : ActivateTemplateRepo) {
+export default function ActivateTemplateRepo({courseworkGitlabId, status, setStatus, onRefresh} : ActivateTemplateRepo) {
   const [loadingState, setLoadingState] = useState<boolean>(false);
   
   const handleActivate = async () => {
     try {
       setLoadingState(true);
+      setStatus(1)
       const result = await activate_template_request({courseworkGitLabId: courseworkGitlabId});
       setLoadingState(false);
       if (result) {
@@ -41,7 +43,13 @@ export default function ActivateTemplateRepo({courseworkGitlabId, status, onRefr
         </Button>
       )}
 
-      {loadingState && (
+      {status === 1 && !loadingState && (
+        <Button size="lg" disabled className="w-full">
+          <Spinner className="mr-2 h-4 w-4" />
+        </Button>
+      )}
+
+      {loadingState&& (
         <Button size="lg" disabled className="w-full">
           <Spinner className="mr-2 h-4 w-4" />
           Activating...

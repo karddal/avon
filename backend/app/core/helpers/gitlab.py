@@ -245,8 +245,7 @@ async def gl_activate_template_project(coursework_id):
                 detail="Internal Server Error when connecting to GitLab",
             )
     return {
-        "httpsCloneUrl": data["http_url_to_repo"],
-        "sshCloneUrl": data["ssh_url_to_repo"],
+        "templateGitLabId": data["id"],
     }
 
 async def gl_template_files(template_id):
@@ -319,9 +318,13 @@ async def gl_template_urls(template_id):
         "ssh": data["ssh_url_to_repo"],
     }
 
-async def gl_upload_zip(templateId: str, file: UploadFile):
+async def gl_upload_zip(courseworkGitLabId: str, file: UploadFile):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
+    
+    activationResult = await gl_activate_template_project(courseworkGitLabId)
+
+    templateId = activationResult["templateGitLabId"]
     
     commit_actions = []
     contents = await file.read()
@@ -392,7 +395,7 @@ async def gl_upload_zip(templateId: str, file: UploadFile):
                 detail=response.text
             )
 
-    return {"success": True}
+    return {"templateId": templateId}
 
 async def gl_overwrite_zip(templateId: str, file: UploadFile):
     if not TOKEN or not BASE_URL:
@@ -477,7 +480,7 @@ async def gl_overwrite_zip(templateId: str, file: UploadFile):
                 action_type = "update"
             else:
                 action_type = "create"
-                
+
             commit_actions.append({
                 "action": "create",
                 "file_path": gitkeep_path,
