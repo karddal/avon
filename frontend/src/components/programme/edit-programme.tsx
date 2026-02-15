@@ -168,7 +168,7 @@ export default function EditProgramme({
             }}
         >
             <SheetContent
-                className={"h-full overflow-y-scroll"}
+                className={"h-full flex flex-col p-0"}
                 side={b ? "top" : "right"}
                 onInteractOutside={(event) => {
                     if (form.formState.isDirty) {
@@ -183,16 +183,18 @@ export default function EditProgramme({
                     }
                 }}
             >
-                <SheetHeader>
-                    <SheetTitle>Edit this programme</SheetTitle>
-                    <SheetDescription>
-                        You can modify this programme here. Please remember to save when you
-                        are done.
-                    </SheetDescription>
-                </SheetHeader>
+                <div className="px-6 pt-6">
+                    <SheetHeader>
+                        <SheetTitle>Edit this programme</SheetTitle>
+                        <SheetDescription>
+                            You can modify this programme here. Please remember to save when you are done.
+                        </SheetDescription>
+                    </SheetHeader>
+                </div>
 
-                <div className={"h-full overflow-y-scroll px-4"}>
+                <div className={"flex-1 overflow-y-auto px-6 pb-28"}>
                     <form
+                        id="edit-programme-form"
                         className={"h-full form-flow flex flex-col justify-between"}
                         onSubmit={form.handleSubmit(onSubmit)}
                     >
@@ -271,46 +273,51 @@ export default function EditProgramme({
                                 )}
                             ></Controller>
                         </FieldGroup>
-                        <div>
-                            <SheetFooter>
-                                <ButtonGroup
-                                    orientation={"vertical"}
-                                    className={"gap-2 w-full"}
-                                >
-                                    {submitState && (
-                                        <Button disabled={true}>
-                                            <Spinner />
-                                            Save changes
-                                        </Button>
-                                    )}
-                                    {!submitState && (
-                                        <Button type={"submit"}>
-                                            <Save />
-                                            Save changes
-                                        </Button>
-                                    )}
-                                </ButtonGroup>
 
-                                {showAlert && (
-                                    <Alert variant="destructive">
-                                        <OctagonAlert />
-                                        <AlertTitle>Heads up!</AlertTitle>
-                                        <AlertDescription>{alertText}</AlertDescription>
-                                    </Alert>
-                                )}
+                        {showAlert && (
+                            <Alert variant="destructive">
+                                <OctagonAlert />
+                                <AlertTitle>Heads up!</AlertTitle>
+                                <AlertDescription>{alertText}</AlertDescription>
+                            </Alert>
+                        )}
+                    </form>
+                </div>
 
+                <div>
+                    <SheetFooter>
+                        <ButtonGroup
+                            orientation={"vertical"}
+                            className={"gap-2 w-full"}
+                        >
+                            {submitState && (
+                                <Button disabled={true} className="w-full">
+                                    <Spinner />
+                                    Save changes
+                                </Button>
+                            )}
+                            {!submitState && (
                                 <Button
-                                    type="button"
-                                    variant="outline"
-                                    onClick={requestClose}
-                                    disabled={submitState}
+                                    type={"submit"}
+                                    form="edit-programme-form"
                                     className="w-full"
                                 >
-                                    Cancel
+                                    <Save />
+                                    Save changes
                                 </Button>
-                            </SheetFooter>
-                        </div>
-                    </form>
+                            )}
+                        </ButtonGroup>
+
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={requestClose}
+                            disabled={submitState}
+                            className="w-full"
+                        >
+                            Cancel
+                        </Button>
+                    </SheetFooter>
                 </div>
             </SheetContent>
         </Sheet>

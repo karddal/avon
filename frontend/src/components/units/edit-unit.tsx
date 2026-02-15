@@ -422,14 +422,6 @@ export default function EditUnit({
                         )}
                     </ButtonGroup>
 
-                    {showAlert && (
-                        <Alert variant="destructive">
-                            <OctagonAlert />
-                            <AlertTitle>Heads up!</AlertTitle>
-                            <AlertDescription>{alertText}</AlertDescription>
-                        </Alert>
-                    )}
-
                     <Button
                         type="button"
                         variant={"outline"}
