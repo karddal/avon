@@ -386,6 +386,14 @@ export default function EditUnit({
                   )}
                 />
               </FieldGroup>
+
+                {showAlert && (
+                    <Alert variant="destructive">
+                        <OctagonAlert />
+                        <AlertTitle>Heads up!</AlertTitle>
+                        <AlertDescription>{alertText}</AlertDescription>
+                    </Alert>
+                )}
             </form>
           </div>
 
