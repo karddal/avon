@@ -11,6 +11,8 @@ class UnitPreview(BaseModel):
 
 class ProgrammePreview(BaseModel):
     programme_name: str
+    start_year: int
+    end_year: int
     units: List[UnitPreview]
 
 class StructurePreviewResponse(BaseModel):

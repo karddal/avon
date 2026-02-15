@@ -18,7 +18,7 @@ router = APIRouter(prefix="/programmes", tags=["programmes"])
 session_dependency = Annotated[Session, Depends(get_session)]
 
 @router.post('/create', response_model = ProgrammeRead, status_code=status.HTTP_201_CREATED)
-async def create_programme(programme: ProgrammeCreate, session: session_dependency):
+async def create_programme(programme: ProgrammeCreate, session: session_dependency) -> Programme:
     
     programmeAlreadyExists = session.exec(select(Programme).where((Programme.name == programme.name))).first()
 

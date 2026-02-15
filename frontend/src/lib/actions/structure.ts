@@ -11,6 +11,8 @@ export interface UnitPreview {
 
 export interface ProgrammePreview {
   programme_name: string;
+  start_year: number;
+  end_year: number;
   units: UnitPreview[];
 }
 
@@ -40,6 +42,27 @@ export async function getStructurePreview(link: string, years: string[]) {
     return data;
   } catch (error) {
     console.error("Scraper Error:", error);
+    return null;
+  }
+}
+
+export async function sendStructure(payload: StructurePreviewResponse) {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/structure/create`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      },
+    );
+
+    if (!response.ok) throw new Error("Failed to create structure");
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error:", error);
     return null;
   }
 }

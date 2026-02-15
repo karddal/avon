@@ -20,7 +20,9 @@ import {
   getStructurePreview,
   StructurePreviewResponse,
   UnitPreview,
+  sendStructure,
 } from "@/lib/actions/structure";
+import { toast } from "sonner";
 
 export default function CreateStructurePage() {
   const years = ["Year 1", "Year 2", "Year 3", "Year 4"];
@@ -46,6 +48,19 @@ export default function CreateStructurePage() {
     setIsLoading(false);
   }
 
+  async function handleSend() {
+    if (!previewData) {
+      toast.error("Select some preview data first!");
+      return;
+    }
+    const response = await sendStructure(previewData);
+    if (response) {
+      toast.success("Created entire structure!");
+    } else {
+      toast.error("Structure creation failed!");
+    }
+  }
+
   function toggleYear(year: string) {
     setSelectedYears((prev) =>
       prev.includes(year) ? prev.filter((y) => y !== year) : [...prev, year],
@@ -65,7 +80,7 @@ export default function CreateStructurePage() {
   }
 
   return (
-    <div className="container mx-auto p-6 min-h-screen flex items-center justify-center">
+    <div className="space-y-6 items-center flex justify-center h-full">
       <div className="flex flex-col-reverse lg:flex-row gap-6 w-full max-w-7xl">
         <Card className="flex-1 shadow-sm border-muted/60">
           <CardContent className="flex flex-col gap-8 h-full">
@@ -149,6 +164,7 @@ export default function CreateStructurePage() {
                 variant="outline"
                 size="lg"
                 disabled={!previewData || isLoading}
+                onClick={handleSend}
                 className="w-full"
               >
                 <Send className="mr-2 w-4 h-4" /> Confirm & Add Structure
