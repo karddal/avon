@@ -1,11 +1,9 @@
-'use client';
+"use client";
 
-import { useCallback, useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { useDropzone } from 'react-dropzone';
-import { toast } from 'sonner';
-import { Spinner } from "@/components/ui/spinner";
-import { FolderSync } from 'lucide-react';
+import { FolderSync } from "lucide-react";
+import { useCallback, useState } from "react";
+import { useDropzone } from "react-dropzone";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -15,8 +13,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { upload_zip } from '@/lib/actions/upload_zip';
-import { overwrite_zip } from '@/lib/actions/overwrite_zip';
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import { overwrite_zip } from "@/lib/actions/overwrite_zip";
+import { upload_zip } from "@/lib/actions/upload_zip";
 
 interface UploadZip {
   courseworkGitlabId: string;
@@ -26,9 +26,14 @@ interface UploadZip {
   onRefresh: () => void;
 }
 
-export default function ZipUploadPage({courseworkGitlabId, templateGitlabId, uploadStatus, onRefresh} : UploadZip) {
+export default function ZipUploadPage({
+  courseworkGitlabId,
+  templateGitlabId,
+  uploadStatus,
+  onRefresh,
+}: UploadZip) {
   const [file, setFile] = useState<File | null>(null);
-  const [status, setStatus] = useState('Idle');
+  const [status, setStatus] = useState("Idle");
   const [uploading, setUploading] = useState(false);
   const [showOverwrite, setShowOverwrite] = useState(false);
 
@@ -37,27 +42,30 @@ export default function ZipUploadPage({courseworkGitlabId, templateGitlabId, upl
     if (!selected) return;
 
     setFile(selected);
-    setStatus('File ready to upload.');
+    setStatus("File ready to upload.");
   }, []);
 
   const handleUpload = async () => {
     if (!file) return;
 
     setUploading(true);
-    setStatus('Uploading ZIP...');
+    setStatus("Uploading ZIP...");
 
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
 
     try {
-      const result = await upload_zip({courseworkGitLabId: courseworkGitlabId, formData: formData})
+      const result = await upload_zip({
+        courseworkGitLabId: courseworkGitlabId,
+        formData: formData,
+      });
 
       onRefresh();
-      setStatus('Upload complete. Files committed.');
+      setStatus("Upload complete. Files committed.");
       setFile(null);
     } catch (err) {
       console.error(err);
-      setStatus('Upload failed.');
+      setStatus("Upload failed.");
     } finally {
       setUploading(false);
     }
@@ -67,21 +75,21 @@ export default function ZipUploadPage({courseworkGitlabId, templateGitlabId, upl
     if (!file || !templateGitlabId) return;
 
     setUploading(true);
-    setStatus('Overwriting ZIP...');
+    setStatus("Overwriting ZIP...");
 
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
     try {
-      await overwrite_zip({templateId: templateGitlabId, formData: formData})
+      await overwrite_zip({ templateId: templateGitlabId, formData: formData });
 
       setShowOverwrite(false);
       onRefresh();
-      setStatus('Overwrite complete');
-      toast.success("Template overwritten sucessfully")
+      setStatus("Overwrite complete");
+      toast.success("Template overwritten sucessfully");
       setFile(null);
     } catch (err) {
       console.error(err);
-      setStatus('Overwrite failed.');
+      setStatus("Overwrite failed.");
     } finally {
       setUploading(false);
     }
@@ -90,7 +98,7 @@ export default function ZipUploadPage({courseworkGitlabId, templateGitlabId, upl
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     multiple: false,
-    accept: { 'application/zip': ['.zip'] },
+    accept: { "application/zip": [".zip"] },
     maxFiles: 1,
     disabled: uploading,
   });
@@ -107,53 +115,63 @@ export default function ZipUploadPage({courseworkGitlabId, templateGitlabId, upl
           rounded-lg
           outline-dashed
           cursor-pointer
-          ${uploading ? 'opacity-50 cursor-not-allowed' : ''}
+          ${uploading ? "opacity-50 cursor-not-allowed" : ""}
         `}
       >
         <input {...getInputProps()} />
         <p className="text-lg font-medium text-center">
           {isDragActive
-            ? 'Drop the ZIP file here'
+            ? "Drop the ZIP file here"
             : file
               ? `${file.name}`
-              : 'Drop ZIP file here or click to select'}
+              : "Drop ZIP file here or click to select"}
         </p>
       </div>
-      {uploadStatus === 0 && status !== 'Uploading ZIP...' && (
-        <Button size="lg" className="w-full" onClick={handleUpload} disabled={!file || uploading}>
+      {uploadStatus === 0 && status !== "Uploading ZIP..." && (
+        <Button
+          size="lg"
+          className="w-full"
+          onClick={handleUpload}
+          disabled={!file || uploading}
+        >
           Upload
         </Button>
-
       )}
 
-      {uploadStatus == 1 && status !== 'Uploading ZIP...' && (
+      {uploadStatus == 1 && status !== "Uploading ZIP..." && (
         <Button size="lg" disabled className="w-full">
           <Spinner className="mr-2 h-4 w-4" />
         </Button>
       )}
 
-      {status === 'Uploading ZIP...' && uploadStatus !== 2 && (
+      {status === "Uploading ZIP..." && uploadStatus !== 2 && (
         <Button size="lg" disabled className="w-full">
           <Spinner className="mr-2 h-4 w-4" />
           Uploading...
         </Button>
       )}
 
-      {status === 'Overwriting ZIP...' && uploadStatus === 2 && (
+      {status === "Overwriting ZIP..." && uploadStatus === 2 && (
         <Button size="lg" disabled className="w-full" variant="destructive">
           <Spinner className="mr-2 h-4 w-4" />
           Overwriting...
         </Button>
       )}
 
-      {uploadStatus === 2 && status !== 'Overwriting ZIP...' && (
-        <Button variant="destructive" size="lg" className="w-full" disabled={!file || uploading} onClick={() => setShowOverwrite(true)}>
+      {uploadStatus === 2 && status !== "Overwriting ZIP..." && (
+        <Button
+          variant="destructive"
+          size="lg"
+          className="w-full"
+          disabled={!file || uploading}
+          onClick={() => setShowOverwrite(true)}
+        >
           <FolderSync className="mr-2 h-4 w-4" />
           Overwrite
         </Button>
       )}
 
-      {status !== 'Idle' && (
+      {status !== "Idle" && (
         <p className="text-sm text-center text-gray-600">{status}</p>
       )}
 
@@ -167,19 +185,21 @@ export default function ZipUploadPage({courseworkGitlabId, templateGitlabId, upl
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            {status !== 'Overwriting ZIP...' && (
+            {status !== "Overwriting ZIP..." && (
               <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
             )}
-            {status === 'Overwriting ZIP...' && (
-              <AlertDialogCancel className="h-full" disabled >Cancel</AlertDialogCancel>
+            {status === "Overwriting ZIP..." && (
+              <AlertDialogCancel className="h-full" disabled>
+                Cancel
+              </AlertDialogCancel>
             )}
-            {status !== 'Overwriting ZIP...'&& (
+            {status !== "Overwriting ZIP..." && (
               <Button variant="destructive" size="lg" onClick={handleOverwrite}>
                 <FolderSync className="mr-2 h-4 w-4" />
                 Overwrite
               </Button>
             )}
-            {status === 'Overwriting ZIP...' && (
+            {status === "Overwriting ZIP..." && (
               <Button size="lg" disabled variant="destructive">
                 <Spinner className="mr-2 h-4 w-4" />
                 Overwriting...

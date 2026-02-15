@@ -10,9 +10,8 @@ type ActivateTemplateResponse = {
 };
 
 export async function activate_template_request(
-  req: ActivateTemplateRequest
+  req: ActivateTemplateRequest,
 ): Promise<ActivateTemplateResponse> {
-
   const token = await getRequestJWT();
 
   const response = await fetch(
@@ -23,7 +22,7 @@ export async function activate_template_request(
         Authorization: `Bearer ${token}`,
       },
       cache: "no-cache",
-    }
+    },
   );
 
   if (!response.ok) {

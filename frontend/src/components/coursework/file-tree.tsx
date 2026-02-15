@@ -1,42 +1,37 @@
-"use client"
+"use client";
 
+import { file } from "bun";
+import { ChevronRight, FileCode, FileText, Folder } from "lucide-react";
+import React from "react";
 import {
   Collapsible,
-  CollapsibleTrigger,
   CollapsibleContent,
-} from "@/components/ui/collapsible"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import {
-  ChevronRight,
-  Folder,
-  FileText,
-  FileCode,
-} from "lucide-react"
-import { file } from "bun"
-import React from "react"
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface RepoTree {
   fileTree: GitLabTreeItem[];
 }
 
 type RepoNode = {
-  name: string
-  path: string
-  type: "tree" | "blob"
-  children?: RepoNode[]
-}
+  name: string;
+  path: string;
+  type: "tree" | "blob";
+  children?: RepoNode[];
+};
 
 type GitLabTreeItem = {
-    id: string;
-    name: string;
-    type: "blob" | "tree";
-    path: string;
-    mode: string;
-}
+  id: string;
+  name: string;
+  type: "blob" | "tree";
+  path: string;
+  mode: string;
+};
 
 export function buildTree(items: GitLabTreeItem[]): RepoNode[] {
-  const map = new Map<string, RepoNode>()
-  const roots: RepoNode[] = []
+  const map = new Map<string, RepoNode>();
+  const roots: RepoNode[] = [];
 
   for (const item of items) {
     map.set(item.path, {
@@ -44,26 +39,25 @@ export function buildTree(items: GitLabTreeItem[]): RepoNode[] {
       path: item.path,
       type: item.type,
       children: item.type === "tree" ? [] : undefined,
-    })
+    });
   }
 
   for (const item of items) {
-    const node = map.get(item.path)!
+    const node = map.get(item.path)!;
     const parentPath = item.path.includes("/")
       ? item.path.substring(0, item.path.lastIndexOf("/"))
-      : null
+      : null;
 
     if (!parentPath) {
-      roots.push(node)
+      roots.push(node);
     } else {
-      const parent = map.get(parentPath)
-      parent?.children?.push(node)
+      const parent = map.get(parentPath);
+      parent?.children?.push(node);
     }
   }
 
-  return roots
+  return roots;
 }
-
 
 function TreeNode({ node }: { node: RepoNode }) {
   // File (Blob)
@@ -71,14 +65,14 @@ function TreeNode({ node }: { node: RepoNode }) {
     const Icon =
       node.name.endsWith(".tsx") || node.name.endsWith(".ts")
         ? FileCode
-        : FileText
+        : FileText;
 
     return (
       <div className="flex items-center gap-2 pl-6 py-1 text-sm text-muted-foreground hover:bg-accent rounded">
         <Icon className="h-4 w-4" />
         <span className="truncate">{node.name}</span>
       </div>
-    )
+    );
   }
 
   // Folder (tree)
@@ -96,14 +90,14 @@ function TreeNode({ node }: { node: RepoNode }) {
         ))}
       </CollapsibleContent>
     </Collapsible>
-  )
+  );
 }
 
 export default function RepoTree({ fileTree }: RepoTree) {
-  console.log(fileTree)
-  const nestedTree = React.useMemo(() => buildTree(fileTree), [fileTree])
+  console.log(fileTree);
+  const nestedTree = React.useMemo(() => buildTree(fileTree), [fileTree]);
 
-  const isEmpty = nestedTree.length === 0
+  const isEmpty = nestedTree.length === 0;
   return (
     <div>
       <div className="mb-2 text-sm font-medium">Repository</div>
@@ -121,5 +115,5 @@ export default function RepoTree({ fileTree }: RepoTree) {
         </div>
       </ScrollArea>
     </div>
-  )
+  );
 }

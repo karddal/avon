@@ -10,7 +10,9 @@ type uploadZipResponse = {
   templateId: number;
 };
 
-export async function upload_zip(req: uploadZipRequest): Promise<uploadZipResponse> {
+export async function upload_zip(
+  req: uploadZipRequest,
+): Promise<uploadZipResponse> {
   "use server";
   const token = await getRequestJWT();
   const data = await fetch(
@@ -25,7 +27,7 @@ export async function upload_zip(req: uploadZipRequest): Promise<uploadZipRespon
     },
   );
   if (!data.ok) {
-     throw new Error("Failed to upload files");
+    throw new Error("Failed to upload files");
   }
 
   return (await data.json()) as uploadZipResponse;

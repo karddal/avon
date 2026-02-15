@@ -6,21 +6,20 @@ type TemplateFileTreeRequest = {
 };
 
 type GitLabTreeItem = {
-    id: string;
-    name: string;
-    type: "blob" | "tree";
-    path: string;
-    mode: string;
-}
+  id: string;
+  name: string;
+  type: "blob" | "tree";
+  path: string;
+  mode: string;
+};
 
 // type TemplateFileTreeResponse = {
 //   templateTreeResponse: GitLabTreeItem[];
 // };
 
 export async function template_file_tree(
-  req: TemplateFileTreeRequest
+  req: TemplateFileTreeRequest,
 ): Promise<GitLabTreeItem[]> {
-
   const token = await getRequestJWT();
 
   const response = await fetch(
@@ -30,7 +29,7 @@ export async function template_file_tree(
         Authorization: `Bearer ${token}`,
       },
       cache: "no-cache",
-    }
+    },
   );
 
   if (!response.ok) {

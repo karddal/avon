@@ -6,14 +6,13 @@ type TemplateUrlRequest = {
 };
 
 type TemplateUrlResponse = {
-    http: string;
-    ssh: string;
+  http: string;
+  ssh: string;
 };
 
 export async function template_url(
-  req: TemplateUrlRequest
+  req: TemplateUrlRequest,
 ): Promise<TemplateUrlResponse> {
-
   const token = await getRequestJWT();
 
   const response = await fetch(
@@ -23,7 +22,7 @@ export async function template_url(
         Authorization: `Bearer ${token}`,
       },
       cache: "no-cache",
-    }
+    },
   );
 
   if (!response.ok) {

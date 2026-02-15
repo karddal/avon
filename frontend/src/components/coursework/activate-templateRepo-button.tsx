@@ -15,14 +15,21 @@ interface ActivateTemplateRepo {
   onRefresh: () => void;
 }
 
-export default function ActivateTemplateRepo({courseworkGitlabId, status, setStatus, onRefresh} : ActivateTemplateRepo) {
+export default function ActivateTemplateRepo({
+  courseworkGitlabId,
+  status,
+  setStatus,
+  onRefresh,
+}: ActivateTemplateRepo) {
   const [loadingState, setLoadingState] = useState<boolean>(false);
-  
+
   const handleActivate = async () => {
     try {
       setLoadingState(true);
-      setStatus(1)
-      const result = await activate_template_request({courseworkGitLabId: courseworkGitlabId});
+      setStatus(1);
+      const result = await activate_template_request({
+        courseworkGitLabId: courseworkGitlabId,
+      });
       setLoadingState(false);
       if (result) {
         toast.success("Template Repository activated successfully");
@@ -49,16 +56,21 @@ export default function ActivateTemplateRepo({courseworkGitlabId, status, setSta
         </Button>
       )}
 
-      {loadingState&& (
+      {loadingState && (
         <Button size="lg" disabled className="w-full">
           <Spinner className="mr-2 h-4 w-4" />
           Activating...
         </Button>
       )}
 
-      {status === 2 && !loadingState &&(
-        <Button size="lg" variant="outline" className="w-full border-green-500 text-green-600 cursor-default" disabled>
-            ✓ Template Repo Activated
+      {status === 2 && !loadingState && (
+        <Button
+          size="lg"
+          variant="outline"
+          className="w-full border-green-500 text-green-600 cursor-default"
+          disabled
+        >
+          ✓ Template Repo Activated
         </Button>
       )}
     </div>

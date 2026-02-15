@@ -1,10 +1,10 @@
 // fake-repo.ts
 export type RepoNode = {
-  name: string
-  path: string
-  type: "tree" | "blob"
-  children?: RepoNode[]
-}
+  name: string;
+  path: string;
+  type: "tree" | "blob";
+  children?: RepoNode[];
+};
 
 export const fakeRepo: RepoNode[] = [
   {
@@ -58,4 +58,4 @@ export const fakeRepo: RepoNode[] = [
     path: "README.md",
     type: "blob",
   },
-]
+];

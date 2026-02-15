@@ -11,9 +11,8 @@ type CourseworkTemplateExistanceResponse = {
 };
 
 export async function template_existance(
-  req: CourseworkTemplateExistanceRequest
+  req: CourseworkTemplateExistanceRequest,
 ): Promise<CourseworkTemplateExistanceResponse> {
-
   const token = await getRequestJWT();
 
   const response = await fetch(
@@ -24,7 +23,7 @@ export async function template_existance(
         Authorization: `Bearer ${token}`,
       },
       cache: "no-cache",
-    }
+    },
   );
   const data = await response.json();
   console.log("Responssyy:", data);

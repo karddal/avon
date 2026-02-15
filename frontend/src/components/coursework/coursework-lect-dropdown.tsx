@@ -2,12 +2,12 @@
 
 import {
   BookCheck,
+  BookDashed,
   Container,
   Menu,
   ServerCog,
   SquarePen,
   SquareX,
-  BookDashed, 
 } from "lucide-react";
 import { useState } from "react";
 import CreateDockerfile from "@/components/coursework/create-dockerfile";
@@ -70,7 +70,10 @@ export default function CourseworkLectDropdown({
           <DropdownMenuLabel>Coursework Options</DropdownMenuLabel>
           <DropdownMenuSeparator />
 
-          <DropdownMenuItem disabled={false} onSelect={() => setShowTemplate(true)}>
+          <DropdownMenuItem
+            disabled={false}
+            onSelect={() => setShowTemplate(true)}
+          >
             <BookDashed className="mr-2 h-4 w-4" />
             Templates
           </DropdownMenuItem>
@@ -110,7 +113,11 @@ export default function CourseworkLectDropdown({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <CreateTemplate open_state={showTemplates} set_open_state={setShowTemplate} courseworkGitlabId={coursework_update_data.gitlabId}/>
+      <CreateTemplate
+        open_state={showTemplates}
+        set_open_state={setShowTemplate}
+        courseworkGitlabId={coursework_update_data.gitlabId}
+      />
 
       <CreateDockerfile
         open_state={showDocker}

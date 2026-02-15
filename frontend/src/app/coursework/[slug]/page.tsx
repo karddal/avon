@@ -10,6 +10,7 @@ import Loading from "../loading";
 import CourseworkDescription from "./description";
 import CourseworkInformation from "./information";
 import CourseworkName from "./name";
+import SetupProgress from "@/components/coursework/setup-progress";
 
 type CourseworkUpdateReqResponse = {
   id: string;
@@ -131,14 +132,9 @@ async function CourseworkPageContent({
           <Suspense>
             <CourseworkInformation slug={slug} token={token} />
           </Suspense>
-          <DropdownCard
-            openByDefault={true}
-            title="Tools"
-            desc="Tools you can use for this coursework appear here."
-          >
-            {" "}
-            <RunTestsItem />
-          </DropdownCard>
+          <Suspense>
+              <SetupProgress/>
+          </Suspense>
         </div>
       </section>
     </>
