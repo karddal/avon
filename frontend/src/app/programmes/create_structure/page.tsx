@@ -1,23 +1,50 @@
 "use client";
 
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { Check, Eye, Pointer, Send } from "lucide-react";
+import {
+  Check,
+  Eye,
+  Loader2,
+  Send,
+  ExternalLink,
+  ChevronDown,
+} from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  ProgrammePreview,
+  getStructurePreview,
+  StructurePreviewResponse,
+  UnitPreview,
+} from "@/lib/actions/structure";
 
 export default function CreateStructurePage() {
-  const [selectedYears, setSelectedYears] = useState([
-    "Year 1",
-    "Year 2",
-    "Year 3",
-  ]);
-  const years = ["Year 1", "Year 2", "Year 3"];
-  const [previewLoaded, setPreviewLoaded] = useState<boolean>(false);
-  const [structureLink, setStructureLink] = useState<string>();
+  const years = ["Year 1", "Year 2", "Year 3", "Year 4"];
+  const [selectedYears, setSelectedYears] = useState<string[]>(["Year 1"]);
+  const [structureLink, setStructureLink] = useState<string>("");
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [previewData, setPreviewData] =
+    useState<StructurePreviewResponse | null>(null);
+  const [expandedProgrammes, setExpandedProgrammes] = useState<Set<number>>(
+    new Set(),
+  );
+
+  async function handlePreview() {
+    if (!structureLink) return;
+    setIsLoading(true);
+
+    const data = await getStructurePreview(structureLink, selectedYears.sort());
+    setPreviewData(data);
+    setExpandedProgrammes(
+      new Set(data?.results.map((_: ProgrammePreview, i: number) => i) ?? []),
+    );
+    setIsLoading(false);
+  }
 
   function toggleYear(year: string) {
     setSelectedYears((prev) =>
@@ -25,92 +52,193 @@ export default function CreateStructurePage() {
     );
   }
 
-  function handlePreview(link: string) {}
+  function toggleProgramme(index: number) {
+    setExpandedProgrammes((prev) => {
+      const next = new Set(prev);
+      if (next.has(index)) {
+        next.delete(index);
+      } else {
+        next.add(index);
+      }
+      return next;
+    });
+  }
 
   return (
-    <div className="space-y-6 flex justify-center align-center items-center h-full">
-      <div className="flex flex-col lg:flex-row gap-4 w-full">
-        <Card className="flex-1">
-          <CardContent className="flex flex-col gap-8">
-            <div className="flex flex-col gap-0">
-              <CardTitle className="text-xl">Create Structure</CardTitle>
-              <p className="text-muted-foreground">
-                Create a structure for a programme automatically below.
+    <div className="container mx-auto p-6 min-h-screen flex items-center justify-center">
+      <div className="flex flex-col-reverse lg:flex-row gap-6 w-full max-w-7xl">
+        <Card className="flex-1 shadow-sm border-muted/60">
+          <CardContent className="flex flex-col gap-8 h-full">
+            <div>
+              <CardTitle className="text-2xl font-bold">
+                Create Structure
+              </CardTitle>
+              <p className="text-muted-foreground text-sm">
+                Scrape programme units directly from the University of Bristol
+                catalogue.
               </p>
             </div>
-            <div className="flex flex-col gap-1">
-              <CardTitle>Link to programme catalogue</CardTitle>
-              <p className="text-muted-foreground text-sm">
-                An example can be seen{" "}
-                <Link
-                  className="font-bold inline-flex flex-row gap-1 justify-baseline"
-                  href="https://www.bris.ac.uk/unit-programme-catalogue/RouteStructureCohort.jsa?ayrCode=26/27&byCohort=Y&programmeCode=4COSC006U"
-                >
-                  here
-                </Link>
-                .
-              </p>
+
+            <div className="space-y-3">
+              <div className="flex flex-col gap-1">
+                <CardTitle>Programme Catalogue Link</CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  The link must contain <strong>programmeCode</strong> and{" "}
+                  <strong>ayrCode</strong>.
+                </p>
+              </div>
+
               <Input
                 placeholder="https://www.bris.ac.uk/unit-programme-catalogue/..."
                 value={structureLink}
                 onChange={(e) => setStructureLink(e.target.value)}
-              ></Input>
+                className="bg-muted/20"
+              />
             </div>
-            <div className="flex flex-col gap-1">
+
+            <div className="space-y-4">
               <CardTitle>Select Year(s)</CardTitle>
-              <p className="text-muted-foreground text-sm">
-                Choose what year(s) to automatically create the structure for.
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
+              <div className="grid grid-cols-2 gap-3">
                 {years.map((year) => {
                   const isActive = selectedYears.includes(year);
-
                   return (
                     <Card
                       key={year}
                       onClick={() => toggleYear(year)}
                       className={cn(
-                        "px-4 py-2 cursor-pointer transition-all flex items-center gap-2 select-none flex-row border",
-                        isActive
-                          ? "border-primary bg-primary/5 shadow-sm"
-                          : "bg-card hover:border-primary/50",
+                        "px-4 py-3 cursor-pointer transition-all flex items-center gap-2 hover:border-primary select-none flex-row justify-between",
+                        isActive ? "border-primary bg-primary/5" : "bg-card",
                       )}
                     >
-                      {isActive && <Check className="w-3 h-3 text-primary" />}
-
                       <span
                         className={cn(
                           "text-sm font-medium",
-                          isActive ? "text-primary" : "text-muted-foreground",
+                          isActive && "text-primary font-semibold",
                         )}
                       >
                         {year}
                       </span>
+                      <div
+                        className={cn(
+                          "w-5 h-5 flex items-center justify-center transition-all",
+                        )}
+                      >
+                        {isActive && <Check className="w-5 h-5 text-primary" />}
+                      </div>
                     </Card>
                   );
                 })}
               </div>
             </div>
-            <div className="flex flex-col gap-2">
+
+            <div className="flex flex-col gap-3 mt-auto pb-4">
               <Button
-                variant={"outline"}
-                onClick={() => handlePreview(structureLink)}
+                size="lg"
+                onClick={handlePreview}
+                disabled={isLoading || !structureLink}
+                className="w-full font-bold"
               >
-                <Eye></Eye>Preview Structure
+                {isLoading ? (
+                  <Loader2 className="animate-spin mr-2" />
+                ) : (
+                  <Eye className="mr-2 w-4 h-4" />
+                )}
+                Preview Structure
               </Button>
-              <Button variant={"default"} disabled={previewLoaded === false}>
-                <Send></Send>Confirm & Add Structure
+              <Button
+                variant="outline"
+                size="lg"
+                disabled={!previewData || isLoading}
+                className="w-full"
+              >
+                <Send className="mr-2 w-4 h-4" /> Confirm & Add Structure
               </Button>
             </div>
           </CardContent>
         </Card>
-        <Card className="flex-1">
-          <CardContent>
-            <div className="flex flex-col gap-0">
-              <CardTitle className="text-xl">Preview</CardTitle>
-              <p className="text-muted-foreground">
-                A preview of the proposed structure will appear here.
+
+        <Card className="flex-1 shadow-sm border-muted/60 flex flex-col overflow-hidden">
+          <CardContent className="flex-1 flex flex-col h-full overflow-hidden">
+            <div className="mb-6">
+              <CardTitle className="text-2xl font-bold">Preview</CardTitle>
+              <p className="text-muted-foreground text-sm">
+                Preview of the structure will appear below.
               </p>
+              {!previewData && (
+                <div className="mt-20 flex flex-col items-center text-center px-10">
+                  <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mb-4">
+                    <Eye className="w-6 h-6 text-muted-foreground" />
+                  </div>
+                  <p className="text-muted-foreground text-sm">
+                    No data to display. Paste a link and click preview to see
+                    the programme structure.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="flex-1 overflow-y-scroll max-h-100 pr-2 space-y-8 p-2">
+              {previewData?.results.map((prog: ProgrammePreview, i: number) => {
+                const isExpanded = expandedProgrammes.has(i);
+                return (
+                  <div key={i} className="relative">
+                    <Card
+                      onClick={() => toggleProgramme(i)}
+                      className="cursor-pointer hover:bg-accent transition-colors sticky top-0 z-10 bg-background"
+                    >
+                      <CardContent className="flex items-center justify-between">
+                        <CardTitle>{prog.programme_name}</CardTitle>
+                        <ChevronDown
+                          className={cn(
+                            "w-5 h-5 text-muted-foreground transition-transform duration-200",
+                            isExpanded && "rotate-180",
+                          )}
+                        />
+                      </CardContent>
+                    </Card>
+
+                    {isExpanded && (
+                      <div className="grid gap-3 mt-3">
+                        {prog.units.map((unit: UnitPreview) => (
+                          <Card key={unit.code} className="p-0">
+                            <CardContent className="p-2">
+                              <div className="flex justify-between gap-2 items-start mb-2">
+                                <div className="flex flex-row gap-2">
+                                  <Badge className="bg-foreground text-background px-2">
+                                    {unit.code}
+                                  </Badge>
+                                  <div>{unit.name}</div>
+                                </div>
+
+                                <Badge variant="outline">
+                                  {unit.teaching_block}
+                                </Badge>
+                              </div>
+
+                              <div className="flex justify-between items-center pt-2 border-t border-dashed">
+                                <span className="text-muted-foreground">
+                                  <span className="font-mono">
+                                    {unit.credits}CP
+                                  </span>{" "}
+                                  - {unit.status}
+                                </span>
+                                <Link
+                                  href={unit.link}
+                                  target="_blank"
+                                  className="font-bold text-blue-600 flex items-center hover:underline"
+                                >
+                                  Link{" "}
+                                  <ExternalLink className="ml-1 w-2.5 h-2.5" />
+                                </Link>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </CardContent>
         </Card>
