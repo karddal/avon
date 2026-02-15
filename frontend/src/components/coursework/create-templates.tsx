@@ -170,7 +170,7 @@ export default function CreateTemplate({
                                   setStatus={setActiveStatus}
                               />
                           {activateStatus === 2 && (
-                              <RepoAccessBox repoUrl={templatehttpURL} />
+                              <RepoAccessBox repoUrl={templatehttpURL} repoSsh={templateSshURL}/>
                           )}
                       </div>
                     </div>

@@ -163,7 +163,7 @@ export default function ZipUploadPage({courseworkGitlabId, templateGitlabId, upl
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
               This action cannot be undone. This will permanently overwrite the
-              contents of the template repository for this.s
+              contents of the template repository.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
