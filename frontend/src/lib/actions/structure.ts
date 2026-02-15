@@ -21,7 +21,7 @@ export interface StructurePreviewResponse {
 }
 
 export async function getStructurePreview(link: string, years: string[]) {
-  const yearNumbers = years.map((y) => parseInt(y.replace("Year ", "")));
+  const yearNumbers = years.map((y) => parseInt(y.replace("Year ", ""), 10));
 
   try {
     const response = await fetch(

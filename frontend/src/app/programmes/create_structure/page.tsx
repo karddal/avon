@@ -1,28 +1,28 @@
 "use client";
 
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
 import {
   Check,
+  ChevronDown,
+  ExternalLink,
   Eye,
   Loader2,
   Send,
-  ExternalLink,
-  ChevronDown,
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  ProgrammePreview,
-  getStructurePreview,
-  StructurePreviewResponse,
-  UnitPreview,
-  sendStructure,
-} from "@/lib/actions/structure";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  getStructurePreview,
+  type ProgrammePreview,
+  type StructurePreviewResponse,
+  sendStructure,
+  type UnitPreview,
+} from "@/lib/actions/structure";
+import { cn } from "@/lib/utils";
 
 export default function CreateStructurePage() {
   const years = ["Year 1", "Year 2", "Year 3", "Year 4"];
@@ -197,7 +197,7 @@ export default function CreateStructurePage() {
               {previewData?.results.map((prog: ProgrammePreview, i: number) => {
                 const isExpanded = expandedProgrammes.has(i);
                 return (
-                  <div key={i} className="relative">
+                  <div key={prog.programme_name} className="relative">
                     <Card
                       onClick={() => toggleProgramme(i)}
                       className="cursor-pointer hover:bg-accent transition-colors sticky top-0 z-10 bg-background"

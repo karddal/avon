@@ -1,6 +1,6 @@
 from datetime import date
 import random
-from typing import Annotated, List
+from typing import Annotated
 from app.core.helpers.scraping import scrape_full_programme
 from app.db.session import get_session
 from app.routers.programme import create_programme
