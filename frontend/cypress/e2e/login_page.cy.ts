@@ -1,8 +1,8 @@
 describe("Login page", () => {
-  beforeEach(() => {
-    // cy.exec("npm run db:clear && npm run db:seed");
-    cy.dbPrepare();
+  before(() => {
+    cy.exec("npm run db:seed");
   });
+
   it("redirects to login page", () => {
     cy.visit("/");
     cy.location("pathname").should("eq", "/login");
