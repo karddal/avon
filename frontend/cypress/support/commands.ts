@@ -35,7 +35,6 @@
 //     }
 //   }
 // }
-/// <reference path="./commands.d.ts" />
 
 Cypress.Commands.add(
   "login",
@@ -53,12 +52,6 @@ Cypress.Commands.add(
     cy.getCookie("__Secure-better-auth.session_token").should("exist");
   },
 );
-
-Cypress.Commands.add("dbPrepare", () => {
-  return cy.exec("npm run e2e:db:prepare", {
-    failOnNonZeroExit: true,
-  });
-});
 
 Cypress.Commands.add("getByCy", (value: string) => {
   return cy.get(`[data-cy="${value}"]`);
