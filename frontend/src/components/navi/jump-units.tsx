@@ -54,69 +54,66 @@ export default function JumpUnits({
   }, []);
   return (
     <CommandDialog
-        open={open}
-        onOpenChange={setOpen}
-        className="sm:max-w-4xl h-[min(80vh,760px)]"
+      open={open}
+      onOpenChange={setOpen}
+      className="sm:max-w-4xl h-[min(80vh,760px)]"
     >
-        <CommandInput
-            placeholder={"Jump to..."}
-            className="text-lg h-14"
-        />
+      <CommandInput placeholder={"Jump to..."} className="text-lg h-14" />
 
-        <CommandList className="flex-1 overflow-y-auto max-h-none text-base">
-            <CommandEmpty className="py-6 text-lg">
-                No results found :(
-            </CommandEmpty>
+      <CommandList className="flex-1 overflow-y-auto max-h-none text-base">
+        <CommandEmpty className="py-6 text-lg">
+          No results found :(
+        </CommandEmpty>
 
-            <CommandGroup
-                heading={"Active units"}
-                className="[&_[cmdk-group-heading]]:text-lg [&_[cmdk-group-heading]]:py-3"
+        <CommandGroup
+          heading={"Active units"}
+          className="[&_[cmdk-group-heading]]:text-lg [&_[cmdk-group-heading]]:py-3"
+        >
+          {units.map((unit) => (
+            <CommandItem
+              key={unit.id}
+              keywords={[unit.name, unit.unit_code]}
+              onSelect={() => {
+                setOpen(false);
+                router.push(`/units/${unit.id}`);
+              }}
+              className="py-4 text-lg gap-4"
             >
-                {units.map((unit) => (
-                    <CommandItem
-                        key={unit.id}
-                        keywords={[unit.name, unit.unit_code]}
-                        onSelect={() => {
-                            setOpen(false);
-                            router.push(`/units/${unit.id}`);
-                        }}
-                        className="py-4 text-lg gap-4"
-                    >
-                        <Book className="h-6 w-6" />
-                        <div className="flex items-baseline gap-2">
-                            <span>{unit.name}</span>
-                            <span className="text-muted-foreground text-base">
-                                {unit.unit_code}
-                            </span>
-                        </div>
-                    </CommandItem>
-                ))}
-            </CommandGroup>
+              <Book className="h-6 w-6" />
+              <div className="flex items-baseline gap-2">
+                <span>{unit.name}</span>
+                <span className="text-muted-foreground text-base">
+                  {unit.unit_code}
+                </span>
+              </div>
+            </CommandItem>
+          ))}
+        </CommandGroup>
 
-            <CommandSeparator />
+        <CommandSeparator />
 
-            <CommandGroup
-                heading={"Active courseworks"}
-                className="[&_[cmdk-group-heading]]:text-lg [&_[cmdk-group-heading]]:py-3"
+        <CommandGroup
+          heading={"Active courseworks"}
+          className="[&_[cmdk-group-heading]]:text-lg [&_[cmdk-group-heading]]:py-3"
+        >
+          {coursework.map((cw) => (
+            <CommandItem
+              key={cw.id}
+              keywords={[cw.name]}
+              onSelect={() => {
+                setOpen(false);
+                router.push(`/coursework/${cw.id}`);
+              }}
+              className="py-4 text-lg gap-4"
             >
-                {coursework.map((cw) => (
-                    <CommandItem
-                        key={cw.id}
-                        keywords={[cw.name]}
-                        onSelect={() => {
-                            setOpen(false);
-                            router.push(`/coursework/${cw.id}`);
-                        }}
-                        className="py-4 text-lg gap-4"
-                    >
-                        <NotepadText className="h-6 w-6" />
-                        <div className="flex items-baseline gap-2">
-                            <span>{cw.name}</span>
-                        </div>
-                    </CommandItem>
-                ))}
-            </CommandGroup>
-        </CommandList>
+              <NotepadText className="h-6 w-6" />
+              <div className="flex items-baseline gap-2">
+                <span>{cw.name}</span>
+              </div>
+            </CommandItem>
+          ))}
+        </CommandGroup>
+      </CommandList>
     </CommandDialog>
   );
 }
