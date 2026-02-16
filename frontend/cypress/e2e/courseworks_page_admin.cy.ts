@@ -69,7 +69,7 @@ describe("Coursework listing page - admin tests", () => {
     cy.get("@courseworkCard")
       .find('button[data-slot="dropdown-menu-trigger"]')
       .click();
-      cy.get('[data-cy="unit-delete-menu-item"]').click();
+    cy.get(`[data-slot="dropdown-menu-item"]`).click();
     cy.get(`[data-slot="button"]`).click();
     // cy.get('[data-content=""] > div').contains(
     //   "Coursework deleted successfully",

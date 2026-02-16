@@ -103,7 +103,7 @@ export default function Unit({
               </DropdownMenuItem>
 
               <DropdownMenuItem
-                  data-cy="unit-delete-menu-item"
+                data-cy="unit-delete-menu-item"
                 onSelect={(e) => {
                   e.preventDefault();
                   setShowDelete(true);

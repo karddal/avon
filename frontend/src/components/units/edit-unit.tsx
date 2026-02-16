@@ -118,7 +118,7 @@ export default function EditUnit({
       setShowAlert(false);
       setAlertText("");
     }
-  }, [open_state, unit_update_data.id, editDefaultValues, form]);
+  }, [open_state, editDefaultValues, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     // do something with values, submit here
