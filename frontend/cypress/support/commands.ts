@@ -40,9 +40,9 @@ Cypress.Commands.add(
   "login",
   (username: string, password: string, student: boolean) => {
     cy.visit("/login");
-    cy.get("#email").type(username);
-    cy.get("#password").type(password);
-    cy.get("button[type=submit]").click();
+    cy.get("#email").type(username, { force: true });
+    cy.get("#password").type(password, { force: true });
+    cy.get("button[type=submit]").click({ force: true });
     if (student) {
       cy.url().should("include", "/units");
     } else {
