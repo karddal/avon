@@ -3,22 +3,15 @@
 // TODO: Probably WONT WORK ON PROD bc of SQLDB being directly checked
 
 import { DatabaseSync, type SQLOutputValue } from "node:sqlite";
-import { Pool } from "pg";
-
-const pgPool =
-  process.env.NODE_ENV === "production"
-    ? new Pool({
-        connectionString: process.env.BA_DATABASE_URL,
-        ssl: { rejectUnauthorized: false },
-      })
-    : null;
+import { pool } from "./db_pool";
 
 export async function get_batch_user_info(user_ids: string[]) {
   if (user_ids.length === 0) return [];
 
   const isProd = process.env.NODE_ENV === "production";
 
-  if (isProd && pgPool) {
+  if (isProd) {
+    const pgPool = pool;
     const query = `
       SELECT id, name, image 
       FROM "user" 

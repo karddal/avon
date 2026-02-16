@@ -1,0 +1,37 @@
+import type { DatabaseSync } from "node:sqlite";
+import { batch_add_students_to_unit } from "@/scripts/util/add-students";
+import { create_unit } from "@/scripts/util/unit";
+
+export async function createUnitWithStudents(
+  db: DatabaseSync,
+  programmeId: string,
+  unitData: {
+    name: string;
+    description: string;
+    colour: string;
+    unit_code: string;
+  },
+  userIds: string[],
+): Promise<string | null> {
+  await create_unit({
+    name: unitData.name,
+    description: unitData.description,
+    colour: unitData.colour,
+    unit_code: unitData.unit_code,
+    programme_id: programmeId,
+  });
+
+  const unit = db
+    .prepare("SELECT id FROM unit WHERE name = ?")
+    .get(unitData.name);
+
+  if (!unit) {
+    return null;
+  }
+
+  const unitId = String(unit.id);
+
+  await batch_add_students_to_unit(unitId, userIds);
+
+  return unitId;
+}

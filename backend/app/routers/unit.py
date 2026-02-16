@@ -6,6 +6,7 @@ from app.core.helpers.gitlab import gl_create_unit
 from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlmodel import Session, select
 from sqlalchemy.orm.strategy_options import selectinload
+from app.core.settings import settings
 
 from app.db.session import get_session
 from app.models.programme import Programme
@@ -40,7 +41,11 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
             raise HTTPException(status_code=400, detail="Programme id is invalid.")
     
     try:
-        gl_data = await gl_create_unit(unit.name, programme.gitlab_id)
+        if settings.testing_mode:
+            # ignore gitlab if in testing mode, set gitlab id to dummy
+            gl_data = {"gitlabGroupId": 12345678}
+        else:
+            gl_data = await gl_create_unit(unit.name, programme.gitlab_id)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
@@ -52,16 +57,19 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
         description=unit.description,
         unit_code=unit.unit_code,
         colour=unit.colour,
-        start_date=None,
-        end_date=None,
         programme_id=unit.programme_id,
         gitlab_id=gl_data["gitlabGroupId"]
     )
+    # Add validation for the start and end dates below
+
+    statement = select(Unit.id).where(Unit.name==unit.name or Unit.unit_code==unit.unit_code)
+    existing_units = session.exec(statement).all()
+    if len(existing_units) > 0:
+        raise HTTPException(status_code=400, detail="Unit already exists with same name or unit code")
 
     session.add(db_unit)
     session.commit()
     session.refresh(db_unit)
-
     return db_unit
 
 @router.get("/units-by-programme", response_model=UnitAllByGroup)
@@ -180,12 +188,12 @@ async def delete_unit(unit_id: UUID, session: session_dependency):
 
 
 @router.get("/u/{user_id}", response_model=UnitAll)
-async def get_user_units(user_id: UUID, session: session_dependency):
+async def get_user_units(user_id: str, session: session_dependency):
     response = session.exec(
         select(Unit).join(UnitEnrollment).where(UnitEnrollment.user_id == user_id)
     ).all()
 
-    return response
+    return {"units": response}
 
 
 @router.get("/{unit_id}/courseworks", response_model=CourseworkAll)
@@ -204,4 +212,4 @@ async def get_courseworks(unit_id: UUID, session: session_dependency):
 async def get_units(session: session_dependency):
     statement = select(Unit)
     units = session.exec(statement).all()
-    return units
+    return {"units":units}

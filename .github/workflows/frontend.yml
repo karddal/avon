@@ -2,7 +2,7 @@ name: Frontend Lints, Run Tests
 on:
   pull_request:
     paths:
-      - 'frontend/**'
+      - "frontend/**"
 
 jobs:
   lint-and-format-check:
@@ -13,12 +13,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-      - name: Install bun
-        uses: oven-sh/setup-bun@v2
+      - name: Install npm
+        uses: actions/setup-node@v6
+        with:
+          node-version: 25
       - name: Install dependencies
-        run: bun install
+        run: npm ci
+
       - name: Run lints
-        run: bunx biome ci
+        run: npx biome ci
+
+      - name: Build Frontend
+        run: npm run build
       # - name: Run tests
       #   run: bun test
       # - name: Publish Test Report
@@ -26,4 +32,31 @@ jobs:
       #   if: success() || failure() # always run even if the previous step fails
       #   with:
       #     report_paths: '**/ci/*.xml'
-      
+
+  run-frontend-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: "Set up Python"
+        uses: actions/setup-python@v6
+        with:
+          python-version-file: "./backend/.python-version"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+      - name: Install the project
+        run: cd ./backend && uv sync --locked --all-extras --dev
+      - name: Setup node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 25
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
+        env:
+          NODE_ENV: test
+        with:
+          working-directory: ./frontend
+          env: NODE_ENV=test
+          command: npm run test

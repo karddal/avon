@@ -4,13 +4,14 @@
 
 # User guide
 
-- [Welcome]()
+- [User instructions](user_guide/README.md)
+<!-- - [Welcome]()
 - [The Avon web interface]()
   - [Dashboard]()
   - [Analytics page]()
   - [Units listing]()
   - [Courseworks listing]()
-  - [Creating a coursework]()
+  - [Creating a coursework]() -->
 
 # Project management
 
@@ -25,6 +26,10 @@
     - [19-01-2026 Sprint 2 Initial meeting](meetings/sprint2/19-01-2025-team.md)
     - [21-01-2026 Sprint 2 Mentor meeting](meetings/sprint2/21-01-2025-team.md)
     - [23-01-2026 Sprint 2 Review](meetings/sprint2/23-01-2025-team.md)
+  - [Sprint 3](meetings/sprint3/README.md)
+    - [26-01-2026 Sprint 3 initial meeting](meetings/sprint3/26-01-2025-team.md)
+    - [28-01-2026 Sprint 3 midweek meeting](meetings/sprint3/28-01-2025-team.md)
+    - [30-01-2026 Sprint 3 end of week meeting](meetings/sprint3/30-01-2025-team.md)
 
 # Developer documentation
 

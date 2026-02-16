@@ -5,6 +5,7 @@ from sqlmodel import Session, select
 from app.db.session import get_session
 from typing import Annotated
 from uuid import UUID
+from app.core.settings import settings
 
 from app.models.coursework import Coursework
 from app.models.unit import Unit, UnitWithCourseworks
@@ -28,7 +29,11 @@ async def create_coursework(coursework: CourseworkCreate, session: session_depen
             raise HTTPException(status_code=404, detail='Corresponding unit not found')
         
     try:
-        gl_data = await gl_create_coursework(coursework.name, unit_exists.gitlab_id)
+        if settings.testing_mode:
+            # ignore gitlab if in testing mode, set gitlab id to dummy
+            gl_data = {"gitlabGroupId": 12345678}
+        else:
+            gl_data = await gl_create_coursework(coursework.name, unit_exists.gitlab_id)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY, 

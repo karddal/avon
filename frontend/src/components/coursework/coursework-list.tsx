@@ -95,7 +95,7 @@ export default async function CourseworkList({
         <Tabs
           defaultValue={filteredUnitsList[0].id}
           orientation={"vertical"}
-          className={"flex flex-col lg:flex-row w-full overflow-y-scroll h-48"}
+          className={"flex flex-col lg:flex-row w-full"}
         >
           <TabsList
             className={"basis-1/3 flex flex-col h-min w-full justify-start"}
