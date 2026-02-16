@@ -100,3 +100,7 @@ class CourseworkTemplateUrl(BaseModel):
 
 class CourseworkTemplateUploadZip(BaseModel):
     templateId: int
+
+class CourseworkSetupProgress(BaseModel):
+    title: str
+    completed: bool

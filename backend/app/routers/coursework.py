@@ -12,7 +12,7 @@ from app.core.settings import settings
 
 from app.models.coursework import Coursework
 from app.models.unit import Unit, UnitWithCourseworks
-from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkTemplateUploadZip, CourseworkUpdate, CourseworkDelete, CourseworkTemplateExists, CourseworkTemplateActivate, CourseworkTemplateFile, CourseworkTemplateUrl, CourseworkUpdateFormData
+from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkSetupProgress, CourseworkTemplateUploadZip, CourseworkUpdate, CourseworkDelete, CourseworkTemplateExists, CourseworkTemplateActivate, CourseworkTemplateFile, CourseworkTemplateUrl, CourseworkUpdateFormData
 
 router = APIRouter(prefix = "/coursework", tags=["coursework"])
 session_dependency = Annotated[Session, Depends(get_session)]
@@ -69,6 +69,25 @@ async def all_courseworks(session: session_dependency):
     ]
 
     return results
+
+@router.get('/progress', response_model=list[CourseworkSetupProgress])
+async def setup_progress(gitLabCwId: str, session: session_dependency):
+    try:
+        response = await gl_template_existance(gitLabCwId)
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+    # When get other pices of info / steps are coed will put in here
+
+    result = [{"title": "Create Template", "completed" : response["exists"]},
+              {"title": "Create Dockerfile", "completed" : False},
+              {"title": "Create Engine", "completed" : False},
+              {"title": "Test Engine", "completed" : False},
+              {"title": "Provision Repositories", "completed" : False},
+              ]
+    return result
+
 @router.get('/{id}/update_form_data', response_model=CourseworkUpdateFormData)
 async def get_coursework_update_form_data(id: UUID, session: session_dependency):
     coursework = session.get(Coursework, id)

@@ -133,7 +133,7 @@ async function CourseworkPageContent({
             <CourseworkInformation slug={slug} token={token} />
           </Suspense>
           <Suspense>
-              <SetupProgress/>
+              <SetupProgress gitLabCwId={data.gitlabId}/>
           </Suspense>
         </div>
       </section>

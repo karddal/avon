@@ -1,17 +1,15 @@
 import { DropdownCard } from "@/components/dropdown-card";
 import { ArrowRight } from "lucide-react";
 import { CheckCircle, Circle } from "lucide-react";
+import { cw_setup_progress } from "@/lib/actions/coursework-setup-progress";
 
 interface setupProgress {
-  title: string;
-  completed: boolean;
+  gitLabCwId: string;
 }
 
-interface StepList {
-  steps: setupProgress[]
-}
 
-export default async function SetupPogress({steps} : StepList) {
+export default async function SetupPogress({gitLabCwId} : setupProgress) {
+  const steps = await cw_setup_progress(gitLabCwId)
   return (
     // Need to use reusable components for the buttons and sections, just place with names or smth
     // Add links to each one and actually do backend for it as well
