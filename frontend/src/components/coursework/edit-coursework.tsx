@@ -127,7 +127,7 @@ export default function EditCoursework({
       setShowAlert(false);
       setAlertText("");
     }
-  }, [open_state, coursework_update_data.id, editDefaultValues, form]);
+  }, [open_state, editDefaultValues, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     // do something with values, submit here
