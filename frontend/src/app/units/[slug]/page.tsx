@@ -11,9 +11,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LecturerDropdown from "@/components/units/lecturer-dropdown";
 import Lecturers from "@/components/units/lecturers";
+import OpenEdit from "@/components/units/open-edit";
 import UnitsCourseworkList from "@/components/units/units-coursework-list";
 import { getRequestJWT, requireSession } from "@/lib/auth-utils";
-import OpenEdit from "@/components/units/open-edit";
 
 type UnitDataResponse = {
   id: string;
@@ -67,7 +67,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
 
   return (
     <>
-        <OpenEdit data={data} />
+      <OpenEdit data={data} />
       {/* Header */}
       <div className="flex flex-col col-span-3 min-h-0">
         <div className="font-semibold text-5xl text-shadow-2xs">
