@@ -7,6 +7,7 @@ import {
   ServerCog,
   SquarePen,
   SquareX,
+  LayersPlus
 } from "lucide-react";
 import { useState } from "react";
 import CreateDockerfile from "@/components/coursework/create-dockerfile";
@@ -29,6 +30,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import ProvisionCoursework from "./provision-coursework";
 
 type CourseworkUpdateData = {
   id: string;
@@ -55,6 +57,7 @@ export default function CourseworkLectDropdown({
   const [showDelete, setShowDelete] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showDocker, setShowDocker] = useState(false);
+  const [showProvision, setShowProvision] = useState(false)
 
   return (
     <div className="aspect-square">
@@ -82,6 +85,14 @@ export default function CourseworkLectDropdown({
             Create Dockerfile
           </DropdownMenuItem>
 
+          <DropdownMenuItem
+            disabled={false}
+            onSelect={() => setShowProvision(true)}
+          >
+            <LayersPlus className="mr-2 h-4 w-4" />
+            Provision Coursework
+          </DropdownMenuItem>
+
           <DropdownMenuItem disabled={true}>
             <BookCheck className="mr-2 h-4 w-4" />
             Results
@@ -103,6 +114,11 @@ export default function CourseworkLectDropdown({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <ProvisionCoursework
+        open_state={showProvision}
+        set_open_state={setShowProvision}
+      ></ProvisionCoursework>
 
       <CreateDockerfile
         open_state={showDocker}
