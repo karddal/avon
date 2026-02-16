@@ -21,7 +21,6 @@ import {
 import { Input } from "@/components/ui/input";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetDescription,
   SheetFooter,
@@ -105,7 +104,7 @@ export default function EditUnit({
       unit_code: unit_update_data.unit_code ?? "",
       programme_id: unit_update_data.programme_id ?? "",
     }),
-    [unit_update_data.id],
+    [unit_update_data],
   );
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -143,8 +142,8 @@ export default function EditUnit({
         toast.success("Unit updated successfully.");
         setSubmitState(false);
         router.refresh();
-          form.reset(values)
-          set_open_state(false)
+        form.reset(values);
+        set_open_state(false);
       }
     });
   }
@@ -196,19 +195,19 @@ export default function EditUnit({
             }
           }}
         >
-            <div className="px-6 pt-6">
-                <SheetHeader>
-                    <SheetTitle>Edit this unit</SheetTitle>
-                    <SheetDescription>
-                        You can modify this unit here. Please remember to save when you
-                        are done.
-                    </SheetDescription>
-                </SheetHeader>
-            </div>
+          <div className="px-6 pt-6">
+            <SheetHeader>
+              <SheetTitle>Edit this unit</SheetTitle>
+              <SheetDescription>
+                You can modify this unit here. Please remember to save when you
+                are done.
+              </SheetDescription>
+            </SheetHeader>
+          </div>
 
           <div className={"flex-1 overflow-y-auto px-6 pb-28"}>
             <form
-                id="edit-unit-form"
+              id="edit-unit-form"
               className={"h-full form-flow flex flex-col justify-between"}
               onSubmit={form.handleSubmit(onSubmit)}
             >
@@ -387,52 +386,49 @@ export default function EditUnit({
                 />
               </FieldGroup>
 
-                {showAlert && (
-                    <Alert variant="destructive">
-                        <OctagonAlert />
-                        <AlertTitle>Heads up!</AlertTitle>
-                        <AlertDescription>{alertText}</AlertDescription>
-                    </Alert>
-                )}
+              {showAlert && (
+                <Alert variant="destructive">
+                  <OctagonAlert />
+                  <AlertTitle>Heads up!</AlertTitle>
+                  <AlertDescription>{alertText}</AlertDescription>
+                </Alert>
+              )}
             </form>
           </div>
 
-            {/* Sticky footer */}
-            <div className="sticky bottom-0 border-t bg-background px-6 py-4">
-                <SheetFooter>
-                    <ButtonGroup
-                        orientation={"vertical"}
-                        className={"gap-2 w-full"}
-                    >
-                        {submitState && (
-                            <Button disabled={true} className="w-full">
-                                <Spinner />
-                                Save changes
-                            </Button>
-                        )}
-                        {!submitState && (
-                            <Button
-                                type={"submit"}
-                                form="edit-unit-form"
-                                className="w-full"
-                            >
-                                <Save />
-                                Save changes
-                            </Button>
-                        )}
-                    </ButtonGroup>
+          {/* Sticky footer */}
+          <div className="sticky bottom-0 border-t bg-background px-6 py-4">
+            <SheetFooter>
+              <ButtonGroup orientation={"vertical"} className={"gap-2 w-full"}>
+                {submitState && (
+                  <Button disabled={true} className="w-full">
+                    <Spinner />
+                    Save changes
+                  </Button>
+                )}
+                {!submitState && (
+                  <Button
+                    type={"submit"}
+                    form="edit-unit-form"
+                    className="w-full"
+                  >
+                    <Save />
+                    Save changes
+                  </Button>
+                )}
+              </ButtonGroup>
 
-                    <Button
-                        type="button"
-                        variant={"outline"}
-                        onClick={requestClose}
-                        disabled={submitState}
-                        className="w-full"
-                    >
-                        Close
-                    </Button>
-                </SheetFooter>
-            </div>
+              <Button
+                type="button"
+                variant={"outline"}
+                onClick={requestClose}
+                disabled={submitState}
+                className="w-full"
+              >
+                Close
+              </Button>
+            </SheetFooter>
+          </div>
         </SheetContent>
       </Sheet>
 
