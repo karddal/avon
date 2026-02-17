@@ -58,6 +58,7 @@ type Props = {
   open_state: boolean;
   set_open_state: Dispatch<SetStateAction<boolean>>;
   courseworkGitlabId: string;
+  courseworkId: string;
 };
 
 type GitLabTreeItem = {
@@ -72,6 +73,7 @@ export default function CreateTemplate({
   open_state,
   set_open_state,
   courseworkGitlabId,
+  courseworkId
 }: Props) {
   const [activateStatus, setActiveStatus] = useState<number>(0);
   const [templatehttpURL, setTemplatehttpURL] = useState<string | null>(null);
@@ -92,7 +94,7 @@ export default function CreateTemplate({
 
     const loadAll = async () => {
       const response = await template_existance({
-        courseworkGitLabId: courseworkGitlabId,
+        id: courseworkId,
       });
 
       if (!response.exists || !response.templateProjectId) {

@@ -2,7 +2,7 @@
 import { getRequestJWT } from "@/lib/auth-utils";
 
 type CourseworkTemplateExistanceRequest = {
-  courseworkGitLabId: string;
+  id: string;
 };
 
 type CourseworkTemplateExistanceResponse = {
@@ -16,7 +16,7 @@ export async function template_existance(
   const token = await getRequestJWT();
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/coursework/template/exists?gitLabId=${req.courseworkGitLabId}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/${req.id}/coursework/template/exists`,
     {
       method: "GET",
       headers: {

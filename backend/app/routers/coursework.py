@@ -1,7 +1,7 @@
 import base64
 import io
 import zipfile
-from app.core.helpers.gitlab import gl_create_coursework, gl_template_existance, gl_activate_template_project, gl_template_files, gl_activate_template_project, gl_template_urls, gl_upload_zip, gl_overwrite_zip
+from app.core.helpers.gitlab import gl_create_coursework, gl_activate_template_project, gl_template_files, gl_activate_template_project, gl_template_urls, gl_upload_zip, gl_overwrite_zip
 from sqlalchemy.orm import selectinload
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from sqlmodel import Session, select
@@ -151,16 +151,19 @@ async def update_coursework(id: UUID, coursework: CourseworkUpdate, session: ses
     session.refresh(coursework_db)
     return coursework_db
 
-@router.get('/template/exists', response_model=CourseworkTemplateExists)
-async def template_exists(gitLabId: str, session: session_dependency):
-    try:
-        templateExists = await gl_template_existance(gitLabId)
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
-            detail="GitLab request failed"
-    )
-    return templateExists
+@router.get('/{courseworkId}/template/exists', response_model=CourseworkTemplateExists)
+async def template_exists(courseworkId: str, session: session_dependency):
+    coursework = session.get(Coursework,courseworkId)
+    if coursework is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
+    if coursework.templateId:
+        exists = True
+        templateId = coursework.templateId
+    else:
+        exists = False
+        templateId = None
+        
+    return {"exists":exists, "templateProjectId" : templateId}
 
 @router.post('/template/activate', response_model=CourseworkTemplateActivate)
 async def activate_template(gitLabId: str, session: session_dependency):

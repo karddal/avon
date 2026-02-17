@@ -117,6 +117,7 @@ export default function CourseworkLectDropdown({
         open_state={showTemplates}
         set_open_state={setShowTemplate}
         courseworkGitlabId={coursework_update_data.gitlabId}
+        courseworkId={coursework_update_data.id}
       />
 
       <CreateDockerfile
