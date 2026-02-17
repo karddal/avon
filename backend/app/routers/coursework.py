@@ -89,7 +89,7 @@ async def list_coursework_events(
             exists().where(
                 and_(
                     UnitEnrollment.unit_id == Coursework.unit_id,
-                    UnitEnrollment.user_id == current_user.id,
+                    UnitEnrollment.user_id == current_user.user_id,
                 )
             )
         )

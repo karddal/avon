@@ -107,7 +107,7 @@ def list_units_for_events(
     else:
         statement = (select(Unit)
                      .join(UnitEnrollment)
-                     .where(UnitEnrollment.user_id == current_user))
+                     .where(UnitEnrollment.user_id == current_user.user_id))
         units = session.exec(statement).all()
     return [
         {
