@@ -45,6 +45,7 @@ app.include_router(unit_enrollment.router)
 
 create_db_and_tables()
 
+
 def main():
     print("[BACKEND] Hello from backend!")
 

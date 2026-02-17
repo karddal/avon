@@ -45,7 +45,7 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
 
         if not programme:
             raise HTTPException(status_code=400, detail="Programme id is invalid.")
-    
+
     try:
         if settings.testing_mode:
             gl_data = {"gitlabGroupId": 12345678}
@@ -63,19 +63,26 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
         unit_code=unit.unit_code,
         colour=unit.colour,
         programme_id=unit.programme_id,
-        gitlab_id=gl_data["gitlabGroupId"]
+        gitlab_id=gl_data["gitlabGroupId"],
     )
     # Add validation for the start and end dates below
 
-    statement = select(Unit.id).where(Unit.name==unit.name, Unit.unit_code==unit.unit_code, Unit.programme_id == unit.programme_id)
+    statement = select(Unit.id).where(
+        Unit.name == unit.name,
+        Unit.unit_code == unit.unit_code,
+        Unit.programme_id == unit.programme_id,
+    )
     existing_units = session.exec(statement).all()
     if len(existing_units) > 0:
-        raise HTTPException(status_code=400, detail="Unit already exists with same name or unit code")
+        raise HTTPException(
+            status_code=400, detail="Unit already exists with same name or unit code"
+        )
 
     session.add(db_unit)
     session.commit()
     session.refresh(db_unit)
     return db_unit
+
 
 @router.get("/units-by-programme", response_model=UnitAllByGroup)
 async def get_units_by_programme(session: session_dependency):
@@ -84,14 +91,16 @@ async def get_units_by_programme(session: session_dependency):
     ).all()
     return UnitAllByGroup(programmes=results)
 
+
 @router.get("/active", response_model=UnitAll)
 async def active_units(session: session_dependency):
     results = session.exec(select(Unit).join(UnitEnrollment)).unique()
     today = date.today()
-    filtered = filter(lambda unit: unit.programme.start_date <= today <= unit.programme.end_date, results)
-    return UnitAll(
-        units=filtered
+    filtered = filter(
+        lambda unit: unit.programme.start_date <= today <= unit.programme.end_date,
+        results,
     )
+    return UnitAll(units=filtered)
 
 
 @router.get("/units", response_model=list[UnitEventRead])
@@ -145,7 +154,12 @@ async def get_unit_details(unit_id: UUID, session: session_dependency):
 
     return unit
 
-@router.get("/{unit_id}/with_dates", response_model=UnitReadWithDates, status_code=status.HTTP_200_OK)
+
+@router.get(
+    "/{unit_id}/with_dates",
+    response_model=UnitReadWithDates,
+    status_code=status.HTTP_200_OK,
+)
 async def get_unit_with_dates(unit_id: UUID, session: session_dependency):
     unit = session.get(Unit, unit_id)
     start = unit.programme.start_date
@@ -167,10 +181,16 @@ async def get_unit_with_dates(unit_id: UUID, session: session_dependency):
         end_date=end,
     )
 
-@router.get("/{unit_id}/lecturers", response_model=UnitLecturers, status_code=status.HTTP_200_OK)
+
+@router.get(
+    "/{unit_id}/lecturers", response_model=UnitLecturers, status_code=status.HTTP_200_OK
+)
 async def get_unit_lecturers(unit_id: UUID, session: session_dependency):
     lects = session.exec(
-        select(UnitEnrollment.user_id).join(Unit).where(Unit.id == unit_id).where(UnitEnrollment.type == "lecturer")
+        select(UnitEnrollment.user_id)
+        .join(Unit)
+        .where(Unit.id == unit_id)
+        .where(UnitEnrollment.type == "lecturer")
     ).all()
     if not lects:
         raise HTTPException(status_code=404, detail="No lecturers found.")
@@ -178,16 +198,23 @@ async def get_unit_lecturers(unit_id: UUID, session: session_dependency):
         lecturers=lects,
     )
 
-@router.get("/{unit_id}/students", response_model=UnitStudents, status_code=status.HTTP_200_OK)
+
+@router.get(
+    "/{unit_id}/students", response_model=UnitStudents, status_code=status.HTTP_200_OK
+)
 async def get_unit_students(unit_id: UUID, session: session_dependency):
     studs = session.exec(
-        select(UnitEnrollment.user_id).join(Unit).where(Unit.id == unit_id).where(UnitEnrollment.type == "student")
+        select(UnitEnrollment.user_id)
+        .join(Unit)
+        .where(Unit.id == unit_id)
+        .where(UnitEnrollment.type == "student")
     ).all()
     if not studs:
         raise HTTPException(status_code=404, detail="No students found.")
     return UnitStudents(
         students=studs,
     )
+
 
 @router.put("/{unit_id}", response_model=UnitUpdate, status_code=status.HTTP_200_OK)
 async def update_unit(unit_id: UUID, unit: UnitUpdate, session: session_dependency):
@@ -263,7 +290,7 @@ async def get_courseworks(unit_id: UUID, session: session_dependency):
     unit = session.get(Unit, unit_id)
     if not unit:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail = "Unit not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Unit not found"
         )
     courseworks = unit.courseworks
     return CourseworkAll(courseworks=courseworks)
@@ -273,4 +300,4 @@ async def get_courseworks(unit_id: UUID, session: session_dependency):
 async def get_units(session: session_dependency):
     statement = select(Unit)
     units = session.exec(statement).all()
-    return {"units":units}
+    return {"units": units}

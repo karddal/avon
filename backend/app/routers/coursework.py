@@ -22,19 +22,32 @@ from app.schemas.coursework import CourseworkEventRead
 from app.schemas.security import CurrentUser
 import datetime
 
-router = APIRouter(prefix = "/coursework", tags=["coursework"])
+router = APIRouter(prefix="/coursework", tags=["coursework"])
 session_dependency = Annotated[Session, Depends(get_session)]
 
 
-@router.post('/create', response_model = CourseworkRead, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/create", response_model=CourseworkRead, status_code=status.HTTP_201_CREATED
+)
 async def create_coursework(coursework: CourseworkCreate, session: session_dependency):
-    courseworkAlreadyExists = session.exec(select(Coursework).where((Coursework.unit_id == coursework.unit_id) & (Coursework.name == coursework.name) & (Coursework.due_date == coursework.due_date))).first()
-   
+    courseworkAlreadyExists = session.exec(
+        select(Coursework).where(
+            (Coursework.unit_id == coursework.unit_id)
+            & (Coursework.name == coursework.name)
+            & (Coursework.due_date == coursework.due_date)
+        )
+    ).first()
+
     if courseworkAlreadyExists:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Coursework already made that belongs to the same unit and has the same name")
-    
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Coursework already made that belongs to the same unit and has the same name",
+        )
+
     if coursework.unit_id is not None:
-        unit_exists = session.exec(select(Unit).where(Unit.id == coursework.unit_id)).first()
+        unit_exists = session.exec(
+            select(Unit).where(Unit.id == coursework.unit_id)
+        ).first()
         if not unit_exists:
             raise HTTPException(status_code=404, detail='Corresponding unit not found')
 
@@ -56,9 +69,13 @@ async def create_coursework(coursework: CourseworkCreate, session: session_depen
     session.refresh(db_coursework)
     return db_coursework
 
+
 @router.get("/all")
 async def all_courseworks(session: session_dependency):
-    statement = (select(Unit).options(selectinload(Unit.courseworks), selectinload(Unit.programme),))
+    statement = select(Unit).options(
+        selectinload(Unit.courseworks),
+        selectinload(Unit.programme),
+    )
 
     units = session.exec(statement).all()
 
@@ -163,21 +180,26 @@ async def get_coursework_update_form_data(id: UUID, session: session_dependency)
     )
 
 
-@router.get('/{id}', response_model = CourseworkRead)
+@router.get("/{id}", response_model=CourseworkRead)
 async def get_coursework(id: UUID, session: session_dependency):
-    coursework = session.get(Coursework,id)
+    coursework = session.get(Coursework, id)
 
     if coursework is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Coursework not found"
+        )
     return coursework
 
-@router.delete('/{id}', response_model=CourseworkDelete)
+
+@router.delete("/{id}", response_model=CourseworkDelete)
 async def delete_coursework(id: UUID, session: session_dependency):
-    coursework = session.get(Coursework,id)
+    coursework = session.get(Coursework, id)
 
     if coursework is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
-    #print("\n\n\n\n\n\n\n")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Coursework not found"
+        )
+    # print("\n\n\n\n\n\n\n")
     session.delete(coursework)
     session.commit()
 
@@ -192,20 +214,25 @@ async def delete_coursework(id: UUID, session: session_dependency):
 
     #print("got here")
     courseworkDeleted = CourseworkDelete(id=id, deletion_successful=True)
-    #print(courseworkDeleted)
+    # print(courseworkDeleted)
     return courseworkDeleted
 
-@router.put('/{id}', response_model=CourseworkRead)
-async def update_coursework(id: UUID, coursework: CourseworkUpdate, session: session_dependency):
+
+@router.put("/{id}", response_model=CourseworkRead)
+async def update_coursework(
+    id: UUID, coursework: CourseworkUpdate, session: session_dependency
+):
     coursework_db = session.get(Coursework, id)
 
     if coursework_db is None:
-        raise HTTPException(status_code=404, detail='Coursework not found')
+        raise HTTPException(status_code=404, detail="Coursework not found")
 
     if coursework.unit_id is not None:
-        unit_exists = session.exec(select(Unit).where(Unit.id == coursework.unit_id)).first()
+        unit_exists = session.exec(
+            select(Unit).where(Unit.id == coursework.unit_id)
+        ).first()
         if not unit_exists:
-            raise HTTPException(status_code=404, detail='Corresponding unit not found')
+            raise HTTPException(status_code=404, detail="Corresponding unit not found")
 
     coursework_data = coursework.model_dump(exclude_unset=True)
     coursework_db.sqlmodel_update(coursework_data)

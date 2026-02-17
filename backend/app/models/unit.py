@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from coursework import Coursework
     from notification import Notification
 
+
 class Unit(SQLModel, table=True):
     id: uuid.UUID = Field(primary_key=True, default_factory=uuid.uuid4)
     name: str = Field(index=True, min_length=1, max_length=100)
@@ -23,8 +24,13 @@ class Unit(SQLModel, table=True):
     programme_id: uuid.UUID = Field(foreign_key="programme.id", ondelete="CASCADE")
     gitlab_id: str = Field(nullable=False)
     programme: "Programme" = Relationship(back_populates="units")
-    enrollments: List["UnitEnrollment"] = Relationship(back_populates="unit",sa_relationship_kwargs={"cascade": "all, delete-orphan"})
-    courseworks: List["Coursework"] = Relationship(back_populates="unit",sa_relationship_kwargs={"cascade": "all, delete-orphan"})
+    enrollments: List["UnitEnrollment"] = Relationship(
+        back_populates="unit", sa_relationship_kwargs={"cascade": "all, delete-orphan"}
+    )
+    courseworks: List["Coursework"] = Relationship(
+        back_populates="unit", sa_relationship_kwargs={"cascade": "all, delete-orphan"}
+    )
+
 
     notifications: List["Notification"] = Relationship(back_populates="unit", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
 
@@ -37,6 +43,7 @@ class UnitWithCourseworks(SQLModel):
     programme_start_date: datetime
     programme_end_date: datetime
     courseworks: List["CourseworkReadWithoutUnit"]
+
 
 class UnitsWithCourseworks(SQLModel):
     units: List[UnitWithCourseworks]

@@ -56,28 +56,24 @@ async def me_active_units(
     return UnitAll(
         units=filtered
     )
+    return UnitAll(units=filtered)
+
 
 @router.get("/units-by-programme", response_model=UnitAllByGroup)
-async def me_units_by_programme(session: session_dependency, me: str = Depends(get_current_user)):
+async def me_units_by_programme(
+    session: session_dependency, me: str = Depends(get_current_user)
+):
     results = session.exec(
         select(Programme)
-        .where(
-            Programme.units.any(
-                Unit.enrollments.any(
-                    UnitEnrollment.user_id == me
-                )
-            )
-        ).options(
+        .where(Programme.units.any(Unit.enrollments.any(UnitEnrollment.user_id == me)))
+        .options(
             selectinload(Programme.units),
             with_loader_criteria(
-                Unit,
-                Unit.enrollments.any(
-                    UnitEnrollment.user_id == me
-                )
-            )
-        )).all()
+                Unit, Unit.enrollments.any(UnitEnrollment.user_id == me)
+            ),
+        )
+    ).all()
     return UnitAllByGroup(programmes=results)
-
 
 
 @router.get("/courseworks")

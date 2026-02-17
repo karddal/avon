@@ -22,42 +22,56 @@ from app.db.session import get_session
 @pytest.fixture(scope="function")
 def engine():
     # Test via memory so no clean-up afterwards is needed (volatile DB)
-    engine = create_engine("sqlite:///:memory:", echo=False, connect_args={"check_same_thread": False},) # connect_args Needed for Router tests with FastAPI
+    engine = create_engine(
+        "sqlite:///:memory:",
+        echo=False,
+        connect_args={"check_same_thread": False},
+    )  # connect_args Needed for Router tests with FastAPI
     SQLModel.metadata.create_all(engine)
     yield engine
-    SQLModel.metadata.drop_all(engine) # to clean up after each test file as each one creates a database instance
+    SQLModel.metadata.drop_all(
+        engine
+    )  # to clean up after each test file as each one creates a database instance
+
 
 @pytest.fixture(scope="function")
 def session(engine):
-    connection = engine.connect() #connecting to the orgininal engine
+    connection = engine.connect()  # connecting to the orgininal engine
     transaction = connection.begin()
-    session = Session(bind=connection) # bind session to connection so we can control transactions
-    
-    yield session # yield not return so to clean up After the tests are done
-    
+    session = Session(
+        bind=connection
+    )  # bind session to connection so we can control transactions
+
+    yield session  # yield not return so to clean up After the tests are done
+
     session.close()
     transaction.rollback()
-    connection.close() 
+    connection.close()
+
 
 @pytest.fixture(scope="function")
 def client(session):
     def override_get_session():
         yield session  # Use THE SAME session, not a new one
 
-    app.dependency_overrides[get_session] = override_get_session # Whenever something requires get_session (from our main app.db.session file), use override_get_session instead
-    with TestClient(app) as client: # creates a TestClient instance using our FastAPI app
-        yield client # yield so that we get a clean shut down and successful clean up
+    app.dependency_overrides[get_session] = (
+        override_get_session  # Whenever something requires get_session (from our main app.db.session file), use override_get_session instead
+    )
+    with TestClient(
+        app
+    ) as client:  # creates a TestClient instance using our FastAPI app
+        yield client  # yield so that we get a clean shut down and successful clean up
 
-    app.dependency_overrides.clear() # Clean up after it's finished
+    app.dependency_overrides.clear()  # Clean up after it's finished
+
 
 @pytest.fixture(scope="function", autouse=True)
 def mock_gitlab_coursework():
-
     success_response = {
         "success": True,
         "gitlabGroupId": 123456,
         "webUrl": "https://gitlab.com/test-group",
-        "path": "test-path"
+        "path": "test-path",
     }
 
     with patch.multiple(
