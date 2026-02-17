@@ -53,19 +53,21 @@ export default function lecturerList({
     try {
       const data = await get_lecturers(unit_id);
       const lecturerIds = data.lecturers;
+      let enrichedlecturers: lecturerInfo[] = [];
+      if (lecturerIds) {
+        enrichedlecturers = await Promise.all(
+          lecturerIds.map(async (id: string) => {
+            const name = await get_username_from_id(id);
+            const imageSrc = await get_user_image_from_id(id);
 
-      const enrichedlecturers = await Promise.all(
-        lecturerIds.map(async (id: string) => {
-          const name = await get_username_from_id(id);
-          const imageSrc = await get_user_image_from_id(id);
-
-          return {
-            id: id,
-            displayName: name || "Unknown lecturer",
-            src: imageSrc,
-          };
-        }),
-      );
+            return {
+              id: id,
+              displayName: name || "Unknown lecturer",
+              src: imageSrc,
+            };
+          }),
+        );
+      }
 
       setlecturers(enrichedlecturers);
     } finally {
