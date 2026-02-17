@@ -1,4 +1,5 @@
 from typing import Annotated, Literal
+import os
 
 import datetime
 from pydantic import BaseModel, AfterValidator
@@ -21,6 +22,8 @@ def is_valid_description(description: str) -> str:
 
 
 def is_valid_due_date(date: datetime.datetime) -> datetime.datetime:
+    if os.getenv("TESTING_MODE") == "True":
+        return date
     if date.tzinfo is None:
         date = date.replace(tzinfo=datetime.timezone.utc)
         

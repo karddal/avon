@@ -41,6 +41,11 @@ class PasswordIncorrectError(Exception):
 
 get_bearer = HTTPBearer(auto_error=True)
 
+jwks_client = PyJWKClient(
+    settings.jwks_url,
+    cache_keys=True
+)
+
 async def get_current_user(token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -54,7 +59,6 @@ async def get_current_user(token: Annotated[HTTPAuthorizationCredentials, Depend
         print("Token here: ")
         print(token)
         print(settings.jwt_audience)
-        jwks_client = PyJWKClient(settings.jwks_url)
         signing_key = jwks_client.get_signing_key_from_jwt(token.credentials)
         payload = jwt.decode(
             token.credentials,
