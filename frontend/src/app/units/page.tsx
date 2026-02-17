@@ -34,10 +34,18 @@ function PageContent({ userRole }: UserRole) {
           <div className="flex flex-row align-middle items-center justify-between">
             <TabsList className="flex flex-row gap-4 bg-background my-4">
               <div className="bg-accent p-1">
-                <TabsTrigger value="ongoing" className="bg-accent px-4 py-2">
+                <TabsTrigger
+                  value="ongoing"
+                  className="bg-accent px-4 py-2"
+                  id="tabs-ongoing"
+                >
                   Ongoing
                 </TabsTrigger>
-                <TabsTrigger value="finished" className="bg-accent px-4 py-2">
+                <TabsTrigger
+                  value="finished"
+                  className="bg-accent px-4 py-2"
+                  id="tabs-finished"
+                >
                   Finished
                 </TabsTrigger>
               </div>

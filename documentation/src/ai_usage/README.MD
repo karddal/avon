@@ -1,3 +1,4 @@
+# AI Usage Policy
 # AI in 2025-ContinuousAssessment
 
 AI tools have been used in the following ways
@@ -33,6 +34,11 @@ Backend - used more rarely here, mostly for architecture deisions. One area wher
 Engine prototyping - For the initial prototype test runner (not merged), used to help design the initial prototype, such as doing research to help me work out the best practice way of doing the test running, due to the very complicated domain area, and implications including security, sandboxing etc. Using it I was able to discover technologies that I haven't heard of before. Because of how complicated Kubernetes is, and the complexity and verbosity of task definitions, as well as how the client libraries I was using are poorly documented, I used it to show me how to run a kubernetes task for the proof of concept, as well as how to use tooling like Dockerfiles and setting up a local kubernetes cluster, and debugging these. I used this, along with an example from Temporal, the scheduler stack I was using, to get a proof of concept working. Without it, I wouldn't have been able to get the proof of concept working because I had little knowledge of this area before. Now that I have a base, I will probably redesign this in a cleaner way for the final product, now that I know that it is feasible.
 
 Debugging and setting up deployment - Very helpful when setting up deployment to AWS to explain things like how to setup the connections. A specific example was when I was trying to debug why sql queries weren't working with a cryptic error. With the error message and the code, it identified that in Postges you can't use ? for placeholders, you have to use $1. This is something that I didn't know about and wouldn't have found. It also suggested an improved way of sharing Postgres pools using a global variable.
+
+Used also when debugging and fixing the seed script - example prompt: ```What does this error mean? detail: [ { type: 'model_attributes_type', loc: [Array], msg: 'Input should be a valid dictionary or object to extract fields from', input: '{"name":"Year 1 Computer Science 2025-2026","start_date":"2025-09-10","end_date":"2026-05-30"}' } ] Here is the api spec example { "name": "string", "start_date": "2026-02-08", "end_date": "2026-02-08" }``` 
+
+```How can I clean out a full subgroup in Gitlab without deleting it using the API? So all subgroups and projects in it should be deleted.```
+
 ### Josh
 
 **Tools used**
@@ -48,6 +54,8 @@ Frontend - TailwindCSS issues and more complex Typescript functions or methods w
 
 Backend - I have used AI in the backend to produce repeatable pieces of code, saving me time rewriting similar schemas or methods with slightly different variable names and inputs. I also used it to learn more about the frameworks we were using, such as Spring Boot (before switching), and now FastAPI. FastAPI is simple enough, but some features have multiple ways of being implemented, and sometimes the docs aren't helpful. Since my focus on this project has been mainly on the frontend, my AI use in the backend has been lower than the rest of the project.
 
+Added: Have now used Claude to tell me a better way to refactor the Dockerfile creator, and Claude then helped me rewrite some of the code to use this pattern (see `frontend/src/lib/docker`). An example of a prompt I used was: `Is there a better way to find out if the tool/language is a script or package, and can you architect it please.`
+
 Overall, the use of AI for me has been majority frontend, and has been mostly for time-saving reasons, allowing me to focus more on the actual features that require human insight and reasoning, such as the UI flow and accessibility, as well as the actual codebase looking professional and easy to extend.
 
 ### Rishi
@@ -58,9 +66,10 @@ Overall, the use of AI for me has been majority frontend, and has been mostly fo
 - Perplexity
 
 **Where did you use AI tools and why**
-Blueprinting / Concepting -
+Blueprinting / Concepting - To figure out how to create a concurrent fault tolerant workflow and what I should look for
 Frontend - Primarily to fix styling issues in TailwindCSS. To understand concepts in frontend development such as SSR, the use of types and best practises to organise my code. Also used it to refactor code which was not efficient.
 Backend - To debug errors esspecially with regards to schemas. To figure out the best way to implement a certain feature and organise the project. Used it to generate fake users to test my database and other test cases.
+Git - Just to be sure I don't do anything stupid with my git branch, I often ask an LLM what the right course of action is. A notable use case is when I accidentally committed node_modules in the first commit of my branch. I didn't want to delete the file and make it look like I had 200,000 insertions and deletions. To resolve this, I used Claude to help me figure out how to cherry pick commits onto a new branch so I can keep the timestamps of the work I've done as well.
 
 Overall, I tried my best to limit the use of AI as I wanted to write code myself. AI was primarily used to help me understand the best practises to write code while also acting as a debugger.
 

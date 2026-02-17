@@ -61,7 +61,6 @@ class UnitCreate(BaseModel):
     colour: Colour
     programme_id: uuid.UUID
 
-
 class UnitUpdate(BaseModel):
     name: Name
     description: str

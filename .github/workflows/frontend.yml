@@ -59,7 +59,4 @@ jobs:
         with:
           working-directory: ./frontend
           env: NODE_ENV=test
-          start: |
-            npm run start:backend
-            npm run dev
-          wait-on: "http://localhost:8000/check/health"
+          command: npm run test

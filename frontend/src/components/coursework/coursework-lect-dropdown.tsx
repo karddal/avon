@@ -1,7 +1,15 @@
 "use client";
 
-import { BookCheck, Menu, ServerCog, SquarePen, SquareX } from "lucide-react";
+import {
+  BookCheck,
+  Container,
+  Menu,
+  ServerCog,
+  SquarePen,
+  SquareX,
+} from "lucide-react";
 import { useState } from "react";
+import CreateDockerfile from "@/components/coursework/create-dockerfile";
 import DeleteCourseworkButton from "@/components/coursework/delete_coursework_button";
 import EditCoursework from "@/components/coursework/edit-coursework";
 import {
@@ -46,20 +54,32 @@ export default function CourseworkLectDropdown({
 }) {
   const [showDelete, setShowDelete] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
+  const [showDocker, setShowDocker] = useState(false);
 
   return (
     <div className="aspect-square">
       <DropdownMenu>
-        <DropdownMenuTrigger className="border hover:bg-accent hover:transition p-2">
+        <DropdownMenuTrigger
+          data-cy="coursework-lect-dropdown"
+          className="border hover:bg-accent hover:transition p-2"
+        >
           <Menu size={32} />
         </DropdownMenuTrigger>
         <DropdownMenuContent className="flex flex-col">
-          <DropdownMenuLabel>Courswork Options</DropdownMenuLabel>
+          <DropdownMenuLabel>Coursework Options</DropdownMenuLabel>
           <DropdownMenuSeparator />
 
           <DropdownMenuItem disabled={true}>
             <ServerCog className="mr-2 h-4 w-4" />
             Engine
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            disabled={false}
+            onSelect={() => setShowDocker(true)}
+          >
+            <Container className="mr-2 h-4 w-4" />
+            Create Dockerfile
           </DropdownMenuItem>
 
           <DropdownMenuItem disabled={true}>
@@ -83,6 +103,11 @@ export default function CourseworkLectDropdown({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <CreateDockerfile
+        open_state={showDocker}
+        set_open_state={setShowDocker}
+      ></CreateDockerfile>
 
       <EditCoursework
         coursework_update_data={coursework_update_data}

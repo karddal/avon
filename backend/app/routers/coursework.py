@@ -1,9 +1,11 @@
+from app.core.helpers.gitlab import gl_create_coursework
 from sqlalchemy.orm import selectinload
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 from app.db.session import get_session
 from typing import Annotated
 from uuid import UUID
+from app.core.settings import settings
 
 from app.models.coursework import Coursework
 from app.models.unit import Unit, UnitWithCourseworks
@@ -16,7 +18,7 @@ session_dependency = Annotated[Session, Depends(get_session)]
 
 @router.post('/create', response_model = CourseworkRead, status_code=status.HTTP_201_CREATED)
 async def create_coursework(coursework: CourseworkCreate, session: session_dependency):
-    courseworkAlreadyExists = session.exec(select(Coursework).where((Coursework.unit_id == coursework.unit_id) & (Coursework.name == coursework.name))).first()
+    courseworkAlreadyExists = session.exec(select(Coursework).where((Coursework.unit_id == coursework.unit_id) & (Coursework.name == coursework.name) & (Coursework.due_date == coursework.due_date))).first()
    
     if courseworkAlreadyExists:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Coursework already made that belongs to the same unit and has the same name")
@@ -25,9 +27,20 @@ async def create_coursework(coursework: CourseworkCreate, session: session_depen
         unit_exists = session.exec(select(Unit).where(Unit.id == coursework.unit_id)).first()
         if not unit_exists:
             raise HTTPException(status_code=404, detail='Corresponding unit not found')
+        
+    try:
+        if settings.testing_mode:
+            gl_data = {"gitlabGroupId": 12345678}
+        else:
+            gl_data = await gl_create_coursework(coursework.name, unit_exists.gitlab_id)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY, 
+            detail="Database failed. GitLab group rolled back."
+    )
 
-    db_coursework = Coursework(name=coursework.name,description=coursework.description,unit_id=coursework.unit_id, due_date=coursework.due_date, colour=coursework.colour)
-    print("data base",db_coursework.due_date)
+    db_coursework = Coursework(name=coursework.name,description=coursework.description,unit_id=coursework.unit_id, due_date=coursework.due_date, colour=coursework.colour, gitlab_id=gl_data["gitlabGroupId"])
+    
     session.add(db_coursework)
     session.commit()
     session.refresh(db_coursework)
