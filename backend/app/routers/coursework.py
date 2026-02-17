@@ -155,9 +155,9 @@ async def template_exists(courseworkId: str, session: session_dependency):
     coursework = session.get(Coursework,courseworkId)
     if coursework is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
-    if coursework.templateId:
+    if coursework.template_id:
         exists = True
-        templateId = coursework.templateId
+        templateId = coursework.template_id
     else:
         exists = False
         templateId = None

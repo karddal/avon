@@ -22,4 +22,4 @@ class Coursework(SQLModel, table=True):
     )  # note: this uses the timezome of the device, not a standard timezone like UTC (which we can't use as this is primarily a uk used program)
     colour: str
     gitlab_id: str = Field(nullable=False)
-    templateId: int = Field(nullable=True)
+    template_id: int = Field(nullable=True)

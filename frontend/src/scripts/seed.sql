@@ -83,6 +83,7 @@ CREATE TABLE coursework (
                             creation_date TIMESTAMP NOT NULL,
                             colour VARCHAR NOT NULL,
                             gitlab_id VARCHAR NOT NULL,
+                            template_id INTEGER,
                             PRIMARY KEY (id),
                             FOREIGN KEY(unit_id) REFERENCES unit (id) ON DELETE CASCADE
 );
