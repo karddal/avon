@@ -81,4 +81,10 @@ def mock_gitlab_coursework():
             "unit": unit_mocks,
             "coursework": coursework_mocks
         }
-        
+
+@pytest.fixture(scope="function")
+def auth_override():
+    from app.core.security import get_current_user
+    app.dependency_overrides[get_current_user] = lambda: "test-user"
+    yield "test-user"
+    app.dependency_overrides.pop(get_current_user, None)
