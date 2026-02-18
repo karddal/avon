@@ -3,7 +3,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 from sqlalchemy import exists, and_
 
-from app.core.helpers.gitlab import gl_create_coursework, gl_update_coursework, gl_delete_coursework
+# GitLab helpers
+from app.core.helpers.gitlab import gl_create_coursework, gl_delete_coursework,gl_update_coursework
+
 from app.core.security import get_current_user_with_role
 from app.db.session import get_session
 from typing import Annotated, Optional
