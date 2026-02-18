@@ -264,7 +264,7 @@ async def gl_template_urls(template_id):
 
 # All file stuff is done in memory, as automatically delted after use, and we set limits on file size anyway
 async def check_file_safe(file: UploadFile):
-    MAX_COMPRESSED = 20 * 1024 * 1024
+    MAX_COMPRESSED = 10 * 1024 * 1024
     MAX_UNCOMPRESSED = 50 * 1024 * 1024
     MAX_FILES = 1000
 
@@ -324,9 +324,6 @@ async def gl_upload_zip(courseworkGitLabId: str, file: UploadFile):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
     
-    activationResult = await gl_activate_template_project(courseworkGitLabId)
-
-    templateId = activationResult["templateGitLabId"]
     
     commit_actions = []
     
@@ -343,6 +340,10 @@ async def gl_upload_zip(courseworkGitLabId: str, file: UploadFile):
             file_entries.append(temp)
 
     dir_with_files = set() # O(1) lookup
+
+    activationResult = await gl_activate_template_project(courseworkGitLabId)
+
+    templateId = activationResult["templateGitLabId"]
 
     # Do file entries first
     for filename in file_entries:

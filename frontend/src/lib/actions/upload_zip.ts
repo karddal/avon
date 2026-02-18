@@ -9,6 +9,12 @@ type uploadZipRequest = {
 
 type uploadZipResponse = {
   templateId: number;
+  error: string | null;
+};
+
+type apiError = {
+  status: number;
+  detail: string;
 };
 
 export async function upload_zip(
@@ -28,8 +34,15 @@ export async function upload_zip(
     },
   );
   if (!data.ok) {
-    throw new Error("Failed to upload files");
+    if (data.status === 453) {
+      return { templateId: -1, error: `File upload failed: ${await data.json().then((err: apiError) => err.detail)}` };
+    } 
+    throw new Error(`Failed to upload zip`);
   }
 
-  return (await data.json()) as uploadZipResponse;
+  const json = await data.json();
+  return {
+    templateId: json.templateId,
+    error: null,
+  };
 }

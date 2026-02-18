@@ -27,6 +27,11 @@ interface UploadZip {
   onRefresh: () => void;
 }
 
+type apiError = {
+  status: number;
+  detail: string;
+};
+
 export default function ZipUploadPage({
   courseworkGitlabId,
   cw_id,
@@ -64,10 +69,17 @@ export default function ZipUploadPage({
         courseworkGitLabId: courseworkGitlabId,
         formData: formData,
       });
-
-      onRefresh();
-      setStatus("Upload complete. Files committed.");
-      setFile(null);
+      if (result.templateId === -1) {
+        setStatus(result.error ?? "Upload failed due to file issues.");
+        toast.error(result.error ?? "Upload failed due to file issues.");
+        
+        setUploadStatus(0);
+        return;
+      }else{
+        onRefresh();
+        setStatus("Upload complete. Files committed.");
+        setFile(null);
+      }
     } catch (err) {
       console.error(err);
       setStatus("Upload failed.");
