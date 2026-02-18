@@ -195,7 +195,7 @@ export default async function AppSidebarContent() {
                 </SidebarMenuItem>
               ))}
           </div>
-          <Dialog>
+          {/*<Dialog>
             <div className="flex flex-col border-t">
               <SidebarMenuButton asChild key={"Settings"} className={"w-full"}>
                 <DialogTrigger className="h-full flex flex-row items-center">
@@ -215,7 +215,7 @@ export default async function AppSidebarContent() {
                 </DialogFooter>
               </DialogContent>
             </div>
-          </Dialog>
+          </Dialog>*/}
 
           <div className="flex flex-col border-t">
             {/* bottom part of sidebar */}
@@ -225,11 +225,11 @@ export default async function AppSidebarContent() {
                   asChild
                   key={"Settings"}
                   className={
-                    "w-full flex flex-row items-center w-full h-full py-2 gap-2 mx-1"
+                    "h-full w-full px-0! hover:bg-accent"
                   }
                 >
-                  <DialogTrigger className="h-full flex flex-row items-center">
-                    <SettingsIcon strokeWidth={1} className="size-8!" />
+                  <DialogTrigger className="flex flex-row items-center w-full h-full py-2 gap-2 mx-1">
+                    <SettingsIcon strokeWidth={1} className="size-8! mx-2" />
                     <span className="text-accent-foreground">{"Settings"}</span>
                   </DialogTrigger>
                 </SidebarMenuButton>
