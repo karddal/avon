@@ -1,4 +1,4 @@
-"use server"
+"use server";
 import { type NextRequest, NextResponse } from "next/server";
 import { getRequestJWT } from "@/lib/auth-utils";
 
