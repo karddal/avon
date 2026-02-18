@@ -27,6 +27,7 @@ export default async function UnitListByYear({
   const token = await getRequestJWT();
   const s = await requireSession();
   const role = s.user.role;
+  const hasPermissions = role === "admin";
   const route = role === "admin" ? "units/active" : "me/units/active";
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/${route}`, {
     method: "GET",
@@ -63,7 +64,7 @@ export default async function UnitListByYear({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-1 gap-4 overflow-y-scroll h-48">
       {unitsArray.map((unit: UnitData) => (
-        <Unit key={unit.id} props={unit} />
+        <Unit hasPermissions={hasPermissions} key={unit.id} props={unit} />
       ))}
     </div>
   );

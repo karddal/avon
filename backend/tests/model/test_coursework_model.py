@@ -10,7 +10,7 @@ from tests.helpers.factories import create_unit
 
 # Testing that the model auto Populates the id and creation_date fields
 def test_coursework_auto_fields(session):
-    unit_id = create_unit(session)
+    unit_id = create_unit(session).id
 
     due = datetime.now()
     cw = Coursework(name="Haskell 2",description="Coursework Description",unit_id=unit_id,due_date=due,colour="abcdef", gitlab_id="12345")
@@ -25,7 +25,7 @@ def test_coursework_auto_fields(session):
 
 # Ensuring the data is availlable still
 def test_coursework_persists_properly(session):
-    unit_id = create_unit(session)
+    unit_id = create_unit(session).id
 
     due = datetime.now()
     cw = Coursework(name="Haskell 2", description="Coursework Description", unit_id=unit_id, due_date=due, colour="abcdef", gitlab_id="12345")
@@ -43,7 +43,7 @@ def test_coursework_persists_properly(session):
 
 # Testing that we can succseesfully query by unit_id
 def test_coursework_query_by_unit_id(session):
-    unit_id = create_unit(session)
+    unit_id = create_unit(session).id
 
     due = datetime.now()
     cw = Coursework(name="Haskell 2",description="Coursework Description",unit_id=unit_id,due_date=due,colour="abcdef", gitlab_id="12345")
@@ -58,7 +58,7 @@ def test_coursework_query_by_unit_id(session):
 
 # Testing we can update model correctly
 def test_coursework_update(session):
-    unit_id = create_unit(session)
+    unit_id = create_unit(session).id
 
     due = datetime.now()
     cw = Coursework(name="Haskell 2",description="Coursework Description",unit_id=unit_id,due_date=due,colour="abcdef", gitlab_id="12345")
@@ -77,7 +77,7 @@ def test_coursework_update(session):
 
 # Testing we can successfuly delete a coursework
 def test_coursework_delete(session):
-    unit_id = create_unit(session)
+    unit_id = create_unit(session).id
 
     due = datetime.now()
     cw = Coursework(name="Haskell 2",description="Coursework Description",unit_id=unit_id,due_date=due,colour="abcdef", gitlab_id="12345")
@@ -93,7 +93,7 @@ def test_coursework_delete(session):
 
 # Make sure field types are correct
 def test_coursework_field_types(session):
-    unit_id = create_unit(session)
+    unit_id = create_unit(session).id
     
     due = datetime.now()
     cw = Coursework(name="Haskell 2",description="Coursework Description",unit_id=unit_id,due_date=due,colour="abcdef", gitlab_id="12345")

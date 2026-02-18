@@ -6,6 +6,9 @@ module.exports = (phase: string, _defaultConfig: NextConfig) => {
     return {
       /* development only config options here */
       cacheComponents: true,
+      experimental: {
+        globalNotFound: true,
+      },
 
       images: {
         remotePatterns: [
@@ -23,6 +26,9 @@ module.exports = (phase: string, _defaultConfig: NextConfig) => {
     /* config options for all phases except development here */
     cacheComponents: true,
     output: "standalone",
+    experimental: {
+      globalNotFound: true,
+    },
     assetPrefix: undefined,
     images: {
       unoptimized: true,

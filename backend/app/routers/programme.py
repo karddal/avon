@@ -4,11 +4,15 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.db.session import get_session
 from sqlmodel import Session, select
 from uuid import UUID
+from app.core.settings import settings
 
 from app.models.programme import Programme
 from app.schemas.programme import ProgrammeCreate, ProgrammeRead, ProgrammeDelete
 
 from app.schemas.programme import ProgrammeUpdate
+
+
+from app.schemas.programme import ProgrammeAll
 
 router = APIRouter(prefix="/programmes", tags=["programmes"])
 session_dependency = Annotated[Session, Depends(get_session)]
@@ -22,7 +26,11 @@ async def create_programme(programme: ProgrammeCreate, session: session_dependen
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Programme already exists')
     
     try:
-        gl_data = await gl_create_programme(programme.name)
+        if settings.testing_mode:
+            gl_data = {"gitlabGroupId": 12345678}
+        else:
+            gl_data = await gl_create_programme(programme.name)
+        print(gl_data)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
@@ -93,3 +101,10 @@ async def update_programme(id: UUID, programme: ProgrammeUpdate, session: sessio
     session.commit()
     session.refresh(programme_db)
     return programme_db
+
+
+@router.get("/", response_model=ProgrammeAll, status_code=status.HTTP_200_OK)
+async def get_programmes(session: session_dependency):
+    statement = select(Programme)
+    programmes = session.exec(statement).all()
+    return {"programmes":programmes}
