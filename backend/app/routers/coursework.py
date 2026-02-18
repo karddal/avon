@@ -1,13 +1,10 @@
-import base64
-import io
-import zipfile
-from app.core.helpers.gitlab import gl_create_coursework, gl_activate_template_project, gl_template_files, gl_activate_template_project, gl_template_urls, gl_upload_zip, gl_overwrite_zip
+from app.core.helpers.gitlab import gl_create_coursework, gl_template_files, gl_activate_template_project, gl_template_urls, gl_upload_zip, gl_overwrite_zip
+# Adding this back in
 from sqlalchemy.orm import selectinload
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from sqlmodel import Session, select
 from sqlalchemy import exists, and_
 
-from app.core.helpers.gitlab import gl_create_coursework
 from app.core.security import get_current_user_with_role
 from app.db.session import get_session
 from typing import Annotated, Optional
@@ -18,7 +15,7 @@ from app.models.coursework import Coursework
 from app.models.unit import Unit, UnitWithCourseworks
 from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkSetupProgress, CourseworkTemplateUploadZip, CourseworkUpdate, CourseworkDelete, CourseworkTemplateExists, CourseworkTemplateActivate, CourseworkTemplateFile, CourseworkTemplateUrl, CourseworkUpdateFormData
 from app.models.unit_enrollment import UnitEnrollment
-from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkUpdate, CourseworkDelete, CourseworkEventRead, CourseworkUpdateFormData
+from app.schemas.coursework import CourseworkEventRead
 from app.schemas.security import CurrentUser
 import datetime
 
@@ -275,7 +272,7 @@ async def upload_zip(cw_id: UUID, courseworkGitLabId: str,  session: session_dep
     except HTTPException as e:
         print("GitLab error:", e.detail)
         raise  # Just gitalbs error message
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=500, detail="Internal server error")
 
     
