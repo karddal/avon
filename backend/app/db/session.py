@@ -16,7 +16,7 @@ db_url = os.getenv("DATABASE_URL")
 if not db_url:
     raise RuntimeError("No database url found")
 
-is_e2e = os.getenv("CI") in ("1", "true", "True") or os.getenv("ENV") == "e2e"
+is_e2e = os.getenv("CI_MODE") in ("1", "true", "True") or os.getenv("ENV") == "e2e"
 
 engine_kwargs = {}
 

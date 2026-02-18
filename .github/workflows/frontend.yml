@@ -55,9 +55,6 @@ jobs:
       - name: Install frontend dependencies
         working-directory: ./frontend
         run: npm ci
-      - name: Clear & Seed Database
-        working-directory: ./frontend
-        run: npm run db:seed
       - name: Cypress run
         uses: cypress-io/github-action@v6
         env:
