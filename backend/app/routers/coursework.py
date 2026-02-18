@@ -40,7 +40,6 @@ async def create_coursework(coursework: CourseworkCreate, session: session_depen
             gl_data = {"gitlabGroupId": 12345678}
         else:
             gl_data = await gl_create_coursework(coursework.name, unit_exists.gitlab_id)
-            print(gl_data)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
