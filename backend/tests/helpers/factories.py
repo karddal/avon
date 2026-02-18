@@ -1,10 +1,11 @@
+from datetime import datetime, timedelta
+from uuid import UUID, uuid4
+
 from sqlmodel import Session
+
 from app.models.coursework import Coursework
 from app.models.notification import Notification
 from app.models.programme import Programme
-from uuid import uuid4, UUID
-from datetime import datetime, timedelta
-
 from app.models.unit import Unit
 from app.models.unit_enrollment import UnitEnrollment
 
@@ -55,7 +56,7 @@ def create_notification(session) -> Notification:
     notification = Notification(
         id=notification_id,
         recipient_id=str(user_id),
-        unit_id=unit,
+        unit_id=unit.id,
         title="Test Notification",
         body="Test Body",
         created_at=datetime.now(), viewed=False)
