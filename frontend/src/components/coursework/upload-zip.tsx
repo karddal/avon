@@ -27,11 +27,6 @@ interface UploadZip {
   onRefresh: () => void;
 }
 
-type apiError = {
-  status: number;
-  detail: string;
-};
-
 export default function ZipUploadPage({
   courseworkGitlabId,
   cw_id,
@@ -72,10 +67,10 @@ export default function ZipUploadPage({
       if (result.templateId === -1) {
         setStatus(result.error ?? "Upload failed due to file issues.");
         toast.error(result.error ?? "Upload failed due to file issues.");
-        
+
         setUploadStatus(0);
         return;
-      }else{
+      } else {
         onRefresh();
         setStatus("Upload complete. Files committed.");
         setFile(null);
@@ -155,7 +150,7 @@ export default function ZipUploadPage({
         </Button>
       )}
 
-      {uploadStatus == 1 && status !== "Uploading ZIP..." && (
+      {uploadStatus === 1 && status !== "Uploading ZIP..." && (
         <Button size="lg" disabled className="w-full">
           <Spinner className="mr-2 h-4 w-4" />
         </Button>

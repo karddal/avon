@@ -35,8 +35,11 @@ export async function upload_zip(
   );
   if (!data.ok) {
     if (data.status === 453) {
-      return { templateId: -1, error: `File upload failed: ${await data.json().then((err: apiError) => err.detail)}` };
-    } 
+      return {
+        templateId: -1,
+        error: `File upload failed: ${await data.json().then((err: apiError) => err.detail)}`,
+      };
+    }
     throw new Error(`Failed to upload zip`);
   }
 

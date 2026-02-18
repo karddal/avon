@@ -1,7 +1,5 @@
 "use client";
 
-import { XIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -30,7 +28,7 @@ export default function ActivateTemplateRepo({
       setLoadingState(true);
       setStatus(1);
       const result = await activate_template_request({
-        cw_id:cw_id,
+        cw_id: cw_id,
         courseworkGitLabId: courseworkGitlabId,
       });
       setLoadingState(false);
@@ -40,7 +38,7 @@ export default function ActivateTemplateRepo({
       } else {
         throw new Error();
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Template Repository failed to Acivate");
     }
   };

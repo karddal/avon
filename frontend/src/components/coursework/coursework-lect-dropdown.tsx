@@ -9,7 +9,8 @@ import {
   SquarePen,
   SquareX,
 } from "lucide-react";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
 import CreateDockerfile from "@/components/coursework/create-dockerfile";
 import DeleteCourseworkButton from "@/components/coursework/delete_coursework_button";
 import EditCoursework from "@/components/coursework/edit-coursework";
@@ -31,8 +32,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import CreateTemplate from "./create-templates";
-import { useRouter } from "next/navigation";
-
 
 type CourseworkUpdateData = {
   id: string;
@@ -62,6 +61,9 @@ export default function CourseworkLectDropdown({
   const [showDocker, setShowDocker] = useState(false);
   const [showTemplates, setShowTemplate] = useState(false);
   const router = useRouter();
+  const refresh = useCallback(() => {
+    router.refresh();
+  }, [router]);
 
   return (
     <div className="aspect-square">
@@ -124,13 +126,13 @@ export default function CourseworkLectDropdown({
         set_open_state={setShowTemplate}
         courseworkGitlabId={coursework_update_data.gitlabId}
         courseworkId={coursework_update_data.id}
-        refresh={() => router.refresh()}
+        refresh={refresh}
       />
 
       <CreateDockerfile
         open_state={showDocker}
         set_open_state={setShowDocker}
-        refresh={() => router.refresh()}
+        refresh={() => refresh()}
       ></CreateDockerfile>
 
       <EditCoursework

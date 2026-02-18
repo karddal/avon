@@ -1,8 +1,7 @@
 import { Suspense } from "react";
 import CourseworkLectDropdown from "@/components/coursework/coursework-lect-dropdown";
 import Repository from "@/components/coursework/repository";
-import { DropdownCard } from "@/components/dropdown-card";
-import RunTestsItem from "@/components/run-tests-item";
+import SetupProgress from "@/components/coursework/setup-progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getRequestJWT, requireSession } from "@/lib/auth-utils";
@@ -10,7 +9,6 @@ import Loading from "../loading";
 import CourseworkDescription from "./description";
 import CourseworkInformation from "./information";
 import CourseworkName from "./name";
-import SetupProgress from "@/components/coursework/setup-progress";
 
 type CourseworkUpdateReqResponse = {
   id: string;
@@ -133,7 +131,7 @@ async function CourseworkPageContent({
             <CourseworkInformation slug={slug} token={token} />
           </Suspense>
           <Suspense>
-              <SetupProgress cw_id={data.id}/>
+            <SetupProgress cw_id={data.id} />
           </Suspense>
         </div>
       </section>

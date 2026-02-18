@@ -7,7 +7,6 @@ from fastapi import HTTPException, UploadFile
 import httpx
 from dotenv import load_dotenv
 import os
-from urllib.parse import quote
 
 load_dotenv()
 TOKEN = os.getenv("GITLAB_API_TOKEN")
@@ -320,7 +319,6 @@ async def check_file_safe(file: UploadFile):
     return zip_ref
 
 async def gl_upload_zip(courseworkGitLabId: str, file: UploadFile):
-    MAX_ZIP_SIZE = 20 * 1024 * 1024
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
     

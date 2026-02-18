@@ -261,7 +261,7 @@ export default function CreateDockerfile({
 
   const applyDockerfile = () => {
     refresh?.();
-  }
+  };
 
   return (
     <Dialog open={open_state} onOpenChange={set_open_state}>
@@ -560,7 +560,11 @@ export default function CreateDockerfile({
                 <Download className="mr-2 w-4 h-4" /> Download Dockerfile
               </Button>
               <Button variant="default" className="w-full">
-                <FileCheck onClick={() => applyDockerfile()} className="mr-2 w-4 h-4" /> Apply Dockerfile
+                <FileCheck
+                  onClick={() => applyDockerfile()}
+                  className="mr-2 w-4 h-4"
+                />{" "}
+                Apply Dockerfile
               </Button>
             </div>
           </div>

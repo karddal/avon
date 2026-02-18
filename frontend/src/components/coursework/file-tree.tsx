@@ -1,6 +1,5 @@
 "use client";
 
-import { file } from "bun";
 import { ChevronRight, FileCode, FileText, Folder } from "lucide-react";
 import React from "react";
 import {
@@ -43,7 +42,8 @@ export function buildTree(items: GitLabTreeItem[]): RepoNode[] {
   }
 
   for (const item of items) {
-    const node = map.get(item.path)!;
+    const node = map.get(item.path);
+    if (!node) continue;
     const parentPath = item.path.includes("/")
       ? item.path.substring(0, item.path.lastIndexOf("/"))
       : null;

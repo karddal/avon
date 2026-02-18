@@ -1,44 +1,17 @@
 "use client";
 
 import {
-  Check,
-  ChevronDown,
-  ChevronRight,
-  Copy,
-  Download,
-  FileCheck,
-  Plus,
-  Search,
-  Trash2,
-} from "lucide-react";
-import {
   type Dispatch,
   type SetStateAction,
+  useCallback,
   useEffect,
-  useMemo,
   useState,
 } from "react";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { template_existance } from "@/lib/actions/template_existance";
 import { template_file_tree } from "@/lib/actions/template_file_tree";
 import { template_url } from "@/lib/actions/template_url";
-import { IMAGES } from "@/lib/docker/image";
-import { TOOLS } from "@/lib/docker/tools";
-import type { Image, Tool } from "@/lib/docker/types";
-import { cn } from "@/lib/utils";
 import ActivateTemplateRepo from "./activate-templateRepo-button";
 import RepoTree from "./file-tree";
 import RepoAccessBox from "./repo-access-box";
@@ -59,7 +32,7 @@ type Props = {
   set_open_state: Dispatch<SetStateAction<boolean>>;
   courseworkGitlabId: string;
   courseworkId: string;
-  refresh?: () => void;
+  refresh: () => void;
 };
 
 type GitLabTreeItem = {
@@ -75,62 +48,59 @@ export default function CreateTemplate({
   set_open_state,
   courseworkGitlabId,
   courseworkId,
-  refresh
+  refresh,
 }: Props) {
   const [activateStatus, setActiveStatus] = useState<number>(0);
   const [templatehttpURL, setTemplatehttpURL] = useState<string | null>(null);
   const [templateSshURL, setTemplateSshURL] = useState<string | null>(null);
   const [templateId, setTemplateId] = useState<number | null>(null);
   const [fileTree, setFileTree] = useState<GitLabTreeItem[]>([]);
-  const [refreshKey, setRefreshKey] = useState(0);
-  // const [loadingStatus, setLoadingStatus] = useState<boolean>(false) // set to true by components, set to false by main page
 
   const triggerRefresh = () => {
-    setRefreshKey((prev) => prev + 1);
+    // refreshes the component, via update in refreshCreateTemplate state, which calls loadall, refreshing parent components and therefore stup progress
+    loadAll();
   };
 
-  useEffect(() => {
+  // you can blame the linter for this mess of the callback shit
+  const loadAll = useCallback(async () => {
     if (!open_state) return;
 
     setActiveStatus(1);
+    const response = await template_existance({
+      cw_id: courseworkId,
+    });
+    if (!response.exists || !response.templateProjectId) {
+      setTemplateId(null);
+      setActiveStatus(0);
+      setFileTree([]);
+      setTemplatehttpURL(null);
+      setTemplateSshURL(null);
+      return;
+    }
 
-    const loadAll = async () => {
-      const response = await template_existance({
-        cw_id: courseworkId,
-      });
+    const id = response.templateProjectId;
 
-      if (!response.exists || !response.templateProjectId) {
-        setTemplateId(null);
-        setActiveStatus(0);
-        setFileTree([]);
-        setTemplatehttpURL(null);
-        setTemplateSshURL(null);
-        return;
-      }
+    setTemplateId(id);
 
-      const id = response.templateProjectId;
+    const templateData = await template_file_tree({
+      templateProjectId: String(id),
+    });
 
-      setTemplateId(id);
+    setFileTree(templateData);
 
-      const templateData = await template_file_tree({
-        templateProjectId: String(id),
-      });
+    const urlResponse = await template_url({
+      templateProjectId: String(id),
+    });
 
-      setFileTree(templateData);
+    setTemplatehttpURL(urlResponse.http);
+    setTemplateSshURL(urlResponse.ssh);
+    setActiveStatus(2);
+    refresh(); //refresh the page above to update setup progress
+  }, [open_state, courseworkId, refresh]);
 
-      const urlResponse = await template_url({
-        templateProjectId: String(id),
-      });
-
-      setTemplatehttpURL(urlResponse.http);
-      setTemplateSshURL(urlResponse.ssh);
-      // setLoadingStatus(false);
-      setActiveStatus(2);
-      refresh?.();
-    };
-
+  useEffect(() => {
     loadAll();
-  }, [courseworkGitlabId, refreshKey, open_state]);
+  }, [loadAll]); // when open, when coursework id changes, when refreshCreateTemplate changes (triggered by children)
 
   return (
     <Dialog open={open_state} onOpenChange={set_open_state}>
