@@ -12,8 +12,14 @@ from app.core.security import get_current_user_with_role
 from app.db.session import get_session
 from typing import Annotated, Optional
 from uuid import UUID
-from app.core.settings import settings
 
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import selectinload
+from sqlmodel import Session, select
+
+from app.core.helpers.gitlab import gl_create_coursework
+from app.core.settings import settings
+from app.db.session import get_session
 from app.models.coursework import Coursework
 from app.models.unit import Unit, UnitWithCourseworks
 from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkSetupProgress, CourseworkTemplateUploadZip, CourseworkUpdate, CourseworkDelete, CourseworkTemplateExists, CourseworkTemplateActivate, CourseworkTemplateFile, CourseworkTemplateUrl, CourseworkUpdateFormData

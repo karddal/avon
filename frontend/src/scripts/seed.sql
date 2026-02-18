@@ -94,6 +94,15 @@ CREATE INDEX ix_coursework_name ON coursework (name);
 CREATE INDEX ix_coursework_due_date ON coursework (due_date);
 CREATE INDEX ix_coursework_unit_id ON coursework (unit_id);
 
+CREATE TABLE courseworkenrollment (
+    student_id VARCHAR NOT NULL,
+    coursework_id UUID NOT NULL,
+    individual_due_date TIMESTAMP NOT NULL,
+    gl_repo_id VARCHAR NOT NULL,
+    FOREIGN KEY(coursework_id) REFERENCES coursework(id) ON DELETE CASCADE,
+    PRIMARY KEY(student_id, coursework_id),
+)
+
 INSERT INTO "user" (id,name,email,"emailVerified",image,"createdAt","updatedAt","role",banned,"banReason","banExpires") VALUES
                                                                                                                   ('8AteGbdJyVodlUBwQGSxcN7h58aKNjRe','Foo Bar','admin@bris.ac.uk',0,NULL,'2026-01-03T19:22:57.491Z','2026-01-03T19:22:57.491Z','admin',0,NULL,NULL),
                                                                                                                   ('xaegpXv0lUvOsYsjugz7g8zjrzCHiI60','Rohan Booth (Year 1)','rohan@bris.ac.uk',0,NULL,'2026-01-03T19:22:57.749Z','2026-01-03T19:22:57.749Z','user',0,NULL,NULL),
