@@ -4,8 +4,8 @@ from typing import Annotated
 
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI
-from sqlalchemy.pool import NullPool
 from sqlmodel import Session, SQLModel, create_engine
+from sqlalchemy.pool import NullPool
 
 
 if os.getenv("ENV") == "dev":
@@ -16,11 +16,17 @@ db_url = os.getenv("DATABASE_URL")
 if not db_url:
     raise RuntimeError("No database url found")
 
+is_e2e = os.getenv("CI_MODE") in ("1", "true", "True") or os.getenv("ENV") == "e2e"
+
 engine_kwargs = {}
 
+# For db testing
+# Currently only work in sqlite need to fix when use other database
 if db_url.startswith("sqlite"):
-    engine_kwargs["connect_args"] = {"check_same_thread": False, "timeout": 20}
-    engine_kwargs["poolclass"] = NullPool
+    engine_kwargs["connect_args"] = {"check_same_thread": False}
+
+    if is_e2e:
+        engine_kwargs["poolclass"] = NullPool
 
 engine = create_engine(db_url, **engine_kwargs)
 

@@ -1,0 +1,190 @@
+"use client";
+
+import { addDays, addWeeks, format, startOfWeek } from "date-fns";
+import { CalendarIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import { useMemo, useState } from "react";
+import AcademicYearStepper from "@/components/academic-year-stepper";
+import {
+  SearchableSelect,
+  type SearchableSelectOption,
+} from "@/components/searchableSelect";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useIsMobile } from "@/hooks/use-mobile";
+
+export function CalendarNavigationCard({
+  weekStartDate,
+  onWeekStartDateChange,
+  unitOptions = [],
+  onUnitIdsChange,
+  tab,
+  academicYearStart,
+  onAcademicYearStartChange,
+}: {
+  weekStartDate: Date;
+  onWeekStartDateChange: (date: Date) => void;
+  unitOptions?: SearchableSelectOption[];
+  onUnitIdsChange: (unitIds: string[]) => void;
+  tab: "timetable" | "events";
+  academicYearStart: number;
+  onAcademicYearStartChange: (yearStart: number) => void;
+}) {
+  const isMobile = useIsMobile();
+
+  const weekStart = useMemo(
+    () => startOfWeek(weekStartDate, { weekStartsOn: 1 }),
+    [weekStartDate],
+  );
+  const weekEnd = addDays(weekStart, 6);
+
+  const weekRange = `${format(weekStart, "MMM d")} – ${format(weekEnd, "MMM d")}`;
+
+  const dayLabel = format(weekStartDate, "MMM d");
+
+  const [selectedUnitIds, setSelectedUnitIds] = useState<string[]>([]);
+
+  return (
+    <Card className="w-full">
+      <CardContent className="px-3 py-2">
+        <div className="relative h-9">
+          <div className="absolute left-0 top-1/2 -translate-y-1/2">
+            <TabsList className="h-9">
+              <TabsTrigger value="timetable" className="text-sm px-3">
+                timetable
+              </TabsTrigger>
+              <TabsTrigger value="events" className="text-sm px-3">
+                events
+              </TabsTrigger>
+            </TabsList>
+          </div>
+
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+            {tab === "timetable" ? (
+              <div className="text-base font-semibold leading-none">
+                {isMobile ? dayLabel : weekRange}
+              </div>
+            ) : (
+              <AcademicYearStepper
+                value={academicYearStart}
+                onChange={onAcademicYearStartChange}
+              />
+            )}
+          </div>
+
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[260px]">
+            <SearchableSelect
+              data-cy="units-select"
+              multiple={true}
+              prefix="Units"
+              placeholder="All units"
+              options={unitOptions}
+              values={selectedUnitIds}
+              onChangeMultiple={(ids) => {
+                setSelectedUnitIds(ids);
+                onUnitIdsChange(ids);
+              }}
+            />
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setSelectedUnitIds([])}
+              disabled={selectedUnitIds.length === 0}
+              title="Clear unit filters"
+              data-cy="units-reset"
+            >
+              Reset
+            </Button>
+          </div>
+        </div>
+
+        {tab === "timetable" && (
+          <div className="relative mt-2 h-10">
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+              <div className="flex justify-center items-center gap-3">
+                <Button
+                  variant="outline"
+                  size="icon-lg"
+                  onClick={() => {
+                    onWeekStartDateChange(
+                      isMobile
+                        ? addDays(weekStartDate, -1)
+                        : addWeeks(weekStart, -1),
+                    );
+                  }}
+                  title={isMobile ? "Previous day" : "Last week"}
+                >
+                  <ChevronLeft />
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  data-cy="nav-today"
+                  onClick={() =>
+                    onWeekStartDateChange(
+                      isMobile
+                        ? new Date()
+                        : startOfWeek(new Date(), { weekStartsOn: 1 }),
+                    )
+                  }
+                  title="Today"
+                >
+                  Today
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="icon-lg"
+                  onClick={() => {
+                    onWeekStartDateChange(
+                      isMobile
+                        ? addDays(weekStartDate, 1)
+                        : addWeeks(weekStart, 1),
+                    );
+                  }}
+                  title={isMobile ? "Next day" : "Next week"}
+                >
+                  <ChevronRight />
+                </Button>
+
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon-lg"
+                      title="Jump to date"
+                    >
+                      <CalendarIcon />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="p-2 w-auto" align="end">
+                    <Calendar
+                      mode="single"
+                      selected={weekStartDate}
+                      onSelect={(date) => {
+                        if (!date) return;
+                        onWeekStartDateChange(
+                          isMobile
+                            ? date
+                            : startOfWeek(date, { weekStartsOn: 1 }),
+                        );
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
