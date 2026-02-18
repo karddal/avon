@@ -224,9 +224,7 @@ export default async function AppSidebarContent() {
                 <SidebarMenuButton
                   asChild
                   key={"Settings"}
-                  className={
-                    "h-full w-full px-0! hover:bg-accent"
-                  }
+                  className={"h-full w-full px-0! hover:bg-accent"}
                 >
                   <DialogTrigger className="flex flex-row items-center w-full h-full py-2 gap-2 mx-1">
                     <SettingsIcon strokeWidth={1} className="size-8! mx-2" />
@@ -275,6 +273,6 @@ export default async function AppSidebarContent() {
           </div>
         </SidebarMenu>
       </SidebarGroup>
-    </SidebarContent >
+    </SidebarContent>
   );
 }

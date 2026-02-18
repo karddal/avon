@@ -3,7 +3,7 @@ describe("Notifications", () => {
     cy.exec("npm run db:reset && npm run db:seed");
   });
   it("shows no notifications with no notifications in the system", () => {
-    cy.login("rohan@bris.ac.uk", "changeme");
+    cy.login("rohan@bris.ac.uk", "changeme", true);
     cy.get("button.p-2:nth-child(2)").click();
     cy.get(".max-w-sm > .text-lg").should(
       "contain.text",
@@ -12,7 +12,7 @@ describe("Notifications", () => {
   });
 
   it("shows a notification when a notification has been added", () => {
-    cy.login("one@bris.ac.uk", "changeme");
+    cy.login("one@bris.ac.uk", "changeme", false);
     cy.contains("Units").click();
     cy.contains("Imperative and Functional Programming").click();
     cy.get("div.aspect-square button").click();
@@ -23,7 +23,7 @@ describe("Notifications", () => {
     cy.get("button.gap-2:nth-child(2)").click();
     cy.get('[data-content=""] > div').should("exist"); // sonner
 
-    cy.login("rohan@bris.ac.uk", "changeme");
+    cy.login("rohan@bris.ac.uk", "changeme", true);
     cy.get("button.p-2:nth-child(2)").click();
     cy.get("span.absolute").contains("1");
     cy.contains("button", "Imperative and Functional Programming").should(
@@ -34,7 +34,7 @@ describe("Notifications", () => {
   });
 
   it("successfully marks a notification as read", () => {
-    cy.login("one@bris.ac.uk", "changeme");
+    cy.login("one@bris.ac.uk", "changeme", false);
     cy.contains("Units").click();
     cy.contains("Imperative and Functional Programming").click();
     cy.get("div.aspect-square button").click();
@@ -45,7 +45,7 @@ describe("Notifications", () => {
     cy.get("button.gap-2:nth-child(2)").click();
     cy.get('[data-content=""] > div').should("exist"); // sonner
 
-    cy.login("rohan@bris.ac.uk", "changeme");
+    cy.login("rohan@bris.ac.uk", "changeme", true);
     cy.get("button.p-2:nth-child(2)").click();
     cy.get("span.absolute").contains("1");
     cy.contains("button", "Imperative and Functional Programming").should(

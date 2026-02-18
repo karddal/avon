@@ -129,8 +129,7 @@ def test_me_mark_all_read(session, client):
 
 def test_me_unread_notifications_no_unread(session, client):
     # mock the auth so we get the right me routes
-    programme = create_programme(session)
-    unit = create_unit(session, programme.id)
+    unit = create_unit(session)
 
     user = create_students(session, unit.id)
     app.dependency_overrides[get_current_user] = lambda: user.user_id
