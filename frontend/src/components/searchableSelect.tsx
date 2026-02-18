@@ -136,7 +136,7 @@ export function SearchableSelect(props: SearchableSelectProps) {
   return (
     <div className="flex-1">
       <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
+        <PopoverTrigger asChild className="h-full">
           <div
             role={"combobox"}
             aria-expanded={open}
