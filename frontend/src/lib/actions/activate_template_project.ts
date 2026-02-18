@@ -3,6 +3,7 @@ import { getRequestJWT } from "@/lib/auth-utils";
 
 type ActivateTemplateRequest = {
   courseworkGitLabId: string;
+  cw_id: string;
 };
 
 type ActivateTemplateResponse = {
@@ -15,7 +16,7 @@ export async function activate_template_request(
   const token = await getRequestJWT();
 
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/coursework/template/activate?gitLabId=${req.courseworkGitLabId}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/coursework/${req.cw_id}/template/activate?gitLabId=${req.courseworkGitLabId}`,
     {
       method: "POST",
       headers: {

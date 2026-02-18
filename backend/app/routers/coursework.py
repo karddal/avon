@@ -70,16 +70,18 @@ async def all_courseworks(session: session_dependency):
     return results
 
 @router.get('/progress', response_model=list[CourseworkSetupProgress])
-async def setup_progress(gitLabCwId: str, session: session_dependency):
-    try:
-        response = await gl_template_existance(gitLabCwId)
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+async def setup_progress(courseworkId: UUID, session: session_dependency):
+    coursework = session.get(Coursework,courseworkId)
+    if coursework is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
     
+    if coursework.template_id:
+        exists = True
+    else:
+        exists = False
     # When get other pices of info / steps are coed will put in here
 
-    result = [{"title": "Create Template", "completed" : response["exists"]},
+    result = [{"title": "Create Template", "completed" : exists},
               {"title": "Create Dockerfile", "completed" : False},
               {"title": "Create Engine", "completed" : False},
               {"title": "Test Engine", "completed" : False},
@@ -151,7 +153,7 @@ async def update_coursework(id: UUID, coursework: CourseworkUpdate, session: ses
     return coursework_db
 
 @router.get('/{courseworkId}/template/exists', response_model=CourseworkTemplateExists)
-async def template_exists(courseworkId: str, session: session_dependency):
+async def template_exists(courseworkId: UUID, session: session_dependency):
     coursework = session.get(Coursework,courseworkId)
     if coursework is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
@@ -164,8 +166,8 @@ async def template_exists(courseworkId: str, session: session_dependency):
         
     return {"exists":exists, "templateProjectId" : templateId}
 
-@router.post('/template/activate', response_model=CourseworkTemplateActivate)
-async def activate_template(gitLabId: str, session: session_dependency):
+@router.post('/{cw_id}/template/activate', response_model=CourseworkTemplateActivate)
+async def activate_template(cw_id: UUID, gitLabId: str, session: session_dependency):
     try:
         templateActivation = await gl_activate_template_project(gitLabId)
     except Exception:
@@ -173,6 +175,16 @@ async def activate_template(gitLabId: str, session: session_dependency):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
             detail="GitLab request failed"
     )
+
+    coursework = session.get(Coursework,cw_id)
+    if coursework is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
+    
+    coursework.template_id = templateActivation["templateGitLabId"]
+    session.add(coursework)
+    session.commit()
+    session.refresh(coursework)
+
     return templateActivation
 
 @router.get('/template/files', response_model=list[CourseworkTemplateFile])
@@ -197,8 +209,8 @@ async def template_urls(templateId: str, session: session_dependency):
         )
     return urlData
 
-@router.post('/template/upload-zip', response_model=CourseworkTemplateUploadZip)
-async def upload_zip(courseworkGitLabId: str, file: UploadFile = File(...)):
+@router.post('/{cw_id}/template/upload-zip', response_model=CourseworkTemplateUploadZip)
+async def upload_zip(cw_id: UUID, courseworkGitLabId: str,  session: session_dependency, file: UploadFile = File(...)):
     if not file.filename.endswith(".zip"):
         raise HTTPException(status_code=400, detail="File must be in ZIP format")
     try:
@@ -207,6 +219,15 @@ async def upload_zip(courseworkGitLabId: str, file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
+    coursework = session.get(Coursework,cw_id)
+    if coursework is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
+    
+    coursework.template_id = response["templateId"]
+    session.add(coursework)
+    session.commit()
+    session.refresh(coursework)
+
     return response
 
 @router.post('/template/overwrite-zip')

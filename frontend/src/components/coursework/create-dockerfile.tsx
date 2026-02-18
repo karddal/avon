@@ -42,11 +42,13 @@ interface DockerConfig {
 type DockerProps = {
   open_state: boolean;
   set_open_state: Dispatch<SetStateAction<boolean>>;
+  refresh?: () => void;
 };
 
 export default function CreateDockerfile({
   open_state,
   set_open_state,
+  refresh,
 }: DockerProps) {
   const [config, setConfig] = useState<DockerConfig>({
     baseImage: IMAGES[0],
@@ -256,6 +258,10 @@ export default function CreateDockerfile({
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   };
+
+  const applyDockerfile = () => {
+    refresh?.();
+  }
 
   return (
     <Dialog open={open_state} onOpenChange={set_open_state}>
@@ -554,7 +560,7 @@ export default function CreateDockerfile({
                 <Download className="mr-2 w-4 h-4" /> Download Dockerfile
               </Button>
               <Button variant="default" className="w-full">
-                <FileCheck className="mr-2 w-4 h-4" /> Apply Dockerfile
+                <FileCheck onClick={() => applyDockerfile()} className="mr-2 w-4 h-4" /> Apply Dockerfile
               </Button>
             </div>
           </div>

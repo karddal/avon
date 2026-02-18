@@ -59,6 +59,7 @@ type Props = {
   set_open_state: Dispatch<SetStateAction<boolean>>;
   courseworkGitlabId: string;
   courseworkId: string;
+  refresh?: () => void;
 };
 
 type GitLabTreeItem = {
@@ -73,7 +74,8 @@ export default function CreateTemplate({
   open_state,
   set_open_state,
   courseworkGitlabId,
-  courseworkId
+  courseworkId,
+  refresh
 }: Props) {
   const [activateStatus, setActiveStatus] = useState<number>(0);
   const [templatehttpURL, setTemplatehttpURL] = useState<string | null>(null);
@@ -94,7 +96,7 @@ export default function CreateTemplate({
 
     const loadAll = async () => {
       const response = await template_existance({
-        id: courseworkId,
+        cw_id: courseworkId,
       });
 
       if (!response.exists || !response.templateProjectId) {
@@ -124,6 +126,7 @@ export default function CreateTemplate({
       setTemplateSshURL(urlResponse.ssh);
       // setLoadingStatus(false);
       setActiveStatus(2);
+      refresh?.();
     };
 
     loadAll();
@@ -152,6 +155,7 @@ export default function CreateTemplate({
                   </p>
                   <ZipUploadPage
                     courseworkGitlabId={courseworkGitlabId}
+                    cw_id={courseworkId}
                     templateGitlabId={templateId}
                     setUploadStatus={setActiveStatus}
                     onRefresh={triggerRefresh}
@@ -172,6 +176,7 @@ export default function CreateTemplate({
                   <div className="flex flex-col-reverse w-full items-center gap-2">
                     <ActivateTemplateRepo
                       courseworkGitlabId={courseworkGitlabId}
+                      cw_id={courseworkId}
                       status={activateStatus}
                       onRefresh={triggerRefresh}
                       setStatus={setActiveStatus}

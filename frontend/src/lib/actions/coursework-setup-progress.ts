@@ -11,7 +11,7 @@ export async function cw_setup_progress(
 ): Promise<setupProgressResponse[]> {
   const token = await getRequestJWT();
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/coursework/progress?gitLabCwId=${cw_id}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/coursework/progress?courseworkId=${cw_id}`,
     {
       method: "GET",
       headers: {

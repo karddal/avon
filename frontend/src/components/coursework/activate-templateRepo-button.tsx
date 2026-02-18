@@ -10,6 +10,7 @@ import { activate_template_request } from "@/lib/actions/activate_template_proje
 
 interface ActivateTemplateRepo {
   courseworkGitlabId: string;
+  cw_id: string;
   status: number;
   setStatus: (status: number) => void;
   onRefresh: () => void;
@@ -17,6 +18,7 @@ interface ActivateTemplateRepo {
 
 export default function ActivateTemplateRepo({
   courseworkGitlabId,
+  cw_id,
   status,
   setStatus,
   onRefresh,
@@ -28,6 +30,7 @@ export default function ActivateTemplateRepo({
       setLoadingState(true);
       setStatus(1);
       const result = await activate_template_request({
+        cw_id:cw_id,
         courseworkGitLabId: courseworkGitlabId,
       });
       setLoadingState(false);

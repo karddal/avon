@@ -262,6 +262,7 @@ async def gl_template_urls(template_id):
     }
 
 async def gl_upload_zip(courseworkGitLabId: str, file: UploadFile):
+    MAX_ZIP_SIZE = 20 * 1024 * 1024
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
     
@@ -269,6 +270,8 @@ async def gl_upload_zip(courseworkGitLabId: str, file: UploadFile):
 
     templateId = activationResult["templateGitLabId"]
     
+    
+
     commit_actions = []
     contents = await file.read()
     zip_buffer = io.BytesIO(contents)

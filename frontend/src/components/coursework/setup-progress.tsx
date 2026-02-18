@@ -4,12 +4,12 @@ import { CheckCircle, Circle } from "lucide-react";
 import { cw_setup_progress } from "@/lib/actions/coursework-setup-progress";
 
 interface setupProgress {
-  gitLabCwId: string;
+  cw_id: string;
 }
 
 
-export default async function SetupPogress({gitLabCwId} : setupProgress) {
-  const steps = await cw_setup_progress(gitLabCwId)
+export default async function SetupPogress({cw_id} : setupProgress) {
+  const steps = await cw_setup_progress(cw_id)
   return (
     // Need to use reusable components for the buttons and sections, just place with names or smth
     // Add links to each one and actually do backend for it as well

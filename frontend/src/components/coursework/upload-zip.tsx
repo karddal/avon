@@ -20,6 +20,7 @@ import { upload_zip } from "@/lib/actions/upload_zip";
 
 interface UploadZip {
   courseworkGitlabId: string;
+  cw_id: string;
   templateGitlabId: number | null;
   uploadStatus: number;
   setUploadStatus: (uploadStatus: number) => void;
@@ -28,8 +29,10 @@ interface UploadZip {
 
 export default function ZipUploadPage({
   courseworkGitlabId,
+  cw_id,
   templateGitlabId,
   uploadStatus,
+  setUploadStatus,
   onRefresh,
 }: UploadZip) {
   const [file, setFile] = useState<File | null>(null);
@@ -49,6 +52,7 @@ export default function ZipUploadPage({
     if (!file) return;
 
     setUploading(true);
+    setUploadStatus(1);
     setStatus("Uploading ZIP...");
 
     const formData = new FormData();
@@ -56,6 +60,7 @@ export default function ZipUploadPage({
 
     try {
       const result = await upload_zip({
+        cw_id: cw_id,
         courseworkGitLabId: courseworkGitlabId,
         formData: formData,
       });
