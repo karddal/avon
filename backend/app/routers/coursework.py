@@ -216,8 +216,11 @@ async def upload_zip(cw_id: UUID, courseworkGitLabId: str,  session: session_dep
     try:
         response = await gl_upload_zip(courseworkGitLabId, file)
 
+    except HTTPException:
+        raise  # Just gitalbs error message
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail="Internal server error")
+
     
     coursework = session.get(Coursework,cw_id)
     if coursework is None:

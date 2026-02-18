@@ -268,8 +268,9 @@ async def check_file_safe(file: UploadFile):
     MAX_UNCOMPRESSED = 50 * 1024 * 1024
     MAX_FILES = 1000
 
-    if file.content_type != "application/zip":
-        raise HTTPException(status_code=400, detail="Invalid file type")
+    if not file.filename or not file.filename.lower().endswith(".zip"):
+        raise HTTPException(status_code=400, detail="File must be a .zip file")
+
 
     buffer = io.BytesIO()
     total_bytes_read = 0
@@ -282,7 +283,7 @@ async def check_file_safe(file: UploadFile):
         
         total_bytes_read += len(chunk)
         if total_bytes_read > MAX_COMPRESSED:
-            raise HTTPException(status_code=400, detail="Compressed file size exceeds limit")
+            raise HTTPException(status_code=453, detail="Compressed file size exceeds limit")
         buffer.write(chunk)
 
     buffer.seek(0)
@@ -291,10 +292,32 @@ async def check_file_safe(file: UploadFile):
     try:
         zip_ref = zipfile.ZipFile(buffer, "r")
     except zipfile.BadZipFile:
-        raise HTTPException(status_code=400, detail="Invalid ZIP file")
+        raise HTTPException(status_code=453, detail="Invalid ZIP file")
     
     # Validate contents of it (not too many files, not too large uncompressed, valid / correct paths as well)
+    total_uncompressed = 0
+    file_count = 0
 
+    for info in zip_ref.infolist():
+        # File count checking
+        file_count += 1
+        if file_count > MAX_FILES:
+            raise HTTPException(453, "Too many files in ZIP")
+        # Uncompressed size checking
+        total_uncompressed += info.file_size
+        if total_uncompressed > MAX_UNCOMPRESSED:
+            raise HTTPException(453, "Uncompressed size too large")
+
+        # Link validation
+        normalized = os.path.normpath(info.filename)
+        if normalized.startswith("..") or os.path.isabs(normalized):
+            raise HTTPException(453, "Invalid file path in ZIP")
+
+        # Reject symlinks
+        if (info.external_attr >> 16) & 0o120000 == 0o120000:
+            raise HTTPException(453, "Symlinks not allowed")
+
+    return zip_ref
 
 async def gl_upload_zip(courseworkGitLabId: str, file: UploadFile):
     MAX_ZIP_SIZE = 20 * 1024 * 1024
