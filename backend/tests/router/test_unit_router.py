@@ -1,15 +1,9 @@
 
 from uuid import uuid4
+from app.models.programme import Programme
 from sqlmodel import select
 from app.models.unit import Unit
-from tests.helpers.factories import create_coursework, create_lecturers, create_programme, create_students
-
-def create_unit(session, programme_id) -> Unit:
-    unit_id = uuid4()
-    unit = Unit(id=unit_id, name="Test Unit", description="Test description", unit_code="COMS20017", colour="abcdef", programme_id=programme_id,)
-    session.add(unit)
-    session.commit()
-    return unit
+from tests.helpers.factories import create_coursework, create_lecturers, create_programme, create_students, create_unit
 
 
 def valid_unit_payload(programme_id):
@@ -100,10 +94,11 @@ def test_invalid_programme_id(client, session):
 ## Tests to get unit details
 # Tests to get unit with valid details
 def test_get_valid_unit_details(client, session):
-    programme = create_programme(session)
-    unit = create_unit(session, programme.id)
+    unit = create_unit(session)
     response = client.get("/units/" + str(unit.id))
     data = response.json()
+
+    programme = session.get(Programme, unit.programme_id)
 
     assert response.status_code == 200
     assert data["name"] == "Test Unit"
@@ -130,8 +125,7 @@ def test_get_invalid_unit_details(client, session):
 
 # Tests to get the lecturers of the units
 def test_get_unit_lecturers(client, session):
-    programme = create_programme(session)
-    unit = create_unit(session, programme.id)
+    unit = create_unit(session)
     unit_enrollment = create_lecturers(session, unit.id)
     response = client.get("/units/"+str(unit.id)+"/lecturers/")
     data =  response.json()
@@ -141,8 +135,8 @@ def test_get_unit_lecturers(client, session):
 
 # Tests to update units
 def test_update_units(client, session):
-    programme = create_programme(session)
-    unit = create_unit(session, programme.id)
+    unit = create_unit(session)
+    programme = session.get(Programme, unit.programme_id)
     update_payload = valid_update_payload(str(programme.id))
     response = client.put("/units/"+str(unit.id), json=update_payload)
 
@@ -156,8 +150,7 @@ def test_update_units(client, session):
 
 # Tests to delete units
 def test_delete_unit(client, session):
-    programme = create_programme(session)
-    unit = create_unit(session, programme.id)
+    unit = create_unit(session)
     response = client.delete("/units/"+str(unit.id))
 
     assert response.status_code == 204
@@ -173,8 +166,7 @@ def test_delete_non_existent_unit(client, session):
 
 # Tests to get units taken by a student 
 def test_get_units_taken_by_student(client, session):
-    programme = create_programme(session)
-    unit = create_unit(session, programme.id)
+    unit = create_unit(session)
     unit_enrollment = create_students(session, unit.id)
     response = client.get("/units/u/"+str(unit_enrollment.user_id))
     data =  response.json()
@@ -183,8 +175,7 @@ def test_get_units_taken_by_student(client, session):
 
 # Tests to get courseworks from a unit
 def test_get_courseworks_in_a_unit(client, session):
-    programme = create_programme(session)
-    unit = create_unit(session, programme.id)
+    unit = create_unit(session)
     create_coursework(session, unit.id)
     response = client.get("/units/"+str(unit.id)+"/courseworks")
     data = response.json()
@@ -193,8 +184,7 @@ def test_get_courseworks_in_a_unit(client, session):
 
 # Tests to get all units
 def test_get_all_units(client, session):
-    programme = create_programme(session)
-    unit = create_unit(session, programme.id)
+    unit = create_unit(session)
 
     response = client.get("/units/")
     data = response.json()

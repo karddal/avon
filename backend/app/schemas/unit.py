@@ -61,7 +61,6 @@ class UnitCreate(BaseModel):
     colour: Colour
     programme_id: uuid.UUID
 
-
 class UnitUpdate(BaseModel):
     name: Name
     description: str
@@ -107,3 +106,8 @@ class CourseworkReadWithoutUnit(BaseModel):
 
 class CourseworkAll(BaseModel):
     courseworks: List[CourseworkReadWithoutUnit]
+
+class UnitEventRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: uuid.UUID
+    name: Name

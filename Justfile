@@ -78,5 +78,8 @@ sync:
     just fe sync
     just be sync
 
+seed-db:
+    just fe run db:seed
+
 serve-doc:
     mdbook serve --open

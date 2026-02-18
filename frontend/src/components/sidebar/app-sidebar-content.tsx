@@ -1,5 +1,6 @@
 import {
   BookCheck,
+  Calendar,
   ChartLine,
   Layers,
   LayoutDashboard,
@@ -86,7 +87,13 @@ const adminItems = [
     icon: BookUser,
     bottom: false,
 
-  }
+  },
+  {
+    title: "Calendar",
+    url: "/calendar",
+    icon: Calendar,
+    bottom: false,
+  },
 ];
 
 const lecturerItems = [
@@ -120,6 +127,12 @@ const lecturerItems = [
     icon: NotepadText,
     bottom: false,
   },
+  {
+    title: "Calendar",
+    url: "/calendar",
+    icon: Calendar,
+    bottom: false,
+  },
 ];
 const studentItems = [
   {
@@ -132,6 +145,18 @@ const studentItems = [
     title: "Coursework",
     url: "/coursework",
     icon: NotepadText,
+    bottom: false,
+  },
+  {
+    title: "Settings",
+    url: "#",
+    icon: Settings,
+    bottom: true,
+  },
+  {
+    title: "Calendar",
+    url: "/calendar",
+    icon: Calendar,
     bottom: false,
   },
 ];
@@ -212,7 +237,7 @@ export default async function AppSidebarContent() {
                   asChild
                   key={"Settings"}
                   className={
-                    "w-full flex flex-row items-center w-full h-full py-2 gap-2 mx-1"
+                    "w-full flex flex-row items-center h-full py-2 gap-2 mx-1"
                   }
                 >
                   <DialogTrigger className="h-full flex flex-row items-center">

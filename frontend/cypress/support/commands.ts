@@ -36,20 +36,23 @@
 //   }
 // }
 
-Cypress.Commands.add("login", (username: string, password: string) => {
-  cy.session(
-    username,
-    () => {
-      cy.visit("/login");
-      cy.get("#email").type(username);
-      cy.get("#password").type(password);
+Cypress.Commands.add(
+  "login",
+  (username: string, password: string, student: boolean) => {
+    cy.visit("/login");
+    cy.get("#email").type(username, { force: true });
+    cy.get("#password").type(password, { force: true });
+    cy.get("button[type=submit]").click({ force: true });
+    if (student) {
+      cy.url().should("include", "/units");
+    } else {
+      cy.url().should("include", "/dashboard");
+    }
+    // cy.get("span").should("contain", "One");
+    cy.getCookie("__Secure-better-auth.session_token").should("exist");
+  },
+);
 
-      cy.get("button[type=submit]").click();
-    },
-    {
-      validate: () => {
-        cy.getCookie("__Secure-better-auth.session_token").should("exist");
-      },
-    },
-  );
+Cypress.Commands.add("getByCy", (value: string) => {
+  return cy.get(`[data-cy="${value}"]`);
 });

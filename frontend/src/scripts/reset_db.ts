@@ -1,13 +1,6 @@
 import { readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 
-// interface User {
-//   name: string;
-//   email: string;
-//   password: string;
-//   role: string;
-// }
-
 async function seed() {
   console.log(process.env);
 

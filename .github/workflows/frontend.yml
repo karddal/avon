@@ -52,6 +52,9 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 25
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
       - name: Cypress run
         uses: cypress-io/github-action@v6
         env:
@@ -59,7 +62,4 @@ jobs:
         with:
           working-directory: ./frontend
           env: NODE_ENV=test
-          start: |
-            npm run start:backend
-            npm run dev
-          wait-on: "http://localhost:8000/check/health"
+          command: npm run test

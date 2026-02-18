@@ -1,14 +1,21 @@
 from sqlalchemy.orm import selectinload
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
+from sqlalchemy import exists, and_
+
+from app.core.helpers.gitlab import gl_create_coursework
+from app.core.security import get_current_user_with_role
 from app.db.session import get_session
-from typing import Annotated
+from typing import Annotated, Optional
 from uuid import UUID
+from app.core.settings import settings
 
 from app.models.coursework import Coursework
 from app.models.unit import Unit, UnitWithCourseworks
-from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkUpdate, CourseworkDelete
-from app.schemas.coursework import CourseworkUpdateFormData
+from app.models.unit_enrollment import UnitEnrollment
+from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkUpdate, CourseworkDelete, CourseworkEventRead, CourseworkUpdateFormData
+from app.schemas.security import CurrentUser
+import datetime
 
 router = APIRouter(prefix = "/coursework", tags=["coursework"])
 session_dependency = Annotated[Session, Depends(get_session)]
@@ -16,7 +23,7 @@ session_dependency = Annotated[Session, Depends(get_session)]
 
 @router.post('/create', response_model = CourseworkRead, status_code=status.HTTP_201_CREATED)
 async def create_coursework(coursework: CourseworkCreate, session: session_dependency):
-    courseworkAlreadyExists = session.exec(select(Coursework).where((Coursework.unit_id == coursework.unit_id) & (Coursework.name == coursework.name))).first()
+    courseworkAlreadyExists = session.exec(select(Coursework).where((Coursework.unit_id == coursework.unit_id) & (Coursework.name == coursework.name) & (Coursework.due_date == coursework.due_date))).first()
    
     if courseworkAlreadyExists:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Coursework already made that belongs to the same unit and has the same name")
@@ -26,8 +33,19 @@ async def create_coursework(coursework: CourseworkCreate, session: session_depen
         if not unit_exists:
             raise HTTPException(status_code=404, detail='Corresponding unit not found')
 
-    db_coursework = Coursework(name=coursework.name,description=coursework.description,unit_id=coursework.unit_id, due_date=coursework.due_date, colour=coursework.colour)
-    print("data base",db_coursework.due_date)
+    try:
+        if settings.testing_mode:
+            gl_data = {"gitlabGroupId": 12345678}
+        else:
+            gl_data = await gl_create_coursework(coursework.name, unit_exists.gitlab_id)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Database failed. GitLab group rolled back."
+    )
+
+    db_coursework = Coursework(name=coursework.name,description=coursework.description,unit_id=coursework.unit_id, due_date=coursework.due_date, colour=coursework.colour, gitlab_id=gl_data["gitlabGroupId"])
+
     session.add(db_coursework)
     session.commit()
     session.refresh(db_coursework)
@@ -52,6 +70,56 @@ async def all_courseworks(session: session_dependency):
     ]
 
     return results
+
+@router.get("/events", response_model=list[CourseworkEventRead])
+async def list_coursework_events(
+        session: session_dependency,
+        from_: Optional[datetime.datetime] = None,
+        to: Optional[datetime.datetime] = None,
+        unit_ids: Optional[list[UUID]] = None,
+        current_user: CurrentUser = Depends(get_current_user_with_role)
+        ):
+    print("from_:", from_, type(from_))
+    print("to:", to, type(to))
+    statement = (select(Coursework, Unit)
+                 .join(Unit, Unit.id == Coursework.unit_id))
+
+    if current_user.role != "admin":
+        statement = statement.where(
+            exists().where(
+                and_(
+                    UnitEnrollment.unit_id == Coursework.unit_id,
+                    UnitEnrollment.user_id == current_user.user_id,
+                )
+            )
+        )
+
+    # TODO: currently useless code, I thought that we might need a function that can hide some coursework to student
+    # enrollment_type = Optional[Literal["student", "lecturer"]] = None
+    # if enrollment_type:
+    #     statement = statement.where(UnitEnrollment.type == enrollment_type)
+
+    if unit_ids:
+        statement = statement.where(Coursework.unit_id.in_(unit_ids))
+    if from_:
+        statement = statement.where(Coursework.due_date >= from_)
+    if to:
+        statement = statement.where(Coursework.due_date < to)
+
+    rows = session.exec(statement).all()
+
+    return [
+        {
+            "id": coursework.id,
+            "name": coursework.name,
+            "due_date": coursework.due_date,
+            "unit_id": str(unit.id),
+            "unit_name": unit.name,
+            "colour": coursework.colour,
+        }
+        for coursework, unit in rows
+    ]
+
 @router.get('/{id}/update_form_data', response_model=CourseworkUpdateFormData)
 async def get_coursework_update_form_data(id: UUID, session: session_dependency):
     coursework = session.get(Coursework, id)

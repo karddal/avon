@@ -73,6 +73,7 @@ export default function Unit({
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <Button
+                id="unit-dropdown-button"
                 variant="outline"
                 size="icon"
                 onClick={(e) => {

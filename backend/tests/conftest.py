@@ -11,6 +11,7 @@ os.environ["CORS_ORIGIN"] = "http://testserver"
 import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import SQLModel, Session, create_engine
+from unittest.mock import patch, AsyncMock
 
 from app.main import app
 from app.db.session import get_session
@@ -49,4 +50,38 @@ def client(session):
 
     app.dependency_overrides.clear() # Clean up after it's finished
 
+@pytest.fixture(scope="function", autouse=True)
+def mock_gitlab_coursework():
 
+    success_response = {
+        "success": True,
+        "gitlabGroupId": 123456,
+        "webUrl": "https://gitlab.com/test-group",
+        "path": "test-path"
+    }
+
+    with patch(
+        "app.routers.programme.gl_create_programme",
+        new_callable=AsyncMock
+    ) as mock_pr, patch(
+        "app.routers.unit.gl_create_unit",
+        new_callable=AsyncMock
+    ) as mock_un, patch(
+        "app.routers.coursework.gl_create_coursework",
+        new_callable=AsyncMock
+    ) as mock_cw:
+        mock_cw.return_value = success_response
+        mock_pr.return_value = success_response
+        mock_un.return_value = success_response
+        yield {
+            "programme": mock_pr,
+            "unit": mock_un,
+            "coursework": mock_cw
+        }
+
+@pytest.fixture(scope="function")
+def auth_override():
+    from app.core.security import get_current_user
+    app.dependency_overrides[get_current_user] = lambda: "test-user"
+    yield "test-user"
+    app.dependency_overrides.pop(get_current_user, None)

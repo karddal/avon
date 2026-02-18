@@ -1,8 +1,10 @@
 from typing import Annotated
+from app.core.helpers.gitlab import gl_create_programme
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.db.session import get_session
 from sqlmodel import Session, select
 from uuid import UUID
+from app.core.settings import settings
 
 from app.models.programme import Programme
 from app.schemas.programme import ProgrammeCreate, ProgrammeRead, ProgrammeDelete
@@ -15,15 +17,27 @@ from app.schemas.programme import ProgrammeAll
 router = APIRouter(prefix="/programmes", tags=["programmes"])
 session_dependency = Annotated[Session, Depends(get_session)]
 
-
 @router.post('/create', response_model = ProgrammeRead, status_code=status.HTTP_201_CREATED)
 async def create_programme(programme: ProgrammeCreate, session: session_dependency):
+    
     programmeAlreadyExists = session.exec(select(Programme).where((Programme.name == programme.name))).first()
 
     if programmeAlreadyExists:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Programme already exists')
+    
+    try:
+        if settings.testing_mode:
+            gl_data = {"gitlabGroupId": 12345678}
+        else:
+            gl_data = await gl_create_programme(programme.name)
+        print(gl_data)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail="Database failed. GitLab group rolled back."
+    )
 
-    db_programme = Programme(name=programme.name, start_date=programme.start_date, end_date=programme.end_date)
+    db_programme = Programme(name=programme.name, start_date=programme.start_date, end_date=programme.end_date, gitlab_id=gl_data["gitlabGroupId"])
 
     session.add(db_programme)
     session.commit()
