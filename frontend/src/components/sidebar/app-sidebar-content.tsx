@@ -9,6 +9,7 @@ import {
   SwatchBook,
   User,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import SettingsContents from "@/components/settings/settings-contents";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { SidebarLink } from "@/components/sidebar/sidebar-link";
 import { Kbd, KbdGroup } from "@/components/ui/kbd";
 import { requireSession } from "@/lib/auth-utils";
 import LogoutButton from "../logout-button";
@@ -34,6 +36,7 @@ import {
 import {
   SidebarContent,
   SidebarGroup,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -123,59 +126,75 @@ const studentItems = [
     icon: NotepadText,
     bottom: false,
   },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-    bottom: true,
-  },
 ];
 
-export default async function AppSideBarContent() {
+export default async function AppSidebarContent() {
   const s = await requireSession();
-  let type = s.user.role;
-  if (!type) {
-    type = "user";
-  }
+  const type = s.user.role || "user";
+
   const items =
     type === "admin"
       ? adminItems
       : type === "lecturer"
         ? lecturerItems
         : studentItems;
+
   return (
     <SidebarContent>
+      <SidebarHeader className="p-0">
+        <SidebarMenu>
+          <SidebarMenuItem className="md:py-0">
+            <SidebarMenuButton
+              className="size-25 w-full justify-center border-b"
+              asChild
+            >
+              <Link href={type === "student" ? "/units" : "/dashboard"}>
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_CDN_PATH}/images/avon-black-optimized.svg`}
+                  alt="logo"
+                  width={100}
+                  height={100}
+                  className="dark:hidden p-4 md:p-0"
+                />
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_CDN_PATH}/images/avon-white-optimized.svg`}
+                  alt="logo"
+                  width={100}
+                  height={100}
+                  className="hidden dark:block p-4 md:p-0"
+                />
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
+
       <SidebarGroup className="h-full p-0">
         <SidebarMenu className="flex h-full flex-col md:justify-between">
           <div className="flex flex-col py-2">
-            <p
-              className={
-                "w-full text-center text-muted-foreground self-center text-sm pb-2"
-              }
-            >
+            <div className="w-full text-center text-muted-foreground text-sm pb-2">
               Use{" "}
               <KbdGroup>
                 <Kbd>Ctrl</Kbd>+<Kbd>K</Kbd>
               </KbdGroup>{" "}
               to jump.
-            </p>
+            </div>
+
             {items
               .filter((item) => !item.bottom)
               .map((item) => (
-                <SidebarMenuItem key={item.title} className="w-full">
-                  <SidebarMenuButton className="h-full p-2" asChild>
-                    <Link href={item.url} className="flex flex-row">
-                      <item.icon strokeWidth={1} className="size-8!" />
-                      <span className="text-accent-foreground">
+                <SidebarMenuItem key={item.title} className="w-full h-full p-0">
+                  <SidebarMenuButton asChild className="h-full p-0">
+                    <SidebarLink url={item.url}>
+                      <item.icon strokeWidth={1} className="size-8! mx-2" />
+                      <span className="text-accent-foreground text-lg">
                         {item.title}
                       </span>
-                    </Link>
+                    </SidebarLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
           </div>
-
-          {/* bottom part of sidebar */}
           <Dialog>
             <div className="flex flex-col border-t">
               <SidebarMenuButton asChild key={"Settings"} className={"w-full"}>
@@ -197,36 +216,36 @@ export default async function AppSideBarContent() {
               </DialogContent>
             </div>
           </Dialog>
-        </SidebarMenu>
-        <SidebarMenuItem key={"Account"} className="w-full">
-          <SidebarMenuButton className="h-full" asChild>
-            <DropdownMenu>
-              <DropdownMenuTrigger className="w-full">
-                <Link
-                  href="#"
-                  className="flex flex-row w-full items-start gap-2 h-full hover:bg-accent-foreground/10 p-2"
-                >
-                  <User strokeWidth={1} className="size-10!" />
-                  <div className={"flex flex-col w-full items-start"}>
-                    <span className="text-accent-foreground text-sm">
-                      {s.user.name}
-                    </span>
-                    <span className="text-muted-foreground text-sm">
-                      {type.charAt(0).toUpperCase() + type.slice(1)}
-                    </span>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <SidebarMenuItem key={"Account"} className="w-full">
+                <SidebarMenuButton className="h-full w-full p-0! hover:bg-accent">
+                  <div className="flex flex-row items-center w-full h-full py-2 gap-2 mx-1">
+                    <User strokeWidth={1} className="size-8! mx-2" />
+                    <div className="flex flex-col items-start overflow-hidden">
+                      <span className="text-accent-foreground text-sm font-medium truncate w-full">
+                        {s.user.name}
+                      </span>
+                      <span className="text-muted-foreground text-xs capitalize">
+                        {type}
+                      </span>
+                    </div>
                   </div>
-                  {/* <ArrowUpDown strokeWidth={2} className={"self-center"} /> */}
-                </Link>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent side="bottom" align="start">
-                <DropdownMenuItem>{s.user.name}</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <LogoutButton />
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarGroup>
-    </SidebarContent>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent side="top" align="center" className="w-56">
+              <DropdownMenuItem className="font-normal">
+                {s.user.name}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <LogoutButton />
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </SidebarMenu>
+    </SidebarGroup>
+    </SidebarContent >
   );
 }

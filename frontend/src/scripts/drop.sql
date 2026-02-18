@@ -16,4 +16,4 @@ drop table if exists user;
 
 drop table if exists verification;
 
-drop table if exists notification
+drop table if exists notification;

@@ -108,8 +108,6 @@ export const ProgForm = () => {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // do something with values, submit here
-
     setSubmitState(true);
     const req = {
       name: values.name,

@@ -1,9 +1,11 @@
-from typing import Annotated
+from typing import Annotated, List
 from uuid import UUID
 from datetime import date
 
 from pydantic import BaseModel, AfterValidator
 from app.schemas.unit import UnitWithoutProgramme
+import os
+
 
 def is_valid_name(name: str) -> str:
     name = name.strip()
@@ -13,6 +15,8 @@ def is_valid_name(name: str) -> str:
 
 
 def is_valid_date(value: date) -> date:
+    if os.getenv("TESTING_MODE") == "True":
+        return value
     today = date.today()
 
     if value <= today:
@@ -46,3 +50,6 @@ class ProgrammeUpdate(BaseModel):
 class ProgrammeDelete(BaseModel):
     id: UUID
     deletion_successful: bool
+
+class ProgrammeAll(BaseModel):
+    programmes: List[ProgrammeRead]

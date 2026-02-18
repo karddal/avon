@@ -66,6 +66,7 @@ export default function AddMember({ unit_id }: { unit_id: string }) {
       toast.error("Adding failed! ");
     }
   }
+
   const loadDisabled = useCallback(async () => {
     try {
       setDisabledUsers([]);

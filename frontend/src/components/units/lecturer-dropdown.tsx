@@ -50,7 +50,10 @@ export default function LecturerDropdown({
   return (
     <div className="aspect-square">
       <DropdownMenu>
-        <DropdownMenuTrigger className="border hover:bg-accent hover:transition p-2">
+        <DropdownMenuTrigger
+          id="unit-dropdown"
+          className="border hover:bg-accent hover:transition p-2"
+        >
           <Menu size={32} />
         </DropdownMenuTrigger>
         <DropdownMenuContent className="flex flex-col">
