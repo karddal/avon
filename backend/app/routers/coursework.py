@@ -23,7 +23,7 @@ session_dependency = Annotated[Session, Depends(get_session)]
 
 @router.post('/create', response_model = CourseworkRead, status_code=status.HTTP_201_CREATED)
 async def create_coursework(coursework: CourseworkCreate, session: session_dependency):
-    courseworkAlreadyExists = session.exec(select(Coursework).where((Coursework.unit_id == coursework.unit_id) & (Coursework.name == coursework.name))).first()
+    courseworkAlreadyExists = session.exec(select(Coursework).where((Coursework.unit_id == coursework.unit_id) & (Coursework.name == coursework.name) & (Coursework.due_date == coursework.due_date))).first()
    
     if courseworkAlreadyExists:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Coursework already made that belongs to the same unit and has the same name")
@@ -35,7 +35,6 @@ async def create_coursework(coursework: CourseworkCreate, session: session_depen
 
     try:
         if settings.testing_mode:
-            # ignore gitlab if in testing mode, set gitlab id to dummy
             gl_data = {"gitlabGroupId": 12345678}
         else:
             gl_data = await gl_create_coursework(coursework.name, unit_exists.gitlab_id)
@@ -90,7 +89,7 @@ async def list_coursework_events(
             exists().where(
                 and_(
                     UnitEnrollment.unit_id == Coursework.unit_id,
-                    UnitEnrollment.user_id == current_user.id,
+                    UnitEnrollment.user_id == current_user.user_id,
                 )
             )
         )

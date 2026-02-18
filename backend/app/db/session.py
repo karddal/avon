@@ -50,5 +50,4 @@ async def lifespan(app: FastAPI):
     create_db_and_tables()
     print("yo yo")
     print("beep beep")
-    print("DATABASE_URL:", db_url)
     yield

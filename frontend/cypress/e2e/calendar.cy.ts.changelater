@@ -45,7 +45,7 @@ describe("Calendar e2e test", () => {
 
     cy.clock(Date.now(), ["Date"]);
 
-    cy.dbPrepare();
+      cy.exec("npm run db:seed")
 
     cy.intercept("GET", "/api/calendar/units", (req) => {
       unitsCalls.push({ url: req.url, at: Date.now() });

@@ -58,15 +58,17 @@ def enroll_unit_batch(payload: UnitEnrollmentBatchCreate, session: session_depen
 
     # find existing ones in bulk
     statement = select(UnitEnrollment.user_id).where(
-        UnitEnrollment.unit_id == payload.unit_id,
-        UnitEnrollment.user_id.in_(payload.user_ids)
+        UnitEnrollment.unit_id == payload.unit_id
     )
-    existing_user_ids = set(session.exec(statement).all())
+
+    current_user_ids = session.exec(statement).all()
+    print(payload.unit_id, current_user_ids)
+    existing_user_ids = set(payload.user_ids) & set(current_user_ids)
 
     if existing_user_ids:
         raise HTTPException(
             status_code=409, 
-            detail=f"Users {list(existing_user_ids)} already enrolled"
+            detail="Some users are already enrolled!"
         )
 
     # create new ones in bulk

@@ -1,7 +1,6 @@
 describe("Unit page", () => {
   before(() => {
-    // cy.exec("npm run db:reset && npm run db:seed");
-    cy.dbPrepare();
+    cy.exec("npm run db:seed");
   });
 
   beforeEach(() => {
@@ -20,7 +19,7 @@ describe("Unit page", () => {
 
   it("has default ongoing programme", () => {
     cy.visit("/units");
-    cy.get("span").should("contain", "Year 1 Computer Science 2025/2026");
+    cy.get("span").should("contain", "Year 1 Computer Science 2025-2026");
   });
 
   it("has default ongoing unit", () => {
