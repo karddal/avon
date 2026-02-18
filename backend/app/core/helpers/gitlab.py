@@ -147,7 +147,7 @@ async def gl_create_coursework(name, unit_id):
         "gitlabGroupId": data.get("id"),
         "webUrl": data.get("web_url"),
         "path": data.get("path"),
-    }
+    }    
 
 async def gl_activate_template_project(coursework_id):
     if not TOKEN or not BASE_URL:
@@ -261,6 +261,41 @@ async def gl_template_urls(template_id):
         "ssh": data["ssh_url_to_repo"],
     }
 
+
+# All file stuff is done in memory, as automatically delted after use, and we set limits on file size anyway
+async def check_file_safe(file: UploadFile):
+    MAX_COMPRESSED = 20 * 1024 * 1024
+    MAX_UNCOMPRESSED = 50 * 1024 * 1024
+    MAX_FILES = 1000
+
+    if file.content_type != "application/zip":
+        raise HTTPException(status_code=400, detail="Invalid file type")
+
+    buffer = io.BytesIO()
+    total_bytes_read = 0
+
+    # To check if too large (zip bomb protection)
+    while True:
+        chunk = await file.read(1024 * 1024)  # Read in 1MB chunks
+        if not chunk:
+            break
+        
+        total_bytes_read += len(chunk)
+        if total_bytes_read > MAX_COMPRESSED:
+            raise HTTPException(status_code=400, detail="Compressed file size exceeds limit")
+        buffer.write(chunk)
+
+    buffer.seek(0)
+
+    # Try opne it safely
+    try:
+        zip_ref = zipfile.ZipFile(buffer, "r")
+    except zipfile.BadZipFile:
+        raise HTTPException(status_code=400, detail="Invalid ZIP file")
+    
+    # Validate contents of it (not too many files, not too large uncompressed, valid / correct paths as well)
+
+
 async def gl_upload_zip(courseworkGitLabId: str, file: UploadFile):
     MAX_ZIP_SIZE = 20 * 1024 * 1024
     if not TOKEN or not BASE_URL:
@@ -270,59 +305,55 @@ async def gl_upload_zip(courseworkGitLabId: str, file: UploadFile):
 
     templateId = activationResult["templateGitLabId"]
     
-    
-
     commit_actions = []
-    contents = await file.read()
-    zip_buffer = io.BytesIO(contents)
+    
+    zip_ref = await check_file_safe(file)
 
-    with zipfile.ZipFile(zip_buffer, "r") as zip_ref:
+    file_list = zip_ref.namelist()
 
-        file_list = zip_ref.namelist()
+    file_entries = []
+    dir_entries = []
+    for temp in file_list:
+        if (temp.endswith("/")):
+            dir_entries.append(temp)
+        else:
+            file_entries.append(temp)
 
-        file_entries = []
-        dir_entries = []
-        for temp in file_list:
-            if (temp.endswith("/")):
-                dir_entries.append(temp)
-            else:
-                file_entries.append(temp)
+    dir_with_files = set() # O(1) lookup
 
-        dir_with_files = set() # O(1) lookup
+    # Do file entries first
+    for filename in file_entries:
 
-        # Do file entries first
-        for filename in file_entries:
+        file_bytes = zip_ref.read(filename)
 
-            file_bytes = zip_ref.read(filename)
+        encoded_content = base64.b64encode(file_bytes).decode("utf-8")
 
-            encoded_content = base64.b64encode(file_bytes).decode("utf-8")
+        commit_actions.append({
+            "action": "create",
+            "file_path": filename,
+            "content": encoded_content,
+            "encoding": "base64",
+        })
 
-            commit_actions.append({
-                "action": "create",
-                "file_path": filename,
-                "content": encoded_content,
-                "encoding": "base64",
-            })
+        parent_dir = PurePosixPath(filename).parent
+        while str(parent_dir) != ".":
+            dir_with_files.add(str(parent_dir) + "/")
+            parent_dir = parent_dir.parent
 
-            parent_dir = PurePosixPath(filename).parent
-            while str(parent_dir) != ".":
-                dir_with_files.add(str(parent_dir) + "/")
-                parent_dir = parent_dir.parent
+    empty_dirs = []
+    for directory in dir_entries:
+        if directory not in dir_with_files:
+            empty_dirs.append(directory)
 
-        empty_dirs = []
-        for directory in dir_entries:
-            if directory not in dir_with_files:
-                empty_dirs.append(directory)
+    for directory in empty_dirs:
+        gitkeep_path = directory + ".gitkeep"
 
-        for directory in empty_dirs:
-            gitkeep_path = directory + ".gitkeep"
-
-            commit_actions.append({
-                "action": "create",
-                "file_path": gitkeep_path,
-                "content": base64.b64encode(b"").decode("utf-8"),
-                "encoding": "base64",
-            })
+        commit_actions.append({
+            "action": "create",
+            "file_path": gitkeep_path,
+            "content": base64.b64encode(b"").decode("utf-8"),
+            "encoding": "base64",
+        })
 
     async with httpx.AsyncClient() as client:
         response = await client.post(
