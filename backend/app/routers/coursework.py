@@ -5,14 +5,22 @@ from app.core.helpers.gitlab import gl_create_coursework, gl_activate_template_p
 from sqlalchemy.orm import selectinload
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from sqlmodel import Session, select
+from sqlalchemy import exists, and_
+
+from app.core.helpers.gitlab import gl_create_coursework
+from app.core.security import get_current_user_with_role
 from app.db.session import get_session
-from typing import Annotated
+from typing import Annotated, Optional
 from uuid import UUID
 from app.core.settings import settings
 
 from app.models.coursework import Coursework
 from app.models.unit import Unit, UnitWithCourseworks
 from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkSetupProgress, CourseworkTemplateUploadZip, CourseworkUpdate, CourseworkDelete, CourseworkTemplateExists, CourseworkTemplateActivate, CourseworkTemplateFile, CourseworkTemplateUrl, CourseworkUpdateFormData
+from app.models.unit_enrollment import UnitEnrollment
+from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkUpdate, CourseworkDelete, CourseworkEventRead, CourseworkUpdateFormData
+from app.schemas.security import CurrentUser
+import datetime
 
 router = APIRouter(prefix = "/coursework", tags=["coursework"])
 session_dependency = Annotated[Session, Depends(get_session)]
@@ -29,7 +37,7 @@ async def create_coursework(coursework: CourseworkCreate, session: session_depen
         unit_exists = session.exec(select(Unit).where(Unit.id == coursework.unit_id)).first()
         if not unit_exists:
             raise HTTPException(status_code=404, detail='Corresponding unit not found')
-        
+
     try:
         if settings.testing_mode:
             gl_data = {"gitlabGroupId": 12345678}
@@ -38,12 +46,12 @@ async def create_coursework(coursework: CourseworkCreate, session: session_depen
             print(gl_data)
     except Exception:
         raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY, 
+            status_code=status.HTTP_502_BAD_GATEWAY,
             detail="Database failed. GitLab group rolled back."
     )
 
     db_coursework = Coursework(name=coursework.name,description=coursework.description,unit_id=coursework.unit_id, due_date=coursework.due_date, colour=coursework.colour, gitlab_id=gl_data["gitlabGroupId"])
-    
+
     session.add(db_coursework)
     session.commit()
     session.refresh(db_coursework)
@@ -88,6 +96,54 @@ async def setup_progress(courseworkId: UUID, session: session_dependency):
               {"title": "Provision Repositories", "completed" : False},
               ]
     return result
+@router.get("/events", response_model=list[CourseworkEventRead])
+async def list_coursework_events(
+        session: session_dependency,
+        from_: Optional[datetime.datetime] = None,
+        to: Optional[datetime.datetime] = None,
+        unit_ids: Optional[list[UUID]] = None,
+        current_user: CurrentUser = Depends(get_current_user_with_role)
+        ):
+    print("from_:", from_, type(from_))
+    print("to:", to, type(to))
+    statement = (select(Coursework, Unit)
+                 .join(Unit, Unit.id == Coursework.unit_id))
+
+    if current_user.role != "admin":
+        statement = statement.where(
+            exists().where(
+                and_(
+                    UnitEnrollment.unit_id == Coursework.unit_id,
+                    UnitEnrollment.user_id == current_user.user_id,
+                )
+            )
+        )
+
+    # TODO: currently useless code, I thought that we might need a function that can hide some coursework to student
+    # enrollment_type = Optional[Literal["student", "lecturer"]] = None
+    # if enrollment_type:
+    #     statement = statement.where(UnitEnrollment.type == enrollment_type)
+
+    if unit_ids:
+        statement = statement.where(Coursework.unit_id.in_(unit_ids))
+    if from_:
+        statement = statement.where(Coursework.due_date >= from_)
+    if to:
+        statement = statement.where(Coursework.due_date < to)
+
+    rows = session.exec(statement).all()
+
+    return [
+        {
+            "id": coursework.id,
+            "name": coursework.name,
+            "due_date": coursework.due_date,
+            "unit_id": str(unit.id),
+            "unit_name": unit.name,
+            "colour": coursework.colour,
+        }
+        for coursework, unit in rows
+    ]
 
 @router.get('/{id}/update_form_data', response_model=CourseworkUpdateFormData)
 async def get_coursework_update_form_data(id: UUID, session: session_dependency):

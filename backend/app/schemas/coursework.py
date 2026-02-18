@@ -107,3 +107,11 @@ class CourseworkTemplateUploadZip(BaseModel):
 class CourseworkSetupProgress(BaseModel):
     title: str
     completed: bool
+
+class CourseworkEventRead(BaseModel):
+    id: UUID
+    name: Name
+    due_date: datetime.datetime
+    unit_id: UUID
+    unit_name: Name
+    colour: Colour | None = None

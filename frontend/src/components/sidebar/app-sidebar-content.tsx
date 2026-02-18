@@ -1,5 +1,6 @@
 import {
   BookCheck,
+  Calendar,
   ChartLine,
   Layers,
   LayoutDashboard,
@@ -73,6 +74,12 @@ const adminItems = [
     icon: Layers,
     bottom: false,
   },
+  {
+    title: "Calendar",
+    url: "/calendar",
+    icon: Calendar,
+    bottom: false,
+  },
 ];
 
 const lecturerItems = [
@@ -112,6 +119,12 @@ const lecturerItems = [
     icon: NotepadText,
     bottom: false,
   },
+  {
+    title: "Calendar",
+    url: "/calendar",
+    icon: Calendar,
+    bottom: false,
+  },
 ];
 const studentItems = [
   {
@@ -131,6 +144,12 @@ const studentItems = [
     url: "#",
     icon: Settings,
     bottom: true,
+  },
+  {
+    title: "Calendar",
+    url: "/calendar",
+    icon: Calendar,
+    bottom: false,
   },
 ];
 
