@@ -87,7 +87,9 @@ CREATE TABLE coursework (
                             gitlab_id VARCHAR NOT NULL,
                             template_id INTEGER,
                             PRIMARY KEY (id),
-                            FOREIGN KEY(unit_id) REFERENCES unit (id) ON DELETE CASCADE
+                            CONSTRAINT unit_id
+                                FOREIGN KEY (unit_id) REFERENCES unit (id)
+                                ON DELETE CASCADE
 );
 
 CREATE INDEX ix_coursework_name ON coursework (name);
@@ -99,9 +101,11 @@ CREATE TABLE courseworkenrollment (
     coursework_id UUID NOT NULL,
     individual_due_date TIMESTAMP NOT NULL,
     gl_repo_id VARCHAR NOT NULL,
-    FOREIGN KEY(coursework_id) REFERENCES coursework(id) ON DELETE CASCADE,
-    PRIMARY KEY(student_id, coursework_id),
-)
+    CONSTRAINT coursework_id
+        FOREIGN KEY(coursework_id) REFERENCES coursework (id)
+        ON DELETE CASCADE,
+    PRIMARY KEY(student_id, coursework_id)
+);
 
 INSERT INTO "user" (id,name,email,"emailVerified",image,"createdAt","updatedAt","role",banned,"banReason","banExpires") VALUES
                                                                                                                   ('8AteGbdJyVodlUBwQGSxcN7h58aKNjRe','Foo Bar','admin@bris.ac.uk',0,NULL,'2026-01-03T19:22:57.491Z','2026-01-03T19:22:57.491Z','admin',0,NULL,NULL),

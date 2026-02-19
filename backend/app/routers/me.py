@@ -12,6 +12,7 @@ from starlette import status
 from app.core.security import get_current_user, get_current_user_with_role
 from app.db.session import get_session
 from app.models.notification import Notification
+from app.models.coursework_enrollment import CourseworkEnrollment
 from app.models.programme import Programme
 from app.models.unit import Unit, UnitWithCourseworks
 from app.models.unit_enrollment import UnitEnrollment

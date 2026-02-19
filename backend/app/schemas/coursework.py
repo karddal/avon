@@ -1,10 +1,9 @@
 from typing import Annotated, Literal
 import os
-
-import datetime
-from pydantic import BaseModel, AfterValidator, ConfigDict
-from uuid import UUID
 import re
+from uuid import UUID
+
+from pydantic import AfterValidator, BaseModel
 
 
 def is_valid_name(name: str) -> str:
@@ -97,6 +96,17 @@ class CourseworkUpdate(BaseModel):
 class CourseworkDelete(BaseModel):
     id: UUID
     deletion_successful: bool
+
+
+class CourseworkStudent(BaseModel):
+    id: str
+    individual_due_date: datetime.datetime
+    gl_repo_id: str
+
+
+class CourseworkStudents(BaseModel):
+    id: UUID
+    students: list[CourseworkStudent]
 
 class CourseworkTemplateExists(BaseModel):
     exists: bool

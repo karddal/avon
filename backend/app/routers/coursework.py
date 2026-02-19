@@ -33,6 +33,33 @@ router = APIRouter(prefix="/coursework", tags=["coursework"])
 session_dependency = Annotated[Session, Depends(get_session)]
 
 
+@router.get(
+    path=f"/{id}/get_students",
+    response_model=CourseworkStudents,
+    status_code=status.HTTP_200_OK,
+)
+async def get_students_on_coursework(
+    id: UUID,
+    session: session_dependency,
+):
+    coursework = session.get(entity=Coursework, ident=id)
+    if coursework is None:
+        # coursework didn't exist
+        raise HTTPException(status_code=404, detail="Can't find that coursework")
+    enrollments: list[CourseworkEnrollment] = coursework.enrollments
+    output: list[CourseworkStudent] = []
+    for enrollment in enrollments:
+        output.append(
+            CourseworkStudent(
+                id=enrollment.student_id,
+                individual_due_date=enrollment.individual_due_date,
+                gl_repo_id=enrollment.gl_repo_id,
+            )
+        )
+
+    return CourseworkStudents(id=id, students=output)
+
+
 @router.post(
     "/create", response_model=CourseworkRead, status_code=status.HTTP_201_CREATED
 )
@@ -76,6 +103,8 @@ async def create_coursework(coursework: CourseworkCreate, session: session_depen
     ).all()
     enrollments = []
     for student_unit in student_unit_enrollments:
+        if student_unit.type == "lecturer":
+            pass  # do not add lecturers
         db_enrollment = CourseworkEnrollment(
             student_id=student_unit.user_id,
             coursework_id=db_coursework.id,
