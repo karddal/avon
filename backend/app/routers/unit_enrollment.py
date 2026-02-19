@@ -1,19 +1,18 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends
+
+from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from app.db.session import get_session
-from app.schemas.unit_enrollment import (
-    UnitEnrollmentRead,
-    UnitEnrollmentCreate,
-    UnitEnrollmentBatchCreate,
-    UnitEnrollmentDelete,
-)
-from fastapi import HTTPException
-
+from app.models.coursework_enrollment import CourseworkEnrollment
 from app.models.unit import Unit
-
 from app.models.unit_enrollment import UnitEnrollment
+from app.schemas.unit_enrollment import (
+    UnitEnrollmentBatchCreate,
+    UnitEnrollmentCreate,
+    UnitEnrollmentDelete,
+    UnitEnrollmentRead,
+)
 
 router = APIRouter(prefix="/unit_enrollment", tags=["unit_enrollment"])
 session_dependency = Annotated[Session, Depends(get_session)]
@@ -21,7 +20,8 @@ session_dependency = Annotated[Session, Depends(get_session)]
 
 @router.post("", response_model=UnitEnrollmentRead, status_code=201)
 def enroll_unit(payload: UnitEnrollmentCreate, session: session_dependency):
-    if not session.get(Unit, payload.unit_id):
+    unit = session.get(Unit, ident=payload.unit_id)
+    if not unit:
         raise HTTPException(status_code=404, detail="Unit not found")
 
     if session.get(UnitEnrollment, (payload.unit_id, payload.user_id)):
@@ -40,7 +40,21 @@ def enroll_unit(payload: UnitEnrollmentCreate, session: session_dependency):
         type=payload.type,
     )
 
+    # add the user to any ongoing courseworks
+
+    coursework_enrollments: list[CourseworkEnrollment] = []
+    for coursework in unit.courseworks:
+        coursework_enrollments.append(
+            CourseworkEnrollment(
+                student_id=payload.user_id,
+                coursework_id=coursework.id,
+                individual_due_date=coursework.due_date,
+                gl_repo_id="asdfadsfsadf",
+            )
+        )
+
     session.add(enrollment)
+    session.add_all(coursework_enrollments)
     session.commit()
     session.refresh(enrollment)
     return enrollment

@@ -1,13 +1,16 @@
+from uuid import uuid4
+
 from sqlmodel import Session, select
 
+from app.models.unit import Unit
 from app.models.unit_enrollment import UnitEnrollment
+from tests.helpers.factories import create_coursework, create_unit
 from tests.helpers.identities import test_user
-from tests.helpers.factories import create_unit
-from uuid import uuid4
 
 
 def test_router_create_success(client, session: Session):
     unit_id = create_unit(session).id
+    coursework_id = create_coursework(session, unit_id)
 
     response = client.post(
         "/unit_enrollment",
@@ -29,6 +32,14 @@ def test_router_create_success(client, session: Session):
     assert str(db_enrollment.unit_id) == str(unit_id)
     assert db_enrollment.user_id == test_user
     assert db_enrollment.type == "student"
+
+    # check to make sure that the student has been added to any ongoing courseworks
+
+    db_unit = session.get(Unit, unit_id)
+    if not db_unit:
+        raise Exception("Cannot happen")
+
+    assert db_unit.courseworks[0].enrollments[0].student_id == test_user
 
 
 def test_router_invalid_type_422(client, session: Session):
