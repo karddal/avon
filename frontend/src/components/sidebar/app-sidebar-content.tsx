@@ -219,10 +219,15 @@ export default async function AppSidebarContent() {
                   className={"h-full w-full hover:bg-accent"}
                 >
                   <DialogTrigger className="">
-                    <SidebarMenuItem key={"Settings"} className="w-full h-full p-0! flex flex-row items-center">
+                    <SidebarMenuItem
+                      key={"Settings"}
+                      className="w-full h-full p-0! flex flex-row items-center"
+                    >
                       <div className="flex flex-row items-center w-full h-full py-2 gap-2 mx-1">
                         <SettingsIcon strokeWidth={1} className="size-8!" />
-                        <span className="text-accent-foreground p-2">{"Settings"}</span>
+                        <span className="text-accent-foreground p-2">
+                          {"Settings"}
+                        </span>
                       </div>
                     </SidebarMenuItem>
                   </DialogTrigger>

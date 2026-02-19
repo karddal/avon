@@ -47,9 +47,7 @@ export default function NotificationMessage({ data }: { data: Notification2 }) {
           {!data.viewed && <Dot className={"text-red-500"} />}
           {data.title}
         </ItemTitle>
-        <p className="overflow-y-scroll w-full break-all">
-          {data.body}
-        </p>
+        <p className="overflow-y-scroll w-full break-all">{data.body}</p>
         <ItemFooter>
           <span className={"font-light"}>
             Received {new Date(data.created_at).toLocaleString()}
