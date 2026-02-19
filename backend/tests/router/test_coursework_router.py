@@ -1,15 +1,15 @@
 import uuid
+from datetime import datetime, timedelta
+from uuid import UUID, uuid4
 
 import pytest
-from sqlmodel import SQLModel, Session, create_engine, select
-from uuid import uuid4, UUID
-from datetime import datetime, timedelta
+from sqlmodel import Session, SQLModel, create_engine, select
 
 from app.models.coursework import Coursework
-from app.models.unit import Unit
 from app.models.programme import Programme
+from app.models.unit import Unit
 from app.models.unit_enrollment import UnitEnrollment
-from tests.helpers.factories import create_unit
+from tests.helpers.factories import create_students, create_unit
 
 
 def coursework_payload(unit_id):
@@ -37,6 +37,7 @@ def coursework_updated_payload(unit_id):
 # Test successful creation of coursework through response and database
 def test_coursework_create_success(client, session):
     unit_id = create_unit(session).id
+    student = create_students(session, unit_id)
 
     payload = coursework_payload(
         str(unit_id)
@@ -46,7 +47,7 @@ def test_coursework_create_success(client, session):
     assert response.status_code == 201
     data = response.json()
 
-    coursework = session.get(Coursework, UUID(data["id"]))
+    coursework: Coursework = session.get(Coursework, UUID(data["id"]))
 
     # Checks
     assert data["name"] == payload["name"]
@@ -57,6 +58,10 @@ def test_coursework_create_success(client, session):
     assert coursework.description == "Func language courseowrk in haskell"
     assert coursework.unit_id == unit_id
     assert coursework.colour == "abcdef"
+
+    # check to make sure that all the students on the unit have been added as enrollments,
+    # with the correct data
+    assert student.user_id == coursework.enrollments[0].student_id
 
 
 # Test response when creating duplicate coursework for same unit, not database

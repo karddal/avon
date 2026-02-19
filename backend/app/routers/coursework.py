@@ -21,6 +21,7 @@ from app.core.helpers.gitlab import gl_create_coursework
 from app.core.settings import settings
 from app.db.session import get_session
 from app.models.coursework import Coursework
+from app.models.coursework_enrollment import CourseworkEnrollment
 from app.models.unit import Unit, UnitWithCourseworks
 from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkSetupProgress, CourseworkTemplateUploadZip, CourseworkUpdate, CourseworkDelete, CourseworkTemplateExists, CourseworkTemplateActivate, CourseworkTemplateFile, CourseworkTemplateUrl, CourseworkUpdateFormData
 from app.models.unit_enrollment import UnitEnrollment
@@ -70,9 +71,23 @@ async def create_coursework(coursework: CourseworkCreate, session: session_depen
 
     db_coursework = Coursework(name=coursework.name,description=coursework.description,unit_id=coursework.unit_id, due_date=coursework.due_date, colour=coursework.colour, gitlab_id=gl_data["gitlabGroupId"])
 
+    student_unit_enrollments = session.exec(
+        select(UnitEnrollment).where(UnitEnrollment.unit_id == coursework.unit_id)
+    ).all()
+    enrollments = []
+    for student_unit in student_unit_enrollments:
+        db_enrollment = CourseworkEnrollment(
+            student_id=student_unit.user_id,
+            coursework_id=db_coursework.id,
+            individual_due_date=coursework.due_date,
+            gl_repo_id="23432432",
+        )
+        enrollments.append(db_enrollment)
+
     session.add(db_coursework)
+    session.add_all(enrollments)
+
     session.commit()
-    session.refresh(db_coursework)
     return db_coursework
 
 

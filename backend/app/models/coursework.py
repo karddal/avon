@@ -2,9 +2,11 @@ import datetime
 import uuid
 from typing import TYPE_CHECKING
 from uuid import UUID
-from sqlmodel import Field, SQLModel, Relationship
+
+from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
+    from app.models.coursework_enrollment import CourseworkEnrollment
     from app.models.unit import Unit
 
 
@@ -23,3 +25,6 @@ class Coursework(SQLModel, table=True):
     colour: str
     gitlab_id: str = Field(nullable=False)
     template_id: int = Field(nullable=True)
+    enrollments: list["CourseworkEnrollment"] = Relationship(
+        back_populates="coursework"
+    )
