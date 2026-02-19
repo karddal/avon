@@ -208,27 +208,6 @@ export default async function AppSidebarContent() {
                 </SidebarMenuItem>
               ))}
           </div>
-          {/*<Dialog>
-            <div className="flex flex-col border-t">
-              <SidebarMenuButton asChild key={"Settings"} className={"w-full"}>
-                <DialogTrigger className="h-full flex flex-row items-center">
-                  <SettingsIcon strokeWidth={1} className="size-8!" />
-                  <span className="text-accent-foreground">{"Settings"}</span>
-                </DialogTrigger>
-              </SidebarMenuButton>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Settings</DialogTitle>
-                </DialogHeader>
-                <SettingsContents />
-                <DialogFooter>
-                  <DialogClose asChild>
-                    <Button variant={"outline"}>Close</Button>
-                  </DialogClose>
-                </DialogFooter>
-              </DialogContent>
-            </div>
-          </Dialog>*/}
 
           <div className="flex flex-col border-t">
             {/* bottom part of sidebar */}
@@ -237,11 +216,15 @@ export default async function AppSidebarContent() {
                 <SidebarMenuButton
                   asChild
                   key={"Settings"}
-                  className={"h-full w-full px-0! hover:bg-accent"}
+                  className={"h-full w-full hover:bg-accent"}
                 >
-                  <DialogTrigger className="flex flex-row items-center w-full h-full py-2 gap-2 mx-1">
-                    <SettingsIcon strokeWidth={1} className="size-8! mx-2" />
-                    <span className="text-accent-foreground">{"Settings"}</span>
+                  <DialogTrigger className="">
+                    <SidebarMenuItem key={"Settings"} className="w-full h-full p-0! flex flex-row items-center">
+                      <div className="flex flex-row items-center w-full h-full py-2 gap-2 mx-1">
+                        <SettingsIcon strokeWidth={1} className="size-8!" />
+                        <span className="text-accent-foreground p-2">{"Settings"}</span>
+                      </div>
+                    </SidebarMenuItem>
                   </DialogTrigger>
                 </SidebarMenuButton>
                 <DialogContent>

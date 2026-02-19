@@ -77,6 +77,7 @@ export default function SendNotification({
         setSubmitState(false);
       } else {
         toast.success("Notification sent.");
+        form.reset();
         setSubmitState(false);
         setOpenState(false);
       }
