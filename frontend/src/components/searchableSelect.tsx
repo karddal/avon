@@ -220,14 +220,12 @@ export function SearchableSelect(props: SearchableSelectProps) {
                           {checked ? "✓" : ""}
                         </span>
                       )}
-                        <div className="flex flex-col">
-                            <span>{option.label || option.value}</span>
-                            <span
-                                className="font-mono text-muted-foreground"
-                            >
-                            {option.label2}
+                      <div className="flex flex-col">
+                        <span>{option.label || option.value}</span>
+                        <span className="font-mono text-muted-foreground">
+                          {option.label2}
                         </span>
-                        </div>
+                      </div>
                     </CommandItem>
                   );
                 })}
