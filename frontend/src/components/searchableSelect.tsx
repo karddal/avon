@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 export type SearchableSelectOption = {
   value: string;
   label?: string;
+  label2?: string;
 };
 
 export interface SearchableSelectProps {
@@ -219,7 +220,14 @@ export function SearchableSelect(props: SearchableSelectProps) {
                           {checked ? "✓" : ""}
                         </span>
                       )}
-                      <span>{option.label || option.value}</span>
+                        <div className="flex flex-col">
+                            <span>{option.label || option.value}</span>
+                            <span
+                                className="font-mono text-muted-foreground"
+                            >
+                            {option.label2}
+                        </span>
+                        </div>
                     </CommandItem>
                   );
                 })}
