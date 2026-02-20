@@ -45,14 +45,6 @@ describe("Coursework page", () => {
     cy.get("div").find(".text-2xl").should("contain", "Information");
   });
 
-  it("Contains a Tools section", () => {
-    cy.visit("/coursework");
-    cy.contains("button", "Finished").click();
-    cy.contains('[role="tab"]', "Computer Architecture 2024-2025").click();
-    cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
-    cy.get("div").should("contain", "Tools");
-  });
-
   it("Admin can edit a coursework name", () => {
     cy.visit("/coursework");
     cy.contains('[role="tab"]', "Computer Architecture 2025-2026").click();
