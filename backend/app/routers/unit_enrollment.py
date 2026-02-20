@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -44,6 +45,9 @@ def enroll_unit(payload: UnitEnrollmentCreate, session: session_dependency):
 
     coursework_enrollments: list[CourseworkEnrollment] = []
     for coursework in unit.courseworks:
+        if coursework.due_date >= datetime.today():
+            continue  # skip if the coursework is already done
+
         coursework_enrollments.append(
             CourseworkEnrollment(
                 student_id=payload.user_id,
