@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, SquarePen, SquareX, Users } from "lucide-react";
+import { Menu, Siren, SquarePen, SquareX, Users } from "lucide-react";
 import { useState } from "react";
 import {
   AlertDialog,
@@ -22,6 +22,7 @@ import {
 import DeleteUnitButton from "@/components/units/delete-unit-button";
 import EditUnit from "@/components/units/edit-unit";
 import ListMembers from "@/components/units/list-members";
+import SendNotification from "@/components/units/send-notification";
 
 type UnitUpdateData = {
   id: string;
@@ -44,6 +45,7 @@ export default function LecturerDropdown({
   const [showMembers, setShowMembers] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
+  const [showSendNotif, setShowSendNotif] = useState(false);
 
   return (
     <div className="aspect-square">
@@ -64,6 +66,10 @@ export default function LecturerDropdown({
 
           <DropdownMenuItem onSelect={() => setShowEdit(true)}>
             <SquarePen className="mr-2 h-4 w-4" /> Edit Unit
+          </DropdownMenuItem>
+
+          <DropdownMenuItem onSelect={() => setShowSendNotif(true)}>
+            <Siren className="mr-2 h-4 w-4" /> Send Notification
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />
@@ -89,6 +95,13 @@ export default function LecturerDropdown({
         open_state={showEdit}
         set_open_state={setShowEdit}
       />
+
+      <SendNotification
+        unit_id={slug}
+        me={me}
+        openState={showSendNotif}
+        setOpenState={setShowSendNotif}
+      ></SendNotification>
 
       <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
         <AlertDialogContent>

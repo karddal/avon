@@ -1,5 +1,6 @@
+import { Suspense } from "react";
 import { ModeToggle } from "@/components/mode-toggle";
-import NotificationBar from "@/components/notifications-bar";
+import NotificationBar from "@/components/notifications/notifications-bar";
 import AppSidebar from "@/components/sidebar/app-sidebar-wrapper";
 import { SidebarCloser } from "@/components/sidebar/sidebar-closer";
 import {
@@ -16,7 +17,9 @@ export default async function Layout({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarCloser></SidebarCloser>
+      <Suspense>
+        <SidebarCloser></SidebarCloser>
+      </Suspense>
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center justify-between gap-2 px-4 bg-sidebar md:bg-transparent border-b md:border-0">
           <div className="flex flex-row gap-2 items-center">

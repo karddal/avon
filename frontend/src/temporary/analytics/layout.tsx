@@ -1,5 +1,5 @@
 import { ModeToggle } from "@/components/mode-toggle";
-import NotificationBar from "@/components/notifications-bar";
+import NotificationBar from "@/components/notifications/notifications-bar";
 import {
   SidebarInset,
   SidebarProvider,
