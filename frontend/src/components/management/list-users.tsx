@@ -67,7 +67,7 @@ function _getInitials(name: string) {
 }
   
 
-export default function ListMembers() {
+export default function ListMembers({externalSetSelectedUser}: {externalSetSelectedUser: (user: User | null) => void}) {
     const units = [
         { id: "u1", name: "Year 1 Computer Science 2025/2026" },
         { id: "u2", name: "Year 2 Computer Science 2025/2026" },
@@ -82,7 +82,7 @@ export default function ListMembers() {
     offset: 0,
   });
   const [offset, setOffset] = useState<number>(0);
-  const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [length, setLength] = useState<number>(0);
   const [disabledUsers, setDisabledUsers] = useState<string[]>([]);
 
@@ -144,18 +144,14 @@ export default function ListMembers() {
                <div className="absolute top-2 right-2 w-8 h-8">
                   <Checkbox
                     disabled={disabledUsers.includes(user.id)}
-                    checked={selectedUsers.some((u) => u.id === user.id)}
+                    checked={selectedUser?.id === user.id}
                     onCheckedChange={(checked) => {
                       if (!checked) {
-                        const newList = selectedUsers.filter(
-                          (u) => u.id !== user.id,
-                        );
-                        setSelectedUsers(newList);
-                        setLength(newList.length);
+                        setSelectedUser(null);
+                        externalSetSelectedUser(null);
                       } else {
-                        const newList = [...selectedUsers, user];
-                        setSelectedUsers(newList);
-                        setLength(newList.length);
+                        setSelectedUser(user);
+                        externalSetSelectedUser(user);
                       }
                     }}
                     className="peer w-full h-full z-10 bg-card/80 shadow rounded-none border data-[state=checked]:bg-primary"

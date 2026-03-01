@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
 from sqlalchemy import delete, not_
-from sqlmodel import Session, select
+from sqlmodel import Session, select, text
 
 from app.db.session import get_session
 from app.schemas.unit_enrollment import UnitEnrollmentRead, UnitEnrollmentCreate, UnitEnrollmentBatchCreate, UnitEnrollmentBatchDelete, UnitEnrollmentDelete, UnitEnrollmentBatchTransfer
@@ -157,3 +157,15 @@ def transfer_unit_members(payload: UnitEnrollmentBatchTransfer, session: session
     session.commit()
     
     return {"message": "users transferred successfully"}
+
+# Better Auth is rubbish with being able to get the role from a user as I think we get it at runtime, so having to get it manually
+@router.get("/role/{id}")
+def get_user_role(id: str, session: session_dependency):
+    stmt = text('SELECT role FROM "user" WHERE id = :id').bindparams(id=id)
+    row = session.exec(stmt).one_or_none()
+
+    if row is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    role = row[0]  # extract scalar from row
+    return {"role": role}

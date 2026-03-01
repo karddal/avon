@@ -1,17 +1,51 @@
+"use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { requireSession } from "@/lib/auth-utils";
 import { getInitials } from "@/components/user-card";
 import Image from "next/image";
 import { Button } from "../ui/button";
+import { set, type User } from "better-auth";
+import { auth } from "@/lib/auth";
+import { get_user_role } from "@/lib/actions/get_user_role";
+import { useEffect, useState } from "react";
+import { get } from "node:http";
 
-export default async function AccountSettings() {
-  const s = await requireSession();
-  const image = s.user.image ?? "";
-  const role = s.user.role === "admin" ? "Admin" : (s.user.role === "student" ? "Student" : "Lecturer")
+export default function AccountSettings({user, isAdmin}: {user: User | null, isAdmin: boolean }) {
+  const [role, setRole] = useState<string | null>(null);
+  useEffect(() => {
+    if (!user) return;
+    const userId = user.id;
+
+    async function fetchRole() {
+      try {
+        const res = await get_user_role(userId);
+        const role = res === "admin" ? "Admin" : res === "lecturer" ? "Lecturer" : res === "user" ? "Student" : "Unknown";
+        setRole(role);
+      } catch (error) {
+        console.error("Error fetching user role:", error);
+        setRole(null);
+      }
+    }
+
+    fetchRole();
+  }, [user]);
+
+  if (!user) {
+    return (
+      <div className="text-center p-4">
+        <p className="text-muted-foreground">No user selected</p>
+      </div>
+    );
+  }
+
+  const name = user.name;
+  const email = user.email;
+  const image = user.image || "";
 
   return (
     <div className="w-full">
-      <div className="relative w-full aspect-[5/1] overflow-hidden rounded-lg bg-muted">
+      <div className="relative w-full aspect-5/1 overflow-hidden rounded-lg bg-muted">
         <Image
             src={`${process.env.NEXT_PUBLIC_CDN_PATH}/images/campus.jpg`}
             alt="Campus"
@@ -28,7 +62,7 @@ export default async function AccountSettings() {
         <Avatar className="size-16 sm:size-20 md:size-24 lg:size-28 border-4 border-background bg-background rounded-none">
           <AvatarImage src={image} className="rounded-none"/>
           <AvatarFallback className="rounded-none">
-            {getInitials(s.user.name)}
+            {getInitials(name)}
           </AvatarFallback>
         </Avatar>
       </div>
@@ -40,12 +74,12 @@ export default async function AccountSettings() {
 
             <div>
             <p className="text-sm text-muted-foreground">Full name</p>
-            <p className="text-base font-medium">{s.user.name}</p>
+            <p className="text-base font-medium">{name}</p>
             </div>
 
             <div>
             <p className="text-sm text-muted-foreground">Email address</p>
-            <p className="text-base font-medium">{s.user.email}</p>
+            <p className="text-base font-medium">{email}</p>
             </div>
 
         </div>
@@ -73,7 +107,7 @@ export default async function AccountSettings() {
             </h3>
             <p className="text-base font-medium">{role}</p>
 
-            {role === "Admin" && (
+            {isAdmin && (
                 <Button
                 variant="outline"
                 className="w-fit justify-self-end mt-3"
@@ -82,7 +116,7 @@ export default async function AccountSettings() {
                 </Button>
             )}
         </div>
-        {role === "Admin" ? (
+        {isAdmin ? (
             <div className="rounded-md border border-border p-4">
                 <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
                 Deletion
