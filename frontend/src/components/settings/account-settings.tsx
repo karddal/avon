@@ -13,6 +13,7 @@ import { get } from "node:http";
 
 export default function AccountSettings({user, isAdmin}: {user: User | null, isAdmin: boolean }) {
   const [role, setRole] = useState<string | null>(null);
+
   useEffect(() => {
     if (!user) return;
     const userId = user.id;
@@ -30,6 +31,9 @@ export default function AccountSettings({user, isAdmin}: {user: User | null, isA
 
     fetchRole();
   }, [user]);
+
+  // async function resetPassword() {
+
 
   if (!user) {
     return (

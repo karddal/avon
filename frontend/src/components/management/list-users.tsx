@@ -4,16 +4,10 @@ import type { User } from "better-auth";
 import {
   ArrowLeft,
   ArrowRight,
-  Menu,
-  Plus,
-  SendHorizonal,
-  TextSearch,
   UserIcon,
-  X,
   Pencil,
 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -23,37 +17,13 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import UserCard from "@/components/user-card";
-import { batch_add_students_to_unit } from "@/lib/actions/batch_add_students_to_unit";
-import { get_lecturers } from "@/lib/actions/get_lecturers";
-import { get_students } from "@/lib/actions/get_students";
 import {
   type SearchResponse,
-  search_by_name,
-} from "@/lib/actions/search_by_name";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { remove_user_enrollment } from "@/lib/actions/remove_user_enrollment";
+  search_by_name_all_users,
+} from "@/lib/actions/search_by_name_all_users";
 
 function _getInitials(name: string) {
   if (!name || typeof name !== "string") return "?";
@@ -90,11 +60,10 @@ export default function ListMembers({externalSetSelectedUser}: {externalSetSelec
 
   async function showUsers(query: string, offset: number) {
     setLoading(true);
-    const response: SearchResponse = await search_by_name(
+    const response: SearchResponse = await search_by_name_all_users(
       query,
       offset,
       limit,
-      "user",
     );
     setLoading(false);
     setResponse(response);
