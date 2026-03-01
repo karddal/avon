@@ -89,26 +89,71 @@ def unenroll_unit(payload: UnitEnrollmentBatchDelete, session: session_dependenc
         raise HTTPException(status_code=404, detail="Unit not found")
     
     # find in bulk if they don't exist
-    statement = select(UnitEnrollment.user_id).where(UnitEnrollment.unit_id == payload.unit_id)
-    filteredStmt = select(UnitEnrollment.user_id).where(UnitEnrollment.user_id.notin_(payload.omitted_user_ids), UnitEnrollment.type == "student")
+    stmt = select(UnitEnrollment.user_id).where(UnitEnrollment.unit_id == payload.unit_id, UnitEnrollment.type == "student", UnitEnrollment.user_id.notin_(payload.omitted_user_ids))
 
-    exists = session.exec(filteredStmt.limit(1)).first()
+    students_to_remove = set(session.exec(stmt).all())
 
-    if not exists: # Want to check some people exist, to ensure consistency
+    if not students_to_remove: # Want to check some people exist, to ensure consistency
         raise HTTPException(
             status_code=409, 
             detail=f"No Users are enrolled on given unit, that aren't excluded / omitted"
         )
     
-    # unenroll in bulk, will just 
-    delete_process = delete(UnitEnrollment).where(UnitEnrollment.user_id.in_(filteredStmt))
-
-    session.exec(delete_process)
+    # unenroll in bulk
+    session.exec(delete(UnitEnrollment).where(UnitEnrollment.unit_id == payload.unit_id, UnitEnrollment.type == "student", UnitEnrollment.user_id.in_(students_to_remove)))
     session.commit()
 
     return {"message": "users un-enrolled successfully, excluding omitted "}
 
-# @router.post("/batch/transfer", status_code=201)
-# def transfer_unit_members(payload: UnitEnrollmentBatchTransfer, session: session_dependency):
-#     if (not session.get(Unit, payload.unitIdsTo)) or (not )
+@router.post("/batch/transfer", status_code=201)
+def transfer_unit_members(payload: UnitEnrollmentBatchTransfer, session: session_dependency):
+    # Making sure teh unit to transfer from exists, and the units to transfer to exist
+    if not session.get(Unit, payload.unitIdFrom):
+        raise HTTPException(status_code=404, detail="Unit to delete from, not found")
+    
+    for unitToTransfer in payload.unitIdsTo:
+        if not session.get(Unit, unitToTransfer):
+            raise HTTPException(status_code=404, detail=f"Unit with id {unitToTransfer} not found")
+    
+    filtered_stmt = select(UnitEnrollment.user_id).where(
+        UnitEnrollment.unit_id == payload.unitIdFrom,
+        UnitEnrollment.user_id.notin_(payload.omittedMembers),
+        UnitEnrollment.type == "student"
+    )
 
+    students_to_move = set(session.exec(filtered_stmt).all())
+
+    if not students_to_move: # Want to check some people exist, to ensure consistency
+        raise HTTPException(
+            status_code=409, 
+            detail=f"No Users are enrolled on given unit, that aren't excluded / omitted"
+        )
+    
+    # unenroll in bulk
+    session.exec(
+        delete(UnitEnrollment).where(
+            UnitEnrollment.unit_id == payload.unitIdFrom,
+            UnitEnrollment.user_id.in_(students_to_move),
+            UnitEnrollment.type == "student"
+        )
+    )
+
+    
+    for unit_to_transfer in payload.unitIdsTo:
+        # Need to check the moving student isn't already enrolled in teh unit
+        existsing_unit_members = select(UnitEnrollment.user_id).where(UnitEnrollment.unit_id == unit_to_transfer, UnitEnrollment.user_id.in_(students_to_move)) 
+        existing_user_ids = set(session.exec(existsing_unit_members).all())
+        
+        new_user_ids = students_to_move - existing_user_ids # Only want to add people in the request that aren't alreday enrolled
+        
+        if new_user_ids:
+            new_enrollments = [
+                UnitEnrollment(unit_id=unit_to_transfer, user_id=user_id, type="student")
+                for user_id in new_user_ids
+            ]
+            
+            session.add_all(new_enrollments)
+    
+    session.commit()
+    
+    return {"message": "users transferred successfully"}

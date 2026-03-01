@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { transfer_unit_members } from "@/lib/actions/transfer_unit_members";
+import { el } from "date-fns/locale";
 interface TransferUnitMembersProps {
   unitIdFrom: string;
   unitIdsTo: string[];
@@ -24,14 +25,18 @@ export default function BulkTransferButton({ unitIdFrom, unitIdsTo, omittedMembe
       console.log("unitIdsTo:", unitIdsTo);
       console.log("OmittedMembers:", omittedMembers);
       const result = await transfer_unit_members({unitIdFrom, unitIdsTo, omittedMembers});
-
-    //   if (result) {
-    //     toast.success("Unit Members deleted successfully");
-    //     router.push("/units");
-    //   } else {
-    //     throw new Error();
-    //   }
+      console.log("result:");
+      console.log(result);
+      if (result.success) {
+        toast.success("Unit Members transferred successfully");
+      } else if (result.status === 409) {
+        toast.error("No Users are enrolled on given unit, that aren't excluded / omitted");
+        setStatus(2);
+      } else {
+        throw new Error();
+      }
     } catch (_error) {
+      console.log(_error);
       setStatus(2);
       toast.error("Failed to transfer the unit members");
 

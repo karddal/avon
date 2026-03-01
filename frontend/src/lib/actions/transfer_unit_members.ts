@@ -1,5 +1,7 @@
 "use server";
 import { getRequestJWT } from "@/lib/auth-utils";
+import { json } from "better-auth";
+import { stat } from "node:fs";
 
 type TransferUnitMembersRequest = {
   unitIdFrom: string;  
@@ -29,16 +31,20 @@ export async function transfer_unit_members(req: TransferUnitMembersRequest) {
       body: JSON.stringify(req),
     },
   );
+  console.log("response:");
+  console.log(data);
   if (!data.ok) {
     const json = await data.json();
     return {
       success: false,
+      status: data.status,
       data: json,
     };
   } else {
     const json = await data.json();
     return {
       success: true,
+      status: data.status,
       data: json,
     };
   }

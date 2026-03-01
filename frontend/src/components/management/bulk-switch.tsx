@@ -287,25 +287,27 @@ export default function BulkSwitch() {
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                    <AlertDialogDescription className="space-y-3">
-                        <div>
-                            <span>This will transfer all students from:</span>
-                            <div className="mt-1 font-bold text-foreground">
-                            {fromLabel ?? (
-                                <span className="text-muted-foreground">select unit first</span>
-                            )}
+                    <AlertDialogDescription asChild>
+                        <div className="space-y-3">
+                            <div>
+                                <span>This will transfer all students from:</span>
+                                <div className="mt-1 font-bold text-foreground">
+                                {fromLabel ?? (
+                                    <span className="text-muted-foreground">select unit first</span>
+                                )}
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="flex justify-center">
-                            <ArrowRight className="h-6 w-6 rotate-90 text-muted-foreground" />
-                        </div>
+                            <div className="flex justify-center">
+                                <ArrowRight className="h-6 w-6 rotate-90 text-muted-foreground" />
+                            </div>
 
-                        <div>
-                            <div className="font-semibold text-foreground">
-                            {toLabel ?? (
-                                <span className="text-muted-foreground">selected units</span>
-                            )}
+                            <div>
+                                <div className="font-semibold text-foreground">
+                                {toLabel ?? (
+                                    <span className="text-muted-foreground">selected units</span>
+                                )}
+                                </div>
                             </div>
                         </div>
                     </AlertDialogDescription>
