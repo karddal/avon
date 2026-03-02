@@ -47,7 +47,6 @@ const formSchema = z.object({
 
 export default function SendNotification({
   unit_id,
-  me,
   openState,
   setOpenState,
 }: {

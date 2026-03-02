@@ -95,7 +95,7 @@ export default function AddMember({ unit_id }: { unit_id: string }) {
       query,
       offset,
       limit,
-      "user",
+      "admin", // not including admin "ne"
     );
     setLoading(false);
     setResponse(response);
