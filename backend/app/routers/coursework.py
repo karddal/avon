@@ -6,7 +6,7 @@ from sqlmodel import Session, select
 from sqlalchemy import exists, and_
 
 # GitLab helpers
-from app.core.helpers.gitlab import gl_create_coursework, gl_delete_coursework,gl_update_coursework
+from app.core.helpers.gitlab import gl_delete_coursework,gl_update_coursework
 
 from app.core.security import get_current_user_with_role
 from app.db.session import get_session
