@@ -29,6 +29,7 @@ export default function BulkTransferButton({ unitIdFrom, unitIdsTo, omittedMembe
       console.log(result);
       if (result.success) {
         toast.success("Unit Members transferred successfully");
+        setStatus(0);
       } else if (result.status === 409) {
         toast.error("No Users are enrolled on given unit, that aren't excluded / omitted");
         setStatus(2);
