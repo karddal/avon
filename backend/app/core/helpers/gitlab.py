@@ -633,7 +633,6 @@ async def gl_overwrite_zip(templateId: str, file: UploadFile):
             )
 
     return {"success": True}
-    }
 
 async def gl_delete_coursework(gitlab_group_id):
     if not TOKEN or not BASE_URL:
