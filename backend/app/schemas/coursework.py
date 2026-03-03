@@ -83,3 +83,11 @@ class CourseworkDelete(BaseModel):
     id: UUID
     deletion_successful: bool
 
+
+class CourseworkEventRead(BaseModel):
+    id: UUID
+    name: Name
+    due_date: datetime.datetime
+    unit_id: UUID
+    unit_name: Name
+    colour: Colour | None = None

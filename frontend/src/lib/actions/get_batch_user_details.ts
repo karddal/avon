@@ -2,14 +2,21 @@
 
 // TODO: Probably WONT WORK ON PROD bc of SQLDB being directly checked
 
+import path from "node:path";
 import { DatabaseSync, type SQLOutputValue } from "node:sqlite";
 import { pool } from "./db_pool";
+
+var dbPath = "../sqlite.db";
+if (process.env.CI_MODE === "True") {
+  dbPath = path.resolve(process.cwd(), "../../..", "sqlite.db");
+}
 
 export async function get_batch_user_info(user_ids: string[]) {
   if (user_ids.length === 0) return [];
 
-  const isProd = process.env.NODE_ENV === "production";
-
+  const isProd =
+    process.env.NODE_ENV === "production" &&
+    process.env.TESTING_MODE !== "True";
   if (isProd) {
     const pgPool = pool;
     const query = `
@@ -25,7 +32,7 @@ export async function get_batch_user_info(user_ids: string[]) {
       src: row.image,
     }));
   } else {
-    const db = new DatabaseSync("../sqlite.db");
+    const db = new DatabaseSync(dbPath);
 
     const placeholders = user_ids.map(() => "?").join(",");
     const queryStr = `SELECT id, name, image FROM user WHERE id IN (${placeholders})`;

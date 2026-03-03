@@ -23,7 +23,6 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import UserCard from "@/components/user-card";
 import { batch_add_students_to_unit } from "@/lib/actions/batch_add_students_to_unit";
-import { get_lecturers } from "@/lib/actions/get_lecturers";
 import { get_students } from "@/lib/actions/get_students";
 import {
   type SearchResponse,
@@ -61,7 +60,7 @@ export default function AddMember({ unit_id }: { unit_id: string }) {
     const userIds = selectedUsers.map((user) => user.id);
     const response = await batch_add_students_to_unit(unit_id, userIds);
     if (response.success) {
-      toast.success("Adding student(s) to unit!");
+      toast.success("Added student(s) to unit!");
     } else {
       toast.error("Adding failed! ");
     }
@@ -71,15 +70,9 @@ export default function AddMember({ unit_id }: { unit_id: string }) {
     try {
       setDisabledUsers([]);
 
-      const [disabledS, disabledL] = await Promise.all([
-        get_students(unit_id),
-        get_lecturers(unit_id),
-      ]);
+      const [disabledS] = await Promise.all([get_students(unit_id)]);
 
-      const disabledU = [
-        ...(disabledS?.students || []),
-        ...(disabledL?.lecturers || []),
-      ];
+      const disabledU = [...(disabledS?.students || [])];
 
       setDisabledUsers(disabledU);
     } catch (_error) {}
