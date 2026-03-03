@@ -30,7 +30,7 @@ export default function ListMembers({
     <Dialog open={openState} onOpenChange={setOpenState}>
       <DialogContent className="max-h-[80%] md:overflow-auto overflow-y-scroll ">
         <Tabs>
-          <div className="flex flex-row gap-2 items-center mb-2">
+          <div className="flex flex-col md:flex-row gap-2 items-center mb-2">
             <DialogTitle className="text-xl">Members</DialogTitle>
 
             <TabsList className="">
