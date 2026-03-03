@@ -10,11 +10,6 @@ logger = logging.getLogger("jwt_util")
 def _token_fingerprint(token: str) -> str:
     return hashlib.sha256(token.encode("utf-8")).hexdigest()[:8]
 
-_jwks_client = PyJWKClient(
-    settings.jwks_url,
-    cache_keys=True
-)
-
 class JwksProvider:
     def __init__(self, jwks_url: str):
         self._jwks_url = jwks_url

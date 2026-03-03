@@ -11,6 +11,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AddMember from "@/components/units/add-member";
+import AddMemberLecturer from "@/components/units/add-member-lec";
 import LecturerList from "@/components/units/lecturer-list";
 import StudentList from "@/components/units/student-list";
 
@@ -34,7 +35,8 @@ export default function ListMembers({
 
             <TabsList className="">
               <TabsTrigger value="View">View</TabsTrigger>
-              <TabsTrigger value="Add">Add</TabsTrigger>
+              <TabsTrigger value="Add Student">Add Student</TabsTrigger>
+              <TabsTrigger value="Add Lecturer">Add Lecturer</TabsTrigger>
             </TabsList>
           </div>
           <TabsContent value="View">
@@ -52,13 +54,22 @@ export default function ListMembers({
               <StudentList unit_id={unit_id} />
             </DialogHeader>
           </TabsContent>
-          <TabsContent value="Add">
+          <TabsContent value="Add Student">
             <DialogHeader>
-              <DialogTitle>Add a member</DialogTitle>
+              <DialogTitle>Add a student</DialogTitle>
               <DialogDescription>
                 Find someone using the search bar below.
               </DialogDescription>
               <AddMember unit_id={unit_id}></AddMember>
+            </DialogHeader>
+          </TabsContent>
+          <TabsContent value="Add Lecturer">
+            <DialogHeader>
+              <DialogTitle>Add a lecturer</DialogTitle>
+              <DialogDescription>
+                Find someone using the search bar below.
+              </DialogDescription>
+              <AddMemberLecturer unit_id={unit_id}></AddMemberLecturer>
             </DialogHeader>
           </TabsContent>
         </Tabs>

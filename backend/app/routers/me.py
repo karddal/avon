@@ -25,19 +25,15 @@ session_dependency = Annotated[Session, Depends(get_session)]
 
 @router.get("/units", response_model=UnitAll)
 async def me_units(session: session_dependency, me: str = Depends(get_current_user)):
-    print("userid: ", me)
     results = session.exec(
         select(Unit).join(UnitEnrollment).where(UnitEnrollment.user_id == me)
     ).all()
-    print("results: ")
-    print(results)
     return UnitAll(
         units=results
     )
 
 @router.get("/units/active", response_model=UnitAll)
 async def me_active_units(session: session_dependency, me: str = Depends(get_current_user)):
-    print("userid: ", me)
     results = session.exec(
         select(Unit).join(UnitEnrollment).where(UnitEnrollment.user_id == me)
     ).all()
@@ -84,7 +80,6 @@ async def me_courseworks(
         programme_end_date=unit.programme.end_date,
         courseworks=unit.courseworks
     )).model_dump() for unit in units]
-    print(results)
     return results
 
 @router.get("/courseworks/active")
@@ -94,14 +89,12 @@ async def me_active_courseworks(
     # statement = select(Unit).join(UnitEnrollment).where(UnitEnrollment.user_id == me)
     # units = list(session.exec(statement))
     # results = [UnitWithCourseworks.model_validate(unit).model_dump() for unit in units]
-    # print(results)
     units = session.exec(
         select(Unit).join(UnitEnrollment).where(UnitEnrollment.user_id == me)
     ).all()
     today = datetime.datetime.now()
     courseworks = [coursework for unit in units for coursework in unit.courseworks]
     filtered = list(filter(lambda coursework: coursework.due_date >= today, courseworks))
-    print(filtered)
     return filtered
 
 @router.get("/notifications", response_model=Notifications)
@@ -154,19 +147,15 @@ async def me_mark_all_notifications_read(session: session_dependency, me: str = 
         select(Notification).where(Notification.recipient_id == me)
         .where(Notification.viewed == False)
     ).all())
-    print("Notifs before")
-    print(me_notifs)
 
     for notification in me_notifs:
         notification.viewed = True
         session.add(notification)
         session.commit()
 
-    print("notifs after")
     me_notifs = list(session.exec(
         select(Notification).where(Notification.recipient_id == me)
         # ruff: noqa e712
         .where(Notification.viewed == False)
     ).all())
-    print(me_notifs)
     return status.HTTP_200_OK

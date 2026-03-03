@@ -20,8 +20,6 @@ app = FastAPI(lifespan=lifespan)
 
 origins = os.getenv("CORS_ORIGIN")
 
-print("CORS origins:", origins)
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -44,7 +42,7 @@ app.include_router(unit_enrollment.router)
 create_db_and_tables()
 
 def main():
-    print("Hello from backend!")
+    print("[BACKEND] Hello from backend!")
 
 
 if __name__ == "__main__":
