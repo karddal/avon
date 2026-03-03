@@ -199,4 +199,3 @@ async def update_coursework(id: UUID, coursework: CourseworkUpdate, session: ses
     session.commit()
     session.refresh(coursework_db)
     return coursework_db
-

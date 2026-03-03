@@ -30,6 +30,7 @@ from app.schemas.unit import (
 router = APIRouter(prefix="/units", tags=["units"])
 session_dependency = Annotated[Session, Depends(get_session)]
 
+today = date.today()
 
 @router.post(
     "/create",
@@ -92,8 +93,7 @@ async def active_units(session: session_dependency):
         units=filtered
     )
 
-# this function is quite duplicate to other units get
-#but for not causing problem when merging I will use a new one and possibility combine later
+
 @router.get("/units", response_model=list[UnitEventRead])
 def list_units_for_events(
         session: session_dependency,
@@ -101,18 +101,33 @@ def list_units_for_events(
     ):
 
     if current_user.role == "admin":
-        statement = (select(Unit))
+        statement = (
+            select(Unit)
+            .join(Programme)
+            .where(Programme.end_date >= today)
+            .options(selectinload(Unit.programme))
+        )
 
-        units = session.exec(statement).all()
     else:
-        statement = (select(Unit)
-                     .join(UnitEnrollment)
-                     .where(UnitEnrollment.user_id == current_user.user_id))
-        units = session.exec(statement).all()
+        statement = (
+            select(Unit)
+            .join(UnitEnrollment)
+            .join(Programme)
+            .where(
+                UnitEnrollment.user_id == current_user.user_id,
+                Programme.end_date >= today
+            )
+            .options(selectinload(Unit.programme))
+        )
+
+    units = session.exec(statement).all()
     return [
         {
             "id": unit.id,
             "name": unit.name,
+            "unit_code": unit.unit_code,
+            "programme_start_date": str(unit.programme.start_date.year),
+            "programme_end_date": str(unit.programme.end_date.year),
         }
         for unit in units
     ]
