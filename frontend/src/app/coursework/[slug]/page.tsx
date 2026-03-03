@@ -115,27 +115,33 @@ async function CourseworkPageContent({
       </div>
 
       <section className="grid gap-4 grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 min-h-0 mb-2">
-        <div className="flex flex-col lg:col-span-2 gap-4 lg:min-h-0">
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                <div className="text-2xl">Description</div>
-                <div className="font-light">
-                  Information about the coursework.
-                </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Suspense>
-                <CourseworkDescription slug={slug} token={token} />
-              </Suspense>
-            </CardContent>
-          </Card>
-        </div>
-        <div className="flex flex-col xl:col-span-1 lg:col-span-2 gap-4 min-h-0">
-          <Suspense>
-            <CourseworkInformation slug={slug} token={token} />
-          </Suspense>
+          <div className="flex flex-col gap-4 col-span-3 lg:col-span-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  <div className="text-2xl">Description</div>
+                  <div className="font-light">
+                    Information about the coursework.
+                  </div>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Suspense>
+                  <CourseworkDescription slug={slug} token={token} />
+                </Suspense>
+              </CardContent>
+            </Card>
+          </div>
+          <div className="col-span-3 lg:col-span-1">
+            <Suspense>
+              <CourseworkInformation slug={slug} token={token} />
+            </Suspense>
+          </div>
+
+
+        
+
+        <div className="flex flex-col col-span-3 min-h-0">
           <Suspense>
             <SetupProgress cw_id={data.id} />
           </Suspense>
