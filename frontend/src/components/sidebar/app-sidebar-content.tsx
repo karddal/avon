@@ -147,18 +147,6 @@ const studentItems = [
     icon: NotepadText,
     bottom: false,
   },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-    bottom: true,
-  },
-  {
-    title: "Calendar",
-    url: "/calendar",
-    icon: Calendar,
-    bottom: false,
-  },
 ];
 
 export default async function AppSidebarContent() {
@@ -236,16 +224,23 @@ export default async function AppSidebarContent() {
                 <SidebarMenuButton
                   asChild
                   key={"Settings"}
-                  className={
-                    "w-full flex flex-row items-center h-full py-2 gap-2 mx-1"
-                  }
+                  className={"h-full w-full hover:bg-accent"}
                 >
-                  <DialogTrigger className="h-full flex flex-row items-center">
-                    <SettingsIcon strokeWidth={1} className="size-8!" />
-                    <span className="text-accent-foreground text-lg">{"Settings"}</span>
+                  <DialogTrigger className="">
+                    <SidebarMenuItem
+                      key={"Settings"}
+                      className="w-full h-full p-0! flex flex-row items-center"
+                    >
+                      <div className="flex flex-row items-center w-full h-full py-2 gap-2 mx-1">
+                        <SettingsIcon strokeWidth={1} className="size-8!" />
+                        <span className="text-accent-foreground p-2">
+                          {"Settings"}
+                        </span>
+                      </div>
+                    </SidebarMenuItem>
                   </DialogTrigger>
                 </SidebarMenuButton>
-                <DialogContent className="w-[95vw] max-w-md sm:max-w-2xl lg:max-w-4xl">
+                <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Settings</DialogTitle>
                   </DialogHeader>
