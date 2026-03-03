@@ -155,7 +155,6 @@ async def get_unit_lecturers(unit_id: UUID, session: session_dependency):
     lects = session.exec(
         select(UnitEnrollment.user_id).join(Unit).where(Unit.id == unit_id).where(UnitEnrollment.type == "lecturer")
     ).all()
-    print(lects)
     if not lects:
         raise HTTPException(status_code=404, detail="No lecturers found.")
     return UnitLecturers(
@@ -198,7 +197,8 @@ async def update_unit(unit_id: UUID, unit: UnitUpdate, session: session_dependen
     session.refresh(db_unit)
 
     try:
-        await gl_update_unit(db_unit.gitlab_id, db_unit.name)
+        if not settings.testing_mode:
+            await gl_update_unit(db_unit.gitlab_id, db_unit.name)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY, 
@@ -218,7 +218,8 @@ async def delete_unit(unit_id: UUID, session: session_dependency):
         )
     
     try:
-        await gl_delete_unit(unit.gitlab_id)
+        if not settings.testing_mode:
+            await gl_delete_unit(unit.gitlab_id)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
@@ -248,7 +249,6 @@ async def get_courseworks(unit_id: UUID, session: session_dependency):
             status_code=status.HTTP_404_NOT_FOUND, detail = "Unit not found"
         )
     courseworks = unit.courseworks
-    print(courseworks)
     return CourseworkAll(courseworks=courseworks)
 
 

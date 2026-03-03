@@ -1,7 +1,8 @@
 describe("Notifications", () => {
-  beforeEach(() => {
+  before(() => {
     cy.exec("npm run db:seed");
   });
+
   it("shows no notifications with no notifications in the system", () => {
     cy.login("rohan@bris.ac.uk", "changeme", true);
     cy.get("button.p-2:nth-child(2)").click();

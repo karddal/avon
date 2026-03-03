@@ -62,7 +62,6 @@ def enroll_unit_batch_students(payload: UnitEnrollmentBatchCreate, session: sess
     )
 
     current_user_ids = session.exec(statement).all()
-    print(payload.unit_id, current_user_ids)
     existing_user_ids = set(payload.user_ids) & set(current_user_ids)
 
     if existing_user_ids:
@@ -93,7 +92,6 @@ def enroll_unit_batch_lecturers(payload: UnitEnrollmentBatchCreate, session: ses
     )
 
     current_user_ids = session.exec(statement).all()
-    print(payload.unit_id, current_user_ids)
     existing_user_ids = set(payload.user_ids) & set(current_user_ids)
 
     if existing_user_ids:
