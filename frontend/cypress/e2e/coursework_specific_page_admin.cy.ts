@@ -63,7 +63,7 @@ describe("Coursework page", () => {
       .click();
     cy.get('[name="name"]').clear().type("Encrypt 2");
     cy.get(".mt-auto > .flex > .inline-flex").click();
-    cy.wait(5000);
+    // cy.wait(5000);
     cy.visit("/coursework");
     cy.get("p").contains("Encrypt 2").should("be.visible");
   });
