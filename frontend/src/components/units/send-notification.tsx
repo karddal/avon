@@ -51,7 +51,6 @@ export default function SendNotification({
   setOpenState,
 }: {
   unit_id: string;
-  me: string;
   openState: boolean;
   setOpenState: Dispatch<SetStateAction<boolean>>;
 }) {
