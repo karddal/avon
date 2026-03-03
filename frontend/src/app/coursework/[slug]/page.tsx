@@ -37,12 +37,6 @@ type CourseworkUpdateData = {
   max_end_date: Date;
 };
 
-type GitlabData = {
-  name: string;
-  coursework_id: string;
-  template_id: string;
-};
-
 async function CourseworkPageContent({
   params,
 }: {

@@ -1,6 +1,5 @@
 "use client";
 
-import { StringToBoolean } from "class-variance-authority/types";
 import {
   BookCheck,
   Container,
