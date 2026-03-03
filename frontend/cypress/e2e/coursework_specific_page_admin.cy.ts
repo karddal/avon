@@ -55,7 +55,6 @@ describe("Coursework page", () => {
 
   it("Admin can edit a coursework name", () => {
     cy.visit("/coursework");
-    cy.contains('[role="tab"]', "Computer Architecture 2025-2026").click();
     cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
     cy.get('[data-cy="coursework-lect-dropdown"]').click();
     cy.get('[data-state="open"]')
@@ -64,8 +63,8 @@ describe("Coursework page", () => {
       .click();
     cy.get('[name="name"]').clear().type("Encrypt 2");
     cy.get(".mt-auto > .flex > .inline-flex").click();
+    cy.wait(5000);
     cy.visit("/coursework");
-    cy.contains('[role="tab"]', "Computer Architecture 2025-2026").click();
     cy.get("p").contains("Encrypt 2").should("be.visible");
   });
 
