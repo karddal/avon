@@ -20,7 +20,6 @@ async def health_check():
 async def create_templates(template: TemplateCreate, session: session_dependency):
     statement = select(Coursework.gitlab_id).where(Coursework.id == template.coursework_id)
     gitlab_id = session.exec(statement).first()
-    print(gitlab_id)
     try:
         gl_template_group = await gl_create_template_group(gitlab_id)
     except Exception:
@@ -37,7 +36,6 @@ async def create_templates(template: TemplateCreate, session: session_dependency
             detail="Template could not be created"
         )
 
-    print(gl_template_project)
     return {"success": "i think"}
 
 @router.post("/create", status_code=status.HTTP_201_CREATED)
@@ -47,19 +45,14 @@ async def create_projects(project: ProjectCreate, session: session_dependency):
     statement = select(Coursework.unit_id, Coursework.name, Coursework.gitlab_id).where(Coursework.id == project.coursework_id)
     cw_object = session.exec(statement).first()
     unit_id, name, gitlab_id = cw_object
-    print(unit_id, name, gitlab_id)
 
     # Get the student enrollment
     statement = select(UnitEnrollment.user_id).where((UnitEnrollment.unit_id == unit_id) & (UnitEnrollment.type == "student"))
     students_enrolled = session.exec(statement).all()
-    print(students_enrolled)
 
     for student in students_enrolled:
         try:
-            print(2)
             gl_project = await gl_create_project(name, student, gitlab_id, project.template_group_id, project.template_id)
-            # Call helper function to create project
-            print("1")
         except Exception:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
@@ -67,7 +60,6 @@ async def create_projects(project: ProjectCreate, session: session_dependency):
             )
     # Get the number of students enrolled onto a unit, by the courseworkid courseworkid -> unit -> unit_enrollement
     # Make an API call to gitlab to create a project using a helper function for those many students
-    print(gl_project)
     return {"unit id": students_enrolled}
 
 @router.post("/skeleton-code", status_code=status.HTTP_201_CREATED)
@@ -79,19 +71,15 @@ async def create_fork(project: ProjectFork, session: session_dependency):
     statement = select(Coursework.unit_id, Coursework.name, Coursework.gitlab_id).where(Coursework.id == project.coursework_id)
     cw_object = session.exec(statement).first()
     unit_id, name, gitlab_id = cw_object
-    print(unit_id, name, gitlab_id)
 
     # Get the student enrollment
     statement = select(UnitEnrollment.user_id).where((UnitEnrollment.unit_id == unit_id) & (UnitEnrollment.type == "student"))
     students_enrolled = session.exec(statement).all()
-    print(students_enrolled) 
 
     for student in students_enrolled:
         try:
-            print(2)
             gl_project = await gl_create_fork(name, user_id=student, group_id=gitlab_id, template_id=project.template_id)
             # Call helper function to create project
-            print("1")
         except Exception:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
@@ -99,7 +87,6 @@ async def create_fork(project: ProjectFork, session: session_dependency):
             )
     # Get the number of students enrolled onto a unit, by the courseworkid courseworkid -> unit -> unit_enrollement
     # Make an API call to gitlab to create a project using a helper function for those many students
-    print(gl_project)
     return {"unit id": students_enrolled} 
 
 @router.get("/{project_id}", response_model=ProjectRead)
@@ -115,7 +102,6 @@ async def delete_specific_project(project_id: int):
 async def get_projects(group_id: int):
     # Collect all the projects
     projects = await gl_get_projects(group_id)
-    # print(projects)
     return ProjectsInCoursework(projects=projects)
 
 @router.delete("/groups/{group_id}")

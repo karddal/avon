@@ -9,7 +9,7 @@ from app.core.settings import settings
 
 from app.models.coursework import Coursework
 from app.models.unit import Unit, UnitWithCourseworks
-from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkUpdate, CourseworkDelete, GitlabData
+from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkUpdate, CourseworkDelete
 from app.schemas.coursework import CourseworkUpdateFormData
 
 router = APIRouter(prefix = "/coursework", tags=["coursework"])

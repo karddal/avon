@@ -22,7 +22,7 @@ async function provisionForIndividuals(gitlab_data: GitlabData) {
     const req = {
         name: gitlab_data.name,
         coursework_id: gitlab_data.coursework_id,
-        template_id: "79951324" // Hardcoded template id because jack already has this
+        template_id: gitlab_data.template_id
     }
     await provision_individual_projects(req).then((r) => {
         if (!r.success) {
