@@ -158,7 +158,7 @@ def transfer_unit_members(payload: UnitEnrollmentBatchTransfer, session: session
     
     return {"message": "users transferred successfully"}
 
-# Better Auth is rubbish with being able to get the role from a user as I think we get it at runtime, so having to get it manually
+# Better Auth is terrible with being able to get the role from a user as I think we get it at runtime, so having to get it manually
 @router.get("/role/{id}")
 def get_user_role(id: str, session: session_dependency):
     stmt = text('SELECT role FROM "user" WHERE id = :id').bindparams(id=id)
@@ -166,6 +166,18 @@ def get_user_role(id: str, session: session_dependency):
 
     if row is None:
         raise HTTPException(status_code=404, detail="User not found")
-
+    
     role = row[0]  # extract scalar from row
     return {"role": role}
+
+@router.get("/change_role/{id}")
+def change_user_role(id: str, newRole: str, session: session_dependency):
+    stmt = text('SELECT role FROM "user" WHERE id = :id').bindparams(id=id)
+    row = session.exec(stmt).one_or_none()
+    if row is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    update_stmt = text('UPDATE "user" SET role = :newRole WHERE id = :id').bindparams(newRole=newRole, id=id)
+    session.exec(update_stmt)
+    session.commit()
+    return {"role": newRole}

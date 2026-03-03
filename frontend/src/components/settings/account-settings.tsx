@@ -10,9 +10,21 @@ import { auth } from "@/lib/auth";
 import { get_user_role } from "@/lib/actions/get_user_role";
 import { useEffect, useState } from "react";
 import { get } from "node:http";
+import { Alert } from "../ui/alert";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import DeleteUserButton from "../management/delete-user-button";
 
 export default function AccountSettings({user, isAdmin}: {user: User | null, isAdmin: boolean }) {
   const [role, setRole] = useState<string | null>(null);
+  const [showDelete, setShowDelete] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -128,6 +140,7 @@ export default function AccountSettings({user, isAdmin}: {user: User | null, isA
                     <Button
                     variant="destructive"
                     className="mt-3 w-full sm:w-fit"
+                    onClick={() => setShowDelete(true)}
                     >
                         Delete User
                     </Button>
@@ -135,8 +148,26 @@ export default function AccountSettings({user, isAdmin}: {user: User | null, isA
         ) : (
             <></>
         )}
+        <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
+          <AlertDialogContent>
+              <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription asChild>
+                    <div>
+                        <span>This will delete the user and all their data:</span>
+                        <div className="mt-1 font-bold text-foreground">
+                          {name} ({email})
+                        </div>
+                    </div>
+                  </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                  <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
+                    <DeleteUserButton user_id={user.id} closeDialog={() => setShowDelete(false)} />
+              </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
-
     </div>
   );
 }
