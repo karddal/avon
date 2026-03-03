@@ -28,7 +28,7 @@ export async function search_by_name(
       searchOperator: "contains",
       filterField: "role",
       filterValue: filterValue,
-      filterOperator: "ne",
+      filterOperator: "eq",
     },
     headers: await headers(),
   })) as unknown;
