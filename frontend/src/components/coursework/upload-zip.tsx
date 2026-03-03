@@ -65,8 +65,8 @@ export default function ZipUploadPage({
         formData: formData,
       });
       if (result.templateId === -1) {
-        setStatus(result.error ?? "Upload failed due to file issues.");
-        toast.error(result.error ?? "Upload failed due to file issues.");
+        setStatus(result.error ?? "Upload failed as file is too big.");
+        toast.error(result.error ?? "Upload failed as file is too big.");
 
         setUploadStatus(0);
         return;
@@ -91,14 +91,23 @@ export default function ZipUploadPage({
 
     const formData = new FormData();
     formData.append("file", file);
-    try {
-      await overwrite_zip({ templateId: templateGitlabId, formData: formData });
 
-      setShowOverwrite(false);
-      onRefresh();
-      setStatus("Overwrite complete");
-      toast.success("Template overwritten sucessfully");
-      setFile(null);
+    try {
+      const result = await overwrite_zip({
+        templateId: templateGitlabId,
+        formData: formData,
+      });
+      if (result.templateId === -1) {
+        setStatus(result.error ?? "Overwrite failed as file is too big.");
+        toast.error(result.error ?? "Overwrite failed as file is too big.");
+        return;
+      } else {
+        setShowOverwrite(false);
+        onRefresh();
+        setStatus("Overwrite complete");
+        toast.success("Template overwritten sucessfully");
+        setFile(null);
+      }
     } catch (err) {
       console.error(err);
       setStatus("Overwrite failed.");

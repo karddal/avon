@@ -284,15 +284,16 @@ async def template_urls(templateId: str, session: session_dependency):
 async def upload_zip(cw_id: UUID,  session: session_dependency, file: UploadFile = File(...)):
     if not file.filename.endswith(".zip"):
         raise HTTPException(status_code=400, detail="File must be in ZIP format")
+    
     coursework = session.get(Coursework,cw_id)
     if coursework is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
     courseworkGitLabId = coursework.gitlab_id
+
     try:
         response = await gl_upload_zip(courseworkGitLabId, file)
 
-    except HTTPException as e:
-        print("GitLab error:", e.detail)
+    except HTTPException:
         raise  # Just gitalbs error message
     except Exception:
         raise HTTPException(status_code=500, detail="Internal server error")
@@ -316,7 +317,9 @@ async def overwrite_zip(templateId: str, file: UploadFile = File(...)):
     try:
         response = await gl_overwrite_zip(templateId, file)
 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except HTTPException:
+        raise  # Just gitalbs error message
+    except Exception:
+        raise HTTPException(status_code=500, detail="Internal server error")
     
     return response

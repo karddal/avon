@@ -451,9 +451,9 @@ async def gl_template_urls(template_id):
 
 # All file stuff is done in memory, as automatically delted after use, and we set limits on file size anyway
 async def check_file_safe(file: UploadFile):
-    MAX_COMPRESSED = 10 * 1024 * 1024
-    MAX_UNCOMPRESSED = 50 * 1024 * 1024
-    MAX_FILES = 1000
+    MAX_COMPRESSED = 0
+    MAX_UNCOMPRESSED = 0
+    MAX_FILES = 0
 
     if not file.filename or not file.filename.lower().endswith(".zip"):
         raise HTTPException(status_code=400, detail="File must be a .zip file")
@@ -590,8 +590,8 @@ async def gl_overwrite_zip(templateId: str, file: UploadFile):
     
     commit_actions = []
 
-
     current_files = await gl_template_files(templateId)
+
     file_paths = set()
     dir_paths = set()
     for tempFile in current_files:
@@ -599,81 +599,74 @@ async def gl_overwrite_zip(templateId: str, file: UploadFile):
             file_paths.add(tempFile["path"]) 
         else:
             dir_paths.add(tempFile["path"])
-
-
-
-    contents = await file.read()
-    zip_buffer = io.BytesIO(contents)
-
-    with zipfile.ZipFile(zip_buffer, "r") as zip_ref:    
-        # print(zip_ref.namelist())
-        # print(curent_paths)
-
-        file_list = zip_ref.namelist()
-
-        file_entries = set()
-        dir_entries = set()
-        for temp in file_list:
-            if (temp.endswith("/")):
-                dir_entries.add(temp)
-            else:
-                file_entries.add(temp)
-
-        dir_with_files = set() # O(1) lookup
-
-        # Do file entries first
-        for filename in file_entries:
-
-            file_bytes = zip_ref.read(filename)
-
-            encoded_content = base64.b64encode(file_bytes).decode("utf-8")
-
-            if filename in file_paths:
-                action_type = "update"
-            else:
-                action_type = "create"
-
-            commit_actions.append({
-                "action": action_type,
-                "file_path": filename,
-                "content": encoded_content,
-                "encoding": "base64",
-            })
-
-            parent_dir = PurePosixPath(filename).parent
-            while str(parent_dir) != ".":
-                dir_with_files.add(str(parent_dir) + "/")
-                parent_dir = parent_dir.parent
             
-            file_paths.discard(filename)
+    zip_ref = await check_file_safe(file)        
 
-        for filename in file_paths:
-            commit_actions.append({
-                "action": "delete",
-                "file_path": filename,
-            })
+    file_list = zip_ref.namelist()
+
+    file_entries = set()
+    dir_entries = set()
+    for temp in file_list:
+        if (temp.endswith("/")):
+            dir_entries.add(temp)
+        else:
+            file_entries.add(temp)
+
+    dir_with_files = set() # O(1) lookup
+
+    # Do file entries first
+    for filename in file_entries:
+
+        file_bytes = zip_ref.read(filename)
+
+        encoded_content = base64.b64encode(file_bytes).decode("utf-8")
+
+        if filename in file_paths:
+            action_type = "update"
+        else:
+            action_type = "create"
+
+        commit_actions.append({
+            "action": action_type,
+            "file_path": filename,
+            "content": encoded_content,
+            "encoding": "base64",
+        })
+
+        parent_dir = PurePosixPath(filename).parent
+        while str(parent_dir) != ".":
+            dir_with_files.add(str(parent_dir) + "/")
+            parent_dir = parent_dir.parent
+        
+        file_paths.discard(filename)
+
+    for filename in file_paths:
+        commit_actions.append({
+            "action": "delete",
+            "file_path": filename,
+        })
 
 
-        # Which directories don't have anything in them, (gitlab won't handle adding empty dirs, so put .gitkeep in them)
-        empty_dirs = []
-        for directory in dir_entries:
-            if directory not in dir_with_files:
-                empty_dirs.append(directory)
+    # Which directories don't have anything in them, (gitlab won't handle adding empty dirs, so put .gitkeep in them)
+    empty_dirs = []
+    for directory in dir_entries:
+        if directory not in dir_with_files:
+            empty_dirs.append(directory)
 
-        for directory in empty_dirs:
-            gitkeep_path = directory + ".gitkeep"
+    for directory in empty_dirs:
+        gitkeep_path = directory + ".gitkeep"
 
-            if gitkeep_path in file_paths:
-                action_type = "update"
-            else:
-                action_type = "create"
+        if gitkeep_path in file_paths:
+            action_type = "update"
+        else:
+            action_type = "create"
 
-            commit_actions.append({
-                "action": "create",
-                "file_path": gitkeep_path,
-                "content": base64.b64encode(b"").decode("utf-8"),
-                "encoding": "base64",
-            })
+        commit_actions.append({
+            "action": "create",
+            "file_path": gitkeep_path,
+            "content": base64.b64encode(b"").decode("utf-8"),
+            "encoding": "base64",
+        })
             
     async with httpx.AsyncClient() as client:
         response = await client.post(
