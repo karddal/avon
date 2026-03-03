@@ -7,7 +7,9 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { provision_individual_projects } from "@/lib/actions/provision_individual_projects";
 
 type GitlabData = {
-    gitlab_id: string
+    name: string
+    coursework_id: string,
+    template_id: string
 }
 
 type DockerProps = {
@@ -16,12 +18,11 @@ type DockerProps = {
     gitlab_data: GitlabData
 };
 
-async function provisionForIndividuals() {
+async function provisionForIndividuals(gitlab_data: GitlabData) {
     const req = {
-        name: "",
-        coursework_id: "",
-        template_group_id: "string",
-        template_id: "string",
+        name: gitlab_data.name,
+        coursework_id: gitlab_data.coursework_id,
+        template_id: "79951324" // Hardcoded template id because jack already has this
     }
     await provision_individual_projects(req).then((r) => {
         if (!r.success) {
@@ -56,7 +57,7 @@ export default function ProvisionCoursework({
                             <p className="text-lg font-semibold">Provision for Individuals</p>
                             <p className="text-sm text-muted-foreground">Provision one repository for all students on the unit</p>
                             <div className="flex flex-col gap-2">
-                                <Button onClick={provisionForIndividuals} variant="outline" className="w-full mt-4">
+                                <Button onClick={() => provisionForIndividuals(gitlab_data)} variant="outline" className="w-full mt-4">
                                     Provision for Individuals
                                 </Button>
                             </div>

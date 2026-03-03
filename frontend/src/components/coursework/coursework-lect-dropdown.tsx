@@ -47,7 +47,9 @@ type CourseworkUpdateData = {
 };
 
 type GitlabData = {
-  gitlab_id: string
+  name: string,
+  coursework_id: string,
+  template_id: string
 }
 
 export default function CourseworkLectDropdown({

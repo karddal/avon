@@ -6,7 +6,6 @@ import { getRequestJWT } from "@/lib/auth-utils";
 type ProjectCreate = {
     name: string
     coursework_id: string
-    template_group_id: string
     template_id: string
 }
 
@@ -15,7 +14,7 @@ export async function provision_individual_projects(req: ProjectCreate) {
 
     const token = await getRequestJWT();
     const data = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/projects/create`,
+        `${process.env.NEXT_PUBLIC_API_URL}/projects/create-fork`,
         {
             method: "POST",
             headers: {

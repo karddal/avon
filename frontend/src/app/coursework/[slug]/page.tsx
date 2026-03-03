@@ -38,7 +38,9 @@ type CourseworkUpdateData = {
 };
 
 type GitlabData = {
-  gitlab_id: string
+  name: string,
+  coursework_id: string,
+  template_id: string
 }
 
 async function CourseworkPageContent({
@@ -76,20 +78,7 @@ async function CourseworkPageContent({
     unit_code: c.unit_code,
     max_end_date: end,
   };
-
-  const gitlab_data_req = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/coursework/${slug}/gitlab_data`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      cache: "no-cache",
-    },
-  )
-
-  const gitlab_data: GitlabData = await gitlab_data_req.json()
-  // const gitlab_data = { gitlab_id: gitlab_data_res.gitlab_id }
+  const gitlab_data = { name: c.name, coursework_id: c.id, template_id: "" }
 
 
   return (
