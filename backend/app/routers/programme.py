@@ -28,7 +28,6 @@ async def create_programme(programme: ProgrammeCreate, session: session_dependen
     try:
         if settings.testing_mode:
             gl_data = {"gitlabGroupId": 12345678}
-            print("Testing mode enabled, skipping GitLab API call and using dummy data.")
         else:
             gl_data = await gl_create_programme(programme.name)
         print(gl_data)
