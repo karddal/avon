@@ -281,9 +281,13 @@ async def template_urls(templateId: str, session: session_dependency):
     return urlData
 
 @router.post('/{cw_id}/template/upload-zip', response_model=CourseworkTemplateUploadZip)
-async def upload_zip(cw_id: UUID, courseworkGitLabId: str,  session: session_dependency, file: UploadFile = File(...)):
+async def upload_zip(cw_id: UUID,  session: session_dependency, file: UploadFile = File(...)):
     if not file.filename.endswith(".zip"):
         raise HTTPException(status_code=400, detail="File must be in ZIP format")
+    coursework = session.get(Coursework,cw_id)
+    if coursework is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
+    courseworkGitLabId = coursework.gitlab_id
     try:
         response = await gl_upload_zip(courseworkGitLabId, file)
 
