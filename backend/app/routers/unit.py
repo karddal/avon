@@ -126,6 +126,8 @@ async def get_unit_details(unit_id: UUID, session: session_dependency):
             status_code=status.HTTP_404_NOT_FOUND, detail="Unit not found"
         )
 
+    print("[BACKEND] UNIT:", unit)
+
     return unit
 
 @router.get("/{unit_id}/with_dates", response_model=UnitReadWithDates, status_code=status.HTTP_200_OK)
