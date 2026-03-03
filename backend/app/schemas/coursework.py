@@ -63,6 +63,7 @@ class CourseworkUpdateFormData(CourseworkRead):
     unit_name: str
     unit_code: str
     gitlabId: str
+    templateId: int
     max_end_date: datetime.date
 
 class CourseworkCreate(BaseModel):

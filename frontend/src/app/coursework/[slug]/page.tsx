@@ -23,6 +23,7 @@ type CourseworkUpdateReqResponse = {
   unit_name: string;
   unit_code: string;
   gitlabId: string;
+  templateId: string;
   max_end_date: string;
 };
 
@@ -37,6 +38,7 @@ type CourseworkUpdateData = {
   unit_name: string;
   unit_code: string;
   gitlabId: string;
+  templateId: string;
   max_end_date: Date;
 };
 
@@ -74,13 +76,14 @@ async function CourseworkPageContent({
     unit_name: c.unit_name,
     unit_code: c.unit_code,
     gitlabId: c.gitlabId,
+    templateId: c.templateId,
     max_end_date: end,
   };
   // Hardcoded the template id here, when merged, I should be able to get the template id from jack's code
   const gitlab_data = {
     name: c.name,
     coursework_id: c.id,
-    template_id: "79951324",
+    template_id: String(data.templateId),
   };
 
   return (
