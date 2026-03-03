@@ -451,9 +451,9 @@ async def gl_template_urls(template_id):
 
 # All file stuff is done in memory, as automatically delted after use, and we set limits on file size anyway
 async def check_file_safe(file: UploadFile):
-    MAX_COMPRESSED = 0
-    MAX_UNCOMPRESSED = 0
-    MAX_FILES = 0
+    MAX_COMPRESSED = 10 * 1024 * 1024 # 10MB
+    MAX_UNCOMPRESSED = 50 * 1024 * 1024 # 500MB
+    MAX_FILES = 1000
 
     if not file.filename or not file.filename.lower().endswith(".zip"):
         raise HTTPException(status_code=400, detail="File must be a .zip file")
