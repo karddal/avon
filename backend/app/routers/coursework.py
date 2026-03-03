@@ -81,8 +81,6 @@ async def list_coursework_events(
         unit_ids: Optional[list[UUID]] = None,
         current_user: CurrentUser = Depends(get_current_user_with_role)
         ):
-    print("from_:", from_, type(from_))
-    print("to:", to, type(to))
     statement = (select(Coursework, Unit)
                  .join(Unit, Unit.id == Coursework.unit_id))
 
@@ -160,7 +158,8 @@ async def delete_coursework(id: UUID, session: session_dependency):
     session.commit()
 
     try:
-        await gl_delete_coursework(coursework.gitlab_id)
+        if not settings.testing_mode:
+            await gl_delete_coursework(coursework.gitlab_id)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY, 
@@ -186,9 +185,10 @@ async def update_coursework(id: UUID, coursework: CourseworkUpdate, session: ses
 
     coursework_data = coursework.model_dump(exclude_unset=True)
     coursework_db.sqlmodel_update(coursework_data)
-
+    
     try:
-        await gl_update_coursework(coursework_db.gitlab_id, coursework_db.name)
+        if not settings.testing_mode:
+            await gl_update_coursework(coursework_db.gitlab_id, coursework_db.name)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY, 

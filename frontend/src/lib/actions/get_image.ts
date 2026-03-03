@@ -1,10 +1,19 @@
 "use server";
 
+import path from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { pool } from "@/lib/actions/db_pool";
 
+var dbPath = "../sqlite.db";
+if (process.env.CI_MODE === "True") {
+  dbPath = path.resolve(process.cwd(), "../../..", "sqlite.db");
+}
+
 export async function get_user_image_from_id(user_id: string): Promise<string> {
-  const isProd = process.env.NODE_ENV === "production";
+  const isProd =
+    process.env.NODE_ENV === "production" &&
+    process.env.TESTING_MODE !== "True";
+
   if (isProd) {
     const db = pool;
 
@@ -17,7 +26,7 @@ export async function get_user_image_from_id(user_id: string): Promise<string> {
     }
     return out;
   } else {
-    const db = new DatabaseSync("../sqlite.db");
+    const db = new DatabaseSync(dbPath);
     const _session = db.createSession();
     const query = db.prepare("SELECT image FROM user WHERE id = ?");
     const result = query.get(user_id) as { name: string } | undefined;

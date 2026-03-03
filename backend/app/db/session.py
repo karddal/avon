@@ -40,7 +40,7 @@ def get_session():
 # Create the tables
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
-    print("Database created")
+    print("[BACKEND] Database created")
 
 SessionDep = Annotated[Session, Depends(get_session)]
 
@@ -48,6 +48,4 @@ SessionDep = Annotated[Session, Depends(get_session)]
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     create_db_and_tables()
-    print("yo yo")
-    print("beep beep")
     yield

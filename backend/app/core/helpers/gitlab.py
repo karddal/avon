@@ -50,7 +50,7 @@ async def gl_create_programme(name):
                 }
 
         except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+            print(f"[BACKEND] Network Error: {err}")
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
         
     return {
@@ -75,7 +75,6 @@ async def gl_delete_programme(gitlab_group_id):
                 )
 
                 data = response.json()
-                print(data)
 
                 if response.status_code != 202:
                     return {
@@ -288,7 +287,6 @@ async def gl_delete_coursework(gitlab_group_id):
                 )
 
                 data = response.json()
-                print(data)
 
                 if response.status_code != 202:
                     return {

@@ -22,8 +22,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import UserCard from "@/components/user-card";
-import { batch_add_students_to_unit } from "@/lib/actions/batch_add_students_to_unit";
-import { get_students } from "@/lib/actions/get_students";
+import { batch_add_lecturers_to_unit } from "@/lib/actions/batch_add_lecturers_to_unit";
+import { get_lecturers } from "@/lib/actions/get_lecturers";
 import {
   type SearchResponse,
   search_by_name,
@@ -40,7 +40,7 @@ function _getInitials(name: string) {
   return (first + last).toUpperCase();
 }
 
-export default function AddMember({ unit_id }: { unit_id: string }) {
+export default function AddMemberLecturer({ unit_id }: { unit_id: string }) {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<SearchResponse>({
@@ -58,9 +58,9 @@ export default function AddMember({ unit_id }: { unit_id: string }) {
 
   async function handleSend() {
     const userIds = selectedUsers.map((user) => user.id);
-    const response = await batch_add_students_to_unit(unit_id, userIds);
+    const response = await batch_add_lecturers_to_unit(unit_id, userIds);
     if (response.success) {
-      toast.success("Added student(s) to unit!");
+      toast.success("Added lecturer(s) to unit!");
     } else {
       toast.error("Adding failed! ");
     }
@@ -70,9 +70,9 @@ export default function AddMember({ unit_id }: { unit_id: string }) {
     try {
       setDisabledUsers([]);
 
-      const [disabledS] = await Promise.all([get_students(unit_id)]);
+      const [disabledL] = await Promise.all([get_lecturers(unit_id)]);
 
-      const disabledU = [...(disabledS?.students || [])];
+      const disabledU = [...(disabledL?.lecturers || [])];
 
       setDisabledUsers(disabledU);
     } catch (_error) {}
@@ -88,7 +88,7 @@ export default function AddMember({ unit_id }: { unit_id: string }) {
       query,
       offset,
       limit,
-      "user",
+      "lecturer",
     );
     setLoading(false);
     setResponse(response);
