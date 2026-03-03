@@ -31,6 +31,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import ProvisionCoursework from "./provision-coursework";
+import { StringToBoolean } from "class-variance-authority/types";
 
 type CourseworkUpdateData = {
   id: string;
@@ -45,14 +46,20 @@ type CourseworkUpdateData = {
   max_end_date: Date;
 };
 
+type GitlabData = {
+  gitlab_id: string
+}
+
 export default function CourseworkLectDropdown({
   slug,
   _me,
   coursework_update_data,
+  gitlab_data
 }: {
   slug: string;
   _me: string;
   coursework_update_data: CourseworkUpdateData;
+  gitlab_data: GitlabData
 }) {
   const [showDelete, setShowDelete] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
@@ -118,6 +125,7 @@ export default function CourseworkLectDropdown({
       <ProvisionCoursework
         open_state={showProvision}
         set_open_state={setShowProvision}
+        gitlab_data={gitlab_data}
       ></ProvisionCoursework>
 
       <CreateDockerfile

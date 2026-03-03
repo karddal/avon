@@ -9,7 +9,7 @@ from app.core.settings import settings
 
 from app.models.coursework import Coursework
 from app.models.unit import Unit, UnitWithCourseworks
-from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkUpdate, CourseworkDelete
+from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkUpdate, CourseworkDelete, GitlabData
 from app.schemas.coursework import CourseworkUpdateFormData
 
 router = APIRouter(prefix = "/coursework", tags=["coursework"])
@@ -128,3 +128,10 @@ async def update_coursework(id: UUID, coursework: CourseworkUpdate, session: ses
     session.refresh(coursework_db)
     return coursework_db
 
+@router.get("/{id}/gitlab_data", response_model=GitlabData)
+async def get_gitlab_data(id: UUID, session: session_dependency):
+    coursework_db = session.get(Coursework, id)
+    return GitlabData(
+        gitlab_id=coursework_db.gitlab_id
+    )
+    

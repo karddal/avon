@@ -80,3 +80,5 @@ class CourseworkDelete(BaseModel):
     id: UUID
     deletion_successful: bool
 
+class GitlabData(BaseModel):
+    gitlab_id: str

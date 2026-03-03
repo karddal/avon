@@ -1,54 +1,41 @@
 
 "use client";
 
-import {
-    Check,
-    ChevronDown,
-    ChevronRight,
-    Copy,
-    Download,
-    FileCheck,
-    Plus,
-    Search,
-    Trash2,
-} from "lucide-react";
 import { type Dispatch, type SetStateAction, useMemo, useState } from "react";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { IMAGES } from "@/lib/docker/image";
-import { TOOLS } from "@/lib/docker/tools";
-import type { Image, Tool } from "@/lib/docker/types";
-import { cn } from "@/lib/utils";
+import { provision_individual_projects } from "@/lib/actions/provision_individual_projects";
 
-interface DockerConfig {
-    baseImage: Image;
-    workDir: string;
-    installCommands: string[];
-    additionalCommands: { id: string; value: string }[];
-    envVars: { id: string; key: string; value: string }[];
-    finalCommands: { id: string; value: string }[];
+type GitlabData = {
+    gitlab_id: string
 }
 
 type DockerProps = {
     open_state: boolean;
     set_open_state: Dispatch<SetStateAction<boolean>>;
+    gitlab_data: GitlabData
 };
+
+async function provisionForIndividuals() {
+    const req = {
+        name: "",
+        coursework_id: "",
+        template_group_id: "string",
+        template_id: "string",
+    }
+    await provision_individual_projects(req).then((r) => {
+        if (!r.success) {
+            console.log("Something went wrong")
+        }
+    })
+}
 
 export default function ProvisionCoursework({
     open_state,
     set_open_state,
+    gitlab_data,
 }: DockerProps) {
+    console.log(gitlab_data)
     return (
         <Dialog open={open_state} onOpenChange={set_open_state}>
             <DialogContent className="max-w-full! lg:max-w-[70%]! xl:max-w-[60%]! w-full max-h-full! lg:max-h-[70vh]! overflow-y-auto p-0 border-none shadow-none">
@@ -61,6 +48,7 @@ export default function ProvisionCoursework({
                             <p className="text-sm text-muted-foreground mb-6">
                                 Decide how to provision courseworks
                             </p>
+
                         </div>
                     </div>
                     <div className="flex flex-row mx-10 gap-8 justify-between mb-10">
@@ -68,7 +56,7 @@ export default function ProvisionCoursework({
                             <p className="text-lg font-semibold">Provision for Individuals</p>
                             <p className="text-sm text-muted-foreground">Provision one repository for all students on the unit</p>
                             <div className="flex flex-col gap-2">
-                                <Button variant="outline" className="w-full mt-4">
+                                <Button onClick={provisionForIndividuals} variant="outline" className="w-full mt-4">
                                     Provision for Individuals
                                 </Button>
                             </div>
@@ -95,3 +83,5 @@ export default function ProvisionCoursework({
         </Dialog >
     );
 }
+
+

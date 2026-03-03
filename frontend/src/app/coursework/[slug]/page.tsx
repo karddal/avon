@@ -37,6 +37,10 @@ type CourseworkUpdateData = {
   max_end_date: Date;
 };
 
+type GitlabData = {
+  gitlab_id: string
+}
+
 async function CourseworkPageContent({
   params,
 }: {
@@ -73,6 +77,21 @@ async function CourseworkPageContent({
     max_end_date: end,
   };
 
+  const gitlab_data_req = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/coursework/${slug}/gitlab_data`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      cache: "no-cache",
+    },
+  )
+
+  const gitlab_data: GitlabData = await gitlab_data_req.json()
+  // const gitlab_data = { gitlab_id: gitlab_data_res.gitlab_id }
+
+
   return (
     <>
       {/* Header */}
@@ -96,6 +115,7 @@ async function CourseworkPageContent({
                   _me={me}
                   slug={slug}
                   coursework_update_data={data}
+                  gitlab_data={gitlab_data}
                 ></CourseworkLectDropdown>
               )}
             </div>
