@@ -127,12 +127,3 @@ async def update_coursework(id: UUID, coursework: CourseworkUpdate, session: ses
     session.commit()
     session.refresh(coursework_db)
     return coursework_db
-
-@router.get("/{id}/gitlab_data", response_model=GitlabData)
-async def get_gitlab_data(id: UUID, session: session_dependency):
-    coursework_db = session.get(Coursework, id)
-    return GitlabData(
-        name=coursework_db.name,
-        gitlab_id=coursework_db.gitlab_id
-    )
-    

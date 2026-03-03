@@ -79,8 +79,3 @@ class CourseworkUpdate(BaseModel):
 class CourseworkDelete(BaseModel):
     id: UUID
     deletion_successful: bool
-
-class GitlabData(BaseModel):
-    name: str
-    gitlab_id: str
-
