@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from programme import Programme
     from unit_enrollment import UnitEnrollment
     from coursework import Coursework
+    from notification import Notification
 
 class Unit(SQLModel, table=True):
     id: uuid.UUID = Field(primary_key=True, default_factory=uuid.uuid4)
@@ -25,6 +26,10 @@ class Unit(SQLModel, table=True):
     enrollments: List["UnitEnrollment"] = Relationship(back_populates="unit",sa_relationship_kwargs={"cascade": "all, delete-orphan"})
     courseworks: List["Coursework"] = Relationship(back_populates="unit",sa_relationship_kwargs={"cascade": "all, delete-orphan"})
 
+    notifications: List["Notification"] = Relationship(back_populates="unit", sa_relationship_kwargs={"cascade": "all, delete-orphan"})
+
+    def __hash__(self):
+        return self.id.__hash__()
 class UnitWithCourseworks(SQLModel):
     id: uuid.UUID
     unit_code: str

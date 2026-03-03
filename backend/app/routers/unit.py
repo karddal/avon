@@ -2,7 +2,7 @@ from datetime import date
 from typing import Annotated
 from uuid import UUID
 
-from app.core.helpers.gitlab import gl_create_unit
+from app.core.helpers.gitlab import gl_create_unit, gl_delete_unit, gl_update_unit
 from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlmodel import Session, select
 from sqlalchemy.orm.strategy_options import selectinload
@@ -141,6 +141,8 @@ async def get_unit_details(unit_id: UUID, session: session_dependency):
             status_code=status.HTTP_404_NOT_FOUND, detail="Unit not found"
         )
 
+    print("[BACKEND] UNIT:", unit)
+
     return unit
 
 @router.get("/{unit_id}/with_dates", response_model=UnitReadWithDates, status_code=status.HTTP_200_OK)
@@ -170,7 +172,6 @@ async def get_unit_lecturers(unit_id: UUID, session: session_dependency):
     lects = session.exec(
         select(UnitEnrollment.user_id).join(Unit).where(Unit.id == unit_id).where(UnitEnrollment.type == "lecturer")
     ).all()
-    print(lects)
     if not lects:
         raise HTTPException(status_code=404, detail="No lecturers found.")
     return UnitLecturers(
@@ -212,6 +213,15 @@ async def update_unit(unit_id: UUID, unit: UnitUpdate, session: session_dependen
     session.commit()
     session.refresh(db_unit)
 
+    try:
+        if not settings.testing_mode:
+            await gl_update_unit(db_unit.gitlab_id, db_unit.name)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY, 
+            detail="Database failed. GitLab group rolled back."
+        )
+
     return db_unit
 
 
@@ -223,6 +233,15 @@ async def delete_unit(unit_id: UUID, session: session_dependency):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Unit not found."
         )
+    
+    try:
+        if not settings.testing_mode:
+            await gl_delete_unit(unit.gitlab_id)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail="Database failed. GitLab group rolled back."
+    )
 
     session.delete(unit)
     session.commit()
@@ -247,7 +266,6 @@ async def get_courseworks(unit_id: UUID, session: session_dependency):
             status_code=status.HTTP_404_NOT_FOUND, detail = "Unit not found"
         )
     courseworks = unit.courseworks
-    print(courseworks)
     return CourseworkAll(courseworks=courseworks)
 
 

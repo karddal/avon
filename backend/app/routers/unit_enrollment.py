@@ -52,7 +52,7 @@ def delete_unit_enrollment(payload: UnitEnrollmentDelete, session: session_depen
     return {"message": "User enrollment deleted successfully"}
 
 @router.post("/batch", status_code=201)
-def enroll_unit_batch(payload: UnitEnrollmentBatchCreate, session: session_dependency):
+def enroll_unit_batch_students(payload: UnitEnrollmentBatchCreate, session: session_dependency):
     if not session.get(Unit, payload.unit_id):
         raise HTTPException(status_code=404, detail="Unit not found")
 
@@ -62,7 +62,6 @@ def enroll_unit_batch(payload: UnitEnrollmentBatchCreate, session: session_depen
     )
 
     current_user_ids = session.exec(statement).all()
-    print(payload.unit_id, current_user_ids)
     existing_user_ids = set(payload.user_ids) & set(current_user_ids)
 
     if existing_user_ids:
@@ -74,6 +73,36 @@ def enroll_unit_batch(payload: UnitEnrollmentBatchCreate, session: session_depen
     # create new ones in bulk
     new_enrollments = [
         UnitEnrollment(unit_id=payload.unit_id, user_id=user_id, type="student")
+        for user_id in payload.user_ids
+    ]
+    
+    session.add_all(new_enrollments)
+    session.commit()
+    
+    return {"message": f"{len(new_enrollments)} users enrolled successfully"}
+
+@router.post("/batch/lecturers", status_code=201)
+def enroll_unit_batch_lecturers(payload: UnitEnrollmentBatchCreate, session: session_dependency):
+    if not session.get(Unit, payload.unit_id):
+        raise HTTPException(status_code=404, detail="Unit not found")
+
+    # find existing ones in bulk
+    statement = select(UnitEnrollment.user_id).where(
+        UnitEnrollment.unit_id == payload.unit_id
+    )
+
+    current_user_ids = session.exec(statement).all()
+    existing_user_ids = set(payload.user_ids) & set(current_user_ids)
+
+    if existing_user_ids:
+        raise HTTPException(
+            status_code=409, 
+            detail="Some users are already enrolled!"
+        )
+
+    # create new ones in bulk
+    new_enrollments = [
+        UnitEnrollment(unit_id=payload.unit_id, user_id=user_id, type="lecturer")
         for user_id in payload.user_ids
     ]
     

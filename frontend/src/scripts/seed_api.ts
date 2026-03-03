@@ -1,12 +1,19 @@
 import type { DatabaseSync } from "node:sqlite";
 import { create_coursework } from "@/scripts/util/coursework";
-import { createUnitWithStudents } from "@/scripts/util/create-unit-w-students";
+import { createUnitWithStudentsAndLecturers } from "@/scripts/util/create-unit-w-students";
 import { create_programme } from "@/scripts/util/programme";
 
 export async function api_seed(db: DatabaseSync) {
-  const rows = db.prepare("SELECT id FROM user").all();
-  const userIds: string[] = rows.map((row) => String(row.id));
-  console.log(userIds);
+  const students = db
+    .prepare("SELECT id FROM user WHERE user.role = 'user'")
+    .all();
+  const studentIds: string[] = students.map((student) => String(student.id));
+  const lecturers = db
+    .prepare("SELECT id FROM user WHERE user.role = 'lecturer'")
+    .all();
+  const lecturerIds: string[] = lecturers.map((lecturer) =>
+    String(lecturer.id),
+  );
 
   // --- 1. Create Programmes ---
   const programmesToCreate = [
@@ -53,7 +60,7 @@ export async function api_seed(db: DatabaseSync) {
   // --- 2. Create Units & Coursework ---
 
   // Y1 2024/2025 Units
-  const _unitMaths24 = await createUnitWithStudents(
+  const _unitMaths24 = await createUnitWithStudentsAndLecturers(
     db,
     idY1_2425,
     {
@@ -62,10 +69,11 @@ export async function api_seed(db: DatabaseSync) {
       colour: "abcdef",
       unit_code: "COMS10014",
     },
-    userIds,
+    studentIds,
+    lecturerIds,
   );
 
-  const unitArch24 = await createUnitWithStudents(
+  const unitArch24 = await createUnitWithStudentsAndLecturers(
     db,
     idY1_2425,
     {
@@ -74,10 +82,11 @@ export async function api_seed(db: DatabaseSync) {
       colour: "343434",
       unit_code: "COMS10015",
     },
-    userIds,
+    studentIds,
+    lecturerIds,
   );
 
-  const unitImpFunc24 = await createUnitWithStudents(
+  const unitImpFunc24 = await createUnitWithStudentsAndLecturers(
     db,
     idY1_2425,
     {
@@ -86,11 +95,12 @@ export async function api_seed(db: DatabaseSync) {
       colour: "565656",
       unit_code: "COMS10016",
     },
-    userIds,
+    studentIds,
+    lecturerIds,
   );
 
   // Y1 2025/2026 Units
-  const _unitMaths25 = await createUnitWithStudents(
+  const _unitMaths25 = await createUnitWithStudentsAndLecturers(
     db,
     idY1_2526,
     {
@@ -99,10 +109,11 @@ export async function api_seed(db: DatabaseSync) {
       colour: "abcdef",
       unit_code: "COMS10014",
     },
-    userIds,
+    studentIds,
+    lecturerIds,
   );
 
-  const unitArch25 = await createUnitWithStudents(
+  const unitArch25 = await createUnitWithStudentsAndLecturers(
     db,
     idY1_2526,
     {
@@ -111,10 +122,11 @@ export async function api_seed(db: DatabaseSync) {
       colour: "343434",
       unit_code: "COMS10015",
     },
-    userIds,
+    studentIds,
+    lecturerIds,
   );
 
-  const unitImpFunc25 = await createUnitWithStudents(
+  const unitImpFunc25 = await createUnitWithStudentsAndLecturers(
     db,
     idY1_2526,
     {
@@ -123,11 +135,12 @@ export async function api_seed(db: DatabaseSync) {
       colour: "565656",
       unit_code: "COMS10016",
     },
-    userIds,
+    studentIds,
+    lecturerIds,
   );
 
   // Y2 2025/2026 Units
-  const unitSE25 = await createUnitWithStudents(
+  const unitSE25 = await createUnitWithStudentsAndLecturers(
     db,
     idY2_2526,
     {
@@ -136,10 +149,11 @@ export async function api_seed(db: DatabaseSync) {
       colour: "112233",
       unit_code: "COMS20006",
     },
-    userIds,
+    studentIds,
+    lecturerIds,
   );
 
-  await createUnitWithStudents(
+  await createUnitWithStudentsAndLecturers(
     db,
     idY2_2526,
     {
@@ -148,10 +162,11 @@ export async function api_seed(db: DatabaseSync) {
       colour: "454545",
       unit_code: "COMS20007",
     },
-    userIds,
+    studentIds,
+    lecturerIds,
   );
 
-  await createUnitWithStudents(
+  await createUnitWithStudentsAndLecturers(
     db,
     idY2_2526,
     {
@@ -160,7 +175,8 @@ export async function api_seed(db: DatabaseSync) {
       colour: "676767",
       unit_code: "COMS20017",
     },
-    userIds,
+    studentIds,
+    lecturerIds,
   );
 
   // --- 3. Create Coursework ---

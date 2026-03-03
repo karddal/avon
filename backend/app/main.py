@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.db.session import create_db_and_tables, lifespan
 from app.models.coursework import Coursework
 from app.models.unit import UnitWithCourseworks
-from app.routers import coursework
+from app.routers import coursework, notification
 from app.routers import unit
 from app.routers import check, me
 from app.routers import programme
@@ -20,8 +20,6 @@ app = FastAPI(lifespan=lifespan)
 
 origins = os.getenv("CORS_ORIGIN")
 
-print("CORS origins:", origins)
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -35,6 +33,7 @@ app.include_router(check.router)
 app.include_router(coursework.router)
 app.include_router(me.router)
 app.include_router(programme.router)
+app.include_router(notification.router)
 Coursework.model_rebuild()
 UnitWithCourseworks.model_rebuild()
 
@@ -43,7 +42,7 @@ app.include_router(unit_enrollment.router)
 create_db_and_tables()
 
 def main():
-    print("Hello from backend!")
+    print("[BACKEND] Hello from backend!")
 
 
 if __name__ == "__main__":
