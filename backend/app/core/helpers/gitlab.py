@@ -384,7 +384,6 @@ async def gl_activate_template_project(coursework_id):
 async def gl_template_files(template_id):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
-    #print("yyoyo beeping brev")
     async with httpx.AsyncClient() as client:
         try:
             response = await client.get(
