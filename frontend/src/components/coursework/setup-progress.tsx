@@ -18,7 +18,10 @@ export default async function SetupPogress({ cw_id }: setupProgress) {
     >
       <div className="flex flex-col xl:flex-row items-center justify-center">
         {steps.map((step, index) => (
-          <div key={step.title} className="flex flex-col xl:flex-row items-center w-full xl:w-auto">
+          <div
+            key={step.title}
+            className="flex flex-col xl:flex-row items-center w-full xl:w-auto"
+          >
             {step.completed && (
               <div
                 className="flex w-full xl:w-auto items-center justify-between rounded-xl 

@@ -9,7 +9,7 @@ module.exports = (phase: string, _defaultConfig: NextConfig) => {
       experimental: {
         globalNotFound: true,
         serverActions: {
-          bodySizeLimit: '50mb',
+          bodySizeLimit: "50mb",
         },
       },
 
@@ -32,7 +32,7 @@ module.exports = (phase: string, _defaultConfig: NextConfig) => {
     experimental: {
       globalNotFound: true,
       serverActions: {
-        bodySizeLimit: '50mb',
+        bodySizeLimit: "50mb",
       },
     },
     assetPrefix: undefined,
