@@ -2,6 +2,8 @@ import { Suspense } from "react";
 import CourseworkLectDropdown from "@/components/coursework/coursework-lect-dropdown";
 import Repository from "@/components/coursework/repository";
 import SetupProgress from "@/components/coursework/setup-progress";
+import { DropdownCard } from "@/components/dropdown-card";
+import RunTestsItem from "@/components/run-tests-item";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getRequestJWT, requireSession } from "@/lib/auth-utils";
@@ -122,9 +124,6 @@ async function CourseworkPageContent({
               </Suspense>
             </CardContent>
           </Card>
-
-          {/* Repo */}
-          <Repository></Repository>
         </div>
         <div className="flex flex-col xl:col-span-1 lg:col-span-2 gap-4 min-h-0">
           <Suspense>
