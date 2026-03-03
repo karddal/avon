@@ -4,6 +4,7 @@ import {
   BookCheck,
   BookDashed,
   Container,
+  LayersPlus,
   Menu,
   ServerCog,
   SquarePen,
@@ -32,6 +33,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import CreateTemplate from "./create-templates";
+import ProvisionCoursework from "./provision-coursework";
 
 type CourseworkUpdateData = {
   id: string;
@@ -47,14 +49,22 @@ type CourseworkUpdateData = {
   gitlabId: string;
 };
 
+type GitlabData = {
+  name: string;
+  coursework_id: string;
+  template_id: string;
+};
+
 export default function CourseworkLectDropdown({
   slug,
   _me,
   coursework_update_data,
+  gitlab_data,
 }: {
   slug: string;
   _me: string;
   coursework_update_data: CourseworkUpdateData;
+  gitlab_data: GitlabData;
 }) {
   const [showDelete, setShowDelete] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
@@ -64,6 +74,7 @@ export default function CourseworkLectDropdown({
   const refresh = useCallback(() => {
     router.refresh();
   }, [router]);
+  const [showProvision, setShowProvision] = useState(false);
 
   return (
     <div className="aspect-square">
@@ -99,6 +110,14 @@ export default function CourseworkLectDropdown({
             Create Dockerfile
           </DropdownMenuItem>
 
+          <DropdownMenuItem
+            disabled={false}
+            onSelect={() => setShowProvision(true)}
+          >
+            <LayersPlus className="mr-2 h-4 w-4" />
+            Provision Coursework
+          </DropdownMenuItem>
+
           <DropdownMenuItem disabled={true}>
             <BookCheck className="mr-2 h-4 w-4" />
             Results
@@ -128,6 +147,11 @@ export default function CourseworkLectDropdown({
         courseworkId={coursework_update_data.id}
         refresh={refresh}
       />
+      <ProvisionCoursework
+        open_state={showProvision}
+        set_open_state={setShowProvision}
+        gitlab_data={gitlab_data}
+      ></ProvisionCoursework>
 
       <CreateDockerfile
         open_state={showDocker}

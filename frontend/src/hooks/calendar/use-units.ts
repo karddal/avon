@@ -9,7 +9,13 @@ const fetcher = async (url: string) => {
   return [];
 };
 
-export type UnitEvent = { id: string; name: string };
+export type UnitEvent = {
+  id: string;
+  name: string;
+  unit_code: string;
+  programme_start_date: string;
+  programme_end_date: string;
+};
 
 export function useUnits() {
   const { data, error, isLoading, mutate } = useSWR<UnitEvent[]>(
@@ -24,6 +30,7 @@ export function useUnits() {
   const unitOptions = (data ?? []).map((unit) => ({
     value: unit.id,
     label: unit.name,
+    label2: `${unit.unit_code} •${unit.programme_start_date}-${unit.programme_end_date}`,
   }));
 
   return { unitOptions, isLoading, error, refresh: mutate };

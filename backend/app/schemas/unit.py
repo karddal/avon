@@ -111,3 +111,6 @@ class UnitEventRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: uuid.UUID
     name: Name
+    unit_code: str
+    programme_start_date: str
+    programme_end_date: str

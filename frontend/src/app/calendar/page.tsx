@@ -4,7 +4,7 @@ import CalendarDashboard from "@/components/calendar/calendar-dashboard";
 
 async function CalendarPageContent() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 my-2">
       <CalendarDashboard />
     </div>
   );
