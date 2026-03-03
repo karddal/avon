@@ -34,7 +34,7 @@
     - [02-02-2026 Sprint 4 Initial meeting](meetings/sprint4/02-02-2026-team.md)
     - [04-02-2026 Sprint 4 midweek meeting / mentor](meetings/sprint4/04-02-2026-team.md)
     - [06-02-2026 Sprint 4 review meeting](meetings/sprint4/06-02-2026-team.md)
-  - Sprint 5
+  - [Sprint 5](meetings/sprint/README.md)
     - [09-02-2026 Sprint 5 Initial Meeting](meetings/sprint5/09-02-2026-team.md)
     - [11-02-2026 Sprint 5 Midweek Meeting](meetings/sprint5/11-02-2026-team.md)
     - [13-02-2026 Sprint 5 Review Meeting](meetings/sprint5/13-02-2026-team.md)
