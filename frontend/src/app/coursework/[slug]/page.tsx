@@ -38,10 +38,10 @@ type CourseworkUpdateData = {
 };
 
 type GitlabData = {
-  name: string,
-  coursework_id: string,
-  template_id: string
-}
+  name: string;
+  coursework_id: string;
+  template_id: string;
+};
 
 async function CourseworkPageContent({
   params,
@@ -79,8 +79,11 @@ async function CourseworkPageContent({
     max_end_date: end,
   };
   // Hardcoded the template id here, when merged, I should be able to get the template id from jack's code
-  const gitlab_data = { name: c.name, coursework_id: c.id, template_id: "79951324" }
-
+  const gitlab_data = {
+    name: c.name,
+    coursework_id: c.id,
+    template_id: "79951324",
+  };
 
   return (
     <>

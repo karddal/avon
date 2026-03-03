@@ -7,7 +7,7 @@ from app.core.helpers.gitlab import gl_create_fork, gl_create_project, gl_create
 from app.db.session import get_session
 from app.models.coursework import Coursework
 from app.models.unit_enrollment import UnitEnrollment
-from app.schemas.project import ProjectCreate, ProjectDelete, ProjectFork, ProjectRead, ProjectSkeleton, ProjectsInCoursework, TemplateCreate
+from app.schemas.project import ProjectCreate, ProjectFork, ProjectRead, ProjectSkeleton, ProjectsInCoursework, TemplateCreate
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 session_dependency = Annotated[Session, Depends(get_session)]
@@ -29,7 +29,7 @@ async def create_templates(template: TemplateCreate, session: session_dependency
         )
 
     try:
-        gl_template_project = await gl_create_template_project(gl_template_group["gitlabGroupId"])
+        await gl_create_template_project(gl_template_group["gitlabGroupId"])
     except Exception:
         raise HTTPException(                
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
@@ -52,7 +52,7 @@ async def create_projects(project: ProjectCreate, session: session_dependency):
 
     for student in students_enrolled:
         try:
-            gl_project = await gl_create_project(name, student, gitlab_id, project.template_group_id, project.template_id)
+            await gl_create_project(name, student, gitlab_id, project.template_group_id, project.template_id)
         except Exception:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
@@ -78,8 +78,8 @@ async def create_fork(project: ProjectFork, session: session_dependency):
 
     for student in students_enrolled:
         try:
-            gl_project = await gl_create_fork(name, user_id=student, group_id=gitlab_id, template_id=project.template_id)
             # Call helper function to create project
+            await gl_create_fork(name, user_id=student, group_id=gitlab_id, template_id=project.template_id)
         except Exception:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 

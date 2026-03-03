@@ -5,7 +5,7 @@ from app.db.session import create_db_and_tables, lifespan
 from app.models.coursework import Coursework
 from app.models.unit import UnitWithCourseworks
 from app.routers import coursework, project
-from app.routers import coursework, notification
+from app.routers import notification
 from app.routers import unit
 from app.routers import check, me
 from app.routers import programme

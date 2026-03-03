@@ -1,13 +1,14 @@
 "use client";
 
+import { StringToBoolean } from "class-variance-authority/types";
 import {
   BookCheck,
   Container,
+  LayersPlus,
   Menu,
   ServerCog,
   SquarePen,
   SquareX,
-  LayersPlus
 } from "lucide-react";
 import { useState } from "react";
 import CreateDockerfile from "@/components/coursework/create-dockerfile";
@@ -31,7 +32,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import ProvisionCoursework from "./provision-coursework";
-import { StringToBoolean } from "class-variance-authority/types";
 
 type CourseworkUpdateData = {
   id: string;
@@ -47,26 +47,26 @@ type CourseworkUpdateData = {
 };
 
 type GitlabData = {
-  name: string,
-  coursework_id: string,
-  template_id: string
-}
+  name: string;
+  coursework_id: string;
+  template_id: string;
+};
 
 export default function CourseworkLectDropdown({
   slug,
   _me,
   coursework_update_data,
-  gitlab_data
+  gitlab_data,
 }: {
   slug: string;
   _me: string;
   coursework_update_data: CourseworkUpdateData;
-  gitlab_data: GitlabData
+  gitlab_data: GitlabData;
 }) {
   const [showDelete, setShowDelete] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showDocker, setShowDocker] = useState(false);
-  const [showProvision, setShowProvision] = useState(false)
+  const [showProvision, setShowProvision] = useState(false);
 
   return (
     <div className="aspect-square">
