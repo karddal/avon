@@ -52,3 +52,7 @@ Cypress.Commands.add(
     cy.getCookie("__Secure-better-auth.session_token").should("exist");
   },
 );
+
+Cypress.Commands.add("getByCy", (value: string) => {
+  return cy.get(`[data-cy="${value}"]`);
+});

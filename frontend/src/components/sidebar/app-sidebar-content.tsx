@@ -1,16 +1,29 @@
 import {
   BookCheck,
+  Calendar,
   ChartLine,
   Layers,
   LayoutDashboard,
   NotepadText,
   Settings,
+  SettingsIcon,
   SwatchBook,
   User,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import SettingsContents from "@/components/settings/settings-contents";
 import { SidebarLink } from "@/components/sidebar/sidebar-link";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Kbd, KbdGroup } from "@/components/ui/kbd";
 import { requireSession } from "@/lib/auth-utils";
 import LogoutButton from "../logout-button";
@@ -50,12 +63,6 @@ const adminItems = [
     bottom: false,
   },
   {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-    bottom: true,
-  },
-  {
     title: "Units",
     url: "/units",
     icon: SwatchBook,
@@ -71,6 +78,12 @@ const adminItems = [
     title: "Programmes",
     url: "/programmes",
     icon: Layers,
+    bottom: false,
+  },
+  {
+    title: "Calendar",
+    url: "/calendar",
+    icon: Calendar,
     bottom: false,
   },
 ];
@@ -95,12 +108,6 @@ const lecturerItems = [
     bottom: false,
   },
   {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-    bottom: true,
-  },
-  {
     title: "Units",
     url: "/units",
     icon: SwatchBook,
@@ -110,6 +117,12 @@ const lecturerItems = [
     title: "Coursework",
     url: "/coursework",
     icon: NotepadText,
+    bottom: false,
+  },
+  {
+    title: "Calendar",
+    url: "/calendar",
+    icon: Calendar,
     bottom: false,
   },
 ];
@@ -125,12 +138,6 @@ const studentItems = [
     url: "/coursework",
     icon: NotepadText,
     bottom: false,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-    bottom: true,
   },
 ];
 
@@ -203,21 +210,41 @@ export default async function AppSidebarContent() {
           </div>
 
           <div className="flex flex-col border-t">
-            {items
-              .filter((item) => item.bottom)
-              .map((item) => (
-                <SidebarMenuItem key={item.title} className="w-full h-full p-0">
-                  <SidebarMenuButton asChild className="h-full p-0">
-                    <SidebarLink url={item.url}>
-                      <item.icon strokeWidth={1} className="size-8! mx-2" />
-                      <span className="text-accent-foreground">
-                        {item.title}
-                      </span>
-                    </SidebarLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-
+            {/* bottom part of sidebar */}
+            <Dialog>
+              <div className="flex flex-col border-t">
+                <SidebarMenuButton
+                  asChild
+                  key={"Settings"}
+                  className={"h-full w-full hover:bg-accent"}
+                >
+                  <DialogTrigger className="">
+                    <SidebarMenuItem
+                      key={"Settings"}
+                      className="w-full h-full p-0! flex flex-row items-center"
+                    >
+                      <div className="flex flex-row items-center w-full h-full py-2 gap-2 mx-1">
+                        <SettingsIcon strokeWidth={1} className="size-8!" />
+                        <span className="text-accent-foreground p-2">
+                          {"Settings"}
+                        </span>
+                      </div>
+                    </SidebarMenuItem>
+                  </DialogTrigger>
+                </SidebarMenuButton>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Settings</DialogTitle>
+                  </DialogHeader>
+                  <SettingsContents />
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant={"outline"}>Close</Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </div>
+            </Dialog>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuItem key={"Account"} className="w-full">

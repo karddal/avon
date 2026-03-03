@@ -39,7 +39,7 @@ class UnitRead(BaseModel):
     description: str
     creation_date: datetime
     unit_code: str
-    colour: str
+    colour: Colour
     programme_id: uuid.UUID
 
 class UnitReadWithDates(UnitRead):
@@ -106,3 +106,8 @@ class CourseworkReadWithoutUnit(BaseModel):
 
 class CourseworkAll(BaseModel):
     courseworks: List[CourseworkReadWithoutUnit]
+
+class UnitEventRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: uuid.UUID
+    name: Name

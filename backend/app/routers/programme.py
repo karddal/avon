@@ -1,5 +1,5 @@
 from typing import Annotated
-from app.core.helpers.gitlab import gl_create_programme
+from app.core.helpers.gitlab import gl_create_programme, gl_delete_programme, gl_update_programme
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.db.session import get_session
 from sqlmodel import Session, select
@@ -50,6 +50,7 @@ async def list_programmes(session: session_dependency):
     statement = select(Programme)
     programmes = session.exec(statement).all()
     return programmes
+
 @router.get('/{id}', response_model = ProgrammeRead, status_code=status.HTTP_200_OK)
 async def get_programme(id: UUID, session: session_dependency):
     programme = session.get(Programme, id)
@@ -64,6 +65,14 @@ async def delete_programme(id: UUID, session: session_dependency):
 
     if programme is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Programme not found')
+    try:
+        await gl_delete_programme(programme.gitlab_id)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail="Database failed. GitLab group not deleted."
+        )
+    
     session.delete(programme)
     session.commit()
 
@@ -79,6 +88,14 @@ async def update_programme(id: UUID, programme: ProgrammeUpdate, session: sessio
 
     programme_data = programme.model_dump(exclude_unset=True)
     programme_db.sqlmodel_update(programme_data)
+
+    try:
+        await gl_update_programme(programme_db.gitlab_id, programme_db.name)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail="Database failed. GitLab group rolled back."
+        )
 
     session.add(programme_db)
     session.commit()
