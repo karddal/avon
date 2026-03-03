@@ -61,7 +61,6 @@ export default function CreateTemplate({
     loadAll();
   };
 
-  // you can blame the linter for this mess of the callback shit
   const loadAll = useCallback(async () => {
     if (!open_state) return;
 

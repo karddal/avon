@@ -13,9 +13,6 @@ type GitLabTreeItem = {
   mode: string;
 };
 
-// type TemplateFileTreeResponse = {
-//   templateTreeResponse: GitLabTreeItem[];
-// };
 
 export async function template_file_tree(
   req: TemplateFileTreeRequest,
