@@ -60,22 +60,31 @@ def mock_gitlab_coursework():
         "path": "test-path"
     }
 
-    with patch(
-        "app.routers.programme.gl_create_programme",
-        new_callable=AsyncMock
-    ) as mock_pr, patch(
-        "app.routers.unit.gl_create_unit",
-        new_callable=AsyncMock
-    ) as mock_un, patch(
-        "app.routers.coursework.gl_create_coursework",
-        new_callable=AsyncMock
-    ) as mock_cw:
-        mock_cw.return_value = success_response
-        mock_pr.return_value = success_response
-        mock_un.return_value = success_response
+    with patch.multiple(
+        "app.routers.programme",
+        gl_create_programme=AsyncMock(return_value=success_response),
+        gl_update_programme=AsyncMock(return_value=success_response),
+        gl_delete_programme=AsyncMock(return_value=success_response),
+    ) as programme_mocks, patch.multiple(
+        "app.routers.unit",
+        gl_create_unit=AsyncMock(return_value=success_response),
+        gl_update_unit=AsyncMock(return_value=success_response),
+        gl_delete_unit=AsyncMock(return_value=success_response),
+    ) as unit_mocks, patch.multiple(
+        "app.routers.coursework",
+        gl_create_coursework=AsyncMock(return_value=success_response),
+        gl_update_coursework=AsyncMock(return_value=success_response),
+        gl_delete_coursework=AsyncMock(return_value=success_response),
+    ) as coursework_mocks:
         yield {
-            "programme": mock_pr,
-            "unit": mock_un,
-            "coursework": mock_cw
+            "programme": programme_mocks,
+            "unit": unit_mocks,
+            "coursework": coursework_mocks
         }
-        
+
+@pytest.fixture(scope="function")
+def auth_override():
+    from app.core.security import get_current_user
+    app.dependency_overrides[get_current_user] = lambda: "test-user"
+    yield "test-user"
+    app.dependency_overrides.pop(get_current_user, None)

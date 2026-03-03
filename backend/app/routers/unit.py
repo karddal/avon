@@ -2,23 +2,29 @@ from datetime import date
 from typing import Annotated
 from uuid import UUID
 
-from app.core.helpers.gitlab import gl_create_unit
+from app.core.helpers.gitlab import gl_create_unit, gl_delete_unit, gl_update_unit
 from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlmodel import Session, select
 from sqlalchemy.orm.strategy_options import selectinload
 from app.core.settings import settings
 
+from app.core.security import get_current_user_with_role
 from app.db.session import get_session
 from app.models.programme import Programme
 from app.models.unit import Unit
 from app.models.unit_enrollment import UnitEnrollment
+from app.schemas.security import CurrentUser
 from app.schemas.unit import (
     CourseworkAll,
     UnitAll,
     UnitAllByGroup,
     UnitCreate,
     UnitRead,
-    UnitUpdate, UnitLecturers, UnitReadWithDates, UnitStudents
+    UnitUpdate,
+    UnitLecturers,
+    UnitReadWithDates,
+    UnitEventRead,
+    UnitStudents
 )
 
 router = APIRouter(prefix="/units", tags=["units"])
@@ -31,7 +37,6 @@ session_dependency = Annotated[Session, Depends(get_session)]
     status_code=status.HTTP_201_CREATED,
 )
 async def create_unit(unit: UnitCreate, session: session_dependency):
-
     if unit.programme_id:
         programme = session.exec(
             select(Programme).where(Programme.id == unit.programme_id)
@@ -42,13 +47,12 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
     
     try:
         if settings.testing_mode:
-            # ignore gitlab if in testing mode, set gitlab id to dummy
             gl_data = {"gitlabGroupId": 12345678}
         else:
             gl_data = await gl_create_unit(unit.name, programme.gitlab_id)
     except Exception:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Database failed. GitLab group rolled back."
     )
 
@@ -62,7 +66,7 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
     )
     # Add validation for the start and end dates below
 
-    statement = select(Unit.id).where(Unit.name==unit.name or Unit.unit_code==unit.unit_code)
+    statement = select(Unit.id).where(Unit.name==unit.name, Unit.unit_code==unit.unit_code, Unit.programme_id == unit.programme_id)
     existing_units = session.exec(statement).all()
     if len(existing_units) > 0:
         raise HTTPException(status_code=400, detail="Unit already exists with same name or unit code")
@@ -88,6 +92,30 @@ async def active_units(session: session_dependency):
         units=filtered
     )
 
+# this function is quite duplicate to other units get
+#but for not causing problem when merging I will use a new one and possibility combine later
+@router.get("/units", response_model=list[UnitEventRead])
+def list_units_for_events(
+        session: session_dependency,
+        current_user: CurrentUser = Depends(get_current_user_with_role),
+    ):
+
+    if current_user.role == "admin":
+        statement = (select(Unit))
+
+        units = session.exec(statement).all()
+    else:
+        statement = (select(Unit)
+                     .join(UnitEnrollment)
+                     .where(UnitEnrollment.user_id == current_user.user_id))
+        units = session.exec(statement).all()
+    return [
+        {
+            "id": unit.id,
+            "name": unit.name,
+        }
+        for unit in units
+    ]
 
 @router.get("/{unit_id}", response_model=UnitRead, status_code=status.HTTP_200_OK)
 async def get_unit_details(unit_id: UUID, session: session_dependency):
@@ -97,6 +125,8 @@ async def get_unit_details(unit_id: UUID, session: session_dependency):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Unit not found"
         )
+
+    print("[BACKEND] UNIT:", unit)
 
     return unit
 
@@ -127,7 +157,6 @@ async def get_unit_lecturers(unit_id: UUID, session: session_dependency):
     lects = session.exec(
         select(UnitEnrollment.user_id).join(Unit).where(Unit.id == unit_id).where(UnitEnrollment.type == "lecturer")
     ).all()
-    print(lects)
     if not lects:
         raise HTTPException(status_code=404, detail="No lecturers found.")
     return UnitLecturers(
@@ -169,6 +198,15 @@ async def update_unit(unit_id: UUID, unit: UnitUpdate, session: session_dependen
     session.commit()
     session.refresh(db_unit)
 
+    try:
+        if not settings.testing_mode:
+            await gl_update_unit(db_unit.gitlab_id, db_unit.name)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY, 
+            detail="Database failed. GitLab group rolled back."
+        )
+
     return db_unit
 
 
@@ -180,6 +218,15 @@ async def delete_unit(unit_id: UUID, session: session_dependency):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Unit not found."
         )
+    
+    try:
+        if not settings.testing_mode:
+            await gl_delete_unit(unit.gitlab_id)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail="Database failed. GitLab group rolled back."
+    )
 
     session.delete(unit)
     session.commit()
@@ -204,7 +251,6 @@ async def get_courseworks(unit_id: UUID, session: session_dependency):
             status_code=status.HTTP_404_NOT_FOUND, detail = "Unit not found"
         )
     courseworks = unit.courseworks
-    print(courseworks)
     return CourseworkAll(courseworks=courseworks)
 
 

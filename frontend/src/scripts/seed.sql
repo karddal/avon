@@ -1,32 +1,97 @@
 -- jwks definition
 
-CREATE TABLE if not exists "jwks" ("id" text not null primary key, "publicKey" text not null, "privateKey" text not null, "createdAt" date not null, "expiresAt" date);
+CREATE TABLE "jwks" ("id" text not null primary key, "publicKey" text not null, "privateKey" text not null, "createdAt" date not null, "expiresAt" date);
+
+
+-- programme definition
+
+CREATE TABLE programme (
+                           id UUID NOT NULL,
+                           name VARCHAR NOT NULL,
+                           start_date DATE NOT NULL,
+                           end_date DATE NOT NULL,
+                           gitlab_id VARCHAR NOT NULL,
+                           PRIMARY KEY (id)
+);
 
 
 -- "user" definition
 
-CREATE TABLE if not exists "user" ("id" text not null primary key, "name" text not null, "email" text not null unique, "emailVerified" integer not null, "image" text, "createdAt" date not null, "updatedAt" date not null, "role" text, "banned" integer, "banReason" text, "banExpires" date);
+CREATE TABLE "user" ("id" text not null primary key, "name" text not null, "email" text not null unique, "emailVerified" integer not null, "image" text, "createdAt" date not null, "updatedAt" date not null, "role" text, "banned" integer, "banReason" text, "banExpires" date);
 
+-- "notification" definition
+CREATE TABLE "notification" ("id" UUID not null primary key, "recipient_id" VARCHAR not null, "unit_id" UUID, "title" text not null, "body" text not null, "created_at" TIMESTAMP not null, "viewed" boolean not null);
 
 -- verification definition
 
-CREATE TABLE if not exists "verification" ("id" text not null primary key, "identifier" text not null, "value" text not null, "expiresAt" date not null, "createdAt" date not null, "updatedAt" date not null);
+CREATE TABLE "verification" ("id" text not null primary key, "identifier" text not null, "value" text not null, "expiresAt" date not null, "createdAt" date not null, "updatedAt" date not null);
 
-CREATE INDEX if not exists "verification_identifier_idx" on "verification" ("identifier");
+CREATE INDEX "verification_identifier_idx" on "verification" ("identifier");
 
 
 -- account definition
 
-CREATE TABLE if not exists "account" ("id" text not null primary key, "accountId" text not null, "providerId" text not null, "userId" text not null references "user" ("id") on delete cascade, "accessToken" text, "refreshToken" text, "idToken" text, "accessTokenExpiresAt" date, "refreshTokenExpiresAt" date, "scope" text, "password" text, "createdAt" date not null, "updatedAt" date not null);
+CREATE TABLE "account" ("id" text not null primary key, "accountId" text not null, "providerId" text not null, "userId" text not null references "user" ("id") on delete cascade, "accessToken" text, "refreshToken" text, "idToken" text, "accessTokenExpiresAt" date, "refreshTokenExpiresAt" date, "scope" text, "password" text, "createdAt" date not null, "updatedAt" date not null);
 
-CREATE INDEX if not exists "account_userId_idx" on "account" ("userId");
+CREATE INDEX "account_userId_idx" on "account" ("userId");
 
 
 -- "session" definition
 
-CREATE TABLE if not exists "session" ("id" text not null primary key, "expiresAt" date not null, "token" text not null unique, "createdAt" date not null, "updatedAt" date not null, "ipAddress" text, "userAgent" text, "userId" text not null references "user" ("id") on delete cascade, "impersonatedBy" text);
+CREATE TABLE "session" ("id" text not null primary key, "expiresAt" date not null, "token" text not null unique, "createdAt" date not null, "updatedAt" date not null, "ipAddress" text, "userAgent" text, "userId" text not null references "user" ("id") on delete cascade, "impersonatedBy" text);
 
-CREATE INDEX if not exists "session_userId_idx" on "session" ("userId");
+CREATE INDEX "session_userId_idx" on "session" ("userId");
+
+
+-- unit definition
+
+CREATE TABLE unit (
+                      id UUID NOT NULL,
+                      name VARCHAR NOT NULL,
+                      description VARCHAR NOT NULL,
+                      creation_date TIMESTAMP NOT NULL,
+                      unit_code VARCHAR NOT NULL,
+                      colour VARCHAR NOT NULL,
+                      programme_id UUID NOT NULL,
+                      gitlab_id VARCHAR NOT NULL,
+                      PRIMARY KEY (id),
+                      FOREIGN KEY(programme_id) REFERENCES programme (id) ON DELETE CASCADE
+);
+
+CREATE INDEX ix_unit_name ON unit (name);
+CREATE INDEX ix_unit_description ON unit (description);
+CREATE INDEX ix_unit_unit_code ON unit (unit_code);
+
+
+-- unitenrollment definition
+
+CREATE TABLE unitenrollment (
+                                unit_id UUID NOT NULL,
+                                user_id VARCHAR NOT NULL,
+                                type VARCHAR NOT NULL,
+                                PRIMARY KEY (unit_id, user_id),
+                                FOREIGN KEY(unit_id) REFERENCES unit (id)
+);
+
+
+-- coursework definition
+
+CREATE TABLE coursework (
+                            id UUID NOT NULL,
+                            name VARCHAR NOT NULL,
+                            description VARCHAR NOT NULL,
+                            unit_id UUID NOT NULL,
+                            due_date TIMESTAMP NOT NULL,
+                            creation_date TIMESTAMP NOT NULL,
+                            colour VARCHAR NOT NULL,
+                            gitlab_id VARCHAR NOT NULL,
+                            PRIMARY KEY (id),
+                            FOREIGN KEY(unit_id) REFERENCES unit (id) ON DELETE CASCADE
+);
+
+CREATE INDEX ix_coursework_name ON coursework (name);
+CREATE INDEX ix_coursework_due_date ON coursework (due_date);
+CREATE INDEX ix_coursework_unit_id ON coursework (unit_id);
 
 INSERT INTO "user" (id,name,email,"emailVerified",image,"createdAt","updatedAt","role",banned,"banReason","banExpires") VALUES
                                                                                                                   ('8AteGbdJyVodlUBwQGSxcN7h58aKNjRe','Foo Bar','admin@bris.ac.uk',0,NULL,'2026-01-03T19:22:57.491Z','2026-01-03T19:22:57.491Z','admin',0,NULL,NULL),
@@ -57,4 +122,3 @@ INSERT INTO account (id,"accountId","providerId","userId","accessToken","refresh
                                                                                                                                                                           ('VEZvRZsEN9WsLYyANFirjTJn72jMUfJ9','JuP6rqIofgOwoEQQARdNRLJQ6htc6zea','credential','JuP6rqIofgOwoEQQARdNRLJQ6htc6zea',NULL,NULL,NULL,NULL,NULL,NULL,'eb937221bdebe78f1a4b6881246c2550:2496e557b9703215c5e90b76974a221b933f02d40228719f19a6c6b29a6154d3f8aea9cc7c6141a1a964287453e28ab14b7fa901a65eb15779e15d25cc7fa925','2026-01-03T19:22:59.452Z','2026-01-03T19:22:59.452Z'),
                                                                                                                                                                           ('pX5hOofgWxJhupteDRuLAF0yed0Cx5q6','IFvdr1GBzO6SCOiPswaPpHznqbeSOlnw','credential','IFvdr1GBzO6SCOiPswaPpHznqbeSOlnw',NULL,NULL,NULL,NULL,NULL,NULL,'fbfea13e3dd89d9981f2d11c529efa05:f54eaa7cd35cf833030597a815118611eca48d88e15fdf0122b600764747769cb64dd4bbed44df72ab6b3872d7c36c57fcfe100bec5c93eaa5a695c2ba00c979','2026-01-03T19:22:59.627Z','2026-01-03T19:22:59.627Z'),
                                                                                                                                                                           ('ZWSVSewBew0W0xQWwm0ZwaVIuiX2BcBq','4xgSUVKUjrBgLBV5TYNtNxCEjNyQO8M1','credential','4xgSUVKUjrBgLBV5TYNtNxCEjNyQO8M1',NULL,NULL,NULL,NULL,NULL,NULL,'814b1bfb105f3506a0da8cc0ebc15df0:87eede6301ae492d938f312ec7acd48b4b385feb11a1d3781b7c4f9e36dadf7507bd08cde68a4b5c4fa4b4406a2a6b864171a645523a6b1cea486f412f19f119','2026-01-03T19:22:59.854Z','2026-01-03T19:22:59.854Z');
-

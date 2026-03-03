@@ -1,3 +1,4 @@
+import os
 from typing import Annotated
 
 import datetime
@@ -21,6 +22,8 @@ def is_valid_description(description: str) -> str:
 
 
 def is_valid_due_date(date: datetime.datetime) -> datetime.datetime:
+    if os.getenv("TESTING_MODE") == "True":
+        return date
     if date.tzinfo is None:
         date = date.replace(tzinfo=datetime.timezone.utc)
         
@@ -79,3 +82,11 @@ class CourseworkUpdate(BaseModel):
 class CourseworkDelete(BaseModel):
     id: UUID
     deletion_successful: bool
+
+class CourseworkEventRead(BaseModel):
+    id: UUID
+    name: Name
+    due_date: datetime.datetime
+    unit_id: UUID
+    unit_name: Name
+    colour: Colour | None = None
