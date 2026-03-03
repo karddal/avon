@@ -83,7 +83,6 @@ class CourseworkDelete(BaseModel):
     id: UUID
     deletion_successful: bool
 
-
 class CourseworkEventRead(BaseModel):
     id: UUID
     name: Name

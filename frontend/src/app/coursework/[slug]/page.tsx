@@ -71,6 +71,12 @@ async function CourseworkPageContent({
     unit_code: c.unit_code,
     max_end_date: end,
   };
+  // Hardcoded the template id here, when merged, I should be able to get the template id from jack's code
+  const gitlab_data = {
+    name: c.name,
+    coursework_id: c.id,
+    template_id: "79951324",
+  };
 
   return (
     <>
@@ -95,6 +101,7 @@ async function CourseworkPageContent({
                   _me={me}
                   slug={slug}
                   coursework_update_data={data}
+                  gitlab_data={gitlab_data}
                 ></CourseworkLectDropdown>
               )}
             </div>
