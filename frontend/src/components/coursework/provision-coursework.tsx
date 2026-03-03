@@ -51,7 +51,7 @@ export default function ProvisionCoursework({
 }: DockerProps) {
     return (
         <Dialog open={open_state} onOpenChange={set_open_state}>
-            <DialogContent className="max-w-full! lg:max-w-[80%]! xl:max-w-[70%]! w-full max-h-full! lg:max-h-[80vh]! overflow-y-auto p-0 border-none shadow-none">
+            <DialogContent className="max-w-full! lg:max-w-[70%]! xl:max-w-[60%]! w-full max-h-full! lg:max-h-[70vh]! overflow-y-auto p-0 border-none shadow-none">
                 <div className="flex flex-col-reverse lg:flex-col gap-6 w-full justify-center items-stretch">
                     <div className="lg:max-h-[80vh]! flex-2 lg:overflow-y-auto bg-background border rounded-xl shadow-lg justify-between flex flex-col">
                         <div className="p-8 pb-0">
@@ -62,43 +62,35 @@ export default function ProvisionCoursework({
                                 Decide how to provision courseworks
                             </p>
                         </div>
-                        <div className="overflow-y-auto px-8">
+                    </div>
+                    <div className="flex flex-row mx-10 gap-8 justify-between mb-10">
+                        <div className="flex flex-col flex-1 gap-2">
+                            <p className="text-lg font-semibold">Provision for Individuals</p>
+                            <p className="text-sm text-muted-foreground">Provision one repository for all students on the unit</p>
+                            <div className="flex flex-col gap-2">
+                                <Button variant="outline" className="w-full mt-4">
+                                    Provision for Individuals
+                                </Button>
+                            </div>
+
+                        </div>
+
+                        <div className="w-px bg-border self-stretch" />
+
+                        <div className="flex flex-col flex-1 gap-2">
+                            <p className="text-lg font-semibold">Provision for Teams</p>
+                            <p className="text-sm text-muted-foreground">Drop in your teams using our CSV guide</p>
+                            <div className="flex flex-col gap-2 mt-auto pt-4">
+                                <Button variant="outline" className="w-full">
+                                    Upload CSV
+                                </Button>
+                                <Button variant="outline" disabled className="w-full">
+                                    Provision for Teams
+                                </Button>
+                            </div>
                         </div>
                     </div>
-
-                    <div className="space-y-3">
-                        Provison All
-                        <p>Provision one repository for all students on the unit </p>
-                    </div>
-
-                    <div className="space-y-3">
-                        Provison All
-                        <p>Provision one repository for all students on the unit </p>
-                    </div>
-
-                    <div className="space-y-3">
-
-                    </div>
-
-                    <div className="space-y-3 pb-8">
-
-                    </div>
                 </div>
-
-
-
-                <div className="mt-auto flex flex-col gap-2 p-8 border-t bg-background">
-                    <Button
-                        variant="outline"
-                        className="w-full"
-                    >
-                        Provision Coursework
-                    </Button>
-                    <Button variant="default" className="w-full">
-                        Provision Coursework
-                    </Button>
-                </div>
-
             </DialogContent>
         </Dialog >
     );
