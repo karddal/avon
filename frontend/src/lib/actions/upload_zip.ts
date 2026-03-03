@@ -23,7 +23,7 @@ export async function upload_zip(
   "use server";
   const token = await getRequestJWT();
   const data = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/coursework/${req.cw_id}/template/upload-zip?courseworkGitLabId=${req.courseworkGitLabId}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/coursework/${req.cw_id}/template/upload-zip`,
     {
       method: "POST",
       headers: {
