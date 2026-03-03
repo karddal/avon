@@ -13,7 +13,6 @@ type GitLabTreeItem = {
   mode: string;
 };
 
-
 export async function template_file_tree(
   req: TemplateFileTreeRequest,
 ): Promise<GitLabTreeItem[]> {
