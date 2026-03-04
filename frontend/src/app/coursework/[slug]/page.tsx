@@ -138,14 +138,13 @@ async function CourseworkPageContent({
           </Suspense>
         </div>
 
-        {(me == "lecturer" || me == "admin") && (
+        {(me === "lecturer" || me === "admin") && (
           <div className="flex flex-col col-span-3 min-h-0">
             <Suspense>
               <SetupProgress cw_id={data.id} />
             </Suspense>
           </div>
         )}
-
       </section>
     </>
   );
