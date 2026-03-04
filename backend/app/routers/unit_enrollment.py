@@ -1,9 +1,10 @@
 from typing import Annotated
+from uuid import UUID
 from fastapi import APIRouter, Depends
 from sqlmodel import Session, select
 
 from app.db.session import get_session
-from app.schemas.unit_enrollment import UnitEnrollmentRead, UnitEnrollmentCreate, UnitEnrollmentBatchCreate, UnitEnrollmentDelete
+from app.schemas.unit_enrollment import UnitEnrollmentOwnerCreate, UnitEnrollmentRead, UnitEnrollmentCreate, UnitEnrollmentBatchCreate, UnitEnrollmentDelete
 from fastapi import HTTPException
 
 from app.models.unit import Unit
@@ -111,3 +112,49 @@ def enroll_unit_batch_lecturers(payload: UnitEnrollmentBatchCreate, session: ses
     
     return {"message": f"{len(new_enrollments)} users enrolled successfully"}
         
+# owner
+
+@router.get("/{unit_id}/owner", status_code=200)
+def get_owner_of_unit(unit_id: UUID, session: session_dependency):
+    stmt = select(UnitEnrollment).where(
+        UnitEnrollment.unit_id == unit_id,
+        UnitEnrollment.type == "owner"
+    )
+    owner_enrollment = session.exec(stmt).one()
+    
+    if not owner_enrollment:
+        raise HTTPException(status_code=404, detail="No owner found for this unit")
+    
+    return owner_enrollment
+
+@router.post("/{unit_id}/owner", status_code=201)
+def add_owner_to_unit(
+    unit_id: UUID, 
+    owner_data: UnitEnrollmentOwnerCreate,
+    session: session_dependency
+):
+    # Check if an owner already exists
+    existing_owner_stmt = select(UnitEnrollment).where(
+        UnitEnrollment.unit_id == unit_id,
+        UnitEnrollment.type == "owner"
+    )
+    existing_owner = session.exec(existing_owner_stmt).one()
+    
+    if existing_owner:
+        raise HTTPException(
+            status_code=400, 
+            detail="This unit already has an owner"
+        )
+    
+    # Create new owner
+    new_owner = UnitEnrollment(
+        unit_id=unit_id,
+        user_id=owner_data.user_id,
+        role="owner"
+    )
+    
+    session.add(new_owner)
+    session.commit()
+    session.refresh(new_owner)
+    
+    return new_owner

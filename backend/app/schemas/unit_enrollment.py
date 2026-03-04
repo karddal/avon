@@ -17,7 +17,7 @@ def is_valid_enrollment_type(type: str) -> str:
     return type
 
 UserId = Annotated[str, AfterValidator(is_valid_user_id)]
-EnrollmentType = Annotated[Literal["lecturer", "student"], AfterValidator(is_valid_enrollment_type)]
+EnrollmentType = Annotated[Literal["lecturer", "student", "owner"], AfterValidator(is_valid_enrollment_type)]
 
 class UnitEnrollmentRead(BaseModel):
     unit_id : UUID
@@ -40,3 +40,6 @@ class UnitEnrollmentDelete(BaseModel):
 class UnitEnrollmentBatchCreate(BaseModel):
     unit_id: UUID
     user_ids: List[UserId]
+
+class UnitEnrollmentOwnerCreate(BaseModel):
+    user_id: UUID

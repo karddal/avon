@@ -6,7 +6,7 @@ type UserCardProps = {
   name: string;
   image: string | null | undefined;
   email?: string | undefined;
-  role?: string | undefined;
+  role: boolean;
 };
 
 export function getInitials(name: string) {
@@ -43,7 +43,7 @@ export default function UserCard(props: UserCardProps) {
               {props.name}
             </span>
             <span className="font-mono text-accent-foreground/60 text-xs flex flex-row gap-2">
-              {props.role} {props.email}
+              {props.email} {props.role}
             </span>
           </div>
         </div>

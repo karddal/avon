@@ -1,5 +1,6 @@
 import UserCard from "@/components/user-card";
 import { get_user_image_from_id } from "@/lib/actions/get_image";
+import { get_owner_of_unit } from "@/lib/actions/get_owner_of_unit";
 import { get_username_from_id } from "@/lib/actions/get_username";
 import { getRequestJWT } from "@/lib/auth-utils";
 
@@ -11,6 +12,11 @@ type Lecturer = {
   id: string;
   name: string;
   image: string;
+  role: boolean;
+};
+
+type Owner = {
+  id: string;
 };
 
 export default async function Lecturers({ unit_id }: { unit_id: string }) {
@@ -30,6 +36,8 @@ export default async function Lecturers({ unit_id }: { unit_id: string }) {
   const lecturerResponse: Response = await response.json();
   const lecturers = lecturerResponse.lecturers;
 
+  const owner: Owner = await get_owner_of_unit(unit_id);
+
   if (lecturers === undefined) {
     return <></>;
   }
@@ -41,6 +49,7 @@ export default async function Lecturers({ unit_id }: { unit_id: string }) {
       id: lecturer,
       name: await get_username_from_id(lecturer),
       image: await get_user_image_from_id(lecturer),
+      role: lecturer === owner.id,
     });
   }
 
@@ -52,6 +61,7 @@ export default async function Lecturers({ unit_id }: { unit_id: string }) {
           name={lecturer.name}
           id={lecturer.id}
           image={lecturer.image}
+          role={lecturer.role}
         ></UserCard>
       ))}
     </div>
