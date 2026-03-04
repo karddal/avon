@@ -2,6 +2,7 @@
 
 import {
   BookCheck,
+  BookDashed,
   Container,
   LayersPlus,
   Menu,
@@ -9,7 +10,8 @@ import {
   SquarePen,
   SquareX,
 } from "lucide-react";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
 import CreateDockerfile from "@/components/coursework/create-dockerfile";
 import DeleteCourseworkButton from "@/components/coursework/delete_coursework_button";
 import EditCoursework from "@/components/coursework/edit-coursework";
@@ -30,6 +32,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import CreateTemplate from "./create-templates";
 import ProvisionCoursework from "./provision-coursework";
 
 type CourseworkUpdateData = {
@@ -43,6 +46,7 @@ type CourseworkUpdateData = {
   unit_name: string;
   unit_code: string;
   max_end_date: Date;
+  gitlabId: string;
 };
 
 type GitlabData = {
@@ -65,6 +69,11 @@ export default function CourseworkLectDropdown({
   const [showDelete, setShowDelete] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showDocker, setShowDocker] = useState(false);
+  const [showTemplates, setShowTemplate] = useState(false);
+  const router = useRouter();
+  const refresh = useCallback(() => {
+    router.refresh();
+  }, [router]);
   const [showProvision, setShowProvision] = useState(false);
 
   return (
@@ -79,6 +88,14 @@ export default function CourseworkLectDropdown({
         <DropdownMenuContent className="flex flex-col">
           <DropdownMenuLabel>Coursework Options</DropdownMenuLabel>
           <DropdownMenuSeparator />
+
+          <DropdownMenuItem
+            disabled={false}
+            onSelect={() => setShowTemplate(true)}
+          >
+            <BookDashed className="mr-2 h-4 w-4" />
+            Templates
+          </DropdownMenuItem>
 
           <DropdownMenuItem disabled={true}>
             <ServerCog className="mr-2 h-4 w-4" />
@@ -123,6 +140,13 @@ export default function CourseworkLectDropdown({
         </DropdownMenuContent>
       </DropdownMenu>
 
+      <CreateTemplate
+        open_state={showTemplates}
+        set_open_state={setShowTemplate}
+        courseworkGitlabId={coursework_update_data.gitlabId}
+        courseworkId={coursework_update_data.id}
+        refresh={refresh}
+      />
       <ProvisionCoursework
         open_state={showProvision}
         set_open_state={setShowProvision}
@@ -132,6 +156,7 @@ export default function CourseworkLectDropdown({
       <CreateDockerfile
         open_state={showDocker}
         set_open_state={setShowDocker}
+        refresh={() => refresh()}
       ></CreateDockerfile>
 
       <EditCoursework

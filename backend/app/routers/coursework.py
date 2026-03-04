@@ -1,10 +1,12 @@
+from app.core.helpers.gitlab import gl_create_coursework, gl_template_files, gl_activate_template_project, gl_template_urls, gl_upload_zip, gl_overwrite_zip
+# Adding this back in
 from sqlalchemy.orm import selectinload
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from sqlmodel import Session, select
 from sqlalchemy import exists, and_
 
 # GitLab helpers
-from app.core.helpers.gitlab import gl_create_coursework, gl_delete_coursework,gl_update_coursework
+from app.core.helpers.gitlab import gl_delete_coursework,gl_update_coursework
 
 from app.core.security import get_current_user_with_role
 from app.db.session import get_session
@@ -14,8 +16,9 @@ from app.core.settings import settings
 
 from app.models.coursework import Coursework
 from app.models.unit import Unit, UnitWithCourseworks
+from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkSetupProgress, CourseworkTemplateUploadZip, CourseworkUpdate, CourseworkDelete, CourseworkTemplateExists, CourseworkTemplateActivate, CourseworkTemplateFile, CourseworkTemplateUrl, CourseworkUpdateFormData
 from app.models.unit_enrollment import UnitEnrollment
-from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkUpdate, CourseworkDelete, CourseworkEventRead, CourseworkUpdateFormData
+from app.schemas.coursework import CourseworkEventRead
 from app.schemas.security import CurrentUser
 import datetime
 
@@ -73,6 +76,25 @@ async def all_courseworks(session: session_dependency):
 
     return results
 
+@router.get('/progress', response_model=list[CourseworkSetupProgress])
+async def setup_progress(courseworkId: UUID, session: session_dependency):
+    coursework = session.get(Coursework,courseworkId)
+    if coursework is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
+    
+    if coursework.template_id:
+        exists = True
+    else:
+        exists = False
+    # When get other pices of info / steps are coed will put in here
+
+    result = [{"title": "Create Template", "completed" : exists},
+              {"title": "Create Dockerfile", "completed" : False},
+              {"title": "Create Engine", "completed" : False},
+              {"title": "Test Engine", "completed" : False},
+              {"title": "Provision Repositories", "completed" : False},
+              ]
+    return result
 @router.get("/events", response_model=list[CourseworkEventRead])
 async def list_coursework_events(
         session: session_dependency,
@@ -135,6 +157,8 @@ async def get_coursework_update_form_data(id: UUID, session: session_dependency)
         colour=coursework.colour,
         unit_name=unit.name,
         unit_code=unit.unit_code,
+        gitlabId=coursework.gitlab_id,
+        templateId=coursework.template_id,
         max_end_date=unit.programme.end_date,
     )
 
@@ -199,3 +223,104 @@ async def update_coursework(id: UUID, coursework: CourseworkUpdate, session: ses
     session.commit()
     session.refresh(coursework_db)
     return coursework_db
+
+@router.get('/{courseworkId}/template/exists', response_model=CourseworkTemplateExists)
+async def template_exists(courseworkId: UUID, session: session_dependency):
+    coursework = session.get(Coursework,courseworkId)
+    if coursework is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
+    if coursework.template_id:
+        exists = True
+        templateId = coursework.template_id
+    else:
+        exists = False
+        templateId = None
+        
+    return {"exists":exists, "templateProjectId" : templateId}
+
+@router.post('/{cw_id}/template/activate', response_model=CourseworkTemplateActivate)
+async def activate_template(cw_id: UUID, gitLabId: str, session: session_dependency):
+    try:
+        templateActivation = await gl_activate_template_project(gitLabId)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail="GitLab request failed"
+    )
+
+    coursework = session.get(Coursework,cw_id)
+    if coursework is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
+    
+    coursework.template_id = templateActivation["templateGitLabId"]
+    session.add(coursework)
+    session.commit()
+    session.refresh(coursework)
+
+    return templateActivation
+
+@router.get('/template/files', response_model=list[CourseworkTemplateFile])
+async def get_files(templateId: str, session: session_dependency):
+    try:
+        fileData = await gl_template_files(templateId)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail="GitLab request failed"
+        )
+    return fileData
+
+@router.get('/template/urls', response_model=CourseworkTemplateUrl)
+async def template_urls(templateId: str, session: session_dependency):
+    try:
+        urlData = await gl_template_urls(templateId)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail="GitLab request failed"
+        )
+    return urlData
+
+@router.post('/{cw_id}/template/upload-zip', response_model=CourseworkTemplateUploadZip)
+async def upload_zip(cw_id: UUID,  session: session_dependency, file: UploadFile = File(...)):
+    if not file.filename.endswith(".zip"):
+        raise HTTPException(status_code=400, detail="File must be in ZIP format")
+    
+    coursework = session.get(Coursework,cw_id)
+    if coursework is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
+    courseworkGitLabId = coursework.gitlab_id
+
+    try:
+        response = await gl_upload_zip(courseworkGitLabId, file)
+
+    except HTTPException:
+        raise  # Just gitalbs error message
+    except Exception:
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+    
+    coursework = session.get(Coursework,cw_id)
+    if coursework is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
+    
+    coursework.template_id = response["templateId"]
+    session.add(coursework)
+    session.commit()
+    session.refresh(coursework)
+
+    return response
+
+@router.post('/template/overwrite-zip')
+async def overwrite_zip(templateId: str, file: UploadFile = File(...)):
+    if not file.filename.endswith(".zip"):
+        raise HTTPException(status_code=400, detail="File must be in ZIP format")
+    try:
+        response = await gl_overwrite_zip(templateId, file)
+
+    except HTTPException:
+        raise  # Just gitalbs error message
+    except Exception:
+        raise HTTPException(status_code=500, detail="Internal server error")
+    
+    return response

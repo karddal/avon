@@ -8,6 +8,10 @@ module.exports = (phase: string, _defaultConfig: NextConfig) => {
       cacheComponents: true,
       experimental: {
         globalNotFound: true,
+        middlewareClientMaxBodySize: 52 * 1024 * 1024,
+        serverActions: {
+          bodySizeLimit: "52mb",
+        },
       },
 
       images: {
@@ -28,6 +32,10 @@ module.exports = (phase: string, _defaultConfig: NextConfig) => {
     output: "standalone",
     experimental: {
       globalNotFound: true,
+      middlewareClientMaxBodySize: 52 * 1024 * 1024,
+      serverActions: {
+        bodySizeLimit: "52mb",
+      },
     },
     assetPrefix: undefined,
     images: {

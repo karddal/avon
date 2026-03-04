@@ -81,5 +81,8 @@ sync:
 seed-db:
     just fe run db:seed
 
+reset-db:
+    just fe run db:reset
+
 serve-doc:
     mdbook serve --open
