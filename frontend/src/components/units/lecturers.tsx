@@ -15,10 +15,6 @@ type Lecturer = {
   role: boolean;
 };
 
-type Owner = {
-  id: string;
-};
-
 export default async function Lecturers({ unit_id }: { unit_id: string }) {
   const token = await getRequestJWT();
   const response = await fetch(
@@ -36,7 +32,8 @@ export default async function Lecturers({ unit_id }: { unit_id: string }) {
   const lecturerResponse: Response = await response.json();
   const lecturers = lecturerResponse.lecturers;
 
-  const owner: Owner = await get_owner_of_unit(unit_id);
+  const owner = await get_owner_of_unit(unit_id);
+  console.log("OWNER", owner);
 
   if (lecturers === undefined) {
     return <></>;
@@ -44,12 +41,11 @@ export default async function Lecturers({ unit_id }: { unit_id: string }) {
 
   const results: Lecturer[] = [];
   for (const lecturer of lecturers) {
-    console.log(lecturer);
     results.push({
       id: lecturer,
       name: await get_username_from_id(lecturer),
       image: await get_user_image_from_id(lecturer),
-      role: lecturer === owner.id,
+      role: lecturer === owner,
     });
   }
 

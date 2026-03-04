@@ -14,6 +14,7 @@ import { Spinner } from "@/components/ui/spinner";
 import UserCard from "@/components/user-card";
 import { get_user_image_from_id } from "@/lib/actions/get_image";
 import { get_lecturers } from "@/lib/actions/get_lecturers";
+import { get_owner_of_unit } from "@/lib/actions/get_owner_of_unit";
 import { get_username_from_id } from "@/lib/actions/get_username";
 import { remove_user_enrollment } from "@/lib/actions/remove_user_enrollment";
 import { requireSession } from "@/lib/auth-utils";
@@ -22,6 +23,7 @@ type lecturerInfo = {
   id: string;
   displayName: string;
   src?: string;
+  role: boolean;
 };
 
 export default function lecturerList({
@@ -53,6 +55,7 @@ export default function lecturerList({
     try {
       const data = await get_lecturers(unit_id);
       const lecturerIds = data.lecturers;
+      const owner = await get_owner_of_unit(unit_id);
 
       const enrichedlecturers = await Promise.all(
         lecturerIds.map(async (id: string) => {
@@ -63,6 +66,7 @@ export default function lecturerList({
             id: id,
             displayName: name || "Unknown lecturer",
             src: imageSrc,
+            role: owner === id,
           };
         }),
       );
@@ -115,6 +119,7 @@ export default function lecturerList({
                 id={lecturer.id}
                 name={lecturer.displayName}
                 image={lecturer.src}
+                role={lecturer.role}
               />
 
               <div className="absolute top-2 right-2 w-8 h-8">

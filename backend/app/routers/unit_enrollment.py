@@ -120,12 +120,12 @@ def get_owner_of_unit(unit_id: UUID, session: session_dependency):
         UnitEnrollment.unit_id == unit_id,
         UnitEnrollment.type == "owner"
     )
-    owner_enrollment = session.exec(stmt).one()
+    owner_enrollment = session.exec(stmt).one_or_none()
     
     if not owner_enrollment:
         raise HTTPException(status_code=404, detail="No owner found for this unit")
     
-    return owner_enrollment
+    return owner_enrollment.user_id
 
 @router.post("/{unit_id}/owner", status_code=201)
 def add_owner_to_unit(
@@ -138,7 +138,7 @@ def add_owner_to_unit(
         UnitEnrollment.unit_id == unit_id,
         UnitEnrollment.type == "owner"
     )
-    existing_owner = session.exec(existing_owner_stmt).one()
+    existing_owner = session.exec(existing_owner_stmt)
     
     if existing_owner:
         raise HTTPException(

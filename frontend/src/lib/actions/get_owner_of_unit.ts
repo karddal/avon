@@ -1,16 +1,10 @@
 "use server";
 import { getRequestJWT } from "@/lib/auth-utils";
 
-type ownerResponse = {
-  id: string;
-};
-
-export async function get_owner_of_unit(
-  unit_id: string,
-): Promise<ownerResponse> {
+export async function get_owner_of_unit(unit_id: string): Promise<string> {
   const token = await getRequestJWT();
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/units/${unit_id}/owner`,
+    `${process.env.NEXT_PUBLIC_API_URL}/unit_enrollment/${unit_id}/owner`,
     {
       method: "GET",
       headers: {
@@ -21,7 +15,7 @@ export async function get_owner_of_unit(
     },
   );
 
-  const data: ownerResponse = await response.json();
+  const data: string = await response.json();
 
   return data;
 }

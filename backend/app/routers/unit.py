@@ -4,6 +4,7 @@ from uuid import UUID
 
 from app.core.helpers.gitlab import gl_create_unit, gl_delete_unit, gl_update_unit
 from fastapi import APIRouter, Depends, HTTPException, status, Response
+from sqlalchemy import or_
 from sqlmodel import Session, select
 from sqlalchemy.orm.strategy_options import selectinload
 from app.core.settings import settings
@@ -170,7 +171,10 @@ async def get_unit_with_dates(unit_id: UUID, session: session_dependency):
 @router.get("/{unit_id}/lecturers", response_model=UnitLecturers, status_code=status.HTTP_200_OK)
 async def get_unit_lecturers(unit_id: UUID, session: session_dependency):
     lects = session.exec(
-        select(UnitEnrollment.user_id).join(Unit).where(Unit.id == unit_id).where(UnitEnrollment.type == "lecturer")
+    select(UnitEnrollment.user_id)
+    .join(Unit)
+    .where(Unit.id == unit_id)
+    .where(or_(UnitEnrollment.type == "lecturer", UnitEnrollment.type == "owner"))
     ).all()
     if not lects:
         raise HTTPException(status_code=404, detail="No lecturers found.")
