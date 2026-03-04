@@ -95,10 +95,10 @@ describe("Coursework page", () => {
   // });
   //
   it("shows the CW setup flow", () => {
-      cy.visit("/coursework");
-      cy.contains("button", "Finished").click();
-      cy.contains('[role="tab"]', "Computer Architecture 2024-2025").click();
-      cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
-      cy.contains("Setup Progress").should("exist");
-    });
+    cy.visit("/coursework");
+    cy.contains("button", "Finished").click();
+    cy.contains('[role="tab"]', "Computer Architecture 2024-2025").click();
+    cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
+    cy.contains("Setup Progress").should("exist");
+  });
 });
