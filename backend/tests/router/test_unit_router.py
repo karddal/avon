@@ -12,7 +12,8 @@ def valid_unit_payload(programme_id):
         "description":"Intro to coding",
         "unit_code":"COMS10015",
         "colour":"abcdef",
-        "programme_id":programme_id
+        "programme_id":programme_id,
+        "owner": "w2sHUIT6tdX4BI5nWL5LnRMjf0K9NYix"
     }
 
 def valid_update_payload(programme_id):
@@ -21,7 +22,7 @@ def valid_update_payload(programme_id):
         "description":"Intro to coding",
         "unit_code":"COMS10015",
         "colour":"abcdef",
-        "programme_id":programme_id 
+        "programme_id":programme_id ,
     }
 
 def incomplete_payload(programme_id):
@@ -38,7 +39,8 @@ def invalid_programme_id(programme_id):
         "description":"Intro to coding",
         "unit_code":"COMS10015",
         "colour":"abcdef",
-        "programme_id": "bec07dbc-08aa-4b26-b1c7-aed9e13496cb"
+        "programme_id": "bec07dbc-08aa-4b26-b1c7-aed9e13496cb",
+        "owner": "w2sHUIT6tdX4BI5nWL5LnRMjf0K9NYix"
     }
 
 
