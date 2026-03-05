@@ -288,6 +288,28 @@ async def get_coursework(
     return coursework
 
 
+@router.get("/{id}/scopes")
+async def get_scopes(
+    id: UUID,
+    session: session_dependency,
+    token: Annotated[HTTPAuthorizationCredentials, Depends(dependency=get_bearer)],
+):
+    coursework = session.get(Coursework, id)
+
+    if coursework is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Coursework not found"
+        )
+
+    user = await require_scopes(
+        ResourceInformation(type=ResourceType.UNIT, id=coursework.unit.id),
+        token=token,
+        session=session,
+    )
+
+    return {"scopes": user.scopes}
+
+
 @router.delete("/{id}", response_model=CourseworkDelete)
 async def delete_coursework(
     id: UUID,
