@@ -41,5 +41,10 @@ class UnitEnrollmentBatchCreate(BaseModel):
     unit_id: UUID
     user_ids: List[UserId]
 
-class UnitEnrollmentOwnerCreate(BaseModel):
-    user_id: UUID
+class UnitEnrollmentOwner(BaseModel):
+    user_id: str
+
+class TransferOwnerResponse(BaseModel):
+    message: str
+    previous_owner: str
+    new_owner: str
