@@ -39,6 +39,23 @@ Used also when debugging and fixing the seed script - example prompt: ```What do
 
 ```How can I clean out a full subgroup in Gitlab without deleting it using the API? So all subgroups and projects in it should be deleted.```
 
+Used for setting up permissions scoping, and for debugging it. Useful because it gave me good ideas for how to do this properly, and how this could be done with fastapi. It suggested something much more complicated than necessary though, and I ended up simplifying it.
+Example prompts used here:
+
+- `How can I create a decorator in Python? I'm trying to refactor my backend's auth system and I think that would be the cleanest way of doing it.`
+- `The problem is that different functions need different types of auth - how can I be more flexible? Is this where decorators are less beneficial?`
+- `What is the scopes pattern and how does it work?`
+- ```My backend and frontend are separated - my frontend uses betterauth, and the backend is fastapi. Right now, fastapi calls the frontend, verifies the jwt that the frontend sends with requests, and that's how it works. Frontend jwt has a 'role' attribute, but right now that is only really used on the fe for simple things like what pages are shown in the sidebar - the current backend has enrollment tables, and the enrollment has different 'types'. E.g. we have a Unit, and a UnitEnrollment can have type 'lecturer' which means that they can manage the unit. I want to migrate this to use scopes instead. How can I do this?```
+- `how can I use this on the fe to decide which ui actions to surface?`
+- `Should I allow custom scopes? For example, do I let a lecturer set a specific person to have specific permissions? Or is the roles we have now enough?`
+- `How can I write a function that works for different entities, not just units`
+- ```async function get_cw_update_data( slug: string, scopes: Set<string>, ): Promise<CourseworkUpdateData | undefined> { const token = await getRequestJWT(); console.log(typeof scopes); if (scopes.has("unit:coursework_manage")) { it says scopes.has() is not a function, i can't figure out what I'm doing wrong.```
+- `in fastapi dependencies how can I get path parameters?`
+
+I found that it was useful in that it taught me about the pattern and gave me a good foundation code example, but I had to customise what it gave me, for example I ended up not using the decorator pattern that it suggested, but the scopes pattern example code it showed me was very good, and worked well with user types etc.
+
+I also used GH Copilot for autocompletion sometimes to save time.
+
 ### Josh
 
 **Tools used**
