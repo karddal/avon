@@ -188,34 +188,24 @@ async def authenticate_user(
         )
 
 
-def require_scopes(
-    path_id_param_name: str,
-    resource_type: ResourceType,
+async def require_scopes(
+    resource: ResourceInformation,
     *required_scopes: Scopes,
-    token: Annotated[HTTPAuthorizationCredentials, Depends(dependency=get_bearer)],
-    session: Annotated[Session, Depends(dependency=get_session)],
+    token: HTTPAuthorizationCredentials,
+    session: Session,
 ):
-    async def dependency(
-        request: Request,
-    ):
-        resource_id = request.path_params.get(path_id_param_name)
-        if not resource_id:
-            raise Exception("param name not in path")
+    user = await authenticate_user(
+        resource=resource,
+        token=token,
+        session=session,
+    )
 
-        user = await authenticate_user(
-            resource=ResourceInformation(type=resource_type, id=resource_id),
-            token=token,
-            session=session,
+    required = set(required_scopes)
+    missing = required - user.scopes
+    if missing:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Authentication error. Missing scopes: {missing}",
         )
 
-        required = set(required_scopes)
-        missing = required - user.scopes
-        if missing:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=f"Authentication error. Missing scopes: {missing}",
-            )
-
-        return user
-
-    return dependency
+    return user
