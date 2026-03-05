@@ -1,3 +1,7 @@
+import logging
+import os
+
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -17,6 +21,10 @@ import os
 if os.getenv("ENV") == "dev":
     env_file = ".env.dev"
     load_dotenv(dotenv_path=env_file)
+
+logging.basicConfig(
+    level=os.getenv("LOG_LEVEL", "INFO").upper(),
+)
 
 app = FastAPI(lifespan=lifespan)
 

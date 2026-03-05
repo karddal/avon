@@ -1,3 +1,4 @@
+import logging
 from enum import Enum
 from typing import Annotated
 from uuid import UUID
@@ -13,6 +14,8 @@ from app.core.security import get_bearer, jwks_client
 from app.core.settings import settings
 from app.db.session import get_session
 from app.models.unit_enrollment import UnitEnrollment
+
+logger = logging.getLogger("permissions")
 
 
 class ResourceType(Enum):
@@ -70,16 +73,23 @@ async def resolve_unit_scopes(
     user_id, unit_id: UUID, session: Annotated[Session, Depends(dependency=get_session)]
 ) -> set[Scopes]:
     """Fetches scopes from a unit and a user id."""
+    logger.debug("resolving scopes for unit, fetching unit enrollment")
     enrollment = session.exec(
-        select(UnitEnrollment).where(
-            UnitEnrollment.unit_id == unit_id and UnitEnrollment.user_id == user_id
-        )
-    ).one_or_none()
+        select(UnitEnrollment)
+        .where(UnitEnrollment.unit_id == unit_id)
+        .where(UnitEnrollment.user_id == user_id)
+    ).first()
 
     if not enrollment:
+        logger.debug("no enrollment found, so no scopes are valid for this unit.")
         return set()
 
-    return set(ENROLLMENT_TYPE_SCOPES.get(enrollment.type, []))
+    scopes = ENROLLMENT_TYPE_SCOPES.get(enrollment.type, [])
+
+    logger.debug(
+        f"scopes due to enrollment type {enrollment.type} added, they are {scopes}"
+    )
+    return set(scopes)
 
 
 async def resolve_programme_scopes(
@@ -121,7 +131,7 @@ class ResourceInformation:
     """
 
     resource_type: ResourceType
-    resource_id: UUID
+    resource_id: UUID | None
 
     def __init__(self, type, id):
         self.resource_type = type
@@ -139,9 +149,12 @@ async def authenticate_user(
     """
 
     if settings.ignore_auth:
-        return AuthenticatedUser(
+        logger.debug("ignore auth mode set, so authenticating as admin")
+        user = AuthenticatedUser(
             user_id="aaaa", scopes=[Scopes.ADMIN], fe_role="testing"
         )
+        logger.debug(user)
+        return user
 
     try:
         signing_key = jwks_client.get_signing_key_from_jwt(token.credentials)
@@ -154,6 +167,9 @@ async def authenticate_user(
         )
         user_id = payload.get("sub")
         if user_id is None:
+            logger.debug(
+                "could not validate credentials because sub field not set on jwt"
+            )
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Could not validate credentials",
@@ -162,6 +178,7 @@ async def authenticate_user(
 
         role = payload.get("role")
         if role is None:
+            logger.debug("role field not set on jwt, could not validate credentials")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Could not validate credentials",
@@ -172,14 +189,17 @@ async def authenticate_user(
 
         role_scopes = ROLE_TYPE_SCOPES.get(role)
         if role_scopes:
+            logger.debug(f"role of {role} found, adding scopes {role_scopes}")
             scopes.update(role_scopes)
 
-        if resource:
+        if resource and resource.resource_id:
             resolver = RESOURCE_TYPE_RESOLVERS.get(resource.resource_type)
             if resolver:
                 scopes.update(await resolver(user_id, resource.resource_id, session))
 
-        return AuthenticatedUser(user_id=user_id, scopes=scopes, fe_role=role)
+        auth_user = AuthenticatedUser(user_id=user_id, scopes=scopes, fe_role=role)
+        logger.debug(f"authenticated user withs {auth_user}")
+        return auth_user
     except jwt.exceptions.InvalidTokenError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

@@ -52,16 +52,17 @@ async def get_students_on_coursework(
     session: session_dependency,
     token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)],
 ):
-    await require_scopes(
-        ResourceInformation(type=ResourceType.UNIT, id=id),
-        Scopes.UNIT_COURSEWORK_MANAGE,
-        token=token,
-        session=session,
-    )
     coursework = session.get(entity=Coursework, ident=id)
     if coursework is None:
         # coursework didn't exist
         raise HTTPException(status_code=404, detail="Can't find that coursework")
+
+    await require_scopes(
+        ResourceInformation(type=ResourceType.UNIT, id=coursework.unit.id),
+        Scopes.UNIT_COURSEWORK_MANAGE,
+        token=token,
+        session=session,
+    )
     enrollments: list[CourseworkEnrollment] = coursework.enrollments
     output: list[CourseworkStudent] = []
     for enrollment in enrollments:
@@ -85,7 +86,7 @@ async def create_coursework(
     token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)],
 ):
     await require_scopes(
-        ResourceInformation(type=ResourceType.UNIT, id=id),
+        ResourceInformation(type=ResourceType.UNIT, id=coursework.unit_id),
         Scopes.UNIT_COURSEWORK_CREATE,
         token=token,
         session=session,
@@ -152,7 +153,7 @@ async def all_courseworks(
     token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)],
 ):
     await require_scopes(
-        ResourceInformation(type=ResourceType.UNIT, id=id),
+        ResourceInformation(type=ResourceType.UNIT, id=None),
         Scopes.ADMIN,  # only admin should be able to read all coursworks
         token=token,
         session=session,
@@ -271,18 +272,19 @@ async def get_coursework(
     session: session_dependency,
     token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)],
 ):
-    await require_scopes(
-        ResourceInformation(type=ResourceType.UNIT, id=id),
-        Scopes.UNIT_READ,
-        token=token,
-        session=session,
-    )
     coursework = session.get(Coursework, id)
 
     if coursework is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Coursework not found"
         )
+
+    await require_scopes(
+        ResourceInformation(type=ResourceType.UNIT, id=coursework.unit.id),
+        Scopes.UNIT_READ,
+        token=token,
+        session=session,
+    )
     return coursework
 
 
@@ -292,18 +294,19 @@ async def delete_coursework(
     session: session_dependency,
     token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)],
 ):
-    await require_scopes(
-        ResourceInformation(type=ResourceType.UNIT, id=id),
-        Scopes.UNIT_COURSEWORK_DELETE,
-        token=token,
-        session=session,
-    )
     coursework = session.get(Coursework, id)
 
     if coursework is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Coursework not found"
         )
+
+    await require_scopes(
+        ResourceInformation(type=ResourceType.UNIT, id=coursework.unit.id),
+        Scopes.UNIT_COURSEWORK_DELETE,
+        token=token,
+        session=session,
+    )
     # print("\n\n\n\n\n\n\n")
     session.delete(coursework)
     session.commit()
@@ -330,17 +333,16 @@ async def update_coursework(
     session: session_dependency,
     token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)],
 ):
-    await require_scopes(
-        ResourceInformation(type=ResourceType.UNIT, id=id),
-        Scopes.UNIT_COURSEWORK_MANAGE,
-        token=token,
-        session=session,
-    )
     coursework_db = session.get(Coursework, id)
 
     if coursework_db is None:
         raise HTTPException(status_code=404, detail="Coursework not found")
-
+    await require_scopes(
+        ResourceInformation(type=ResourceType.UNIT, id=coursework_db.unit.id),
+        Scopes.UNIT_COURSEWORK_MANAGE,
+        token=token,
+        session=session,
+    )
     if coursework.unit_id is not None:
         unit_exists = session.exec(
             select(Unit).where(Unit.id == coursework.unit_id)
