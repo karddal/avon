@@ -14,10 +14,19 @@ from typing import Annotated, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.orm import selectinload
 from sqlmodel import Session, select
 
 from app.core.helpers.gitlab import gl_create_coursework
+from app.core.scopes.scopes import (
+    AuthenticatedUser,
+    ResourceInformation,
+    ResourceType,
+    Scopes,
+    require_scopes,
+)
+from app.core.security import get_bearer
 from app.core.settings import settings
 from app.db.session import get_session
 from app.models.coursework import Coursework
@@ -41,7 +50,14 @@ session_dependency = Annotated[Session, Depends(get_session)]
 async def get_students_on_coursework(
     id: UUID,
     session: session_dependency,
+    token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)],
 ):
+    await require_scopes(
+        ResourceInformation(type=ResourceType.UNIT, id=id),
+        Scopes.UNIT_COURSEWORK_MANAGE,
+        token=token,
+        session=session,
+    )
     coursework = session.get(entity=Coursework, ident=id)
     if coursework is None:
         # coursework didn't exist
@@ -63,7 +79,17 @@ async def get_students_on_coursework(
 @router.post(
     "/create", response_model=CourseworkRead, status_code=status.HTTP_201_CREATED
 )
-async def create_coursework(coursework: CourseworkCreate, session: session_dependency):
+async def create_coursework(
+    coursework: CourseworkCreate,
+    session: session_dependency,
+    token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)],
+):
+    await require_scopes(
+        ResourceInformation(type=ResourceType.UNIT, id=id),
+        Scopes.UNIT_COURSEWORK_CREATE,
+        token=token,
+        session=session,
+    )
     courseworkAlreadyExists = session.exec(
         select(Coursework).where(
             (Coursework.unit_id == coursework.unit_id)
@@ -121,7 +147,16 @@ async def create_coursework(coursework: CourseworkCreate, session: session_depen
 
 
 @router.get("/all")
-async def all_courseworks(session: session_dependency):
+async def all_courseworks(
+    session: session_dependency,
+    token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)],
+):
+    await require_scopes(
+        ResourceInformation(type=ResourceType.UNIT, id=id),
+        Scopes.ADMIN,  # only admin should be able to read all coursworks
+        token=token,
+        session=session,
+    )
     statement = select(Unit).options(
         selectinload(Unit.courseworks),
         selectinload(Unit.programme),
@@ -231,7 +266,17 @@ async def get_coursework_update_form_data(id: UUID, session: session_dependency)
 
 
 @router.get("/{id}", response_model=CourseworkRead)
-async def get_coursework(id: UUID, session: session_dependency):
+async def get_coursework(
+    id: UUID,
+    session: session_dependency,
+    token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)],
+):
+    await require_scopes(
+        ResourceInformation(type=ResourceType.UNIT, id=id),
+        Scopes.UNIT_READ,
+        token=token,
+        session=session,
+    )
     coursework = session.get(Coursework, id)
 
     if coursework is None:
@@ -242,7 +287,17 @@ async def get_coursework(id: UUID, session: session_dependency):
 
 
 @router.delete("/{id}", response_model=CourseworkDelete)
-async def delete_coursework(id: UUID, session: session_dependency):
+async def delete_coursework(
+    id: UUID,
+    session: session_dependency,
+    token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)],
+):
+    await require_scopes(
+        ResourceInformation(type=ResourceType.UNIT, id=id),
+        Scopes.UNIT_COURSEWORK_DELETE,
+        token=token,
+        session=session,
+    )
     coursework = session.get(Coursework, id)
 
     if coursework is None:
@@ -270,8 +325,17 @@ async def delete_coursework(id: UUID, session: session_dependency):
 
 @router.put("/{id}", response_model=CourseworkRead)
 async def update_coursework(
-    id: UUID, coursework: CourseworkUpdate, session: session_dependency
+    id: UUID,
+    coursework: CourseworkUpdate,
+    session: session_dependency,
+    token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)],
 ):
+    await require_scopes(
+        ResourceInformation(type=ResourceType.UNIT, id=id),
+        Scopes.UNIT_COURSEWORK_MANAGE,
+        token=token,
+        session=session,
+    )
     coursework_db = session.get(Coursework, id)
 
     if coursework_db is None:

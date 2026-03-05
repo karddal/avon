@@ -31,15 +31,15 @@ class Scopes(Enum):
 
     ADMIN = "admin:all"  # Access all areas
 
-    # Unit related scopes
+    # Unit related scopes, coursework belongs to a unit so perms from that
     UNIT_READ = "unit:read"  # Read unit information
     UNIT_SEND_NOTIFICATION = "unit:send_notification"  # Send a notification
     UNIT_MANAGE = "unit:manage"  # Manage unit name, code, description, colour
     UNIT_ENROLL = "unit:enroll"  # Manage unit enrollment
     UNIT_DELETE = "unit:delete"  # Delete unit
-    UNIT_COURSEWORK_CREATE = "unit:coursework_create"  # Create coursework
+    UNIT_COURSEWORK_CREATE = "unit:coursework_create"  # Create coursework for a unit
     UNIT_COURSEWORK_MANAGE = "unit:coursework_manage"  # Manage coursework name, description, due date, colour
-    UNIT_COURSEWORK_DELETE = "unit:coursework_delete"  # Delete coursework
+    UNIT_COURSEWORK_DELETE = "unit:coursework_delete"  # Delete coursework for a unit
     UNIT_COURSEWORK_GITLAB = "unit:coursework_gitlab"  # Manage coursework GitLab
     UNIT_COURSEWORK_ENGINE = "unit:coursework_engine"  # Manage Engine for coursework
 
@@ -50,7 +50,7 @@ class Scopes(Enum):
 
 # The scopes that you get for having a specific unit enrollment
 ENROLLMENT_TYPE_SCOPES: dict[str, list[Scopes]] = {
-    "student": [Scopes.UNIT_READ],
+    "student": [Scopes.UNIT_READ],  # a student on a unit can read all that unit info
     "lecturer": [
         Scopes.UNIT_READ,
         Scopes.UNIT_MANAGE,
