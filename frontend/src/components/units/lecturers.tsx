@@ -57,7 +57,7 @@ export default async function Lecturers({ unit_id }: { unit_id: string }) {
           name={lecturer.name}
           id={lecturer.id}
           image={lecturer.image}
-          role={lecturer.role}
+          user_role={lecturer.role}
         ></UserCard>
       ))}
     </div>
