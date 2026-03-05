@@ -115,6 +115,30 @@ def enroll_unit_batch_lecturers(payload: UnitEnrollmentBatchCreate, session: ses
         
 # owner
 
+## Helper function for other areas. Just wanted to put it here for now.
+def create_owner_enrollment(unit_id: UUID, user_id: UUID, session: Session) -> UnitEnrollment:
+    existing_owner_stmt = select(UnitEnrollment).where(
+        UnitEnrollment.unit_id == unit_id,
+        UnitEnrollment.type == "owner"
+    )
+    existing_owner = session.exec(existing_owner_stmt).first()
+    
+    if existing_owner:
+        raise HTTPException(
+            status_code=400, 
+            detail="This unit already has an owner"
+        )
+    
+    new_owner = UnitEnrollment(
+        unit_id=unit_id,
+        user_id=user_id,
+        type="owner"
+    )
+    
+    session.add(new_owner)
+    
+    return new_owner
+
 @router.get("/{unit_id}/owner", status_code=200)
 def get_owner_of_unit(unit_id: UUID, session: session_dependency):
     stmt = select(UnitEnrollment).where(
@@ -127,38 +151,6 @@ def get_owner_of_unit(unit_id: UUID, session: session_dependency):
         raise HTTPException(status_code=404, detail="No owner found for this unit")
     
     return owner_enrollment.user_id
-
-@router.post("/{unit_id}/owner", status_code=201)
-def add_owner_to_unit(
-    unit_id: UUID, 
-    owner_data: UnitEnrollmentOwner,
-    session: session_dependency
-):
-    # Check if an owner already exists
-    existing_owner_stmt = select(UnitEnrollment).where(
-        UnitEnrollment.unit_id == unit_id,
-        UnitEnrollment.type == "owner"
-    )
-    existing_owner = session.exec(existing_owner_stmt)
-    
-    if existing_owner:
-        raise HTTPException(
-            status_code=400, 
-            detail="This unit already has an owner"
-        )
-    
-    # Create new owner
-    new_owner = UnitEnrollment(
-        unit_id=unit_id,
-        user_id=UUID(owner_data.user_id),
-        role="owner"
-    )
-    
-    session.add(new_owner)
-    session.commit()
-    session.refresh(new_owner)
-    
-    return new_owner
 
 @router.put("/{unit_id}/transfer_owner", status_code=200, response_model=TransferOwnerResponse)
 def transfer_owner(

@@ -132,7 +132,7 @@ export default function lecturerList({
                 id={lecturer.id}
                 name={lecturer.displayName}
                 image={lecturer.src}
-                role={lecturer.role}
+                user_role={lecturer.role}
               />
 
               <div className="absolute top-2 right-2 w-8 h-8">

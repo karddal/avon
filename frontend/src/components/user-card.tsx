@@ -7,7 +7,7 @@ type UserCardProps = {
   name: string;
   image: string | null | undefined;
   email?: string | undefined;
-  role: boolean;
+  user_role: boolean;
 };
 
 export function getInitials(name: string) {
@@ -40,7 +40,7 @@ export default function UserCard(props: UserCardProps) {
               </AvatarFallback>
             </Avatar>
 
-            {props.role ? (
+            {props.user_role ? (
               <Crown className="fill-black dark:fill-white" strokeWidth={1.5} />
             ) : (
               <></>

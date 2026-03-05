@@ -10,6 +10,7 @@ import { HexColorInput, HexColorPicker } from "react-colorful";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
+import AddMemberLecturerAll from "@/app/units/create-unit/add-member-lec";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -65,6 +66,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
   const { step, next, back } = multistep_unit_flow();
   const [programmes, setProgrammes] = useState<Programme[]>([]);
   const [programmeName, setProgrammeName] = useState<string>("");
+  const [selectedOwner, setSelectedOwner] = useState<string>("");
 
   const loadProgrammes = useCallback(async () => {
     const programmesReq = await getProgrammes();
@@ -138,7 +140,6 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // do something with values, submit here
     try {
       const s = await loadSlug();
       console.log(s);
@@ -149,6 +150,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
         unit_code: values.unitCode,
         colour: colour.substring(1),
         programme_id: values.programme,
+        owner: selectedOwner,
       };
 
       console.log(payload);
@@ -180,7 +182,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
       <div className="flex sm:flex-row w-full lg:w-[70%] gap-4 mb-2 h-fit">
         <Card className={"flex-1"}>
           <Progress
-            value={step * (100 / 2)}
+            value={step * (100 / 3)}
             className={"rounded-none"}
           ></Progress>
           <CardHeader>
@@ -246,7 +248,6 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                           </Field>
                         )}
                       />
-                      {/* Select the Unit Code */}
                       <Controller
                         name={"unitCode"}
                         control={form.control}
@@ -273,7 +274,6 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                         )}
                       />
 
-                      {/* Select the programme it's part of */}
                       <Controller
                         name={"programme"}
                         control={form.control}
@@ -339,13 +339,61 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                         Next
                         <ArrowRight />
                       </Button>
-                      {/* </div> */}
                     </FieldGroup>
                   </motion.div>
                 )}
                 {step === 1 && (
                   <motion.div
                     key="step-1"
+                    initial="hidden"
+                    animate={"visible"}
+                    variants={formVariants}
+                    exit={"exit"}
+                  >
+                    <FieldGroup>
+                      <Field className="flex flex-col gap-4 mb-4">
+                        <FieldLabel
+                          htmlFor={"form-flow-owner"}
+                          className="flex flex-col gap-2 w-full bg-card"
+                        >
+                          Add an owner to the unit
+                        </FieldLabel>
+                        <AddMemberLecturerAll
+                          onOwnerSelect={setSelectedOwner}
+                          selectedOwnerId={selectedOwner}
+                        />
+                      </Field>
+                    </FieldGroup>
+                    <div className="flex flex-col w-full gap-2">
+                      <Button
+                        className="bg-black text-white hover:bg-zinc-700 hover:text-white hover:cursor-pointer"
+                        type={"button"}
+                        variant={"outline"}
+                        disabled={!selectedOwner}
+                        onClick={() => {
+                          next();
+                        }}
+                      >
+                        Next
+                        <ArrowRight />
+                      </Button>
+                      <Button
+                        className="hover:cursor-pointer"
+                        type={"button"}
+                        variant={"outline"}
+                        onClick={() => {
+                          back();
+                        }}
+                      >
+                        <ArrowLeft />
+                        Back
+                      </Button>
+                    </div>
+                  </motion.div>
+                )}
+                {step === 2 && (
+                  <motion.div
+                    key="step-2"
                     initial="hidden"
                     animate={"visible"}
                     variants={formVariants}
@@ -467,24 +515,13 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                           </Field>
                         )}
                       />
-                      {/* <Button
-                        type={"button"}
-                        variant={"outline"}
-                        onClick={() => next()}
-                      >
-                        Next
-                      </Button> */}
                       <div className="flex flex-col w-full gap-2">
                         <Button
                           className="bg-black text-white hover:bg-zinc-700 hover:text-white hover:cursor-pointer"
                           type={"button"}
                           variant={"outline"}
                           onClick={() => {
-                            form.trigger(["color"]).then((_result) => {
-                              if (form.formState.isValid) {
-                                next();
-                              }
-                            });
+                            next();
                           }}
                         >
                           Next
@@ -495,11 +532,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                           type={"button"}
                           variant={"outline"}
                           onClick={() => {
-                            form.trigger([]).then((_result) => {
-                              if (form.formState.isValid) {
-                                back();
-                              }
-                            });
+                            back();
                           }}
                         >
                           <ArrowLeft />
@@ -509,9 +542,9 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                     </FieldGroup>
                   </motion.div>
                 )}
-                {step === 2 && (
+                {step === 3 && (
                   <motion.div
-                    key="step-2"
+                    key="step-3"
                     initial="visible"
                     animate={"visible"}
                     variants={formVariants}
@@ -546,6 +579,10 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                             <ItemTitle>Programme</ItemTitle>
                             <ItemDescription>
                               {programme ? programmeName : "Not provided."}
+                            </ItemDescription>
+                            <ItemTitle>Owner</ItemTitle>
+                            <ItemDescription>
+                              {selectedOwner ? selectedOwner : "Not provided."}
                             </ItemDescription>
                             <ItemTitle>Colour</ItemTitle>
                             <ItemDescription>{colour}</ItemDescription>
@@ -584,11 +621,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                         type={"button"}
                         variant={"outline"}
                         onClick={() => {
-                          form.trigger([]).then((_result) => {
-                            if (form.formState.isValid) {
-                              back();
-                            }
-                          });
+                          back();
                         }}
                       >
                         <ArrowLeft />
