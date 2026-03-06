@@ -2,10 +2,15 @@
 
 import { getRequestJWT } from "../auth-utils";
 
+export type RoleChangeResponse = {
+  success: boolean;
+  error?: string;
+};
+
 export async function change_role(
   userId: string,
   newRole: string
-): Promise<string> {
+): Promise<RoleChangeResponse> {
   const token = await getRequestJWT();
   try {
     const response = await fetch(
@@ -20,10 +25,11 @@ export async function change_role(
         },
     );
 
-    const data = await response.json();
-    return data.role ?? null;
-  } catch (error) {
-    console.error("Error changing role:", error);
-    return "error";
+    return { success: true } as RoleChangeResponse;
+  } catch (err: any){
+    return {
+      success: false,
+      error: err?.message ?? "Role change Failed"
+    }
   }
 }

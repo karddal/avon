@@ -33,6 +33,7 @@ import ResetPasswordButtonAdmin from "./reset-password-button-manage";
 import ResetPasswordButtonSettings from "./reset-password-button-settings";
 import { Input } from "../ui/input";
 import { authClient } from "@/lib/auth-client";
+import ChangeRoleButton from "../management/change-role-button";
 
 // This page is used for both settoings and management pages, when settingsPage is true then the compoennt is used for settings page, otherwise it's used in management
 export default function AccountSettings({user, isAdmin, settingsPage}: {user: User | null, isAdmin: boolean, settingsPage: boolean }) {
@@ -47,11 +48,13 @@ export default function AccountSettings({user, isAdmin, settingsPage}: {user: Us
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const isValidPassword = newPasswordInp && newPasswordInp.length >= 8 && newPasswordInp.length <= 128;
   const isValidPasswordStudent = OldPasswordInpStudent && NewPasswordInpStudent && OldPasswordInpStudent.length >= 8 && OldPasswordInpStudent.length <= 128 && NewPasswordInpStudent.length >= 8 && NewPasswordInpStudent.length <= 128;
+  const roleLabel = role === "admin" ? "Admin" : role === "lecturer" ? "Lecturer" : role === "user" ? "Student" : "Unknown";
   const ROLES = [
     { value: "admin", label: "Admin" },
     { value: "lecturer", label: "Lecturer" },
     { value: "user", label: "Student" },
   ];
+  const hasRoleChanged = selectedRole && role !== selectedRole;
   const activeUser = settingsPage ? session?.user : user;
 
   useEffect(() => {
@@ -61,8 +64,7 @@ export default function AccountSettings({user, isAdmin, settingsPage}: {user: Us
     async function fetchRole() {
       try {
         const res = await get_user_role(userId);
-        const role = res === "admin" ? "Admin" : res === "lecturer" ? "Lecturer" : res === "user" ? "Student" : "Unknown";
-        setRole(role);
+        setRole(res);
         setSelectedRole(res);
       } catch (error) {
         console.error("Error fetching user role:", error);
@@ -78,6 +80,7 @@ export default function AccountSettings({user, isAdmin, settingsPage}: {user: Us
   }
 
 
+
   if (!activeUser) {
     return (
       <div className="text-center p-4">
@@ -89,6 +92,7 @@ export default function AccountSettings({user, isAdmin, settingsPage}: {user: Us
   const name = activeUser.name;
   const email = activeUser.email;
   const image = activeUser.image || "";
+
 
   return (
     <div className="w-full">
@@ -152,7 +156,7 @@ export default function AccountSettings({user, isAdmin, settingsPage}: {user: Us
             <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
               Role
             </h3>
-            <p className="text-base font-medium">{role}</p>
+            <p className="text-base font-medium">{roleLabel}</p>
 
             {isAdmin && !settingsPage && (
                 <Button
@@ -238,7 +242,7 @@ export default function AccountSettings({user, isAdmin, settingsPage}: {user: Us
               </AlertDialogHeader>
               <AlertDialogFooter>
                   <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
-                    <ChangeRolButton user_id={activeUser.id} closeDialog={() => setShowDelete(false)} newRole={selectedRole}/>
+                    <ChangeRoleButton user_id={activeUser.id} closeDialog={() => setShowDelete(false)} newRole={selectedRole ?? ""} disabled={!hasRoleChanged}/>
               </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
