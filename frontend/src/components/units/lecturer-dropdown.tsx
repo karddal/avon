@@ -98,7 +98,6 @@ export default function LecturerDropdown({
 
       <SendNotification
         unit_id={slug}
-        me={me}
         openState={showSendNotif}
         setOpenState={setShowSendNotif}
       ></SendNotification>

@@ -130,7 +130,11 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
 
             <CardContent className="w-full flex flex-col">
               <Tabs defaultValue="ongoing">
-                <div className={"flex flex-row justify-between items-center"}>
+                <div
+                  className={
+                    "flex flex-row flex-wrap justify-between items-center"
+                  }
+                >
                   <TabsList>
                     <TabsTrigger value="ongoing">Ongoing</TabsTrigger>
                     <TabsTrigger value="finished">Finished</TabsTrigger>
@@ -139,7 +143,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
                     <Button asChild variant={"outline"} size={"sm"}>
                       <Link href={`/units/${slug}/create-coursework`}>
                         <ClipboardPlus />
-                        Assign new coursework
+                        Assign coursework
                       </Link>
                     </Button>
                   )}

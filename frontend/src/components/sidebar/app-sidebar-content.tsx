@@ -5,7 +5,6 @@ import {
   Layers,
   LayoutDashboard,
   NotepadText,
-  Settings,
   SettingsIcon,
   SwatchBook,
   User,

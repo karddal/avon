@@ -1,8 +1,11 @@
 import type { DatabaseSync } from "node:sqlite";
-import { batch_add_students_to_unit } from "@/scripts/util/add-students";
+import {
+  seed_batch_add_lecturers_to_unit,
+  seed_batch_add_students_to_unit,
+} from "@/scripts/util/add-students";
 import { create_unit } from "@/scripts/util/unit";
 
-export async function createUnitWithStudents(
+export async function createUnitWithStudentsAndLecturers(
   db: DatabaseSync,
   programmeId: string,
   unitData: {
@@ -11,7 +14,8 @@ export async function createUnitWithStudents(
     colour: string;
     unit_code: string;
   },
-  userIds: string[],
+  studentIds: string[],
+  lecturerIds: string[],
 ): Promise<string | null> {
   await create_unit({
     name: unitData.name,
@@ -31,7 +35,8 @@ export async function createUnitWithStudents(
 
   const unitId = String(unit.id);
 
-  await batch_add_students_to_unit(unitId, userIds);
+  await seed_batch_add_students_to_unit(unitId, studentIds);
+  await seed_batch_add_lecturers_to_unit(unitId, lecturerIds);
 
   return unitId;
 }

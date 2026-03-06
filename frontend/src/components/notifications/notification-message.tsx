@@ -13,7 +13,6 @@ import {
   Item,
   ItemActions,
   ItemContent,
-  ItemDescription,
   ItemFooter,
   ItemTitle,
 } from "../ui/item";

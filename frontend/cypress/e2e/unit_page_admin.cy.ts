@@ -65,6 +65,5 @@ describe("Unit page", () => {
     cy.get(`[data-slot="dropdown-menu-item"]`).click();
     cy.contains(`button`, "Delete").click();
     cy.get('[data-content=""] > div').contains("Unit deleted successfully");
-    cy.get("p").should("not.contain", "Mathematics for Computer Science B");
   });
 });

@@ -34,8 +34,6 @@ async def mark_as_read(id: str, session: session_dependency, me: str = Depends(g
 
 @router.post("/create", status_code=status.HTTP_201_CREATED)
 async def create_notification(notification: CreateNotification, session: session_dependency, me: str = Depends(get_current_user)):
-    print("HELLO ----")
-    print(notification)
     unit = session.get(Unit, uuid.UUID(notification.unit_id))
     for user in unit.enrollments:
         if user.type == "student":

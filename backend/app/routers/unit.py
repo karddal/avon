@@ -30,6 +30,7 @@ from app.schemas.unit import (
 router = APIRouter(prefix="/units", tags=["units"])
 session_dependency = Annotated[Session, Depends(get_session)]
 
+today = date.today()
 
 @router.post(
     "/create",
@@ -92,8 +93,7 @@ async def active_units(session: session_dependency):
         units=filtered
     )
 
-# this function is quite duplicate to other units get
-#but for not causing problem when merging I will use a new one and possibility combine later
+
 @router.get("/units", response_model=list[UnitEventRead])
 def list_units_for_events(
         session: session_dependency,
@@ -101,18 +101,33 @@ def list_units_for_events(
     ):
 
     if current_user.role == "admin":
-        statement = (select(Unit))
+        statement = (
+            select(Unit)
+            .join(Programme)
+            .where(Programme.end_date >= today)
+            .options(selectinload(Unit.programme))
+        )
 
-        units = session.exec(statement).all()
     else:
-        statement = (select(Unit)
-                     .join(UnitEnrollment)
-                     .where(UnitEnrollment.user_id == current_user.user_id))
-        units = session.exec(statement).all()
+        statement = (
+            select(Unit)
+            .join(UnitEnrollment)
+            .join(Programme)
+            .where(
+                UnitEnrollment.user_id == current_user.user_id,
+                Programme.end_date >= today
+            )
+            .options(selectinload(Unit.programme))
+        )
+
+    units = session.exec(statement).all()
     return [
         {
             "id": unit.id,
             "name": unit.name,
+            "unit_code": unit.unit_code,
+            "programme_start_date": str(unit.programme.start_date.year),
+            "programme_end_date": str(unit.programme.end_date.year),
         }
         for unit in units
     ]
@@ -125,6 +140,8 @@ async def get_unit_details(unit_id: UUID, session: session_dependency):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Unit not found"
         )
+
+    print("[BACKEND] UNIT:", unit)
 
     return unit
 
@@ -155,7 +172,6 @@ async def get_unit_lecturers(unit_id: UUID, session: session_dependency):
     lects = session.exec(
         select(UnitEnrollment.user_id).join(Unit).where(Unit.id == unit_id).where(UnitEnrollment.type == "lecturer")
     ).all()
-    print(lects)
     if not lects:
         raise HTTPException(status_code=404, detail="No lecturers found.")
     return UnitLecturers(
@@ -198,7 +214,8 @@ async def update_unit(unit_id: UUID, unit: UnitUpdate, session: session_dependen
     session.refresh(db_unit)
 
     try:
-        await gl_update_unit(db_unit.gitlab_id, db_unit.name)
+        if not settings.testing_mode:
+            await gl_update_unit(db_unit.gitlab_id, db_unit.name)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY, 
@@ -218,7 +235,8 @@ async def delete_unit(unit_id: UUID, session: session_dependency):
         )
     
     try:
-        await gl_delete_unit(unit.gitlab_id)
+        if not settings.testing_mode:
+            await gl_delete_unit(unit.gitlab_id)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
@@ -248,7 +266,6 @@ async def get_courseworks(unit_id: UUID, session: session_dependency):
             status_code=status.HTTP_404_NOT_FOUND, detail = "Unit not found"
         )
     courseworks = unit.courseworks
-    print(courseworks)
     return CourseworkAll(courseworks=courseworks)
 
 
