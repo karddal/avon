@@ -75,6 +75,10 @@ export default function AccountSettings({user, isAdmin, settingsPage}: {user: Us
     fetchRole();
   }, [activeUser]);
 
+  useEffect(() => {
+    setSelectedRole(role);
+  }, [role]);
+
   if (settingsPage && isPending) {
     return <div className="p-4">Loading...</div>;
   }
@@ -242,7 +246,7 @@ export default function AccountSettings({user, isAdmin, settingsPage}: {user: Us
               </AlertDialogHeader>
               <AlertDialogFooter>
                   <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
-                    <ChangeRoleButton user_id={activeUser.id} closeDialog={() => setShowDelete(false)} newRole={selectedRole ?? ""} disabled={!hasRoleChanged}/>
+                    <ChangeRoleButton user_id={activeUser.id} closeDialog={() => {setShowRoleChange(false); setRole(selectedRole);}} newRole={selectedRole ?? ""} disabled={!hasRoleChanged}/>
               </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

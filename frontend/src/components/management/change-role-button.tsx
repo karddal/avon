@@ -6,7 +6,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { RotateCcwKey } from "lucide-react";
+import { UserCog } from "lucide-react";
 import { delete_user } from "@/lib/actions/delete_user";
 import { reset_password_setting } from "@/lib/actions/reset_password_setting";
 import { change_role } from "@/lib/actions/change_role";
@@ -47,7 +47,7 @@ export default function ChangeRoleButton({ user_id, closeDialog, newRole, disabl
       {status === 1 && (
         <Button size="lg" disabled className="w-full">
           <Spinner className="mr-2 h-4 w-4" />
-          Reseting ...
+          Changing Role ...
         </Button>
       )}
 
@@ -58,8 +58,8 @@ export default function ChangeRoleButton({ user_id, closeDialog, newRole, disabl
           onClick={handleRoleChange}
           disabled={disabled}
         >
-          <RotateCcwKey/>
-          Reset Password
+          <UserCog/>
+          Change Role
         </Button>
       )}
 
