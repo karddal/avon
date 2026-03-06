@@ -20,6 +20,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import DeleteUserButton from "./delete-user-button";
 import ResetPasswordButtonAdmin from "./reset-password-button-manage";
 import ResetPasswordButtonSettings from "./reset-password-button-settings";
@@ -36,9 +44,14 @@ export default function AccountSettings({user, isAdmin, settingsPage}: {user: Us
   const [newPasswordInp, setNewPasswordInp] = useState<string | null>(null);
   const [OldPasswordInpStudent,setOldPasswordInpStudent] = useState<string | null>(null);
   const [NewPasswordInpStudent,setNewPasswordInpStudent] = useState<string | null>(null);
+  const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const isValidPassword = newPasswordInp && newPasswordInp.length >= 8 && newPasswordInp.length <= 128;
   const isValidPasswordStudent = OldPasswordInpStudent && NewPasswordInpStudent && OldPasswordInpStudent.length >= 8 && OldPasswordInpStudent.length <= 128 && NewPasswordInpStudent.length >= 8 && NewPasswordInpStudent.length <= 128;
-
+  const ROLES = [
+    { value: "admin", label: "Admin" },
+    { value: "lecturer", label: "Lecturer" },
+    { value: "user", label: "Student" },
+  ];
   const activeUser = settingsPage ? session?.user : user;
 
   useEffect(() => {
@@ -50,6 +63,7 @@ export default function AccountSettings({user, isAdmin, settingsPage}: {user: Us
         const res = await get_user_role(userId);
         const role = res === "admin" ? "Admin" : res === "lecturer" ? "Lecturer" : res === "user" ? "Student" : "Unknown";
         setRole(role);
+        setSelectedRole(res);
       } catch (error) {
         console.error("Error fetching user role:", error);
         setRole(null);
@@ -140,10 +154,11 @@ export default function AccountSettings({user, isAdmin, settingsPage}: {user: Us
             </h3>
             <p className="text-base font-medium">{role}</p>
 
-            {isAdmin && (
+            {isAdmin && !settingsPage && (
                 <Button
                 variant="outline"
                 className="w-fit justify-self-end mt-3"
+                onClick={() => setShowRoleChange(true)}
                 >
                 Change Role
                 </Button>
@@ -188,19 +203,42 @@ export default function AccountSettings({user, isAdmin, settingsPage}: {user: Us
         <AlertDialog open={showRoleChange} onOpenChange={setShowRoleChange}>
           <AlertDialogContent>
               <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogTitle>Role Change</AlertDialogTitle>
                   <AlertDialogDescription asChild>
-                    <div>
-                        <span>This will delete the user and all their data:</span>
-                        <div className="mt-1 font-bold text-foreground">
+                    <div className="flex flex-col gap-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">Selected User</span>
+
+                        <span className="font-bold text-foreground">
                           {name} ({email})
-                        </div>
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-muted-foreground">Role</span>
+
+                        <Select
+                          value={selectedRole ?? undefined}
+                          onValueChange={(value) => setSelectedRole(value)}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select role"/>
+                          </SelectTrigger>
+
+                          <SelectContent>
+                            {ROLES.map((r) => (
+                              <SelectItem key={r.value} value={r.value}>
+                                {r.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                   </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                   <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
-                    <DeleteUserButton user_id={activeUser.id} closeDialog={() => setShowDelete(false)} />
+                    <ChangeRolButton user_id={activeUser.id} closeDialog={() => setShowDelete(false)} newRole={selectedRole}/>
               </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
