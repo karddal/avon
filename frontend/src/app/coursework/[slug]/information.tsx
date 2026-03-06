@@ -59,6 +59,7 @@ export default async function CourseworkInformation({
       title={"Information"}
       desc={"Deadlines and scheduling details."}
       openByDefault={true}
+      className="h-full"
     >
       <div className="flex flex-row items-center justify-evenly gap-8 py-4">
         <div className="flex flex-col gap-2">
