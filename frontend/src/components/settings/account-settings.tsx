@@ -21,10 +21,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import DeleteUserButton from "../management/delete-user-button";
+import ResetPasswordButton from "../management/reset-password-button";
 
 export default function AccountSettings({user, isAdmin}: {user: User | null, isAdmin: boolean }) {
   const [role, setRole] = useState<string | null>(null);
   const [showDelete, setShowDelete] = useState(false);
+  const [showPasswordReset, setShowPasswordReset] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -106,13 +108,13 @@ export default function AccountSettings({user, isAdmin}: {user: User | null, isA
             </h3>
 
             <p className="mt-1 text-sm text-muted-foreground">
-            Reset your password by email.
+            Reset your password.
             </p>
 
             <Button
             variant="outline"
             className="mt-3 w-full sm:w-fit"
-            // onClick={}
+            onClick={() => setShowPasswordReset(true)}
             >
             Reset Password
             </Button>
@@ -166,6 +168,47 @@ export default function AccountSettings({user, isAdmin}: {user: User | null, isA
                     <DeleteUserButton user_id={user.id} closeDialog={() => setShowDelete(false)} />
               </AlertDialogFooter>
           </AlertDialogContent>
+        </AlertDialog>
+
+        <AlertDialog open={showPasswordReset} onOpenChange={setShowPasswordReset}>
+          { isAdmin ? (
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription asChild>
+                    <div>
+                        <span>This will delete the user and all their data:</span>
+                        <div className="mt-1 font-bold text-foreground">
+                          {name} ({email})
+                        </div>
+                    </div>
+                  </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                  <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
+                    <ResetPasswordButton user_id={user.id} new_password="bonjghghghour" closeDialog={() => setShowPasswordReset(false)} />
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          ) : (
+            // Need to replace this with non admin version
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription asChild>
+                    <div>
+                        <span>This will delete the user and all their data:</span>
+                        <div className="mt-1 font-bold text-foreground">
+                          {name} ({email})
+                        </div>
+                    </div>
+                  </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                  <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
+                    <DeleteUserButton user_id={user.id} closeDialog={() => setShowPasswordReset(false)} />
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          )}
         </AlertDialog>
       </div>
     </div>
