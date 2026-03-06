@@ -11,7 +11,7 @@ export type resetResponse = {
   error?: string;
 };
 
-export async function reset_password_admin(
+export async function reset_password_manage(
   userId: string,
   newPasswordInput: string,
 ): Promise<resetResponse> {

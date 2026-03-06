@@ -21,19 +21,29 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import DeleteUserButton from "./delete-user-button";
-import ResetPasswordButton from "./reset-password-button";
+import ResetPasswordButtonAdmin from "./reset-password-button-manage";
+import ResetPasswordButtonSettings from "./reset-password-button-settings";
 import { Input } from "../ui/input";
+import { authClient } from "@/lib/auth-client";
 
-export default function AccountSettings({user, isAdmin}: {user: User | null, isAdmin: boolean }) {
+// This page is used for both settoings and management pages, when settingsPage is true then the compoennt is used for settings page, otherwise it's used in management
+export default function AccountSettings({user, isAdmin, settingsPage}: {user: User | null, isAdmin: boolean, settingsPage: boolean }) {
+  const { data: session, isPending } = authClient.useSession();
   const [role, setRole] = useState<string | null>(null);
   const [showDelete, setShowDelete] = useState(false);
+  const [showRoleChange,setShowRoleChange] = useState(false);
   const [showPasswordReset, setShowPasswordReset] = useState(false);
   const [newPasswordInp, setNewPasswordInp] = useState<string | null>(null);
+  const [OldPasswordInpStudent,setOldPasswordInpStudent] = useState<string | null>(null);
+  const [NewPasswordInpStudent,setNewPasswordInpStudent] = useState<string | null>(null);
   const isValidPassword = newPasswordInp && newPasswordInp.length >= 8 && newPasswordInp.length <= 128;
+  const isValidPasswordStudent = OldPasswordInpStudent && NewPasswordInpStudent && OldPasswordInpStudent.length >= 8 && OldPasswordInpStudent.length <= 128 && NewPasswordInpStudent.length >= 8 && NewPasswordInpStudent.length <= 128;
+
+  const activeUser = settingsPage ? session?.user : user;
 
   useEffect(() => {
-    if (!user) return;
-    const userId = user.id;
+    if (!activeUser) return;
+    const userId = activeUser.id;
 
     async function fetchRole() {
       try {
@@ -47,12 +57,14 @@ export default function AccountSettings({user, isAdmin}: {user: User | null, isA
     }
 
     fetchRole();
-  }, [user]);
+  }, [activeUser]);
 
-  // async function resetPassword() {
+  if (settingsPage && isPending) {
+    return <div className="p-4">Loading...</div>;
+  }
 
 
-  if (!user) {
+  if (!activeUser) {
     return (
       <div className="text-center p-4">
         <p className="text-muted-foreground">No user selected</p>
@@ -60,9 +72,9 @@ export default function AccountSettings({user, isAdmin}: {user: User | null, isA
     );
   }
 
-  const name = user.name;
-  const email = user.email;
-  const image = user.image || "";
+  const name = activeUser.name;
+  const email = activeUser.email;
+  const image = activeUser.image || "";
 
   return (
     <div className="w-full">
@@ -147,7 +159,7 @@ export default function AccountSettings({user, isAdmin}: {user: User | null, isA
                     className="mt-3 w-full sm:w-fit"
                     onClick={() => setShowDelete(true)}
                     >
-                        Delete User
+                      Delete User
                     </Button>
             </div>
         ) : (
@@ -168,13 +180,33 @@ export default function AccountSettings({user, isAdmin}: {user: User | null, isA
               </AlertDialogHeader>
               <AlertDialogFooter>
                   <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
-                    <DeleteUserButton user_id={user.id} closeDialog={() => setShowDelete(false)} />
+                    <DeleteUserButton user_id={activeUser.id} closeDialog={() => setShowDelete(false)} />
+              </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        <AlertDialog open={showRoleChange} onOpenChange={setShowRoleChange}>
+          <AlertDialogContent>
+              <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription asChild>
+                    <div>
+                        <span>This will delete the user and all their data:</span>
+                        <div className="mt-1 font-bold text-foreground">
+                          {name} ({email})
+                        </div>
+                    </div>
+                  </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                  <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
+                    <DeleteUserButton user_id={activeUser.id} closeDialog={() => setShowDelete(false)} />
               </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
 
         <AlertDialog open={showPasswordReset} onOpenChange={setShowPasswordReset}>
-          { isAdmin ? (
+          { (isAdmin && !settingsPage)? (
             <AlertDialogContent>
               <AlertDialogHeader>
                   <AlertDialogTitle>Password Reset</AlertDialogTitle>
@@ -199,26 +231,38 @@ export default function AccountSettings({user, isAdmin}: {user: User | null, isA
               </AlertDialogHeader>
               <AlertDialogFooter>
                   <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
-                    <ResetPasswordButton user_id={user.id} new_password={newPasswordInp ?? ""} closeDialog={() => setShowPasswordReset(false)} disabled={!isValidPassword}/>
+                    <ResetPasswordButtonAdmin user_id={activeUser.id} new_password={newPasswordInp ?? ""} closeDialog={() => setShowPasswordReset(false)} disabled={!isValidPassword}/>
               </AlertDialogFooter>
             </AlertDialogContent>
           ) : (
             // Need to replace this with non admin version
             <AlertDialogContent>
               <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogTitle>Password Reset</AlertDialogTitle>
                   <AlertDialogDescription asChild>
-                    <div>
-                        <span>This will delete the user and all their data:</span>
-                        <div className="mt-1 font-bold text-foreground">
-                          {name} ({email})
-                        </div>
+                    <div className="flex flex-col gap-4">
+                      <Input
+                        className="w-full"
+                        placeholder="Current Password"
+                        onChange={(e) => {
+                          // setOffset(0);
+                          setOldPasswordInpStudent(e.target.value);
+                        }}
+                      />
+                      <Input
+                        className="w-full"
+                        placeholder="New Password"
+                        onChange={(e) => {
+                          // setOffset(0);
+                          setNewPasswordInpStudent(e.target.value);
+                        }}
+                      />
                     </div>
                   </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                   <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
-                    <DeleteUserButton user_id={user.id} closeDialog={() => setShowPasswordReset(false)} />
+                    <ResetPasswordButtonSettings old_password={OldPasswordInpStudent ?? ""} new_password={NewPasswordInpStudent ?? ""} closeDialog={() => setShowPasswordReset(false)} disabled={!isValidPasswordStudent}/>
               </AlertDialogFooter>
             </AlertDialogContent>
           )}

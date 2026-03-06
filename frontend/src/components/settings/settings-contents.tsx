@@ -24,13 +24,9 @@ export default function SettingsContents() {
           Theme
         </TabsTrigger>
       </TabsList>
-      <div
-        className={
-          "no-scrollbar -mx-4 max-h-[50vh] w-full overflow-y-auto px-4"
-        }
-      >
+      <div className={"w-full p-6"}>
         <TabsContent value={"account"}>
-          <AccountSettings user={null} isAdmin={false}/>
+          <AccountSettings user={null} isAdmin={false} settingsPage={true}/>
         </TabsContent>
         <TabsContent value={"password"}></TabsContent>
         <TabsContent value={"notifications"}></TabsContent>

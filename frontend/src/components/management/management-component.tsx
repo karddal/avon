@@ -23,7 +23,7 @@ export default function ManagementComponent({isAdmin}: {isAdmin: boolean}) {
             <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
               Account
             </h3>
-            <AccountSettings user={selectedUser} isAdmin={isAdmin}/>
+            <AccountSettings user={selectedUser} isAdmin={isAdmin} settingsPage={false}/>
         </div>
         <div className="rounded-md border border-border p-4">
             <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">

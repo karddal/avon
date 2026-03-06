@@ -8,23 +8,23 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { RotateCcwKey } from "lucide-react";
 import { delete_user } from "@/lib/actions/delete_user";
-import { reset_password_admin } from "@/lib/actions/reset_password_admin";
+import { reset_password_setting } from "@/lib/actions/reset_password_setting";
 
-interface DeleteUserProps {
-  user_id: string;
+interface ResetPasswordProps {
+  old_password: string;
   new_password: string;
   closeDialog: () => void;
   disabled: boolean;
 }
 
-export default function ResetPasswordButton({ user_id, new_password, closeDialog, disabled }: DeleteUserProps) {
+export default function ResetPasswordButtonSettings({ old_password, new_password, closeDialog, disabled }: ResetPasswordProps) {
   const [status, setStatus] = useState<number>(0);
 
   const handleReset = async () => {
     try {
       setStatus(1);
 
-      const result = await reset_password_admin(user_id, new_password);
+      const result = await reset_password_setting(old_password, new_password);
       
       if (result.success) {
         toast.success("Password reseted successfully");
@@ -35,7 +35,7 @@ export default function ResetPasswordButton({ user_id, new_password, closeDialog
       }
     } catch (error) {
       setStatus(2);
-      toast.error("Failed to reset the password for the user");
+      toast.error("Failed to reset password");
 
       setTimeout(() => setStatus(0), 3000);
     }

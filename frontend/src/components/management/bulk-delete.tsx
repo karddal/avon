@@ -171,9 +171,6 @@ export default function BulkDelete() {
                 </Button>
             </div>
         </div>
-        <div className="justify-center">
-        You Cannot delete any Lecturers from a unit here
-        </div>
       </div>
       <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
         <AlertDialogContent>
