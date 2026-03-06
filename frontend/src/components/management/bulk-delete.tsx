@@ -34,6 +34,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { getProgrammes } from "@/lib/actions/get_all_programmes";
 import BulkDeleteButton from "./bulk-delete-button";
+import OmitMembers from "./omit-users";
 
 interface Programme {
   id: UUID;
@@ -59,6 +60,7 @@ export default function BulkDelete() {
   const [units, setUnits] = useState<Unit[]>([]);
   const [omittedMemberIds, setOmittedMembersIds] = useState<string[]>([]);
   const [showDelete, setShowDelete] = useState(false);
+  const [showOmitUsers, setShowOmitUsers] = useState(false);
   const programmeSelectedTo = selectedProgrammeId !== null;
   const canDeleteAndOmit = selectedUnitId !== null;
 
@@ -128,7 +130,7 @@ export default function BulkDelete() {
         </div>
         <div className="rounded-md border border-border p-4">
             <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                Select Units
+                Select Unit
             </h3>
             <Select value={selectedUnitId ?? "all"}
                 onValueChange={(value) =>
@@ -156,6 +158,7 @@ export default function BulkDelete() {
                 <Button
                 variant="outline"
                 className="w-full sm:w-fit"
+                onClick={() => setShowOmitUsers(true)}
                 disabled={!canDeleteAndOmit}
                 >
                   Omit User From Deletion
@@ -186,6 +189,7 @@ export default function BulkDelete() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <OmitMembers omittedMembersIds={omittedMemberIds} units={units} openState={showOmitUsers} setOpenState={setShowOmitUsers}/>
     </div>
   );
 }

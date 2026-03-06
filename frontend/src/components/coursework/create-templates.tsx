@@ -185,7 +185,7 @@ export default function CreateTemplate({
                 )}
 
                 {activateStatus === 2 && (
-                  <RepoTree fileTree={fileTree} /> //repoId={templateId}
+                  <RepoTree fileTree={fileTree} /> 
                 )}
               </div>
             </div>
