@@ -20,13 +20,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import DeleteUserButton from "../management/delete-user-button";
-import ResetPasswordButton from "../management/reset-password-button";
+import DeleteUserButton from "./delete-user-button";
+import ResetPasswordButton from "./reset-password-button";
+import { Input } from "../ui/input";
 
 export default function AccountSettings({user, isAdmin}: {user: User | null, isAdmin: boolean }) {
   const [role, setRole] = useState<string | null>(null);
   const [showDelete, setShowDelete] = useState(false);
   const [showPasswordReset, setShowPasswordReset] = useState(false);
+  const [newPasswordInp, setNewPasswordInp] = useState<string | null>(null);
+  const isValidPassword = newPasswordInp && newPasswordInp.length >= 8 && newPasswordInp.length <= 128;
 
   useEffect(() => {
     if (!user) return;
@@ -174,19 +177,29 @@ export default function AccountSettings({user, isAdmin}: {user: User | null, isA
           { isAdmin ? (
             <AlertDialogContent>
               <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogTitle>Password Reset</AlertDialogTitle>
                   <AlertDialogDescription asChild>
-                    <div>
-                        <span>This will delete the user and all their data:</span>
-                        <div className="mt-1 font-bold text-foreground">
+                    <div className="flex flex-col gap-4">
+                      <div className="flex flex-row gap-2">
+                        <span>Reset the password for user:</span>
+                        <div className="font-bold text-foreground">
                           {name} ({email})
                         </div>
+                      </div>
+                      <Input
+                        className="w-full"
+                        placeholder="New Password"
+                        onChange={(e) => {
+                          // setOffset(0);
+                          setNewPasswordInp(e.target.value);
+                        }}
+                      />
                     </div>
                   </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                   <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
-                    <ResetPasswordButton user_id={user.id} new_password="bonjghghghour" closeDialog={() => setShowPasswordReset(false)} />
+                    <ResetPasswordButton user_id={user.id} new_password={newPasswordInp ?? ""} closeDialog={() => setShowPasswordReset(false)} disabled={!isValidPassword}/>
               </AlertDialogFooter>
             </AlertDialogContent>
           ) : (

@@ -14,9 +14,10 @@ interface DeleteUserProps {
   user_id: string;
   new_password: string;
   closeDialog: () => void;
+  disabled: boolean;
 }
 
-export default function ResetPasswordButton({ user_id, new_password, closeDialog }: DeleteUserProps) {
+export default function ResetPasswordButton({ user_id, new_password, closeDialog, disabled }: DeleteUserProps) {
   const [status, setStatus] = useState<number>(0);
 
   const handleReset = async () => {
@@ -54,6 +55,7 @@ export default function ResetPasswordButton({ user_id, new_password, closeDialog
           size="lg"
           className="w-full"
           onClick={handleReset}
+          disabled={disabled}
         >
           <RotateCcwKey/>
           Reset Password
