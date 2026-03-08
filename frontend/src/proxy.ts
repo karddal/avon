@@ -1,4 +1,3 @@
-import { headers } from "next/headers";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
@@ -11,10 +10,10 @@ export async function proxy(request: NextRequest) {
   const url = new URL(request.url);
   const pathname = url.pathname;
 
-  const isAuthPage = pathname == "/login";
+  const isAuthPage = pathname === "/login";
 
   if (session && isAuthPage) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   if (!session) {
@@ -26,7 +25,7 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-      "/login",
+    "/login",
     "/units/:path*",
     "/dashboard",
     "/coursework/:path*",
