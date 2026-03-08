@@ -5,10 +5,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, OctagonAlert, Send } from "lucide-react";
 import { easeIn, easeOut } from "motion";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
 import {
   type Dispatch,
   type SetStateAction,
+  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -233,14 +233,6 @@ export const IntForm = ({ units }: FormProps) => {
     void loadUnitData(selectedUnitId);
   }, [selectedUnitId, form]);
 
-  useEffect(() => {
-    setBeforeClose(() => resetAll);
-
-    return () => {
-      setBeforeClose(null);
-    };
-  }, [setBeforeClose, resetAll]);
-
   async function validateOne() {
     setShowAlert(false);
     setAlertText("");
@@ -342,7 +334,7 @@ export const IntForm = ({ units }: FormProps) => {
     }, 300);
   }
 
-  function resetAll() {
+  const resetAll = useCallback(() => {
     form.reset({
       unit_id: "",
       name: "",
@@ -350,14 +342,22 @@ export const IntForm = ({ units }: FormProps) => {
       due_date: buildDefaultDueDate(),
       color: "#abcdef",
     });
-    setStep(0);
+    setSubmitState(false);
     setShowAlert(false);
     setAlertText("");
-    setSubmitState(false);
+    setStep(0);
     setSelectedUnitData(null);
     setSelectedUnitLoading(false);
     setSelectedUnitError(null);
-  }
+  }, [form]);
+
+  useEffect(() => {
+    setBeforeClose(() => resetAll);
+
+    return () => {
+      setBeforeClose(null);
+    };
+  }, [setBeforeClose, resetAll]);
 
   return (
     <div className="flex w-full justify-center p-6 md:p-8">
