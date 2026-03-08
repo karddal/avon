@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import {IntForm, UnitOption} from "./form";
 import { getRequestJWT } from "@/lib/auth-utils";
+import { IntForm, type UnitOption } from "./form";
 
 async function Actual() {
   const token = await getRequestJWT();
@@ -16,14 +16,12 @@ async function Actual() {
     },
   );
 
-    if (!response.ok) {
-        throw new Error("Failed to fetch units.");
-    }
+  if (!response.ok) {
+    throw new Error("Failed to fetch units.");
+  }
 
-    const units: UnitOption[] = await response.json();
-  return (
-      <IntForm units={units} />
-  );
+  const units: UnitOption[] = await response.json();
+  return <IntForm units={units} />;
 }
 
 export default async function CreateCourseworkFlow() {

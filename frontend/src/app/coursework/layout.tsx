@@ -10,7 +10,7 @@ import {
 
 export default async function Layout({
   children,
-    modal,
+  modal,
 }: {
   children: React.ReactNode;
   modal: React.ReactNode;

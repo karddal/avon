@@ -1,10 +1,13 @@
 import { Suspense } from "react";
-import {IntForm, UnitOption} from "@/app/coursework/create-coursework/form";
-import { getRequestJWT } from "@/lib/auth-utils";
+import {
+  IntForm,
+  type UnitOption,
+} from "@/app/coursework/create-coursework/form";
 import ModalShell from "@/components/coursework/modal-shell";
+import { getRequestJWT } from "@/lib/auth-utils";
 
 async function Actual() {
-    const token = await getRequestJWT();
+  const token = await getRequestJWT();
 
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/units/units`,
@@ -19,9 +22,9 @@ async function Actual() {
 
   const units: UnitOption[] = await response.json();
   return (
-      <ModalShell>
-          <IntForm units={units} />
-      </ModalShell>
+    <ModalShell>
+      <IntForm units={units} />
+    </ModalShell>
   );
 }
 
