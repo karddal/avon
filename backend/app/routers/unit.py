@@ -24,7 +24,8 @@ from app.schemas.unit import (
     UnitLecturers,
     UnitReadWithDates,
     UnitEventRead,
-    UnitStudents
+    UnitStudents,
+    UnitUsers
 )
 
 router = APIRouter(prefix="/units", tags=["units"])
@@ -187,6 +188,17 @@ async def get_unit_students(unit_id: UUID, session: session_dependency):
         raise HTTPException(status_code=404, detail="No students found.")
     return UnitStudents(
         students=studs,
+    )
+
+@router.get("/{unit_id}/users", response_model=UnitUsers, status_code=status.HTTP_200_OK)
+async def get_unit_users(unit_id: UUID, session: session_dependency):
+    users = session.exec(
+        select(UnitEnrollment.user_id).join(Unit).where(Unit.id == unit_id).where(UnitEnrollment.type != "admin")
+    ).all()
+    if not users:
+        raise HTTPException(status_code=404, detail="No users found.")
+    return UnitUsers(
+        users=users,
     )
 
 @router.put("/{unit_id}", response_model=UnitUpdate, status_code=status.HTTP_200_OK)
