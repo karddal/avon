@@ -11,6 +11,7 @@ import { HexColorInput, HexColorPicker } from "react-colorful";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
+import { useCourseworkCreateClose } from "@/components/coursework/coursework-create-close";
 
 const Calendar29 = dynamic(
   () => import("@/components/calendar").then((mod) => mod.Calendar29),
@@ -87,6 +88,11 @@ function _resetStep(setStep: Dispatch<SetStateAction<number>>) {
   setStep(0);
 }
 
+function buildDefaultDueDate() {
+    const now = new Date();
+    return new Date(new Date(now).setHours(now.getHours() + 25));
+}
+
 export const IntForm = ({ units }: FormProps) => {
   const [submitState, setSubmitState] = useState<boolean>(false);
   const [showAlert, setShowAlert] = useState<boolean>(false);
@@ -95,6 +101,7 @@ export const IntForm = ({ units }: FormProps) => {
     const [selectedUnitData, setSelectedUnitData] = useState<UnitData | null>(null)
     const [selectedUnitLoading, setSelectedUnitLoading] = useState(false)
     const [selectedUnitError, setSelectedUnitError] = useState<string | null>(null)
+    const { setBeforeClose } = useCourseworkCreateClose();
 
     const router = useRouter()
   const today = new Date();
@@ -220,6 +227,14 @@ export const IntForm = ({ units }: FormProps) => {
         void loadUnitData(selectedUnitId)
     }, [selectedUnitId, form])
 
+    useEffect(() => {
+        setBeforeClose(() => resetAll);
+
+        return () => {
+            setBeforeClose(null);
+        };
+    }, [setBeforeClose]);
+
     async function validateOne() {
         setShowAlert(false)
         setAlertText("")
@@ -312,11 +327,28 @@ export const IntForm = ({ units }: FormProps) => {
         }
 
         toast.success("Coursework created.")
-        setSubmitState(false);
+        resetAll()
 
         setTimeout(() => {
             window.location.href = "/coursework";
         }, 300)
+    }
+
+    function resetAll() {
+        form.reset({
+            unit_id: "",
+            name: "",
+            description: "",
+            due_date: buildDefaultDueDate(),
+            color: "#abcdef",
+        });
+        setStep(0);
+        setShowAlert(false);
+        setAlertText("");
+        setSubmitState(false);
+        setSelectedUnitData(null);
+        setSelectedUnitLoading(false);
+        setSelectedUnitError(null);
     }
 
   return (
