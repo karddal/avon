@@ -189,7 +189,7 @@ export default function BulkDelete() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      <OmitMembers omittedMembersIds={omittedMemberIds} setOmittedUserIds={setOmittedMembersIds} units={units} openState={showOmitUsers} setOpenState={setShowOmitUsers}/>
+      <OmitMembers omittedMembersIds={omittedMemberIds} setOmittedUserIds={setOmittedMembersIds} unitId={selectedUnitId} openState={showOmitUsers} setOpenState={setShowOmitUsers}/>
 
     </div>
   );

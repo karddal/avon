@@ -37,7 +37,7 @@ interface Unit {
 interface OmittedMembersProps {
   omittedMembersIds: string[];
   setOmittedUserIds: (ids: string[]) => void
-  units: Unit[];
+  unitId: string | null;
   openState: boolean;
   setOpenState: Dispatch<SetStateAction<boolean>>;
 }
@@ -49,14 +49,14 @@ type UserInfo = {
 }
 
 
-export default function OmitMembers({ omittedMembersIds, setOmittedUserIds, units, openState, setOpenState}: OmittedMembersProps) {
+export default function OmitMembers({ omittedMembersIds, setOmittedUserIds, unitId, openState, setOpenState}: OmittedMembersProps) {
   const [users, setUsers] = useState<UserInfo[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadUsers = useCallback(async () => {
-    if (!units[0]) return;
+    if (!unitId) return;
     try {
-      const data = await get_unit_users(`${units[0].id}`);
+      const data = await get_unit_users(`${unitId}`);
       const userIds = data?.users ?? [];
       const enriched = await Promise.all(
         userIds.map(async (id: string) => ({
@@ -69,7 +69,7 @@ export default function OmitMembers({ omittedMembersIds, setOmittedUserIds, unit
     } finally {
       setLoading(false);
     }
-  }, [units]);
+  }, [unitId]);
 
   useEffect(() => {
     loadUsers();
