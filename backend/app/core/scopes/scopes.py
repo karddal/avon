@@ -32,8 +32,7 @@ class Scopes(Enum):
     Permission scopes.
     """
 
-    ADMIN = "admin:all"  # Access all areas
-
+    # ADMIN = "admin:all"  # Access all areas
     # Unit related scopes, coursework belongs to a unit so perms from that
     UNIT_READ = "unit:read"  # Read unit information
     UNIT_SEND_NOTIFICATION = "unit:send_notification"  # Send a notification
@@ -102,7 +101,7 @@ async def resolve_programme_scopes(
 
 
 ROLE_TYPE_SCOPES = {
-    "admin": [Scopes.ADMIN],  # admin role grants access to admin scope
+    "admin": [s.value for s in Scopes],  # admin role grants access to all scopes
     "lecturer": [],  # lecturer role grants no default access
     "user": [],  # user role grants no default access
 }
