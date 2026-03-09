@@ -1,87 +1,92 @@
-import { cookies } from "next/headers";
+import { ClipboardPlus } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
-import TabSwitcher from "@/components/tab-switcher";
-import { Tabs, TabsContent, TabsList } from "@/components/ui/tabs";
-import UnitList from "@/components/unit-list";
-import YearSelector from "@/components/year-selector";
-import { getCurrentUser } from "@/lib/auth";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import UnitList from "@/components/units/unit-list";
+import { requireSession } from "@/lib/auth-utils";
 
-type Status = "ongoing" | "finished";
+type UserRole = {
+  userRole: string;
+};
 
-interface PageProps {
-  searchParams: Promise<{ year?: string; tab?: Status }>;
+function CreateUnit({ userRole }: UserRole) {
+  return (
+    <div>
+      {userRole === "admin" && (
+        <Button asChild variant="outline" size="sm" className="mt-2">
+          <Link href={"/units/create-unit/"}>
+            <ClipboardPlus />
+            Add Unit
+          </Link>
+        </Button>
+      )}
+    </div>
+  );
 }
 
-async function PageContent({ searchParams }: PageProps) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("access_token")?.value;
-  const userRole = await getCurrentUser();
-
-  console.log(userRole);
-
-  const params = await searchParams;
-  const yearNow = new Date().getFullYear();
-  const currentYear = params.year
-    ? parseInt(params.year, 10)
-    : new Date().getFullYear();
-  const currentAcademicYear = `${currentYear}/${currentYear + 1}`;
-
-  const activeTab = (params.tab || "ongoing") as Status;
-
+function PageContent({ userRole }: UserRole) {
   return (
-    <div className="space-y-6">
-      <Tabs value={activeTab}>
-        <TabsList className="flex flex-col h-auto min-h-fit items-start justify-start md:flex-row md:align-center md:justify-center md:items-center gap-4 bg-background md:my-4">
-          <YearSelector value={currentYear} />
-          <TabSwitcher currentYear={currentYear} yearNow={yearNow} />
-          {userRole === "lecturer" && (
-            <Link
-              href="/create-unit"
-              className="bg-accent text-black font-medium text-sm p-3 flex gap-2 border hover:cursor-pointer"
-            >
-              {" "}
-              Create a New Unit +{" "}
-            </Link>
-          )}
-        </TabsList>
+    <div className="">
+      <div className="space-y-6">
+        <Tabs defaultValue="ongoing">
+          <div className="flex flex-row align-middle items-center justify-between">
+            <TabsList className="flex flex-row gap-4 bg-background my-4">
+              <div className="bg-accent p-1">
+                <TabsTrigger
+                  value="ongoing"
+                  className="bg-accent px-4 py-2"
+                  id="tabs-ongoing"
+                >
+                  Ongoing
+                </TabsTrigger>
+                <TabsTrigger
+                  value="finished"
+                  className="bg-accent px-4 py-2"
+                  id="tabs-finished"
+                >
+                  Finished
+                </TabsTrigger>
+              </div>
+            </TabsList>
+            <CreateUnit userRole={userRole} />
+          </div>
 
-        <TabsContent value="ongoing">
-          <Suspense fallback={<Loading></Loading>}>
-            <section className="grid gap-4 grid-cols-1 lg:grid-cols-2">
-              <UnitList
-                currentYear={currentYear}
-                finished={false}
-                token={token}
-              />
-            </section>
-          </Suspense>
-        </TabsContent>
-        <TabsContent value="finished">
-          <Suspense fallback={<Loading></Loading>}>
-            <section className="grid gap-4 grid-cols-1 lg:grid-cols-2">
-              <UnitList
-                currentYear={currentYear}
-                finished={true}
-                token={token}
-              />
-            </section>
-          </Suspense>
-        </TabsContent>
-      </Tabs>
+          <TabsContent value="ongoing">
+            <Suspense fallback={<Loading />}>
+              <UnitList finished={false} />
+            </Suspense>
+          </TabsContent>
 
-      <div className="text-sm text-muted-foreground pl-2">
-        Academic Year: {currentAcademicYear}
+          <TabsContent value="finished">
+            <Suspense fallback={<Loading />}>
+              <UnitList finished={true} />
+            </Suspense>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
 }
 
-export default function UnitPage({ searchParams }: PageProps) {
+async function AdminPage() {
+  const s = await requireSession();
+  let userRole = s.user.role;
+  if (!userRole) {
+    userRole = "user";
+  }
   return (
-    <Suspense>
-      <PageContent searchParams={searchParams} />
+    <div>
+      <PageContent userRole={userRole} />
+    </div>
+  );
+}
+
+export default async function UnitPage() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <AdminPage />
     </Suspense>
   );
 }

@@ -15,16 +15,18 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 
 type YearSelectorProps = {
   value: number;
+  setYear: (value: number) => void;
 };
 
-export default function YearSelector({ value }: YearSelectorProps) {
+export default function YearSelector({ value, setYear }: YearSelectorProps) {
   const [open, setOpen] = useState(false);
-  const router = useRouter();
-  const [_isPending, startTransition] = useTransition();
+  const _router = useRouter();
+  const [isPending, _startTransition] = useTransition();
 
   const current = new Date().getFullYear();
   const years = [
@@ -35,11 +37,12 @@ export default function YearSelector({ value }: YearSelectorProps) {
 
   const handleYearChange = (newYear: number) => {
     setOpen(false);
-    startTransition(() => {
-      newYear === current
-        ? router.push(`?year=${newYear}&tab=${"ongoing"}`)
-        : router.push(`?year=${newYear}&tab=${"finished"}`);
-    });
+    // startTransition(() => {
+    //   newYear === current
+    //     ? router.push(`?year=${newYear}&tab=${"ongoing"}`)
+    //     : router.push(`?year=${newYear}&tab=${"finished"}`);
+    // });
+    setYear(newYear);
   };
 
   const currentLabel = years.find((y) => y.value === value)?.label ?? "";
@@ -82,6 +85,7 @@ export default function YearSelector({ value }: YearSelectorProps) {
           </Command>
         </PopoverContent>
       </Popover>
+      {isPending && <Spinner />}
     </div>
   );
 }

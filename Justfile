@@ -1,36 +1,88 @@
+set shell := ["bash", "-cu"]
+set windows-shell := ["powershell.exe", "-NoProfile", "-Command"]
 
+# helper
+@fe cmd *args:
+    just -f Justfile -d frontend {{cmd}}-fe {{args}}
+
+@be cmd *args:
+    just -f Justfile -d backend {{cmd}}-be {{args}}
+
+@doc cmd *args:
+    just -f Justfile -d documentation {{cmd}}-doc {{args}}
+
+@db cmd *args:
+    just -f Justfile {{cmd}}-db {{args}}
+
+# real command
 default:
     just --list
 
 check-fe:
     @echo "Formatting and linting frontend..."
-    cd frontend && bunx biome check
+    npx biome check
 
 check-be:
     @echo "Formatting and linting backend..."
-    cd backend && uv run ruff check
+    uv run ruff check
 
-check: check-fe check-be
+check:
+    just fe check
+    just be check
 
 fix-fe:
     @echo "Fixing frontend..."
-    cd frontend && bunx biome check --fix
+    npx biome check --fix
 
 fix-be:
     @echo "Fixing backend..."
-    cd backend && uv run ruff check --fix
+    uv run ruff check --fix
 
-fixit: fix-fe fix-be
+fixit:
+    just fe fix
+    just be fix
+
+build-fe:
+    npm run build
 
 test-be:
-    @echo "Testing backend..."
-    cd backend && ./gradlew test
+	@echo "Testing backend routers..."
+	uv run pytest -v
 
-test: test-be
+run-fe env = "dev":
+    npm run {{env}}
 
-run-fe:
-    cd frontend && bun run dev
+test-fe:
+    @echo "Testing frontend..."
+    npm test
 
-run-be:
-    cd backend && uv run fastapi dev
+test: 
+    just fe test
+    just be test
 
+[windows]
+run-be env = "dev":
+    $env:ENV="{{env}}"; uv run fastapi dev
+
+[unix]
+run-be env = "dev":
+    ENV={{env}} uv run fastapi dev
+
+sync-fe:
+    npm i
+
+sync-be:
+    uv sync
+
+sync:
+    just fe sync
+    just be sync
+
+seed-db:
+    just fe run db:seed
+
+reset-db:
+    just fe run db:reset
+
+serve-doc:
+    mdbook serve --open

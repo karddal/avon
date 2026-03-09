@@ -1,0 +1,95 @@
+// A smart trend that adjusts its icon based on the data
+// Trend up badge appearance from https://evilcharts.com/docs/bar-charts,
+// adapted under MIT license
+/*
+MIT License
+
+Copyright (c) 2025 Evil Charts
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+* */
+
+import { TrendingDown, TrendingUp, TrendingUpDown } from "lucide-react";
+import type React from "react";
+import { Badge } from "@/components/ui/badge";
+
+interface TrendBadgeProps {
+  trendValue: number;
+  children?: React.ReactNode;
+  className?: string;
+}
+
+export function TrendBadge({
+  trendValue,
+  children,
+  className,
+}: TrendBadgeProps) {
+  let text: string;
+  let badge: React.JSX.Element;
+  if (trendValue > 1) {
+    // trending up
+    text = "Trending up";
+    badge = (
+      <Badge
+        variant={"outline"}
+        className={`text-green-500 bg-green-500/10 border-none ml-2 ${className}`}
+      >
+        <TrendingUp className="h-4 w-4" />
+        {trendValue.toFixed(2)}%
+      </Badge>
+    );
+  } else if (trendValue < -1) {
+    // trending down
+    text = "Trending down";
+    badge = (
+      <Badge
+        variant={"outline"}
+        className={"text-red-500 bg-red-500/10 border-none ml-2"}
+      >
+        <TrendingDown className="h-4 w-4" />
+        {trendValue.toFixed(2)}%
+      </Badge>
+    );
+  } else {
+    // flat
+    text = "Trend flat";
+    badge = (
+      <Badge
+        variant={"outline"}
+        className={"text-blue-500 bg-blue-500/10 border-none ml-2"}
+      >
+        <TrendingUpDown className="h-4 w-4" />
+        {trendValue.toFixed(2)}%
+      </Badge>
+    );
+  }
+  return (
+    <>
+      <div className="flex gap-2 leading-none font-medium items-center">
+        {text}
+        {badge}
+      </div>
+      <div className="text-muted-foreground leading-none">
+        Showing total commits for the last 6 months
+      </div>
+      {children}
+    </>
+  );
+}

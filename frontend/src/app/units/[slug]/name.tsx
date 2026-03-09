@@ -1,5 +1,3 @@
-"use cache";
-
 type UnitData = {
   id: string;
   name: string;
@@ -19,21 +17,18 @@ export default async function UnitName({
     `${process.env.NEXT_PUBLIC_API_URL}/units/${slug}`,
     {
       headers: {
-        Cookie: `access_token=${token}`,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
+      cache: "no-cache",
     },
   );
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch unit");
-  }
 
   const unit: UnitData = await response.json();
 
   return (
-    <>
-      <span className="font-light">{unit.unit_code}</span> {unit.name}
-    </>
+    <div className="text-3xl lg:text-5xl">
+      <span className="font-mono font-light">{unit.unit_code}</span> {unit.name}
+    </div>
   );
 }

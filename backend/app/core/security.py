@@ -1,21 +1,22 @@
-import uuid
-from datetime import timedelta, datetime, timezone
-from fastapi import Request, HTTPException
+import logging
+from typing import Annotated
 
-import jwt
-from fastapi.security import OAuth2PasswordBearer
-from jwt import InvalidTokenError
+from fastapi import HTTPException, Depends
+from fastapi.security import HTTPAuthorizationCredentials
+
+from fastapi.security.http import HTTPBearer
 from pwdlib import PasswordHash
 from pydantic import BaseModel
-from sqlmodel import select
 from starlette import status
+import jwt
+from app.core.jwt_utils import _token_fingerprint, verify_token_and_get_user
+from app.schemas.security import CurrentUser
 
 from app.core.settings import settings
-from app.db.session import SessionDep
-from app.models.user import User
 
 ALGORITHM = "HS256"
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+logger = logging.getLogger("security")
 
 password_hash = PasswordHash.recommended()
 def hash_password(password: str) -> str:
@@ -41,59 +42,90 @@ class PasswordIncorrectError(Exception):
     def __init__(self, message: str):
         self.message = message
 
-def get_user(username: str, session: SessionDep) -> type[User]:
-    user = session.exec(select(User).where(User.username == username)).first()
-    if not user:
-        raise UserNotFoundError("User not found")
-    return user
+get_bearer = HTTPBearer(auto_error=True)
 
-def get_user_by_uuid(user_id: uuid.UUID, session: SessionDep) -> type[User]:
-    user = session.get(User, user_id)
-    print(session.exec(select(User)).all())
-    if not user:
-        raise UserNotFoundError("User not found")
-    return user
-
-def get_user_by_username(email: str, session: SessionDep) -> type[User]:
-    user = session.exec(select(User).where(User.email == email)).first()
-    if not user:
-        raise UserNotFoundError("User not found")
-    return user
-
-def authenticate_user(username: str, password: str, session: SessionDep) -> type[User]:
-    user = get_user_by_username(username, session)
-    if not user:
-        raise UserNotFoundError("User not found")
-    if not verify_password(password, user.hashed_password):
-        raise PasswordIncorrectError("Incorrect password")
-    return user
-
-def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
-    to_encode = data.copy()
-    if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
-    else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes = 30)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, settings.jwt_secret_key, algorithm=ALGORITHM)
-    return encoded_jwt
-
-async def get_current_user(request: Request, session: SessionDep):
-    credentials_exception = HTTPException(
+def credentials_exception():
+    return HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail = "Could not validate creds",
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
     )
+
+async def get_current_user_with_role(token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]) -> CurrentUser:
+    fingerprint = _token_fingerprint(token.credentials)
     try:
-        token = request.cookies.get("access_token")
-        print(repr(token), repr(settings.jwt_secret_key))
-        payload = jwt.decode(token, settings.jwt_secret_key, algorithms=[ALGORITHM])
-        username = payload.get("sub")
-        print(username)
-        if username is None:
-            raise credentials_exception
-    except InvalidTokenError:
-        raise credentials_exception
-    user = get_user_by_username(email=username, session=session)
-    if user is None:
-        raise credentials_exception
-    return user
+        return verify_token_and_get_user(token.credentials)
+
+    except jwt.ExpiredSignatureError:
+        logger.warning("JWT expired fp=%s", fingerprint)
+        raise credentials_exception()
+
+    except jwt.InvalidAudienceError:
+        logger.warning(
+            "JWT invalid audience fingerprint=%s expected=%s", fingerprint, settings.jwt_audience)
+        raise credentials_exception()
+
+    except jwt.InvalidIssuerError:
+        logger.warning(
+            "JWT invalid issuer fingerprint=%s expected=%s", fingerprint, settings.jwt_issuer)
+        raise credentials_exception()
+
+    except jwt.PyJWTError as e:
+        logger.warning("JWT invalid fingerprint=%s error=%s", fingerprint, repr(e))
+        raise credentials_exception()
+
+    except Exception as e:
+        logger.exception("JWT verify unexpected error fingerprint=%s error=%s", fingerprint, repr(e))
+        raise credentials_exception()
+
+async def get_current_user(user: Annotated[CurrentUser, Depends(get_current_user_with_role)]) -> str:
+    return user.user_id
+
+# async def get_current_user(token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]):
+#     try:
+#         print("Token here: ")
+#         print(token)
+#         print(settings.jwt_audience)
+#
+#         signing_key = jwks_client.get_signing_key_from_jwt(token.credentials)
+#         payload = jwt.decode(
+#             token.credentials,
+#             signing_key,
+#             audience=settings.jwt_audience,
+#             issuer=settings.jwt_issuer,
+#             algorithms=["EdDSA"]
+#         )
+#         print("JWT payload:", payload)
+#         user_id = payload.get("sub")
+#         print(user_id)
+#         if user_id is None:
+#             raise credentials_exception
+#     except jwt.exceptions.InvalidTokenError as e:
+#         print("Invalid token")
+#         print(e)
+#         raise credentials_exception
+#     if user_id is None:
+#         raise credentials_exception
+#     return user_id
+
+
+#
+# async def get_current_user(request: Request, session: SessionDep):
+#     credentials_exception = HTTPException(
+#         status_code=status.HTTP_401_UNAUTHORIZED,
+#         detail = "Could not validate creds",
+#     )
+#     try:
+#         token = request.cookies.get("access_token")
+#         print(repr(token), repr(settings.jwt_secret_key))
+#         payload = jwt.decode(token, settings.jwt_secret_key, algorithms=[ALGORITHM])
+#         username = payload.get("sub")
+#         print(username)
+#         if username is None:
+#             raise credentials_exception
+#     except InvalidTokenError:
+#         raise credentials_exception
+#     user = get_user_by_username(email=username, session=session)
+#     if user is None:
+#         raise credentials_exception
+#     return user

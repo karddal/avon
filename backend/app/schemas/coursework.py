@@ -1,7 +1,8 @@
-from typing import Annotated
+from typing import Annotated, Literal
+import os
 
 import datetime
-from pydantic import BaseModel, AfterValidator
+from pydantic import BaseModel, AfterValidator, ConfigDict
 from uuid import UUID
 import re
 
@@ -21,6 +22,8 @@ def is_valid_description(description: str) -> str:
 
 
 def is_valid_due_date(date: datetime.datetime) -> datetime.datetime:
+    if os.getenv("TESTING_MODE") == "True":
+        return date
     if date.tzinfo is None:
         date = date.replace(tzinfo=datetime.timezone.utc)
         
@@ -48,6 +51,7 @@ DueDate = Annotated[datetime.datetime, AfterValidator(is_valid_due_date)]  # Fix
 Colour = Annotated[str, AfterValidator(is_valid_colour)]
 
 class CourseworkRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: UUID
     name: str
     description: str
@@ -56,6 +60,13 @@ class CourseworkRead(BaseModel):
     creation_date: datetime.datetime
     colour: str
 
+class CourseworkUpdateFormData(CourseworkRead):
+    unit_name: str
+    unit_code: str
+    gitlabId: str
+    templateId: int | None = None
+    max_end_date: datetime.date
+
 class CourseworkCreate(BaseModel):
     name: Name
     description: Description
@@ -63,6 +74,12 @@ class CourseworkCreate(BaseModel):
     due_date: DueDate
     colour: str
 
+class CourseworkTemplateFile(BaseModel):
+    id: str
+    name: str
+    type: Literal["blob", "tree"]
+    path: str
+    mode: str
 
 class CourseworkUpdate(BaseModel):
     name: Name | None = None
@@ -75,3 +92,28 @@ class CourseworkDelete(BaseModel):
     id: UUID
     deletion_successful: bool
 
+class CourseworkTemplateExists(BaseModel):
+    exists: bool
+    templateProjectId: int | None = None
+
+class CourseworkTemplateActivate(BaseModel):
+    templateGitLabId: int
+
+class CourseworkTemplateUrl(BaseModel):
+    http: str
+    ssh: str
+
+class CourseworkTemplateUploadZip(BaseModel):
+    templateId: int
+
+class CourseworkSetupProgress(BaseModel):
+    title: str
+    completed: bool
+
+class CourseworkEventRead(BaseModel):
+    id: UUID
+    name: Name
+    due_date: datetime.datetime
+    unit_id: UUID
+    unit_name: Name
+    colour: Colour | None = None

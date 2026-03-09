@@ -1,136 +1,276 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from datetime import date
+from typing import Annotated
 from uuid import UUID
 
+from app.core.helpers.gitlab import gl_create_unit, gl_delete_unit, gl_update_unit
+from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlmodel import Session, select
+from sqlalchemy.orm.strategy_options import selectinload
+from app.core.settings import settings
 
+from app.core.security import get_current_user_with_role
 from app.db.session import get_session
-from typing import Annotated
-from app.schemas.unit import CourseworkAll, CourseworkRead, UnitAll, UnitCreate, UnitRead, UnitUpdate
+from app.models.programme import Programme
 from app.models.unit import Unit
-from app.models.unit_group import UnitGroup
-from app.models.coursework import Coursework
 from app.models.unit_enrollment import UnitEnrollment
-
+from app.schemas.security import CurrentUser
+from app.schemas.unit import (
+    CourseworkAll,
+    UnitAll,
+    UnitAllByGroup,
+    UnitCreate,
+    UnitRead,
+    UnitUpdate,
+    UnitLecturers,
+    UnitReadWithDates,
+    UnitEventRead,
+    UnitStudents
+)
 
 router = APIRouter(prefix="/units", tags=["units"])
 session_dependency = Annotated[Session, Depends(get_session)]
 
-@router.post("/create", response_model=UnitCreate, status_code=status.HTTP_201_CREATED)
+today = date.today()
+
+@router.post(
+    "/create",
+    response_model=UnitCreate,
+    status_code=status.HTTP_201_CREATED,
+)
 async def create_unit(unit: UnitCreate, session: session_dependency):
+    if unit.programme_id:
+        programme = session.exec(
+            select(Programme).where(Programme.id == unit.programme_id)
+        ).first()
 
-  db_unit = Unit(name=unit.name, description=unit.description, unit_code=unit.unit_code, colour=unit.colour)
+        if not programme:
+            raise HTTPException(status_code=400, detail="Programme id is invalid.")
+    
+    try:
+        if settings.testing_mode:
+            gl_data = {"gitlabGroupId": 12345678}
+        else:
+            gl_data = await gl_create_unit(unit.name, programme.gitlab_id)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database failed. GitLab group rolled back."
+    )
 
-  if unit.group_ids:
-    groups = session.exec(
-      select(UnitGroup).where(UnitGroup.id.in_(unit.group_ids))
+    db_unit = Unit(
+        name=unit.name,
+        description=unit.description,
+        unit_code=unit.unit_code,
+        colour=unit.colour,
+        programme_id=unit.programme_id,
+        gitlab_id=gl_data["gitlabGroupId"]
+    )
+    # Add validation for the start and end dates below
+
+    statement = select(Unit.id).where(Unit.name==unit.name, Unit.unit_code==unit.unit_code, Unit.programme_id == unit.programme_id)
+    existing_units = session.exec(statement).all()
+    if len(existing_units) > 0:
+        raise HTTPException(status_code=400, detail="Unit already exists with same name or unit code")
+
+    session.add(db_unit)
+    session.commit()
+    session.refresh(db_unit)
+    return db_unit
+
+@router.get("/units-by-programme", response_model=UnitAllByGroup)
+async def get_units_by_programme(session: session_dependency):
+    results = session.exec(
+        select(Programme).options(selectinload(Programme.units))
     ).all()
+    return UnitAllByGroup(programmes=results)
 
-    if len(groups) != len(unit.group_ids):
-      raise HTTPException(status_code=400, detail="One or more group ids are invalid.")
+@router.get("/active", response_model=UnitAll)
+async def active_units(session: session_dependency):
+    results = session.exec(select(Unit).join(UnitEnrollment)).unique()
+    today = date.today()
+    filtered = filter(lambda unit: unit.programme.start_date <= today <= unit.programme.end_date, results)
+    return UnitAll(
+        units=filtered
+    )
 
-    db_unit.groups.extend(groups)
 
-  session.add(db_unit)
-  session.commit()
-  session.refresh(db_unit)
+@router.get("/units", response_model=list[UnitEventRead])
+def list_units_for_events(
+        session: session_dependency,
+        current_user: CurrentUser = Depends(get_current_user_with_role),
+    ):
 
-  return db_unit
+    if current_user.role == "admin":
+        statement = (
+            select(Unit)
+            .join(Programme)
+            .where(Programme.end_date >= today)
+            .options(selectinload(Unit.programme))
+        )
+
+    else:
+        statement = (
+            select(Unit)
+            .join(UnitEnrollment)
+            .join(Programme)
+            .where(
+                UnitEnrollment.user_id == current_user.user_id,
+                Programme.end_date >= today
+            )
+            .options(selectinload(Unit.programme))
+        )
+
+    units = session.exec(statement).all()
+    return [
+        {
+            "id": unit.id,
+            "name": unit.name,
+            "unit_code": unit.unit_code,
+            "programme_start_date": str(unit.programme.start_date.year),
+            "programme_end_date": str(unit.programme.end_date.year),
+        }
+        for unit in units
+    ]
 
 @router.get("/{unit_id}", response_model=UnitRead, status_code=status.HTTP_200_OK)
 async def get_unit_details(unit_id: UUID, session: session_dependency):
-  unit = session.get(Unit, unit_id)
+    unit = session.get(Unit, unit_id)
 
-  if unit is None:
-      raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Unit not found')
+    if unit is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Unit not found"
+        )
 
-  return unit
+    print("[BACKEND] UNIT:", unit)
+
+    return unit
+
+@router.get("/{unit_id}/with_dates", response_model=UnitReadWithDates, status_code=status.HTTP_200_OK)
+async def get_unit_with_dates(unit_id: UUID, session: session_dependency):
+    unit = session.get(Unit, unit_id)
+    start = unit.programme.start_date
+    end = unit.programme.end_date
+    if unit is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Unit not found"
+        )
+
+    return UnitReadWithDates(
+        id=unit.id,
+        name=unit.name,
+        description=unit.description,
+        creation_date=unit.creation_date,
+        unit_code=unit.unit_code,
+        colour=unit.colour,
+        programme_id=unit.programme_id,
+        start_date=start,
+        end_date=end,
+    )
+
+@router.get("/{unit_id}/lecturers", response_model=UnitLecturers, status_code=status.HTTP_200_OK)
+async def get_unit_lecturers(unit_id: UUID, session: session_dependency):
+    lects = session.exec(
+        select(UnitEnrollment.user_id).join(Unit).where(Unit.id == unit_id).where(UnitEnrollment.type == "lecturer")
+    ).all()
+    if not lects:
+        raise HTTPException(status_code=404, detail="No lecturers found.")
+    return UnitLecturers(
+        lecturers=lects,
+    )
+
+@router.get("/{unit_id}/students", response_model=UnitStudents, status_code=status.HTTP_200_OK)
+async def get_unit_students(unit_id: UUID, session: session_dependency):
+    studs = session.exec(
+        select(UnitEnrollment.user_id).join(Unit).where(Unit.id == unit_id).where(UnitEnrollment.type == "student")
+    ).all()
+    if not studs:
+        raise HTTPException(status_code=404, detail="No students found.")
+    return UnitStudents(
+        students=studs,
+    )
 
 @router.put("/{unit_id}", response_model=UnitUpdate, status_code=status.HTTP_200_OK)
 async def update_unit(unit_id: UUID, unit: UnitUpdate, session: session_dependency):
-  if not unit.name:
-      raise HTTPException(status_code=400, detail="Name of unit is required.")
+    if not unit.name:
+        raise HTTPException(status_code=400, detail="Name of unit is required.")
 
-  db_unit = session.get(Unit, unit_id)
+    db_unit = session.get(Unit, unit_id)
 
-  if not db_unit:
-     raise HTTPException(status_code=404, detail="Unit not found.")
-  
-  if unit.name is not None:
-     db_unit.name = unit.name
-  if unit.description is not None:
-     db_unit.description = unit.description
-  if unit.unit_code is not None:
-     db_unit.unit_code = unit.unit_code
-  if unit.colour is not None:
-     db_unit.colour = unit.colour
+    if not db_unit:
+        raise HTTPException(status_code=404, detail="Unit not found.")
 
-  if unit.group_ids is not None:
-     groups = session.exec(
-        select(UnitGroup).where(UnitGroup.id.in_(unit.group_ids))
-     ).all()
-     db_unit.groups = groups
-  
-  session.add(db_unit)
-  session.commit()
-  session.refresh(db_unit)
+    if unit.name is not None:
+        db_unit.name = unit.name
+    if unit.description is not None:
+        db_unit.description = unit.description
+    if unit.unit_code is not None:
+        db_unit.unit_code = unit.unit_code
+    if unit.colour is not None:
+        db_unit.colour = unit.colour
+    if unit.programme_id is not None:
+        db_unit.programme_id = unit.programme_id
 
-  return db_unit
+    session.commit()
+    session.refresh(db_unit)
+
+    try:
+        if not settings.testing_mode:
+            await gl_update_unit(db_unit.gitlab_id, db_unit.name)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY, 
+            detail="Database failed. GitLab group rolled back."
+        )
+
+    return db_unit
 
 
 @router.delete("/{unit_id}")
-async def delete_unit(unit_id: UUID, session: session_dependency):  
-  unit = session.get(Unit, unit_id)
+async def delete_unit(unit_id: UUID, session: session_dependency):
+    unit = session.get(Unit, unit_id)
 
-  if unit is None:
-      raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Unit not found.")
+    if unit is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Unit not found."
+        )
+    
+    try:
+        if not settings.testing_mode:
+            await gl_delete_unit(unit.gitlab_id)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail="Database failed. GitLab group rolled back."
+    )
 
-  session.delete(unit)
-  session.commit()
+    session.delete(unit)
+    session.commit()
 
-  return
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
 
 @router.get("/u/{user_id}", response_model=UnitAll)
-async def get_user_units(user_id:UUID, session: session_dependency):
-  statement = select(UnitEnrollment).where(UnitEnrollment.user_id == user_id)
-  enrollments = session.exec(statement).all()
-  print(enrollments)
-  response = []
-  for enrollment in enrollments:
-    statement = select(Unit).where(Unit.id == enrollment.unit_id)
-    units = session.exec(statement)
-    for unit in units:
-      response_unit = UnitRead(name=unit.name, description=unit.description, creation_date=unit.creation_date, unit_code=unit.unit_code, colour= unit.colour)
-      response.append(response_unit)
-  
-  return UnitAll(units=response)
-       
-  # 3d0bdb79-8633-403c-bfe7-c83219ec7864
-  return {"hi"} 
-  
+async def get_user_units(user_id: str, session: session_dependency):
+    response = session.exec(
+        select(Unit).join(UnitEnrollment).where(UnitEnrollment.user_id == user_id)
+    ).all()
+
+    return {"units": response}
+
 
 @router.get("/{unit_id}/courseworks", response_model=CourseworkAll)
-async def get_courseworks(unit_id:UUID, session:session_dependency):
-  statement = select(Coursework).where(Coursework.unit_id == unit_id)
-  courseworks = session.exec(statement).all()
-  print(courseworks)
-  response = []
-  for coursework in courseworks:
-      response_courswork = CourseworkRead(id=coursework.id, name=coursework.name, description=coursework.description, due_date=coursework.due_date, creation_date=coursework.creation_date, colour=coursework.colour)
-      response.append(response_courswork)
-    
-  return CourseworkAll(courseworks=response)
+async def get_courseworks(unit_id: UUID, session: session_dependency):
+    unit = session.get(Unit, unit_id)
+    if not unit:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail = "Unit not found"
+        )
+    courseworks = unit.courseworks
+    return CourseworkAll(courseworks=courseworks)
+
 
 @router.get("/", response_model=UnitAll)
-async def get_units(session:session_dependency):
-  statement = select(Unit)
-  units = session.exec(statement).all()
-
-  response = []
-
-  for unit in units:
-    response_unit = UnitRead(name=unit.name, description=unit.description, creation_date=unit.creation_date, unit_code=unit.unit_code, colour= unit.colour)
-    response.append(response_unit)
-
-  print("hi",response)
-  return UnitAll(units=response)
-
+async def get_units(session: session_dependency):
+    statement = select(Unit)
+    units = session.exec(statement).all()
+    return {"units":units}

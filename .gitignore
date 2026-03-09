@@ -17,3 +17,35 @@ out/
 .vscode/
 
 *.db
+*.base
+
+# documentation
+/documentation/book
+# Devenv
+.devenv*
+.devenv/
+devenv.local.nix
+devenv.local.yaml
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml
+
+# Devenv
+.devenv*
+devenv.local.nix
+devenv.local.yaml
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml
+
+
+node_modules/
+
+# frontend cypress
+/frontend/cypress/screenshots
