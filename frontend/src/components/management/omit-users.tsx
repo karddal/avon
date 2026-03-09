@@ -77,35 +77,43 @@ export default function OmitMembers({ omittedMembersIds, setOmittedUserIds, unit
 
   return (
     <Dialog open={openState} onOpenChange={setOpenState}>
-      <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-xl">Omit user from deletion</DialogTitle>
-          <DialogDescription>Find and omit users using the search bar below.</DialogDescription>
-        </DialogHeader>
-        <div className="flex flex-row gap-4">
-            <div className="flex-1 space-y-2 min-w-0">
-                <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">All Users</p>
-                <UserSelectionOmittion 
-                users={users} 
-                loading={loading}
-                omittedMembersIds={omittedMembersIds} 
-                setOmittedUserIds={setOmittedUserIds}
-                />
+          <DialogContent className="max-w-full! lg:max-w-[80%]! xl:max-w-[70%]! w-full max-h-full! lg:max-h-[80vh]! overflow-y-auto p-0 border-none bg-transparent shadow-none">
+            <div className="flex flex-col lg:flex-row gap-6 w-full justify-center items-stretch">
+              <div className="lg:max-h-[80vh]! flex-2 lg:overflow-y-auto bg-background border shadow-lg justify-start flex flex-col">
+                <div className="p-8 pb-0">
+                  <DialogTitle className="text-xl">Omit user from deletion</DialogTitle>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Select users to be omitted from deletion
+                  </p>
+                </div>
+    
+                <div className="flex-1 space-y-2 min-w-0 overflow-y-auto p-8 pt-0 flex flex-col gap-2">
+                        <UserSelectionOmittion 
+                            users={users} 
+                            loading={loading}
+                            omittedMembersIds={omittedMembersIds} 
+                            setOmittedUserIds={setOmittedUserIds}
+                        />
+                </div>
+              </div>
+              <div className="lg:max-h-[80vh]! flex-2 lg:overflow-y-auto bg-background border shadow-lg justify-start flex flex-col">
+                <div className="p-8 pb-0">
+                  <DialogTitle className="text-xl">View selected users</DialogTitle>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    The list of selected users appears below
+                  </p>
+                </div>
+    
+                <div className="flex-1 space-y-2 min-w-0 overflow-y-auto p-8 pt-0 flex flex-col gap-2">
+                  <ListOmittedusers 
+                            users={users}
+                            loading={loading}
+                            omittedMembersIds={omittedMembersIds}
+                  />
+                </div>
+              </div>
             </div>
-
-            <Separator orientation="vertical" className="self-stretch"/>
-
-            <div className="flex-1 space-y-2 min-w-0">
-                <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Omitted</p>
-                <ListOmittedusers 
-                users={users}
-                loading={loading}
-                omittedMembersIds={omittedMembersIds}
-                />
-            </div>
-        </div>
-        
-      </DialogContent>
-    </Dialog>
+          </DialogContent>
+        </Dialog>
   );
 }
