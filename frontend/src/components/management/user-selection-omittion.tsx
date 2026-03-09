@@ -32,21 +32,20 @@ import { Spinner } from "@/components/ui/spinner";
 import { Menu, Pencil, TextSearch, X } from "lucide-react";
 
 interface OmittedMembersProps {
+  users: UserInfo[];
+  loading: boolean;
   omittedMembersIds: string[];
-  setOmittedUserIds: (ids: string[]) => void
-  unit_id: string;
+  setOmittedUserIds: (ids: string[]) => void;
 }
 
-type userInfo = {
+type UserInfo = {
   id: string;
   displayName: string;
   src?: string;
 }
 
 
-export default function UserSelectionOmittion({ omittedMembersIds, setOmittedUserIds, unit_id}: OmittedMembersProps) {
-    const [loading, setLoading] = useState(true);
-    const [users, setUsers] = useState<userInfo[]>([]);
+export default function UserSelectionOmittion({ users, loading, omittedMembersIds, setOmittedUserIds }: OmittedMembersProps) {
     const [searchQuery, setSearchQuery] = useState("");
 
     async function safeOmit(id : string) {
@@ -61,37 +60,6 @@ export default function UserSelectionOmittion({ omittedMembersIds, setOmittedUse
         );
     };
 
-    const loadlecturers = useCallback(async () => {
-        const s = await requireSession();
-        const role = s.user.role;
-
-        try {
-            const data = await get_unit_users(unit_id);
-            const userIds = data.users;
-
-            const enrichedlecturers = await Promise.all(
-            userIds.map(async (id: string) => {
-                const name = await get_username_from_id(id);
-                const imageSrc = await get_user_image_from_id(id);
-
-                return {
-                id: id,
-                displayName: name || "Unknown lecturer",
-                src: imageSrc,
-                };
-            }),
-            );
-
-            setUsers(enrichedlecturers);
-        } finally {
-            setLoading(false);
-        }
-    }, [unit_id]);
-
-    useEffect(() => {
-        loadlecturers();
-    }, [loadlecturers]);
-
     const filteredlecturers = useMemo(() => {
         return users.filter((lecturer) =>
           lecturer.displayName.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -105,7 +73,7 @@ export default function UserSelectionOmittion({ omittedMembersIds, setOmittedUse
         <Input
           disabled
           className="w-full"
-          placeholder="Loading lecturers..."
+          placeholder="Loading users..."
           value={searchQuery}
         />
         <Spinner />
@@ -117,7 +85,7 @@ export default function UserSelectionOmittion({ omittedMembersIds, setOmittedUse
       <div className="flex flex-row">
         <Input
           className="w-full"
-          placeholder="Search lecturers by name..."
+          placeholder="Search users by name..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -136,10 +104,10 @@ export default function UserSelectionOmittion({ omittedMembersIds, setOmittedUse
                 <Checkbox
                     checked={omittedMembersIds.includes(user.id)}
                     onCheckedChange={(checked) => {
-                        if (!checked) {
-                        safeOmit(user.id)
+                        if (checked) {
+                          safeOmit(user.id)
                         } else {
-                        safeDelete(user.id)
+                          safeDelete(user.id)
                         }
                     }}
                     className="peer w-full h-full z-10 bg-card/80 shadow rounded-none border data-[state=checked]:bg-primary"
