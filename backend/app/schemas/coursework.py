@@ -1,8 +1,8 @@
+from typing import Annotated, Literal
 import os
-from typing import Annotated
 
 import datetime
-from pydantic import BaseModel, AfterValidator
+from pydantic import BaseModel, AfterValidator, ConfigDict
 from uuid import UUID
 import re
 
@@ -51,6 +51,7 @@ DueDate = Annotated[datetime.datetime, AfterValidator(is_valid_due_date)]  # Fix
 Colour = Annotated[str, AfterValidator(is_valid_colour)]
 
 class CourseworkRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: UUID
     name: str
     description: str
@@ -62,6 +63,8 @@ class CourseworkRead(BaseModel):
 class CourseworkUpdateFormData(CourseworkRead):
     unit_name: str
     unit_code: str
+    gitlabId: str
+    templateId: int | None = None
     max_end_date: datetime.date
 
 class CourseworkCreate(BaseModel):
@@ -71,6 +74,12 @@ class CourseworkCreate(BaseModel):
     due_date: DueDate
     colour: str
 
+class CourseworkTemplateFile(BaseModel):
+    id: str
+    name: str
+    type: Literal["blob", "tree"]
+    path: str
+    mode: str
 
 class CourseworkUpdate(BaseModel):
     name: Name | None = None
@@ -83,6 +92,23 @@ class CourseworkDelete(BaseModel):
     id: UUID
     deletion_successful: bool
 
+class CourseworkTemplateExists(BaseModel):
+    exists: bool
+    templateProjectId: int | None = None
+
+class CourseworkTemplateActivate(BaseModel):
+    templateGitLabId: int
+
+class CourseworkTemplateUrl(BaseModel):
+    http: str
+    ssh: str
+
+class CourseworkTemplateUploadZip(BaseModel):
+    templateId: int
+
+class CourseworkSetupProgress(BaseModel):
+    title: str
+    completed: bool
 
 class CourseworkEventRead(BaseModel):
     id: UUID

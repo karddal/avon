@@ -45,14 +45,6 @@ describe("Coursework page", () => {
     cy.get("div").find(".text-2xl").should("contain", "Information");
   });
 
-  it("Contains a Tools section", () => {
-    cy.visit("/coursework");
-    cy.contains("button", "Finished").click();
-    cy.contains('[role="tab"]', "Computer Architecture 2024-2025").click();
-    cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
-    cy.get("div").should("contain", "Tools");
-  });
-
   it("Admin can edit a coursework name", () => {
     cy.visit("/coursework");
     cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
@@ -100,4 +92,12 @@ describe("Coursework page", () => {
   //   cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
   //   cy.get("div").contains("24/02/26 at 12:00").should("be.visible");
   // });
+  //
+  it("shows the CW setup flow", () => {
+    cy.visit("/coursework");
+    cy.contains("button", "Finished").click();
+    cy.contains('[role="tab"]', "Computer Architecture 2024-2025").click();
+    cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
+    cy.contains("Setup Progress").should("exist");
+  });
 });

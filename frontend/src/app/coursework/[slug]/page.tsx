@@ -1,8 +1,6 @@
 import { Suspense } from "react";
 import CourseworkLectDropdown from "@/components/coursework/coursework-lect-dropdown";
-import Repository from "@/components/coursework/repository";
-import { DropdownCard } from "@/components/dropdown-card";
-import RunTestsItem from "@/components/run-tests-item";
+import SetupProgress from "@/components/coursework/setup-progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getRequestJWT, requireSession } from "@/lib/auth-utils";
@@ -21,6 +19,8 @@ type CourseworkUpdateReqResponse = {
   colour: string;
   unit_name: string;
   unit_code: string;
+  gitlabId: string;
+  templateId: string;
   max_end_date: string;
 };
 
@@ -34,6 +34,8 @@ type CourseworkUpdateData = {
   colour: string;
   unit_name: string;
   unit_code: string;
+  gitlabId: string;
+  templateId: string;
   max_end_date: Date;
 };
 
@@ -70,7 +72,15 @@ async function CourseworkPageContent({
     colour: c.colour,
     unit_name: c.unit_name,
     unit_code: c.unit_code,
+    gitlabId: c.gitlabId,
+    templateId: c.templateId,
     max_end_date: end,
+  };
+  // Hardcoded the template id here, when merged, I should be able to get the template id from jack's code
+  const gitlab_data = {
+    name: c.name,
+    coursework_id: c.id,
+    template_id: String(data.templateId),
   };
 
   return (
@@ -96,6 +106,7 @@ async function CourseworkPageContent({
                   _me={me}
                   slug={slug}
                   coursework_update_data={data}
+                  gitlab_data={gitlab_data}
                 ></CourseworkLectDropdown>
               )}
             </div>
@@ -104,7 +115,7 @@ async function CourseworkPageContent({
       </div>
 
       <section className="grid gap-4 grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 min-h-0 mb-2">
-        <div className="flex flex-col lg:col-span-2 gap-4 lg:min-h-0">
+        <div className="flex flex-col gap-4 col-span-3 lg:col-span-2">
           <Card>
             <CardHeader>
               <CardTitle>
@@ -120,23 +131,24 @@ async function CourseworkPageContent({
               </Suspense>
             </CardContent>
           </Card>
-
-          {/* Repo */}
-          <Repository></Repository>
         </div>
-        <div className="flex flex-col xl:col-span-1 lg:col-span-2 gap-4 min-h-0">
+        <div className="col-span-3 lg:col-span-1">
           <Suspense>
             <CourseworkInformation slug={slug} token={token} />
           </Suspense>
-          <DropdownCard
-            openByDefault={true}
-            title="Tools"
-            desc="Tools you can use for this coursework appear here."
-          >
-            {" "}
-            <RunTestsItem />
-          </DropdownCard>
         </div>
+
+        {/*
+        TODO: In the future, this should check the backend to ensure that they are a lecturer on this specific unit. For now this is okay for the demo, but this
+        needs to be fixed because a lect could be a student on a nother unit.
+          */}
+        {(me === "admin" || me === "lecturer") && (
+          <div className="flex flex-col col-span-3 min-h-0">
+            <Suspense>
+              <SetupProgress cw_id={data.id} />
+            </Suspense>
+          </div>
+        )}
       </section>
     </>
   );

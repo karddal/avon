@@ -88,3 +88,15 @@ def auth_override():
     app.dependency_overrides[get_current_user] = lambda: "test-user"
     yield "test-user"
     app.dependency_overrides.pop(get_current_user, None)
+
+@pytest.fixture(scope="function")
+def auth_override_with_role():
+    from app.core.security import get_current_user_with_role
+    from app.schemas.security import CurrentUser
+
+    def _override(user_id: str, role: str = "student"):
+        app.dependency_overrides[get_current_user_with_role] = lambda: CurrentUser(user_id=user_id, role=role)
+
+    yield _override
+
+    app.dependency_overrides.pop(get_current_user_with_role, None)

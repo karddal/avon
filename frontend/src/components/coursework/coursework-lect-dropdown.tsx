@@ -2,13 +2,16 @@
 
 import {
   BookCheck,
+  BookDashed,
   Container,
+  LayersPlus,
   Menu,
   ServerCog,
   SquarePen,
   SquareX,
 } from "lucide-react";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useCallback, useState } from "react";
 import CreateDockerfile from "@/components/coursework/create-dockerfile";
 import DeleteCourseworkButton from "@/components/coursework/delete_coursework_button";
 import EditCoursework from "@/components/coursework/edit-coursework";
@@ -29,6 +32,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import CreateTemplate from "./create-templates";
+import ProvisionCoursework from "./provision-coursework";
 
 type CourseworkUpdateData = {
   id: string;
@@ -41,20 +46,35 @@ type CourseworkUpdateData = {
   unit_name: string;
   unit_code: string;
   max_end_date: Date;
+  gitlabId: string;
+};
+
+type GitlabData = {
+  name: string;
+  coursework_id: string;
+  template_id: string;
 };
 
 export default function CourseworkLectDropdown({
   slug,
   _me,
   coursework_update_data,
+  gitlab_data,
 }: {
   slug: string;
   _me: string;
   coursework_update_data: CourseworkUpdateData;
+  gitlab_data: GitlabData;
 }) {
   const [showDelete, setShowDelete] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showDocker, setShowDocker] = useState(false);
+  const [showTemplates, setShowTemplate] = useState(false);
+  const router = useRouter();
+  const refresh = useCallback(() => {
+    router.refresh();
+  }, [router]);
+  const [showProvision, setShowProvision] = useState(false);
 
   return (
     <div className="aspect-square">
@@ -69,6 +89,14 @@ export default function CourseworkLectDropdown({
           <DropdownMenuLabel>Coursework Options</DropdownMenuLabel>
           <DropdownMenuSeparator />
 
+          <DropdownMenuItem
+            disabled={false}
+            onSelect={() => setShowTemplate(true)}
+          >
+            <BookDashed className="mr-2 h-4 w-4" />
+            Templates
+          </DropdownMenuItem>
+
           <DropdownMenuItem disabled={true}>
             <ServerCog className="mr-2 h-4 w-4" />
             Engine
@@ -80,6 +108,14 @@ export default function CourseworkLectDropdown({
           >
             <Container className="mr-2 h-4 w-4" />
             Create Dockerfile
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            disabled={false}
+            onSelect={() => setShowProvision(true)}
+          >
+            <LayersPlus className="mr-2 h-4 w-4" />
+            Provision Coursework
           </DropdownMenuItem>
 
           <DropdownMenuItem disabled={true}>
@@ -104,9 +140,23 @@ export default function CourseworkLectDropdown({
         </DropdownMenuContent>
       </DropdownMenu>
 
+      <CreateTemplate
+        open_state={showTemplates}
+        set_open_state={setShowTemplate}
+        courseworkGitlabId={coursework_update_data.gitlabId}
+        courseworkId={coursework_update_data.id}
+        refresh={refresh}
+      />
+      <ProvisionCoursework
+        open_state={showProvision}
+        set_open_state={setShowProvision}
+        gitlab_data={gitlab_data}
+      ></ProvisionCoursework>
+
       <CreateDockerfile
         open_state={showDocker}
         set_open_state={setShowDocker}
+        refresh={() => refresh()}
       ></CreateDockerfile>
 
       <EditCoursework
