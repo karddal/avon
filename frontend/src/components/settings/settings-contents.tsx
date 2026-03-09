@@ -25,7 +25,7 @@ export default function SettingsContents() {
         </TabsTrigger>
       </TabsList>
       <div className={"w-full p-6"}>
-        <TabsContent value={"account"}>
+        <TabsContent className="max-w-full! lg:max-w-[80%]! xl:max-w-[70%]! w-full p-0 border-none bg-transparent shadow-none overflow-visible" value={"account"}>
           <AccountSettings user={null} isAdmin={false} settingsPage={true}/>
         </TabsContent>
         <TabsContent value={"password"}></TabsContent>

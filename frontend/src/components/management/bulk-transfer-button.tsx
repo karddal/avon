@@ -12,9 +12,10 @@ interface TransferUnitMembersProps {
   unitIdFrom: string;
   unitIdsTo: string[];
   omittedMembers: string[];
+  onSuccess: () => void;
 }
 
-export default function BulkTransferButton({ unitIdFrom, unitIdsTo, omittedMembers }: TransferUnitMembersProps) {
+export default function BulkTransferButton({ unitIdFrom, unitIdsTo, omittedMembers, onSuccess }: TransferUnitMembersProps) {
   const [status, setStatus] = useState<number>(0);
   const router = useRouter();
 
@@ -30,6 +31,7 @@ export default function BulkTransferButton({ unitIdFrom, unitIdsTo, omittedMembe
       if (result.success) {
         toast.success("Unit Members transferred successfully");
         setStatus(0);
+        onSuccess();
       } else if (result.status === 409) {
         toast.error("No Users are enrolled on given unit, that aren't excluded / omitted");
         setStatus(2);

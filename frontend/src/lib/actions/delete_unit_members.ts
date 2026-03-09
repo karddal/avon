@@ -32,12 +32,14 @@ export async function delete_unit_members(req: DeleteUnitMembersRequest) {
     const json = await data.json();
     return {
       success: false,
+      status: data.status,
       data: json,
     };
   } else {
     const json = await data.json();
     return {
       success: true,
+      status: data.status,
       data: json,
     };
   }

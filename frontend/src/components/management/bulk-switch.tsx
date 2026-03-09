@@ -35,6 +35,7 @@ import { useCallback, useEffect, useState } from "react";
 import { getProgrammes } from "@/lib/actions/get_all_programmes";
 import { map } from "better-auth";
 import BulkTransferButton from "./bulk-transfer-button";
+import OmitMembers from "./omit-users";
 
 interface Programme {
   id: UUID;
@@ -70,7 +71,9 @@ export default function BulkSwitch() {
     const [toUnits, setToUnits] = useState<Unit[]>([]);
 
     // Miscallenous form states and variables
+    const [showOmitUsers, setShowOmitUsers] = useState(false);
     const [showDelete, setShowDelete] = useState(false); 
+    const [refreshKey, setRefreshKey] = useState(0);
     const programmeSelectedFrom = selectedProgrammeIdFrom !== null;
     const programmeSelectedTo = selectedProgrammeIdTo !== null;
     const selectedCount = selectedUnitIds.length
@@ -126,6 +129,10 @@ export default function BulkSwitch() {
     useEffect(() => {
         loadProgrammes();
     }, [loadProgrammes]);
+
+    useEffect(() => {
+        setOmittedMembers([]);
+    }, [selectedUnitId]);
 
     // Keeps fromUnit and selectedUnitId in sync with the selected programme and the newly loaded programmes data.
     useEffect(() => {
@@ -273,8 +280,8 @@ export default function BulkSwitch() {
         </div>
         <div className="mt-auto rounded-md border border-border p-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <Button variant="outline" className="w-full sm:w-fit"disabled={!canOmit}>
-                Omit User From Transfer
+                <Button variant="outline" className="w-full sm:w-fit" disabled={!canOmit} onClick={() => setShowOmitUsers(true)}>
+                Omit Student From Transfer
                 </Button>
 
                 <Button variant="outline" className="flex items-center gap-2" disabled={!canTransfer} onClick={() => setShowDelete(true)}>
@@ -318,11 +325,12 @@ export default function BulkSwitch() {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
-                    <BulkTransferButton unitIdFrom={selectedUnitId!} unitIdsTo={selectedUnitIds.filter((unitId) => unitId !== selectedUnitId)} omittedMembers={omittedMembers}/> {/*Filtering out transferring to same unit e.g. programme x unit y -> programme x unit y/*}
+                    <BulkTransferButton unitIdFrom={selectedUnitId!} unitIdsTo={selectedUnitIds.filter((unitId) => unitId !== selectedUnitId)} omittedMembers={omittedMembers} onSuccess={() => setRefreshKey(k => k + 1)}/> {/*Filtering out transferring to same unit e.g. programme x unit y -> programme x unit y/*}
                     {/*selecetd Unit Id can never be null here anyway, as form doesn't allow it*/}
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
+        <OmitMembers omittedMembersIds={omittedMembers} setOmittedUserIds={setOmittedMembers} unitId={selectedUnitId} openState={showOmitUsers} setOpenState={setShowOmitUsers} refreshKey={refreshKey}/>
       </div>
     </div>
   );

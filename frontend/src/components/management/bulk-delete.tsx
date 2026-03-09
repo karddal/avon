@@ -61,6 +61,7 @@ export default function BulkDelete() {
   const [omittedMemberIds, setOmittedMembersIds] = useState<string[]>([]);
   const [showDelete, setShowDelete] = useState(false);
   const [showOmitUsers, setShowOmitUsers] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const programmeSelectedTo = selectedProgrammeId !== null;
   const canDeleteAndOmit = selectedUnitId !== null;
 
@@ -75,7 +76,7 @@ export default function BulkDelete() {
     if (programmesReq.success) {
         console.log("Programmes array:", programmesReq.data.programmes);
         setProgrammes(programmesReq.data.programmes);
-    } else {
+    }else {
       toast.error("Failed to load programmes");
     }
   }, []);
@@ -83,6 +84,10 @@ export default function BulkDelete() {
   useEffect(() => {
     loadProgrammes();
   }, [loadProgrammes]);
+
+  useEffect(() => {
+    setOmittedMembersIds([]);
+  }, [selectedUnitId]);
 
   useEffect(() => {
         if (!selectedProgrammeId) {
@@ -161,7 +166,7 @@ export default function BulkDelete() {
                 onClick={() => setShowOmitUsers(true)}
                 disabled={!canDeleteAndOmit}
                 >
-                  Omit User From Deletion
+                  Omit Student From Deletion
                 </Button>
 
                 <Button
@@ -185,11 +190,11 @@ export default function BulkDelete() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
-            <BulkDeleteButton unit_id={selectedUnitId!} omitted_user_ids={omittedMemberIds} closeDialog={()=>setShowDelete(false)}/>
+            <BulkDeleteButton unit_id={selectedUnitId!} omitted_user_ids={omittedMemberIds} closeDialog={()=>setShowDelete(false)} onSuccess={() => setRefreshKey(k => k + 1)}/>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      <OmitMembers omittedMembersIds={omittedMemberIds} setOmittedUserIds={setOmittedMembersIds} unitId={selectedUnitId} openState={showOmitUsers} setOpenState={setShowOmitUsers}/>
+      <OmitMembers omittedMembersIds={omittedMemberIds} setOmittedUserIds={setOmittedMembersIds} unitId={selectedUnitId} openState={showOmitUsers} setOpenState={setShowOmitUsers} refreshKey={refreshKey}/>
 
     </div>
   );

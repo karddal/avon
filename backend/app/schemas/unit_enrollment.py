@@ -43,9 +43,9 @@ class UnitEnrollmentBatchCreate(BaseModel):
 
 class UnitEnrollmentBatchDelete(BaseModel):
     unit_id: UUID 
-    omitted_user_ids: List[UUID]
+    omitted_user_ids: List[str]
 
 class UnitEnrollmentBatchTransfer(BaseModel):
     unitIdFrom: UUID
     unitIdsTo: List[UUID]
-    omittedMembers: List[UUID]
+    omittedMembers: List[str]
