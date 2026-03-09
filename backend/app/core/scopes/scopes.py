@@ -32,7 +32,6 @@ class Scopes(Enum):
     Permission scopes.
     """
 
-    # ADMIN = "admin:all"  # Access all areas
     # Unit related scopes, coursework belongs to a unit so perms from that
     UNIT_READ = "unit:read"  # Read unit information
     UNIT_SEND_NOTIFICATION = "unit:send_notification"  # Send a notification
@@ -44,6 +43,8 @@ class Scopes(Enum):
     UNIT_COURSEWORK_DELETE = "unit:coursework_delete"  # Delete coursework for a unit
     UNIT_COURSEWORK_GITLAB = "unit:coursework_gitlab"  # Manage coursework GitLab
     UNIT_COURSEWORK_ENGINE = "unit:coursework_engine"  # Manage Engine for coursework
+
+    COURSEWORK_ALL = "coursework:all" # Read all courseworks
 
     # Programme related scopes
     PROGRAMME_CREATE = "programme:create"
