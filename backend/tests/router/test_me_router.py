@@ -33,18 +33,19 @@ def test_me_units(session, client):
     data = response.json()
     assert data["units"][0]["name"] == unit.name
 
-def test_me_active_units(session, client):
+def test_me_active_units(session, client, auth_override_with_role):
     unit = create_unit(session)
 
     user = create_students(session, unit.id)
 
-    app.dependency_overrides[get_current_user] = lambda: user.user_id
+    auth_override_with_role(user.user_id)
 
     response = client.get("/me/units/active")
     assert response.status_code == 200
 
     data = response.json()
     assert data["units"][0]["name"] == unit.name
+
 
 def test_me_units_by_programme(session, client):
     unit = create_unit(session)
@@ -59,7 +60,8 @@ def test_me_units_by_programme(session, client):
     programme = session.get(Programme, unit.programme_id)
 
     data = response.json()
-    assert data["programmes"][0]["name"]  == programme.name
+    assert data["programmes"][0]["name"] == programme.name
+
 
 def test_me_courseworks(session, client):
     unit = create_unit(session)
@@ -75,13 +77,13 @@ def test_me_courseworks(session, client):
     data = response.json()
     assert data[0]["courseworks"][0]["name"] == coursework.name
 
-def test_me_active_courseworks(session, client):
+def test_me_active_courseworks(session, client, auth_override_with_role):
     unit = create_unit(session)
     coursework = create_coursework(session, unit.id)
 
     user = create_students(session, unit.id)
 
-    app.dependency_overrides[get_current_user] = lambda: user.user_id
+    auth_override_with_role(user.user_id)
 
     response = client.get("/me/courseworks/active")
     assert response.status_code == 200

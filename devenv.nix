@@ -27,6 +27,8 @@
     package = pkgs.python312;
     directory = "./backend";
     uv.enable = true;
+    uv.sync.enable = true;
+    venv.enable = true;
   };
 
 

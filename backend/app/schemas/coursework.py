@@ -1,10 +1,9 @@
 from typing import Annotated, Literal
 import os
-
-import datetime
-from pydantic import BaseModel, AfterValidator
-from uuid import UUID
 import re
+from uuid import UUID
+
+from pydantic import AfterValidator, BaseModel
 
 
 def is_valid_name(name: str) -> str:
@@ -26,7 +25,7 @@ def is_valid_due_date(date: datetime.datetime) -> datetime.datetime:
         return date
     if date.tzinfo is None:
         date = date.replace(tzinfo=datetime.timezone.utc)
-        
+
     now = datetime.datetime.now(datetime.timezone.utc)
     one_year_onwards = now + datetime.timedelta(days=365)
 
@@ -37,12 +36,14 @@ def is_valid_due_date(date: datetime.datetime) -> datetime.datetime:
     else:
         return date
 
+
 def is_valid_colour(c: str) -> str:
-    match = re.search(r'^(?:[0-9a-fA-F]{3}){1,2}$', c)
+    match = re.search(r"^(?:[0-9a-fA-F]{3}){1,2}$", c)
     if match:
         return c
     else:
         raise ValueError("Invalid colour")
+
 
 # Type aliases
 Name = Annotated[str, AfterValidator(is_valid_name)]
@@ -50,7 +51,9 @@ Description = Annotated[str, AfterValidator(is_valid_description)]
 DueDate = Annotated[datetime.datetime, AfterValidator(is_valid_due_date)]  # Fixed
 Colour = Annotated[str, AfterValidator(is_valid_colour)]
 
+
 class CourseworkRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: UUID
     name: str
     description: str
@@ -59,12 +62,14 @@ class CourseworkRead(BaseModel):
     creation_date: datetime.datetime
     colour: str
 
+
 class CourseworkUpdateFormData(CourseworkRead):
     unit_name: str
     unit_code: str
     gitlabId: str
     templateId: int | None = None
     max_end_date: datetime.date
+
 
 class CourseworkCreate(BaseModel):
     name: Name
@@ -87,9 +92,21 @@ class CourseworkUpdate(BaseModel):
     due_date: DueDate | None = None
     colour: str | None = None
 
+
 class CourseworkDelete(BaseModel):
     id: UUID
     deletion_successful: bool
+
+
+class CourseworkStudent(BaseModel):
+    id: str
+    individual_due_date: datetime.datetime
+    gl_repo_id: str
+
+
+class CourseworkStudents(BaseModel):
+    id: UUID
+    students: list[CourseworkStudent]
 
 class CourseworkTemplateExists(BaseModel):
     exists: bool

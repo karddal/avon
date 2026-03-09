@@ -1,4 +1,4 @@
-import { ClipboardPlus } from "lucide-react";
+import { ClipboardPlus, LinkIcon } from "lucide-react";
 import Link from "next/dist/client/link";
 import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
@@ -34,12 +34,20 @@ async function PageContent() {
               </div>
             </TabsList>
 
-            <Button asChild variant="outline" size="sm" className="mt-2">
-              <Link href={{ pathname: "/programmes/create_programme" }}>
-                <ClipboardPlus />
-                Add programme
-              </Link>
-            </Button>
+            <div className="flex flex-col gap-0">
+              <Button asChild variant="outline" size="sm" className="mt-2">
+                <Link href={{ pathname: "/programmes/create_programme" }}>
+                  <ClipboardPlus />
+                  Add programme
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="sm" className="mt-2">
+                <Link href={{ pathname: "/programmes/create_structure" }}>
+                  <LinkIcon />
+                  From Link
+                </Link>
+              </Button>
+            </div>
 
             <TabsContent value="ongoing">
               <Suspense fallback={<Loading />}>

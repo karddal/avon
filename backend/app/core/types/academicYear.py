@@ -1,5 +1,3 @@
-
-
 class AcademicYear:
     def __init__(self, start_year: int):
         self.startYear = start_year
