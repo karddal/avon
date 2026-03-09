@@ -198,7 +198,9 @@ async def authenticate_user(
                 scopes.update(await resolver(user_id, resource.resource_id, session))
 
         auth_user = AuthenticatedUser(user_id=user_id, scopes=scopes, fe_role=role)
-        logger.debug(f"authenticated user withs {auth_user}")
+        logger.debug(
+            f"authenticated user, user_id={auth_user.user_id}, scopes={auth_user.scopes}"
+        )
         return auth_user
     except jwt.exceptions.InvalidTokenError:
         raise HTTPException(
