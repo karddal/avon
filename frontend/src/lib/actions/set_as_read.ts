@@ -1,3 +1,5 @@
+"use server";
+
 import { getRequestJWT } from "@/lib/auth-utils";
 
 export async function set_as_read(notification_id: string) {
