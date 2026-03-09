@@ -18,7 +18,7 @@ session_dependency = Annotated[Session, Depends(get_session)]
 @router.post("/preview", response_model=StructurePreviewResponse, status_code=201)
 async def preview_structure(payload: PreviewPayload):
     data = await scrape_full_programme(payload)
-    return StructurePreviewResponse(data)
+    return StructurePreviewResponse(results=data)
 
 @router.post("/create", status_code=201, response_model=StructureCreateResponse)
 async def create_structure(payload: StructurePreviewResponse, session: session_dependency):
@@ -26,8 +26,8 @@ async def create_structure(payload: StructurePreviewResponse, session: session_d
         prog = await create_programme(
             ProgrammeCreate(
                 name=programme.programme_name,
-                start_date=date(programme.start_year, 1, 1),
-                end_date=date(programme.end_year, 1, 1),
+                start_date=date(programme.start_year, 9, 1),
+                end_date=date(programme.end_year, 8, 31),
             ), session=session
         )
 
@@ -42,4 +42,4 @@ async def create_structure(payload: StructurePreviewResponse, session: session_d
                 session=session
             )
 
-    return StructureCreateResponse("Structure created successfully")
+    return StructureCreateResponse(message="Structure created successfully")
