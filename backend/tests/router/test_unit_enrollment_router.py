@@ -10,7 +10,7 @@ from tests.helpers.identities import test_user
 
 def test_router_create_success(client, session: Session):
     unit_id = create_unit(session).id
-    coursework_id = create_coursework(session, unit_id)
+    create_coursework(session, unit_id)
 
     response = client.post(
         "/unit_enrollment",

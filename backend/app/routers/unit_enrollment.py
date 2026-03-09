@@ -6,7 +6,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from app.db.session import get_session
-from app.schemas.unit_enrollment import UnitEnrollment, TransferOwnerResponse, UnitEnrollmentOwner, UnitEnrollmentRead, UnitEnrollmentCreate, UnitEnrollmentBatchCreate, UnitEnrollmentDelete
+from app.models.unit_enrollment import UnitEnrollment
+from app.schemas.unit_enrollment import TransferOwnerResponse, UnitEnrollmentOwner, UnitEnrollmentRead, UnitEnrollmentCreate, UnitEnrollmentBatchCreate, UnitEnrollmentDelete
 
 from app.models.coursework_enrollment import CourseworkEnrollment
 from app.models.unit import Unit

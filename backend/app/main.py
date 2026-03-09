@@ -15,8 +15,6 @@ from app.routers import unit
 from app.routers import check, me
 from app.routers import programme
 from app.routers import unit_enrollment
-from dotenv import load_dotenv
-import os
 
 if os.getenv("ENV") == "dev":
     env_file = ".env.dev"

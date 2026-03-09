@@ -24,7 +24,6 @@ from app.core.helpers.gitlab import (
 from app.core.scopes.scopes import (
     ResourceInformation,
     Scopes,
-    authenticate_user,
     require_scopes,
 )
 from app.core.security import get_bearer, get_current_user_with_role

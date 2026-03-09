@@ -37,7 +37,7 @@ def coursework_updated_payload(unit_id):
 # Test successful creation of coursework through response and database
 def test_coursework_create_success(client, session):
     unit_id = create_unit(session).id
-    student = create_students(session, unit_id)
+    create_students(session, unit_id)
 
     payload = coursework_payload(
         str(unit_id)

@@ -6,11 +6,10 @@ from uuid import UUID
 import jwt
 from fastapi import Depends, status
 from fastapi.exceptions import HTTPException
-from fastapi.requests import Request
 from fastapi.security.http import HTTPAuthorizationCredentials
 from sqlmodel import Session, select
 
-from app.core.security import get_bearer, jwks_client
+from app.core.jwt_utils import jwks_provider
 from app.core.settings import settings
 from app.db.session import get_session
 from app.models.unit_enrollment import UnitEnrollment
@@ -157,7 +156,7 @@ async def authenticate_user(
         return user
 
     try:
-        signing_key = jwks_client.get_signing_key_from_jwt(token.credentials)
+        signing_key = jwks_provider.get_signing_key(token.credentials)
         payload = jwt.decode(
             token.credentials,
             signing_key,

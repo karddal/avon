@@ -36,12 +36,6 @@ import type { CourseworkUpdateData } from "@/lib/actions/get_coursework_update_d
 import CreateTemplate from "./create-templates";
 import ProvisionCoursework from "./provision-coursework";
 
-type GitlabData = {
-  name: string;
-  coursework_id: string;
-  template_id: string;
-};
-
 export default function CourseworkLectDropdown({
   slug,
   scopes,
@@ -133,9 +127,7 @@ export default function CourseworkLectDropdown({
   }
 
   if (scopes.has("unit:coursework_delete")) {
-    entries.push(
-      <DropdownMenuSeparator key={"separator0"} />,
-    );
+    entries.push(<DropdownMenuSeparator key={"separator0"} />);
     entries.push(
       <DropdownMenuItem
         key={"Delete"}

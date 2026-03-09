@@ -6,7 +6,6 @@ from uuid import UUID
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
-    from app.models.coursework_enrollment import CourseworkEnrollment
     from app.models.unit import Unit
 
 
