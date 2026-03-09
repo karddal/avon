@@ -35,8 +35,8 @@ export default function ListOmittedusers({ users, loading, omittedMembersIds }: 
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-2 overflow-y-scroll max-h-48 bg-accent p-2">
+    <div className="flex flex-col gap-4 h-full">
+      <div className="flex flex-col gap-2 overflow-y-scroll max-h-60 bg-accent p-2">
         {filteredUsers.length > 0 ? (
           filteredUsers.map((user) => (
             <div className="group relative w-full" key={user.id}>
@@ -48,7 +48,7 @@ export default function ListOmittedusers({ users, loading, omittedMembersIds }: 
             </div>
           ))
         ) : (
-          <div className="text-center py-10 text-muted-foreground text-sm">
+          <div className="text-center py-10 text-muted-foreground text-sm max-h-60 h-full">
             No users selected
           </div>
         )}

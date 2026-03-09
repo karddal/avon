@@ -14,6 +14,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import UserCard from "@/components/user-card";
 import type { UUID } from "node:crypto";
@@ -29,7 +38,7 @@ import { get_username_from_id } from "@/lib/actions/get_username";
 import { get_user_image_from_id } from "@/lib/actions/get_image";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import { Menu, Pencil, TextSearch, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Menu, Pencil, TextSearch, UserIcon, X } from "lucide-react";
 
 interface OmittedMembersProps {
   users: UserInfo[];
@@ -47,6 +56,9 @@ type UserInfo = {
 
 export default function UserSelectionOmittion({ users, loading, omittedMembersIds, setOmittedUserIds }: OmittedMembersProps) {
     const [searchQuery, setSearchQuery] = useState("");
+    const [offset, setOffset] = useState<number>(0);
+    const [length, setLength] = useState<number>(0);
+    const limit = 5;
 
     async function safeOmit(id : string) {
         if (!omittedMembersIds.includes(id)){
@@ -60,12 +72,15 @@ export default function UserSelectionOmittion({ users, loading, omittedMembersId
         );
     };
 
-    const filteredlecturers = useMemo(() => {
+    const filteredUsers = useMemo(() => {
         return users.filter((lecturer) =>
           lecturer.displayName.toLowerCase().includes(searchQuery.toLowerCase()),
         );
-      }, [users, searchQuery]);
+    }, [users, searchQuery]);
 
+    const paginatedUsers = useMemo(() => {
+      return filteredUsers.slice(offset, offset + limit);
+    }, [filteredUsers, offset]);
 
     if (loading)
     return (
@@ -82,18 +97,29 @@ export default function UserSelectionOmittion({ users, loading, omittedMembersId
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-row">
+      <div className="flex flex-row gap-2">
         <Input
           className="w-full"
           placeholder="Search users by name..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e) => {setSearchQuery(e.target.value); setOffset(0);}}
         />
       </div>
-
+      {loading && searchQuery.length === 0 ? (
+        <div className="flex flex-col items-center gap-4 w-full">
+          <Skeleton className="bg-accent w-full h-12" />
+          <Skeleton className="bg-accent w-full h-12" />
+          <Skeleton className="bg-accent w-full h-12" />
+        </div>
+      ) : (
+        <></>
+      )}
+      {searchQuery.length === 0 ? (
+        <></>
+      ) : (
       <div className="flex flex-col gap-2 overflow-y-scroll max-h-48 bg-accent p-2">
-        {filteredlecturers.length > 0 ? (
-          filteredlecturers.map((user) => (
+        {filteredUsers.length > 0 ? (
+          paginatedUsers.map((user) => (
             <div className="group relative w-full" key={user.id}>
               <UserCard
                 id={user.id}
@@ -127,15 +153,66 @@ export default function UserSelectionOmittion({ users, loading, omittedMembersId
                   <Pencil size={20} className="text-muted-foreground" />
                 </div>
               </div>
-
             </div>
           ))
         ) : (
-          <div className="text-center py-10 text-muted-foreground text-sm">
-            No users found matching "{searchQuery}"
-          </div>
+          <></>
         )}
+        {!loading && searchQuery.length > 0 && filteredUsers.length === 0 ? (
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <UserIcon />
+                </EmptyMedia>
+                <EmptyTitle>No users found</EmptyTitle>
+                <EmptyDescription className="flex flex-row">
+                  No users for search query "
+                  <div className="truncate max-w-20">{searchQuery}</div>"
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          ) : (
+            <></>
+          )}
       </div>
+      )}
+      {filteredUsers.length > 0 && searchQuery.length > 0 ? (
+            <div className="flex flex-row items-center text-center my-2">
+              <Button
+                size="icon"
+                variant="outline"
+                disabled={offset / limit + 1 === 1}
+                onClick={() => {
+                  const newOffset = Math.max(0, offset - limit);
+                  setOffset(newOffset);
+                }}
+              >
+                <ArrowLeft></ArrowLeft>
+              </Button>
+              <span className="font-light text-center w-full">
+                {offset / limit + 1}/{Math.ceil(filteredUsers.length / limit)} -
+                Showing {paginatedUsers.length} results out of {filteredUsers.length}
+              </span>
+              <Button
+                size="icon"
+                variant="outline"
+                disabled={
+                  offset / limit + 1 === Math.ceil(filteredUsers.length / limit)
+                }
+                onClick={() => {
+                  const newOffset = Math.min(
+                    offset + limit,
+                    filteredUsers.length - 1,
+                  );
+                  setOffset(newOffset);
+                }}
+              >
+                <ArrowRight></ArrowRight>
+              </Button>
+            </div>
+          ) : (
+            <></>
+          )}
     </div>
   );
 }
