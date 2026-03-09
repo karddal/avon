@@ -5,7 +5,7 @@ from app.core.helpers.scraping import scrape_full_programme
 from app.db.session import get_session
 from app.routers.programme import create_programme
 from app.routers.unit import create_unit
-from app.schemas.structure import PreviewPayload, StructurePreviewResponse
+from app.schemas.structure import PreviewPayload, StructureCreateResponse, StructurePreviewResponse
 from app.schemas.unit import UnitCreate
 from fastapi import APIRouter, Depends
 from sqlmodel import Session
@@ -18,10 +18,9 @@ session_dependency = Annotated[Session, Depends(get_session)]
 @router.post("/preview", response_model=StructurePreviewResponse, status_code=201)
 async def preview_structure(payload: PreviewPayload):
     data = await scrape_full_programme(payload)
-    print({"results": data})
-    return {"results": data}
+    return StructurePreviewResponse(data)
 
-@router.post("/create", status_code=201)
+@router.post("/create", status_code=201, response_model=StructureCreateResponse)
 async def create_structure(payload: StructurePreviewResponse, session: session_dependency):
     for programme in payload.results:
         prog = await create_programme(
@@ -43,4 +42,4 @@ async def create_structure(payload: StructurePreviewResponse, session: session_d
                 session=session
             )
 
-    return {"message": "Structure created successfully"}
+    return StructureCreateResponse("Structure created successfully")

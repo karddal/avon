@@ -18,6 +18,9 @@ class ProgrammePreview(BaseModel):
 class StructurePreviewResponse(BaseModel):
     results: List[ProgrammePreview]
 
+class StructureCreateResponse(BaseModel):
+    message: str
+
 class PreviewPayload(BaseModel):
   link: str
   years: List[int]
