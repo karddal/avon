@@ -23,11 +23,13 @@ import {
 interface AddMemberLecturerAllProps {
   onOwnerSelect: (userId: string) => void;
   selectedOwnerId?: string;
+  setOwnerName: (username: string) => void;
 }
 
 export default function AddMemberLecturerAll({
   onOwnerSelect,
   selectedOwnerId,
+  setOwnerName,
 }: AddMemberLecturerAllProps) {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [loading, setLoading] = useState(false);
@@ -97,8 +99,10 @@ export default function AddMemberLecturerAll({
                     onCheckedChange={(checked) => {
                       if (checked) {
                         onOwnerSelect(user.id);
+                        setOwnerName(user.name);
                       } else {
                         onOwnerSelect("");
+                        setOwnerName("");
                       }
                     }}
                     className="peer w-full h-full z-10 bg-card/80 shadow rounded-none border data-[state=checked]:bg-primary"

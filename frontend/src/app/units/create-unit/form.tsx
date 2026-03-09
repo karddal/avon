@@ -67,6 +67,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
   const [programmes, setProgrammes] = useState<Programme[]>([]);
   const [programmeName, setProgrammeName] = useState<string>("");
   const [selectedOwner, setSelectedOwner] = useState<string>("");
+  const [ownerName, setOwnerName] = useState<string>("");
 
   const loadProgrammes = useCallback(async () => {
     const programmesReq = await getProgrammes();
@@ -361,6 +362,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                         <AddMemberLecturerAll
                           onOwnerSelect={setSelectedOwner}
                           selectedOwnerId={selectedOwner}
+                          setOwnerName={setOwnerName}
                         />
                       </Field>
                     </FieldGroup>
@@ -582,7 +584,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                             </ItemDescription>
                             <ItemTitle>Owner</ItemTitle>
                             <ItemDescription>
-                              {selectedOwner ? selectedOwner : "Not provided."}
+                              {ownerName ? ownerName : "Not provided."}
                             </ItemDescription>
                             <ItemTitle>Colour</ItemTitle>
                             <ItemDescription>{colour}</ItemDescription>
