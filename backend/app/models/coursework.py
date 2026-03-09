@@ -25,7 +25,3 @@ class Coursework(SQLModel, table=True):
     colour: str
     gitlab_id: str = Field(nullable=False)
     template_id: int = Field(nullable=True)
-    enrollments: list["CourseworkEnrollment"] = Relationship(
-        back_populates="coursework",
-        cascade_delete=True,
-    )

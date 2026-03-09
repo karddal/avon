@@ -1,114 +1,60 @@
-from app.core.helpers.gitlab import gl_create_coursework, gl_template_files, gl_activate_template_project, gl_template_urls, gl_upload_zip, gl_overwrite_zip
-# Adding this back in
-from sqlalchemy.orm import selectinload
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
-from sqlmodel import Session, select
-from sqlalchemy import exists, and_
-
-# GitLab helpers
-from app.core.helpers.gitlab import gl_delete_coursework,gl_update_coursework
-
-from app.core.security import get_current_user_with_role
-from app.db.session import get_session
+import datetime
 from typing import Annotated, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import HTTPAuthorizationCredentials
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from sqlalchemy import and_, exists
+
+# Adding this back in
 from sqlalchemy.orm import selectinload
 from sqlmodel import Session, select
 
-from app.core.helpers.gitlab import gl_create_coursework
-from app.core.scopes.scopes import (
-    AuthenticatedUser,
-    ResourceInformation,
-    ResourceType,
-    Scopes,
-    require_scopes,
+# GitLab helpers
+from app.core.helpers.gitlab import (
+    gl_activate_template_project,
+    gl_create_coursework,
+    gl_delete_coursework,
+    gl_overwrite_zip,
+    gl_template_files,
+    gl_template_urls,
+    gl_update_coursework,
+    gl_upload_zip,
 )
-from app.core.security import get_bearer
+from app.core.security import get_current_user_with_role
 from app.core.settings import settings
 from app.db.session import get_session
 from app.models.coursework import Coursework
-from app.models.coursework_enrollment import CourseworkEnrollment
 from app.models.unit import Unit, UnitWithCourseworks
-from app.schemas.coursework import CourseworkCreate, CourseworkRead, CourseworkSetupProgress, CourseworkTemplateUploadZip, CourseworkUpdate, CourseworkDelete, CourseworkTemplateExists, CourseworkTemplateActivate, CourseworkTemplateFile, CourseworkTemplateUrl, CourseworkUpdateFormData
 from app.models.unit_enrollment import UnitEnrollment
-from app.schemas.coursework import CourseworkEventRead
+from app.schemas.coursework import (
+    CourseworkCreate,
+    CourseworkDelete,
+    CourseworkEventRead,
+    CourseworkRead,
+    CourseworkSetupProgress,
+    CourseworkTemplateActivate,
+    CourseworkTemplateExists,
+    CourseworkTemplateFile,
+    CourseworkTemplateUploadZip,
+    CourseworkTemplateUrl,
+    CourseworkUpdate,
+    CourseworkUpdateFormData,
+)
 from app.schemas.security import CurrentUser
-import datetime
 
-router = APIRouter(prefix="/coursework", tags=["coursework"])
+router = APIRouter(prefix = "/coursework", tags=["coursework"])
 session_dependency = Annotated[Session, Depends(get_session)]
 
 
-@router.get(
-    path=f"/{id}/get_students",
-    response_model=CourseworkStudents,
-    status_code=status.HTTP_200_OK,
-)
-async def get_students_on_coursework(
-    id: UUID,
-    session: session_dependency,
-    token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)],
-):
-    coursework = session.get(entity=Coursework, ident=id)
-    if coursework is None:
-        # coursework didn't exist
-        raise HTTPException(status_code=404, detail="Can't find that coursework")
-
-    await require_scopes(
-        ResourceInformation(type=ResourceType.UNIT, id=coursework.unit.id),
-        Scopes.UNIT_COURSEWORK_MANAGE,
-        token=token,
-        session=session,
-    )
-    enrollments: list[CourseworkEnrollment] = coursework.enrollments
-    output: list[CourseworkStudent] = []
-    for enrollment in enrollments:
-        output.append(
-            CourseworkStudent(
-                id=enrollment.student_id,
-                individual_due_date=enrollment.individual_due_date,
-                gl_repo_id=enrollment.gl_repo_id,
-            )
-        )
-
-    return CourseworkStudents(id=id, students=output)
-
-
-@router.post(
-    "/create", response_model=CourseworkRead, status_code=status.HTTP_201_CREATED
-)
-async def create_coursework(
-    coursework: CourseworkCreate,
-    session: session_dependency,
-    token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)],
-):
-    await require_scopes(
-        ResourceInformation(type=ResourceType.UNIT, id=coursework.unit_id),
-        Scopes.UNIT_COURSEWORK_CREATE,
-        token=token,
-        session=session,
-    )
-    courseworkAlreadyExists = session.exec(
-        select(Coursework).where(
-            (Coursework.unit_id == coursework.unit_id)
-            & (Coursework.name == coursework.name)
-            & (Coursework.due_date == coursework.due_date)
-        )
-    ).first()
+@router.post('/create', response_model = CourseworkRead, status_code=status.HTTP_201_CREATED)
+async def create_coursework(coursework: CourseworkCreate, session: session_dependency):
+    courseworkAlreadyExists = session.exec(select(Coursework).where((Coursework.unit_id == coursework.unit_id) & (Coursework.name == coursework.name) & (Coursework.due_date == coursework.due_date))).first()
 
     if courseworkAlreadyExists:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Coursework already made that belongs to the same unit and has the same name",
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Coursework already made that belongs to the same unit and has the same name")
 
     if coursework.unit_id is not None:
-        unit_exists = session.exec(
-            select(Unit).where(Unit.id == coursework.unit_id)
-        ).first()
+        unit_exists = session.exec(select(Unit).where(Unit.id == coursework.unit_id)).first()
         if not unit_exists:
             raise HTTPException(status_code=404, detail='Corresponding unit not found')
 
@@ -125,43 +71,14 @@ async def create_coursework(
 
     db_coursework = Coursework(name=coursework.name,description=coursework.description,unit_id=coursework.unit_id, due_date=coursework.due_date, colour=coursework.colour, gitlab_id=gl_data["gitlabGroupId"])
 
-    student_unit_enrollments = session.exec(
-        select(UnitEnrollment).where(UnitEnrollment.unit_id == coursework.unit_id)
-    ).all()
-    enrollments = []
-    for student_unit in student_unit_enrollments:
-        if student_unit.type == "lecturer":
-            pass  # do not add lecturers
-        db_enrollment = CourseworkEnrollment(
-            student_id=student_unit.user_id,
-            coursework_id=db_coursework.id,
-            individual_due_date=coursework.due_date,
-            gl_repo_id="23432432",
-        )
-        enrollments.append(db_enrollment)
-
     session.add(db_coursework)
-    session.add_all(enrollments)
-
     session.commit()
+    session.refresh(db_coursework)
     return db_coursework
 
-
 @router.get("/all")
-async def all_courseworks(
-    session: session_dependency,
-    token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)],
-):
-    await require_scopes(
-        ResourceInformation(type=ResourceType.UNIT, id=None),
-        Scopes.ADMIN,  # only admin should be able to read all coursworks
-        token=token,
-        session=session,
-    )
-    statement = select(Unit).options(
-        selectinload(Unit.courseworks),
-        selectinload(Unit.programme),
-    )
+async def all_courseworks(session: session_dependency):
+    statement = (select(Unit).options(selectinload(Unit.courseworks), selectinload(Unit.programme),))
 
     units = session.exec(statement).all()
 
@@ -184,7 +101,7 @@ async def setup_progress(courseworkId: UUID, session: session_dependency):
     coursework = session.get(Coursework,courseworkId)
     if coursework is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
-    
+
     if coursework.template_id:
         exists = True
     else:
@@ -266,70 +183,21 @@ async def get_coursework_update_form_data(id: UUID, session: session_dependency)
     )
 
 
-@router.get("/{id}", response_model=CourseworkRead)
-async def get_coursework(
-    id: UUID,
-    session: session_dependency,
-    token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)],
-):
-    coursework = session.get(Coursework, id)
+@router.get('/{id}', response_model = CourseworkRead)
+async def get_coursework(id: UUID, session: session_dependency):
+    coursework = session.get(Coursework,id)
 
     if coursework is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Coursework not found"
-        )
-
-    await require_scopes(
-        ResourceInformation(type=ResourceType.UNIT, id=coursework.unit.id),
-        Scopes.UNIT_READ,
-        token=token,
-        session=session,
-    )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
     return coursework
 
-
-@router.get("/{id}/scopes")
-async def get_scopes(
-    id: UUID,
-    session: session_dependency,
-    token: Annotated[HTTPAuthorizationCredentials, Depends(dependency=get_bearer)],
-):
-    coursework = session.get(Coursework, id)
+@router.delete('/{id}', response_model=CourseworkDelete)
+async def delete_coursework(id: UUID, session: session_dependency):
+    coursework = session.get(Coursework,id)
 
     if coursework is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Coursework not found"
-        )
-
-    user = await require_scopes(
-        ResourceInformation(type=ResourceType.UNIT, id=coursework.unit.id),
-        token=token,
-        session=session,
-    )
-
-    return {"scopes": user.scopes}
-
-
-@router.delete("/{id}", response_model=CourseworkDelete)
-async def delete_coursework(
-    id: UUID,
-    session: session_dependency,
-    token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)],
-):
-    coursework = session.get(Coursework, id)
-
-    if coursework is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Coursework not found"
-        )
-
-    await require_scopes(
-        ResourceInformation(type=ResourceType.UNIT, id=coursework.unit.id),
-        Scopes.UNIT_COURSEWORK_DELETE,
-        token=token,
-        session=session,
-    )
-    # print("\n\n\n\n\n\n\n")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
+    #print("\n\n\n\n\n\n\n")
     session.delete(coursework)
     session.commit()
 
@@ -338,49 +206,36 @@ async def delete_coursework(
             await gl_delete_coursework(coursework.gitlab_id)
     except Exception:
         raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY, 
+            status_code=status.HTTP_502_BAD_GATEWAY,
             detail="Database failed. GitLab group rolled back."
     )
 
     #print("got here")
     courseworkDeleted = CourseworkDelete(id=id, deletion_successful=True)
-    # print(courseworkDeleted)
+    #print(courseworkDeleted)
     return courseworkDeleted
 
-
-@router.put("/{id}", response_model=CourseworkRead)
-async def update_coursework(
-    id: UUID,
-    coursework: CourseworkUpdate,
-    session: session_dependency,
-    token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)],
-):
+@router.put('/{id}', response_model=CourseworkRead)
+async def update_coursework(id: UUID, coursework: CourseworkUpdate, session: session_dependency):
     coursework_db = session.get(Coursework, id)
 
     if coursework_db is None:
-        raise HTTPException(status_code=404, detail="Coursework not found")
-    await require_scopes(
-        ResourceInformation(type=ResourceType.UNIT, id=coursework_db.unit.id),
-        Scopes.UNIT_COURSEWORK_MANAGE,
-        token=token,
-        session=session,
-    )
+        raise HTTPException(status_code=404, detail='Coursework not found')
+
     if coursework.unit_id is not None:
-        unit_exists = session.exec(
-            select(Unit).where(Unit.id == coursework.unit_id)
-        ).first()
+        unit_exists = session.exec(select(Unit).where(Unit.id == coursework.unit_id)).first()
         if not unit_exists:
-            raise HTTPException(status_code=404, detail="Corresponding unit not found")
+            raise HTTPException(status_code=404, detail='Corresponding unit not found')
 
     coursework_data = coursework.model_dump(exclude_unset=True)
     coursework_db.sqlmodel_update(coursework_data)
-    
+
     try:
         if not settings.testing_mode:
             await gl_update_coursework(coursework_db.gitlab_id, coursework_db.name)
     except Exception:
         raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY, 
+            status_code=status.HTTP_502_BAD_GATEWAY,
             detail="Database failed. GitLab group rolled back."
         )
 
@@ -400,7 +255,7 @@ async def template_exists(courseworkId: UUID, session: session_dependency):
     else:
         exists = False
         templateId = None
-        
+
     return {"exists":exists, "templateProjectId" : templateId}
 
 @router.post('/{cw_id}/template/activate', response_model=CourseworkTemplateActivate)
@@ -409,14 +264,14 @@ async def activate_template(cw_id: UUID, gitLabId: str, session: session_depende
         templateActivation = await gl_activate_template_project(gitLabId)
     except Exception:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="GitLab request failed"
     )
 
     coursework = session.get(Coursework,cw_id)
     if coursework is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
-    
+
     coursework.template_id = templateActivation["templateGitLabId"]
     session.add(coursework)
     session.commit()
@@ -430,7 +285,7 @@ async def get_files(templateId: str, session: session_dependency):
         fileData = await gl_template_files(templateId)
     except Exception:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="GitLab request failed"
         )
     return fileData
@@ -441,7 +296,7 @@ async def template_urls(templateId: str, session: session_dependency):
         urlData = await gl_template_urls(templateId)
     except Exception:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="GitLab request failed"
         )
     return urlData
@@ -450,7 +305,7 @@ async def template_urls(templateId: str, session: session_dependency):
 async def upload_zip(cw_id: UUID,  session: session_dependency, file: UploadFile = File(...)):
     if not file.filename.endswith(".zip"):
         raise HTTPException(status_code=400, detail="File must be in ZIP format")
-    
+
     coursework = session.get(Coursework,cw_id)
     if coursework is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
@@ -464,11 +319,11 @@ async def upload_zip(cw_id: UUID,  session: session_dependency, file: UploadFile
     except Exception:
         raise HTTPException(status_code=500, detail="Internal server error")
 
-    
+
     coursework = session.get(Coursework,cw_id)
     if coursework is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
-    
+
     coursework.template_id = response["templateId"]
     session.add(coursework)
     session.commit()
@@ -487,5 +342,5 @@ async def overwrite_zip(templateId: str, file: UploadFile = File(...)):
         raise  # Just gitalbs error message
     except Exception:
         raise HTTPException(status_code=500, detail="Internal server error")
-    
+
     return response
