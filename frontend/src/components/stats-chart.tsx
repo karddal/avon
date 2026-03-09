@@ -52,7 +52,7 @@ export function StatsChart({
   }, {} as ChartConfig);
 
   return (
-    <div>
+    <div className="flex h-full min-h-0 flex-col">
       <div className="text-4xl text-center font-medium pb-4">{total}</div>
       <ChartContainer config={chartConfig} className={className}>
         <BarChart data={data}>
