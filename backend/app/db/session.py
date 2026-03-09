@@ -42,6 +42,7 @@ def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
     print("[BACKEND] Database created")
 
+
 SessionDep = Annotated[Session, Depends(get_session)]
 
 

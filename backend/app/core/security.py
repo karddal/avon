@@ -19,28 +19,36 @@ ALGORITHM = "HS256"
 logger = logging.getLogger("security")
 
 password_hash = PasswordHash.recommended()
+
+
 def hash_password(password: str) -> str:
-    #password -> hash
+    # password -> hash
     return password_hash.hash(password)
 
+
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    #verify weather the password is correct
+    # verify weather the password is correct
     return password_hash.verify(plain_password, hashed_password)
+
 
 class Token(BaseModel):
     access_token: str
     token_type: str
 
+
 class TokenData(BaseModel):
     user_id: str | None = None
+
 
 class UserNotFoundError(Exception):
     def __init__(self, message: str):
         self.message = message
 
+
 class PasswordIncorrectError(Exception):
     def __init__(self, message: str):
         self.message = message
+
 
 get_bearer = HTTPBearer(auto_error=True)
 

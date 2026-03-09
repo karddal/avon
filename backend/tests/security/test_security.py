@@ -3,6 +3,7 @@ from app.core.security import hash_password, verify_password, get_current_user_w
 from fastapi.security import HTTPAuthorizationCredentials
 from unittest.mock import patch, MagicMock
 
+
 def test_hash_and_verify_password():
     password = "Hashedpassword1234!"
     hashed = hash_password(password)
@@ -11,9 +12,12 @@ def test_hash_and_verify_password():
     assert verify_password(password, hashed)
     assert not verify_password("wrong", hashed)
 
+
 @pytest.mark.asyncio
 async def test_create_access_token_and_get_current_user(session):
-    fake_token = HTTPAuthorizationCredentials(scheme="Bearer", credentials="fake.jwt.token")
+    fake_token = HTTPAuthorizationCredentials(
+        scheme="Bearer", credentials="fake.jwt.token"
+    )
 
     fake_signing_key = MagicMock()
     fake_signing_key.key = "fake-public-key"

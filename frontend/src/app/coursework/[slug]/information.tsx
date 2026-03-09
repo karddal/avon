@@ -42,7 +42,7 @@ export default async function CourseworkInformation({
     `${process.env.NEXT_PUBLIC_API_URL}/coursework/${slug}`,
     {
       headers: {
-        Cookie: `access_token=${token}`,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     },

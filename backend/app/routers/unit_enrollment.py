@@ -1,27 +1,30 @@
+from datetime import datetime
 from typing import Annotated
 from uuid import UUID
 from app.core.security import get_current_user
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from app.db.session import get_session
-from app.schemas.unit_enrollment import TransferOwnerResponse, UnitEnrollmentOwner, UnitEnrollmentRead, UnitEnrollmentCreate, UnitEnrollmentBatchCreate, UnitEnrollmentDelete
-from fastapi import HTTPException
+from app.schemas.unit_enrollment import UnitEnrollment, TransferOwnerResponse, UnitEnrollmentOwner, UnitEnrollmentRead, UnitEnrollmentCreate, UnitEnrollmentBatchCreate, UnitEnrollmentDelete
 
+from app.models.coursework_enrollment import CourseworkEnrollment
 from app.models.unit import Unit
-
-from app.models.unit_enrollment import UnitEnrollment
 
 router = APIRouter(prefix="/unit_enrollment", tags=["unit_enrollment"])
 session_dependency = Annotated[Session, Depends(get_session)]
 
+
 @router.post("", response_model=UnitEnrollmentRead, status_code=201)
 def enroll_unit(payload: UnitEnrollmentCreate, session: session_dependency):
-    if not session.get(Unit, payload.unit_id):
+    unit = session.get(Unit, ident=payload.unit_id)
+    if not unit:
         raise HTTPException(status_code=404, detail="Unit not found")
 
     if session.get(UnitEnrollment, (payload.unit_id, payload.user_id)):
-        raise HTTPException(status_code=409, detail="User already enrolled in this unit")
+        raise HTTPException(
+            status_code=409, detail="User already enrolled in this unit"
+        )
 
     # try:
     #     _ = UserType(payload.user_type)
@@ -34,10 +37,28 @@ def enroll_unit(payload: UnitEnrollmentCreate, session: session_dependency):
         type=payload.type,
     )
 
+    # add the user to any ongoing courseworks
+
+    coursework_enrollments: list[CourseworkEnrollment] = []
+    for coursework in unit.courseworks:
+        if coursework.due_date >= datetime.today():
+            continue  # skip if the coursework is already done
+
+        coursework_enrollments.append(
+            CourseworkEnrollment(
+                student_id=payload.user_id,
+                coursework_id=coursework.id,
+                individual_due_date=coursework.due_date,
+                gl_repo_id="asdfadsfsadf",
+            )
+        )
+
     session.add(enrollment)
+    session.add_all(coursework_enrollments)
     session.commit()
     session.refresh(enrollment)
     return enrollment
+
 
 @router.delete("", status_code=201)
 def delete_unit_enrollment(payload: UnitEnrollmentDelete, session: session_dependency):
@@ -53,6 +74,7 @@ def delete_unit_enrollment(payload: UnitEnrollmentDelete, session: session_depen
     session.commit()
     return {"message": "User enrollment deleted successfully"}
 
+
 @router.post("/batch", status_code=201)
 def enroll_unit_batch_students(payload: UnitEnrollmentBatchCreate, session: session_dependency):
     if not session.get(Unit, payload.unit_id):
@@ -67,20 +89,17 @@ def enroll_unit_batch_students(payload: UnitEnrollmentBatchCreate, session: sess
     existing_user_ids = set(payload.user_ids) & set(current_user_ids)
 
     if existing_user_ids:
-        raise HTTPException(
-            status_code=409, 
-            detail="Some users are already enrolled!"
-        )
+        raise HTTPException(status_code=409, detail="Some users are already enrolled!")
 
     # create new ones in bulk
     new_enrollments = [
         UnitEnrollment(unit_id=payload.unit_id, user_id=user_id, type="student")
         for user_id in payload.user_ids
     ]
-    
+
     session.add_all(new_enrollments)
     session.commit()
-    
+
     return {"message": f"{len(new_enrollments)} users enrolled successfully"}
 
 @router.post("/batch/lecturers", status_code=201)

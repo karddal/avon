@@ -1,3 +1,5 @@
+"use server";
+
 import { getRequestJWT } from "@/lib/auth-utils";
 
 export async function set_all_read() {
