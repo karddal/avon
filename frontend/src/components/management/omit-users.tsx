@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  type Dispatch,
-  type SetStateAction,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { get_user_image_from_id } from "@/lib/actions/get_image";
@@ -40,33 +34,39 @@ export default function OmitMembers({
 }: OmittedMembersProps) {
   const [users, setUsers] = useState<UserInfo[]>([]);
   const [loading, setLoading] = useState(true);
+  
 
-  const loadUsers = useCallback(async () => {
-    if (!unitId) return;
-    setLoading(true);
-    try {
-      const data = await get_students(`${unitId}`);
-      const userIds = data?.students ?? [];
-      const enriched = await Promise.all(
-        userIds.map(async (id: string) => ({
-          id,
-          displayName: (await get_username_from_id(id)) || "Unknown",
-          src: await get_user_image_from_id(id),
-        })),
-      );
-      setUsers(enriched);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    async function loadUsers() {
+      if (!unitId) {
+        setUsers([]);
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        const data = await get_students(unitId);
+        const userIds = data?.students ?? [];
+
+        const enriched = await Promise.all(
+          userIds.map(async (id: string) => ({
+            id,
+            displayName: (await get_username_from_id(id)) || "Unknown",
+            src: await get_user_image_from_id(id),
+          })),
+        );
+
+        setUsers(enriched);
+      } finally {
+        setLoading(false);
+      }
     }
-  }, [unitId, refreshKey]);
 
-  useEffect(() => {
+    void refreshKey;
     loadUsers();
-  }, [loadUsers]);
-
-  useEffect(() => {
-    setOmittedUserIds([]);
-  }, [refreshKey]);
+  }, [unitId, refreshKey]);
 
   return (
     <Dialog open={openState} onOpenChange={setOpenState}>

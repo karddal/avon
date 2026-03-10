@@ -6,9 +6,6 @@ type DeleteUnitMembersRequest = {
   omitted_user_ids: string[];
 };
 
-type DeleteUnitMembersResponse = {
-  success: boolean;
-};
 // Cannot delete lecturers from a unit, only students
 export async function delete_unit_members(req: DeleteUnitMembersRequest) {
   "use server";

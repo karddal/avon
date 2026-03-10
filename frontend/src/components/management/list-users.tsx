@@ -50,8 +50,8 @@ export default function ListMembers({
     setResponse(response);
   }
 
-  async function usersbyProgramme(programme: string) {
-    const usersByPrograme = "";
+  async function _usersbyProgramme(_programme: string) {
+    const _usersByPrograme = "";
   }
 
   return (

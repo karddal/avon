@@ -44,7 +44,7 @@ export default function BulkDeleteButton({
       } else {
         throw new Error();
       }
-    } catch (error) {
+    } catch (_error) {
       setStatus(2);
       toast.error("Failed to delete the unit members");
       setTimeout(() => setStatus(0), 3000);

@@ -37,7 +37,7 @@ export default function UserSelectionOmittion({
 }: OmittedMembersProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [offset, setOffset] = useState<number>(0);
-  const [length, setLength] = useState<number>(0);
+  const [_length, _setLength] = useState<number>(0);
   const limit = 5;
 
   async function safeOmit(id: string) {

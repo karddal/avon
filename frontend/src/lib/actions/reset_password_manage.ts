@@ -1,6 +1,5 @@
 "use server";
 
-import type { User } from "better-auth";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { requireSession } from "../auth-utils";
@@ -30,7 +29,7 @@ export async function reset_password_manage(
   }
 
   try {
-    const response = await auth.api.setUserPassword({
+    const _response = await auth.api.setUserPassword({
       body: {
         newPassword: newPasswordInput,
         userId: userId,
@@ -39,10 +38,10 @@ export async function reset_password_manage(
     });
 
     return { success: true } as resetResponse;
-  } catch (err: any) {
+  } catch (_error) {
     return {
       success: false,
-      error: err?.message ?? "Password Reset Failed",
+      error: "Password Reset Failed",
     };
   }
 }

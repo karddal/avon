@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRightLeft, XIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -8,10 +9,11 @@ import { Spinner } from "@/components/ui/spinner";
 import { transfer_unit_members } from "@/lib/actions/transfer_unit_members";
 
 interface TransferUnitMembersProps {
-  unitIdFrom: string;
+  unitIdFrom: string | null;
   unitIdsTo: string[];
   omittedMembers: string[];
   onSuccess: () => void;
+  closeDialog: () => void;
 }
 
 export default function BulkTransferButton({
@@ -19,8 +21,10 @@ export default function BulkTransferButton({
   unitIdsTo,
   omittedMembers,
   onSuccess,
+  closeDialog,
 }: TransferUnitMembersProps) {
   const [status, setStatus] = useState<number>(0);
+  const router = useRouter();
 
   const handleDelete = async () => {
     try {
@@ -28,24 +32,28 @@ export default function BulkTransferButton({
       console.log("unitIdFrom:", unitIdFrom);
       console.log("unitIdsTo:", unitIdsTo);
       console.log("OmittedMembers:", omittedMembers);
-      const result = await transfer_unit_members({
-        unitIdFrom,
-        unitIdsTo,
-        omittedMembers,
-      });
-      console.log("result:");
-      console.log(result);
-      if (result.success) {
-        toast.success("Unit Members transferred successfully");
-        setStatus(0);
-        onSuccess();
-      } else if (result.status === 409) {
-        toast.error(
-          "No Users are enrolled on given unit, that aren't excluded / omitted",
-        );
-        setStatus(2);
-      } else {
-        throw new Error();
+      if (unitIdFrom) {
+        const result = await transfer_unit_members({
+          unitIdFrom,
+          unitIdsTo,
+          omittedMembers,
+        });
+        console.log("result:");
+        console.log(result);
+        if (result.success) {
+          toast.success("Unit Members transferred successfully");
+          setStatus(0);
+          onSuccess();
+          router.push("/management");
+          closeDialog();
+        } else if (result.status === 409) {
+          toast.error(
+            "No Users are enrolled on given unit, that aren't excluded / omitted",
+          );
+          setStatus(2);
+        } else {
+          throw new Error();
+        }
       }
     } catch (_error) {
       console.log(_error);

@@ -1,6 +1,4 @@
 "use server";
-import { stat } from "node:fs";
-import { json } from "better-auth";
 import { getRequestJWT } from "@/lib/auth-utils";
 
 type TransferUnitMembersRequest = {
@@ -9,9 +7,6 @@ type TransferUnitMembersRequest = {
   omittedMembers: string[];
 };
 
-type TransferUnitMembersResponse = {
-  success: boolean;
-};
 // Cannot delete lecturers from a unit, only students
 export async function transfer_unit_members(req: TransferUnitMembersRequest) {
   "use server";

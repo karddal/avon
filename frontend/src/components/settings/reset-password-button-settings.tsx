@@ -35,7 +35,7 @@ export default function ResetPasswordButtonSettings({
       } else {
         throw new Error();
       }
-    } catch (error) {
+    } catch (_error) {
       setStatus(2);
       toast.error("Failed to reset password");
 

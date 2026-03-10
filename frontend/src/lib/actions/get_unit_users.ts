@@ -23,7 +23,7 @@ export async function get_unit_users(unit_id: string): Promise<usersResponse> {
     const studentData: usersResponse = await response.json();
 
     return studentData;
-  } catch (error: any) {
-    return error;
+  } catch (_error) {
+    throw new Error("Failed to fetch unit users");
   }
 }

@@ -1,6 +1,6 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
-from sqlalchemy import delete, not_
+from sqlalchemy import delete
 from sqlmodel import Session, select, text
 
 from app.db.session import get_session
@@ -95,7 +95,7 @@ def unenroll_unit(payload: UnitEnrollmentBatchDelete, session: session_dependenc
     if not students_to_remove: # Want to check some people exist, to ensure consistency
         raise HTTPException(
             status_code=409, 
-            detail=f"No Users are enrolled on given unit, that aren't excluded / omitted"
+            detail="No Users are enrolled on given unit, that aren't excluded / omitted"
         )
     
     # unenroll in bulk
@@ -125,7 +125,7 @@ def transfer_unit_members(payload: UnitEnrollmentBatchTransfer, session: session
     if not students_to_move: # Want to check some people exist, to ensure consistency
         raise HTTPException(
             status_code=409, 
-            detail=f"No Users are enrolled on given unit, that aren't excluded / omitted"
+            detail="No Users are enrolled on given unit, that aren't excluded / omitted"
         )
     
     # unenroll in bulk

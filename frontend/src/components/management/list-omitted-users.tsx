@@ -51,6 +51,7 @@ export default function ListOmittedusers({
               <UserCard id={user.id} name={user.displayName} image={user.src} />
               <div className="absolute top-2 right-2 w-8 h-8">
                 <button
+                  type="button"
                   onClick={() => safeDelete(user.id)}
                   className="w-full h-full flex items-center justify-center bg-card/80 shadow border hover:bg-destructive hover:text-white hover:border-destructive transition-colors"
                 >

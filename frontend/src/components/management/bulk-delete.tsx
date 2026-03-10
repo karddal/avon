@@ -77,13 +77,10 @@ export default function BulkDelete() {
   }, [loadProgrammes]);
 
   useEffect(() => {
-    setOmittedMembersIds([]);
-  }, [selectedUnitId]);
-
-  useEffect(() => {
     if (!selectedProgrammeId) {
       setUnits([]);
       setSelectedUnitId(null);
+      setOmittedMembersIds([]);
       return;
     }
 
@@ -91,6 +88,7 @@ export default function BulkDelete() {
 
     setUnits(programme?.units ?? []);
     setSelectedUnitId(null);
+    setOmittedMembersIds([]);
   }, [selectedProgrammeId, programmes]);
 
   return (
@@ -127,9 +125,10 @@ export default function BulkDelete() {
           </h3>
           <Select
             value={selectedUnitId ?? "all"}
-            onValueChange={(value) =>
-              setSelectedUnitId(value === "all" ? null : value)
-            }
+            onValueChange={(value) => {
+              setSelectedUnitId(value === "all" ? null : value);
+              setOmittedMembersIds([]);
+            }}
             disabled={!programmeSelectedTo}
           >
             <SelectTrigger className="mt-3 w-full">
@@ -180,12 +179,17 @@ export default function BulkDelete() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
-            <BulkDeleteButton
-              unit_id={selectedUnitId!}
-              omitted_user_ids={omittedMemberIds}
-              closeDialog={() => setShowDelete(false)}
-              onSuccess={() => setRefreshKey((k) => k + 1)}
-            />
+            {selectedUnitId && (
+              <BulkDeleteButton
+                unit_id={selectedUnitId}
+                omitted_user_ids={omittedMemberIds}
+                closeDialog={() => setShowDelete(false)}
+                onSuccess={() => {
+                  setRefreshKey((k) => k + 1);
+                  setOmittedMembersIds([]);
+                }}
+              />
+            )}
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

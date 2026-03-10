@@ -1,9 +1,7 @@
 "use server";
 
-import type { User } from "better-auth";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
-import { requireSession } from "../auth-utils";
 
 export type resetResponse = {
   success: boolean;
@@ -28,7 +26,7 @@ export async function reset_password_setting(
   }
 
   try {
-    const response = await auth.api.changePassword({
+    const _response = await auth.api.changePassword({
       body: {
         newPassword: newPasswordInput,
         currentPassword: oldPasswordInput,
@@ -37,10 +35,10 @@ export async function reset_password_setting(
     });
 
     return { success: true } as resetResponse;
-  } catch (err: any) {
+  } catch (_error) {
     return {
       success: false,
-      error: err?.message ?? "Password Reset Failed",
+      error: "Password Reset Failed",
     };
   }
 }

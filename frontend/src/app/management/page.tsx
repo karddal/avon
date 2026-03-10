@@ -4,7 +4,7 @@ import { requireSession } from "@/lib/auth-utils";
 
 async function PageContent() {
   const s = await requireSession();
-  const isAdmin = s.user.role === "admin" ? true : false;
+  const isAdmin = s.user.role === "admin";
   return <ManagementComponent isAdmin={isAdmin} />;
 }
 export default function ManagementPage() {

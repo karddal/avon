@@ -134,15 +134,12 @@ export default function BulkSwitch() {
     loadProgrammes();
   }, [loadProgrammes]);
 
-  useEffect(() => {
-    setOmittedMembers([]);
-  }, [selectedUnitId]);
-
   // Keeps fromUnit and selectedUnitId in sync with the selected programme and the newly loaded programmes data.
   useEffect(() => {
     if (!selectedProgrammeIdFrom) {
       setFromUnits([]);
       setSelectedUnitId(null);
+      setOmittedMembers([]);
       return;
     }
 
@@ -150,6 +147,7 @@ export default function BulkSwitch() {
 
     setFromUnits(programme?.units ?? []);
     setSelectedUnitId(null);
+    setOmittedMembers([]);
   }, [selectedProgrammeIdFrom, programmes]);
 
   // Keeps toUnits and selectedUnitIds in sync with the selected programme and the newly loaded programmes data.
@@ -200,9 +198,10 @@ export default function BulkSwitch() {
 
             <Select
               value={selectedUnitId ?? "all"}
-              onValueChange={(value) =>
-                setSelectedUnitId(value === "all" ? null : value)
-              }
+              onValueChange={(value) => {
+                setSelectedUnitId(value === "all" ? null : value);
+                setOmittedMembers([]);
+              }}
               disabled={!programmeSelectedFrom}
             >
               <SelectTrigger className="mt-3 w-full">
@@ -339,16 +338,22 @@ export default function BulkSwitch() {
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
-              <BulkTransferButton
-                unitIdFrom={selectedUnitId!}
-                unitIdsTo={selectedUnitIds.filter(
-                  (unitId) => unitId !== selectedUnitId,
-                )}
-                omittedMembers={omittedMembers}
-                onSuccess={() => setRefreshKey((k) => k + 1)}
-              />{" "}
+              {selectedUnitId && (
+                <BulkTransferButton
+                  unitIdFrom={selectedUnitId}
+                  unitIdsTo={selectedUnitIds.filter(
+                    (unitId) => unitId !== selectedUnitId,
+                  )}
+                  omittedMembers={omittedMembers}
+                  closeDialog={() => setShowDelete(false)}
+                  onSuccess={() => {
+                    setRefreshKey((k) => k + 1);
+                    setOmittedMembers([]);
+                  }}
+                />
+              )}
               {/*Filtering out transferring to same unit e.g. programme x unit y -> programme x unit y/*}
-                    {/*selecetd Unit Id can never be null here anyway, as form doesn't allow it*/}
+                      {/*selecetd Unit Id can never be null here anyway, as form doesn't allow it*/}
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

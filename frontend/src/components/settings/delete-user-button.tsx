@@ -18,7 +18,7 @@ export default function DeleteUserButton({
   closeDialog,
 }: DeleteUserProps) {
   const [status, setStatus] = useState<number>(0);
-  const router = useRouter();
+  const _router = useRouter();
 
   const handleDelete = async () => {
     try {
@@ -35,7 +35,7 @@ export default function DeleteUserButton({
       } else {
         throw new Error();
       }
-    } catch (error) {
+    } catch (_error) {
       setStatus(2);
       toast.error("Failed to delete the user");
 

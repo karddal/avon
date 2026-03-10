@@ -26,10 +26,10 @@ export async function change_role(
     );
 
     return { success: true } as RoleChangeResponse;
-  } catch (err: any) {
+  } catch (_error) {
     return {
       success: false,
-      error: err?.message ?? "Role change Failed",
+      error: "Role change Failed",
     };
   }
 }
