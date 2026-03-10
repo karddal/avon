@@ -7,7 +7,10 @@ os.environ["JWT_ISSUER"] = "testIssuer"
 os.environ["JWKS_URL"] = "http://testserver/jwks"
 os.environ["ACCESS_TOKEN_EXPIRY_MINUTES"] = "60"
 os.environ["CORS_ORIGIN"] = "http://testserver"
+os.environ["IGNORE_AUTH"] = "True"
 
+from app.core.security import get_bearer
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import SQLModel, Session, create_engine
@@ -57,6 +60,12 @@ def client(session):
     app.dependency_overrides[get_session] = (
         override_get_session  # Whenever something requires get_session (from our main app.db.session file), use override_get_session instead
     )
+
+    def override_get_bearer():
+        yield None
+
+    app.dependency_overrides[get_bearer] = (override_get_bearer)
+
     with TestClient(
         app
     ) as client:  # creates a TestClient instance using our FastAPI app

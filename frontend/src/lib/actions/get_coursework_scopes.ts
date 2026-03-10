@@ -1,12 +1,14 @@
-"use server"
+"use server";
 
 import { getRequestJWT } from "../auth-utils";
 
 export type ScopesResponse = {
-  scopes: Set<string>;
-}
+  scopes: string[];
+};
 
-export async function get_coursework_scopes(coursework_id: string): Promise<Set<string>> {
+export async function get_coursework_scopes(
+  coursework_id: string,
+): Promise<Set<string>> {
   const token = await getRequestJWT();
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/coursework/${coursework_id}/scopes`,
@@ -24,5 +26,5 @@ export async function get_coursework_scopes(coursework_id: string): Promise<Set<
   }
 
   const scopes_data: ScopesResponse = await response.json();
-  return new Set		(scopes_data.scopes);
+  return new Set(scopes_data.scopes);
 }

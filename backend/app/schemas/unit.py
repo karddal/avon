@@ -72,6 +72,13 @@ class UnitCreate(BaseModel):
     colour: Colour
     programme_id: uuid.UUID
 
+class UnitCreateOwner(BaseModel):
+    name: Name
+    description: Description
+    unit_code: UnitCode
+    colour: Colour
+    programme_id: uuid.UUID
+    owner: str
 
 class UnitUpdate(BaseModel):
     name: Name

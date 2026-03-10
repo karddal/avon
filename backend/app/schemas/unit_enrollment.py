@@ -13,17 +13,14 @@ def is_valid_user_id(user_id: str) -> str:
 
 
 def is_valid_enrollment_type(type: str) -> str:
-    if type not in ("lecturer", "student"):
-        raise ValueError("type must be 'lecturer' or 'student'")
+    if type not in ("lecturer", "student", "owner"):
+        raise ValueError("type must be 'lecturer', 'student' or 'owner'")
 
     return type
 
 
 UserId = Annotated[str, AfterValidator(is_valid_user_id)]
-EnrollmentType = Annotated[
-    Literal["lecturer", "student"], AfterValidator(is_valid_enrollment_type)
-]
-
+EnrollmentType = Annotated[Literal["lecturer", "student", "owner"], AfterValidator(is_valid_enrollment_type)]
 
 class UnitEnrollmentRead(BaseModel):
     unit_id: UUID
@@ -50,3 +47,11 @@ class UnitEnrollmentDelete(BaseModel):
 class UnitEnrollmentBatchCreate(BaseModel):
     unit_id: UUID
     user_ids: List[UserId]
+
+class UnitEnrollmentOwner(BaseModel):
+    user_id: str
+
+class TransferOwnerResponse(BaseModel):
+    message: str
+    previous_owner: str
+    new_owner: str

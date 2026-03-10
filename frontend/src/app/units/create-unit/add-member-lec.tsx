@@ -1,15 +1,8 @@
 "use client";
 
 import type { User } from "better-auth";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Plus,
-  SendHorizonal,
-  UserIcon,
-} from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
+import { ArrowLeft, ArrowRight, Plus, UserIcon } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -22,25 +15,22 @@ import {
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import UserCard from "@/components/user-card";
-import { batch_add_students_to_unit } from "@/lib/actions/batch_add_students_to_unit";
-import { get_students } from "@/lib/actions/get_students";
 import {
   type SearchResponse,
   search_by_name,
 } from "@/lib/actions/search_by_name";
 
-function _getInitials(name: string) {
-  if (!name || typeof name !== "string") return "?";
-  const allNames = name.trim().split(" ");
-  if (allNames.length === 0) return "?";
-
-  const first = allNames[0].charAt(0);
-  const last =
-    allNames.length > 1 ? allNames[allNames.length - 1].charAt(0) : "";
-  return (first + last).toUpperCase();
+interface AddMemberLecturerAllProps {
+  onOwnerSelect: (userId: string) => void;
+  selectedOwnerId?: string;
+  setOwnerName: (username: string) => void;
 }
 
-export default function AddMember({ unit_id }: { unit_id: string }) {
+export default function AddMemberLecturerAll({
+  onOwnerSelect,
+  selectedOwnerId,
+  setOwnerName,
+}: AddMemberLecturerAllProps) {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<SearchResponse>({
@@ -50,37 +40,8 @@ export default function AddMember({ unit_id }: { unit_id: string }) {
     offset: 0,
   });
   const [offset, setOffset] = useState<number>(0);
-  const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
-  const [length, setLength] = useState<number>(0);
-  const [disabledUsers, setDisabledUsers] = useState<string[]>([]);
 
   const limit = 5;
-
-  async function handleSend() {
-    const userIds = selectedUsers.map((user) => user.id);
-    const response = await batch_add_students_to_unit(unit_id, userIds);
-    if (response.success) {
-      toast.success("Added student(s) to unit!");
-    } else {
-      toast.error("Adding failed! ");
-    }
-  }
-
-  const loadDisabled = useCallback(async () => {
-    try {
-      setDisabledUsers([]);
-
-      const [disabledS] = await Promise.all([get_students(unit_id)]);
-
-      const disabledU = [...(disabledS?.students || [])];
-
-      setDisabledUsers(disabledU);
-    } catch (_error) {}
-  }, [unit_id]);
-
-  useEffect(() => {
-    loadDisabled();
-  }, [loadDisabled]);
 
   async function showUsers(query: string, offset: number) {
     setLoading(true);
@@ -88,14 +49,14 @@ export default function AddMember({ unit_id }: { unit_id: string }) {
       query,
       offset,
       limit,
-      "user",
+      "lecturer",
     );
     setLoading(false);
     setResponse(response);
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 w-full">
       <div className="flex flex-row gap-2">
         <Input
           className="w-full"
@@ -134,19 +95,14 @@ export default function AddMember({ unit_id }: { unit_id: string }) {
 
                 <div className="absolute top-2 right-2 w-8 h-8">
                   <Checkbox
-                    disabled={disabledUsers.includes(user.id)}
-                    checked={selectedUsers.some((u) => u.id === user.id)}
+                    checked={selectedOwnerId === user.id}
                     onCheckedChange={(checked) => {
-                      if (!checked) {
-                        const newList = selectedUsers.filter(
-                          (u) => u.id !== user.id,
-                        );
-                        setSelectedUsers(newList);
-                        setLength(newList.length);
+                      if (checked) {
+                        onOwnerSelect(user.id);
+                        setOwnerName(user.name);
                       } else {
-                        const newList = [...selectedUsers, user];
-                        setSelectedUsers(newList);
-                        setLength(newList.length);
+                        onOwnerSelect("");
+                        setOwnerName("");
                       }
                     }}
                     className="peer w-full h-full z-10 bg-card/80 shadow rounded-none border data-[state=checked]:bg-primary"
@@ -227,22 +183,6 @@ export default function AddMember({ unit_id }: { unit_id: string }) {
             <></>
           )}
         </div>
-      )}
-      {length > 0 ? (
-        <div className="flex flex-row items-center text-center">
-          <Button
-            className="w-full"
-            variant="default"
-            onClick={() => {
-              handleSend();
-              loadDisabled();
-            }}
-          >
-            <SendHorizonal></SendHorizonal> Add {length} users to unit
-          </Button>
-        </div>
-      ) : (
-        <></>
       )}
     </div>
   );

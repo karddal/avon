@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, TextSearch, X } from "lucide-react";
+import { Crown, Menu, TextSearch, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
@@ -14,14 +14,17 @@ import { Spinner } from "@/components/ui/spinner";
 import UserCard from "@/components/user-card";
 import { get_user_image_from_id } from "@/lib/actions/get_image";
 import { get_lecturers } from "@/lib/actions/get_lecturers";
+import { get_owner_of_unit } from "@/lib/actions/get_owner_of_unit";
 import { get_username_from_id } from "@/lib/actions/get_username";
 import { remove_user_enrollment } from "@/lib/actions/remove_user_enrollment";
+import { transfer_ownership } from "@/lib/actions/transfer_ownership";
 import { requireSession } from "@/lib/auth-utils";
 
 type lecturerInfo = {
   id: string;
   displayName: string;
   src?: string;
+  role: boolean;
 };
 
 export default function lecturerList({
@@ -34,12 +37,23 @@ export default function lecturerList({
   const [lecturers, setlecturers] = useState<lecturerInfo[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
-  const [role, setRole] = useState<string | null | undefined>();
+  const [_role, setRole] = useState<string | null | undefined>();
+  const [userIsOwner, setUserIsOwner] = useState<boolean>(false);
 
   async function handleDelete(id: string) {
     const result = await remove_user_enrollment(unit_id, id);
     if (result) {
       toast.success("Lecturer unenrolled successfully");
+    } else {
+      throw new Error();
+    }
+    loadlecturers();
+  }
+
+  async function handleTransfer(new_owner_id: string) {
+    const result = await transfer_ownership(unit_id, new_owner_id);
+    if (result) {
+      toast.success("Ownership transferred successfully.");
     } else {
       throw new Error();
     }
@@ -53,27 +67,28 @@ export default function lecturerList({
     try {
       const data = await get_lecturers(unit_id);
       const lecturerIds = data.lecturers;
-      let enrichedlecturers: lecturerInfo[] = [];
-      if (lecturerIds) {
-        enrichedlecturers = await Promise.all(
-          lecturerIds.map(async (id: string) => {
-            const name = await get_username_from_id(id);
-            const imageSrc = await get_user_image_from_id(id);
+      const owner = await get_owner_of_unit(unit_id);
+      setUserIsOwner(owner === me);
 
-            return {
-              id: id,
-              displayName: name || "Unknown lecturer",
-              src: imageSrc,
-            };
-          }),
-        );
-      }
+      const enrichedlecturers = await Promise.all(
+        lecturerIds.map(async (id: string) => {
+          const name = await get_username_from_id(id);
+          const imageSrc = await get_user_image_from_id(id);
+
+          return {
+            id: id,
+            displayName: name || "Unknown lecturer",
+            src: imageSrc,
+            role: owner === id,
+          };
+        }),
+      );
 
       setlecturers(enrichedlecturers);
     } finally {
       setLoading(false);
     }
-  }, [unit_id]);
+  }, [unit_id, me]);
 
   useEffect(() => {
     loadlecturers();
@@ -117,6 +132,7 @@ export default function lecturerList({
                 id={lecturer.id}
                 name={lecturer.displayName}
                 image={lecturer.src}
+                user_role={lecturer.role}
               />
 
               <div className="absolute top-2 right-2 w-8 h-8">
@@ -130,12 +146,17 @@ export default function lecturerList({
                       View Lecturer
                     </DropdownMenuItem>
                     <DropdownMenuItem
+                      onClick={() => handleTransfer(lecturer.id)}
+                      disabled={!userIsOwner}
+                    >
+                      <Crown className="text-black"></Crown>
+                      Transfer Ownership
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
                       onClick={() => handleDelete(lecturer.id)}
                       className="text-destructive hover:text-destructive"
                       disabled={
-                        role !== "admin" ||
-                        lecturer.id === me ||
-                        lecturers.length <= 1
+                        lecturer.id === me || lecturer.role || !userIsOwner
                       }
                     >
                       <X className="text-destructive hover:text-destructive"></X>

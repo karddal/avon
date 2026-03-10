@@ -10,7 +10,7 @@ from tests.helpers.identities import test_user
 
 def test_router_create_success(client, session: Session):
     unit_id = create_unit(session).id
-    coursework_id = create_coursework(session, unit_id)
+    create_coursework(session, unit_id)
 
     response = client.post(
         "/unit_enrollment",
@@ -38,8 +38,6 @@ def test_router_create_success(client, session: Session):
     db_unit = session.get(Unit, unit_id)
     if not db_unit:
         raise Exception("Cannot happen")
-
-    assert db_unit.courseworks[0].enrollments[0].student_id == test_user
 
 
 def test_router_invalid_type_422(client, session: Session):

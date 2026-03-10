@@ -3,14 +3,13 @@ import CourseworkLectDropdown from "@/components/coursework/coursework-lect-drop
 import SetupProgress from "@/components/coursework/setup-progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { get_coursework_scopes } from "@/lib/actions/get_coursework_scopes";
+import { get_cw_update_data } from "@/lib/actions/get_coursework_update_data";
 import { getRequestJWT, requireSession } from "@/lib/auth-utils";
 import Loading from "../loading";
 import CourseworkDescription from "./description";
 import CourseworkInformation from "./information";
 import CourseworkName from "./name";
-import { get_coursework_scopes } from "@/lib/actions/get_coursework_scopes";
-import { get_cw_update_data } from "@/lib/actions/get_coursework_update_data";
-
 
 async function CourseworkPageContent({
   params,
@@ -20,12 +19,16 @@ async function CourseworkPageContent({
   const p = await params;
   const slug = p.slug;
   console.log("CW", slug);
-  const s = await requireSession();
+  const _s = await requireSession();
   const token = await getRequestJWT();
   // Hardcoded the template id here, when merged, I should be able to get the template id from jack's code
 
   const scopes: Set<string> = await get_coursework_scopes(slug);
   console.log("scopes are ", scopes);
+  const canLoadCourseworkTools = scopes.has("unit:coursework_manage");
+  const data = canLoadCourseworkTools
+    ? await get_cw_update_data(slug)
+    : undefined;
 
   return (
     <>
@@ -45,10 +48,11 @@ async function CourseworkPageContent({
               }
             >
               <CourseworkName slug={slug} token={token} />
-                <CourseworkLectDropdown
-                  slug={slug}
-                  scopes={scopes}
-                ></CourseworkLectDropdown>
+              <CourseworkLectDropdown
+                slug={slug}
+                scopes={scopes}
+                coursework_update_data={data}
+              ></CourseworkLectDropdown>
             </div>
           </Suspense>
         </div>
@@ -82,13 +86,11 @@ async function CourseworkPageContent({
         TODO: In the future, this should check the backend to ensure that they are a lecturer on this specific unit. For now this is okay for the demo, but this
         needs to be fixed because a lect could be a student on a nother unit.
           */}
-          {scopes.has("unit:coursework_gitlab") && (
-            <div className="flex flex-col col-span-3 min-h-0">
-                <Suspense>
-                  <SetupProgress cw_id={(await get_cw_update_data(slug)).id} />
-                </Suspense>
-              </div>
-          )}
+        {scopes.has("unit:coursework_gitlab") && (
+          <div className="flex flex-col col-span-3 min-h-0">
+            <Suspense>{data && <SetupProgress cw_id={data.id} />}</Suspense>
+          </div>
+        )}
       </section>
     </>
   );

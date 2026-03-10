@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, List
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
-    from unit import Unit
+    from app.models.unit import Unit
 
 
 class Programme(SQLModel, table=True):

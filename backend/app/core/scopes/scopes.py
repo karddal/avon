@@ -6,11 +6,10 @@ from uuid import UUID
 import jwt
 from fastapi import Depends, status
 from fastapi.exceptions import HTTPException
-from fastapi.requests import Request
 from fastapi.security.http import HTTPAuthorizationCredentials
 from sqlmodel import Session, select
 
-from app.core.security import get_bearer, jwks_client
+from app.core.jwt_utils import verify_token_and_get_user
 from app.core.settings import settings
 from app.db.session import get_session
 from app.models.unit_enrollment import UnitEnrollment
@@ -66,6 +65,18 @@ ENROLLMENT_TYPE_SCOPES: dict[str, list[Scopes]] = {
         Scopes.UNIT_COURSEWORK_GITLAB,
         Scopes.UNIT_COURSEWORK_ENGINE,
     ],
+    "owner": [
+        Scopes.UNIT_READ,
+        Scopes.UNIT_MANAGE,
+        Scopes.UNIT_ENROLL,
+        Scopes.UNIT_DELETE,
+        Scopes.UNIT_SEND_NOTIFICATION,
+        Scopes.UNIT_COURSEWORK_CREATE,
+        Scopes.UNIT_COURSEWORK_MANAGE,
+        Scopes.UNIT_COURSEWORK_DELETE,
+        Scopes.UNIT_COURSEWORK_GITLAB,
+        Scopes.UNIT_COURSEWORK_ENGINE,
+    ],
 }
 
 
@@ -102,7 +113,7 @@ async def resolve_programme_scopes(
 
 
 ROLE_TYPE_SCOPES = {
-    "admin": [s.value for s in Scopes],  # admin role grants access to all scopes
+    "admin": [s for s in Scopes],  # admin role grants access to all scopes
     "lecturer": [],  # lecturer role grants no default access
     "user": [],  # user role grants no default access
 }
@@ -134,13 +145,22 @@ class ResourceInformation:
     resource_id: UUID | None
 
     def __init__(self, type, id):
-        self.resource_type = type
+        if isinstance(type, ResourceType):
+            self.resource_type = type
+        else:
+            type_name = getattr(type, "__name__", str(type)).lower()
+            if type_name == "unit":
+                self.resource_type = ResourceType.UNIT
+            elif type_name == "programme":
+                self.resource_type = ResourceType.PROGRAMME
+            else:
+                raise ValueError(f"Unsupported resource type: {type}")
         self.resource_id = id
 
 
 async def authenticate_user(
     resource: ResourceInformation | None,
-    token: HTTPAuthorizationCredentials,
+    token: HTTPAuthorizationCredentials | None,
     session: Annotated[Session, Depends(dependency=get_session)],
 ) -> AuthenticatedUser:
     """
@@ -151,32 +171,15 @@ async def authenticate_user(
     if settings.ignore_auth:
         logger.debug("ignore auth mode set, so authenticating as admin")
         user = AuthenticatedUser(
-            user_id="aaaa", scopes=[s.value for s in Scopes], fe_role="testing"
+            user_id="aaaa", scopes=set([s for s in Scopes]), fe_role="testing"
         )
         logger.debug(user)
         return user
 
     try:
-        signing_key = jwks_client.get_signing_key_from_jwt(token.credentials)
-        payload = jwt.decode(
-            token.credentials,
-            signing_key,
-            audience=settings.jwt_audience,
-            issuer=settings.jwt_issuer,
-            algorithms=["EdDSA"],
-        )
-        user_id = payload.get("sub")
-        if user_id is None:
-            logger.debug(
-                "could not validate credentials because sub field not set on jwt"
-            )
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Could not validate credentials",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-
-        role = payload.get("role")
+        current_user = verify_token_and_get_user(token.credentials)
+        user_id = current_user.user_id
+        role = current_user.role
         if role is None:
             logger.debug("role field not set on jwt, could not validate credentials")
             raise HTTPException(
@@ -213,7 +216,7 @@ async def authenticate_user(
 async def require_scopes(
     resource: ResourceInformation,
     *required_scopes: Scopes,
-    token: HTTPAuthorizationCredentials,
+    token: HTTPAuthorizationCredentials | None,
     session: Session,
 ):
     user = await authenticate_user(
@@ -221,7 +224,6 @@ async def require_scopes(
         token=token,
         session=session,
     )
-
     required = set(required_scopes)
     missing = required - user.scopes
     if missing:

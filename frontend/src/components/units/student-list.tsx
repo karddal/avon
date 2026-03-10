@@ -93,6 +93,7 @@ export default function StudentList({ unit_id }: { unit_id: string }) {
                 id={student.id}
                 name={student.displayName}
                 image={student.src}
+                user_role={false}
               />
 
               <div className="absolute top-2 right-2 w-8 h-8">

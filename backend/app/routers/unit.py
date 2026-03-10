@@ -3,7 +3,9 @@ from typing import Annotated
 from uuid import UUID
 
 from app.core.helpers.gitlab import gl_create_unit, gl_delete_unit, gl_update_unit
+from app.routers.unit_enrollment import create_owner_enrollment
 from fastapi import APIRouter, Depends, HTTPException, status, Response
+from sqlalchemy import or_
 from sqlmodel import Session, select
 from sqlalchemy.orm.strategy_options import selectinload
 from app.core.settings import settings
@@ -19,6 +21,7 @@ from app.schemas.unit import (
     UnitAll,
     UnitAllByGroup,
     UnitCreate,
+    UnitCreateOwner,
     UnitRead,
     UnitUpdate,
     UnitLecturers,
@@ -37,7 +40,7 @@ today = date.today()
     response_model=UnitCreate,
     status_code=status.HTTP_201_CREATED,
 )
-async def create_unit(unit: UnitCreate, session: session_dependency):
+async def create_unit(unit: UnitCreateOwner, session: session_dependency):
     if unit.programme_id:
         programme = session.exec(
             select(Programme).where(Programme.id == unit.programme_id)
@@ -45,7 +48,22 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
 
         if not programme:
             raise HTTPException(status_code=400, detail="Programme id is invalid.")
-
+    
+    if not unit.owner:
+        raise HTTPException(status_code=400, detail="Owner is required.")
+    
+    statement = select(Unit.id).where(
+        Unit.name == unit.name, 
+        Unit.unit_code == unit.unit_code, 
+        Unit.programme_id == unit.programme_id
+    )
+    existing_units = session.exec(statement).all()
+    if len(existing_units) > 0:
+        raise HTTPException(
+            status_code=400, 
+            detail="Unit already exists with same name or unit code"
+        )
+    
     try:
         if settings.testing_mode:
             gl_data = {"gitlabGroupId": 12345678}
@@ -54,8 +72,8 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Database failed. GitLab group rolled back."
-    )
+            detail="GitLab group creation failed."
+        )
 
     db_unit = Unit(
         name=unit.name,
@@ -79,8 +97,13 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
         )
 
     session.add(db_unit)
+    session.flush()
+    
+    create_owner_enrollment(db_unit.id, unit.owner, session) # add the owner here.
+    
     session.commit()
     session.refresh(db_unit)
+    
     return db_unit
 
 
@@ -187,10 +210,10 @@ async def get_unit_with_dates(unit_id: UUID, session: session_dependency):
 )
 async def get_unit_lecturers(unit_id: UUID, session: session_dependency):
     lects = session.exec(
-        select(UnitEnrollment.user_id)
-        .join(Unit)
-        .where(Unit.id == unit_id)
-        .where(UnitEnrollment.type == "lecturer")
+    select(UnitEnrollment.user_id)
+    .join(Unit)
+    .where(Unit.id == unit_id)
+    .where(or_(UnitEnrollment.type == "lecturer", UnitEnrollment.type == "owner"))
     ).all()
     if not lects:
         raise HTTPException(status_code=404, detail="No lecturers found.")
