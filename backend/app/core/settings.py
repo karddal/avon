@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     jwks_url: str
     ignore_auth: bool = False
     testing_mode: bool = False
+    test_fixture_key: str | None = None
     model_config = SettingsConfigDict(
         env_file=".env"
     )  # Keep on getting warnings in tests to do this, it's the updated version of the code below

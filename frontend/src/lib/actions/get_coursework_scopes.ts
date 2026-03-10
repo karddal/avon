@@ -3,7 +3,7 @@
 import { getRequestJWT } from "../auth-utils";
 
 export type ScopesResponse = {
-  scopes: Set<string>;
+  scopes: string[];
 };
 
 export async function get_coursework_scopes(

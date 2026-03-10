@@ -248,3 +248,18 @@ def test_update_coursework_data(client, session):
     id = uuid.UUID(response.json()["id"])
     g = session.get(Coursework, id)
     assert g.name == np["name"]
+
+
+def test_get_coursework_scopes(client, session):
+    unit_id = create_unit(session).id
+
+    payload = coursework_payload(str(unit_id))
+    create_response = client.post("/coursework/create", json=payload)
+    coursework_id = create_response.json()["id"]
+
+    response = client.get(f"/coursework/{coursework_id}/scopes")
+
+    assert response.status_code == 200
+    scopes = response.json()["scopes"]
+    assert "unit:read" in scopes
+    assert "unit:coursework_gitlab" in scopes

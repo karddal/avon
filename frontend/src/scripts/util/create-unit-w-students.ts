@@ -6,7 +6,7 @@ import {
 import { create_unit } from "@/scripts/util/unit";
 
 export async function createUnitWithStudentsAndLecturers(
-  db: DatabaseSync,
+  _db: DatabaseSync,
   programmeId: string,
   unitData: {
     name: string;
@@ -24,7 +24,7 @@ export async function createUnitWithStudentsAndLecturers(
   const ownerId = lecturerIds[0];
   const otherLecturerIds = lecturerIds.slice(1);
 
-  await create_unit({
+  const unit = await create_unit({
     name: unitData.name,
     description: unitData.description,
     colour: unitData.colour,
@@ -33,15 +33,7 @@ export async function createUnitWithStudentsAndLecturers(
     owner: ownerId,
   });
 
-  const unit = db
-    .prepare("SELECT id FROM unit WHERE name = ? AND programme_id = ?")
-    .get(unitData.name, programmeId);
-
-  if (!unit) {
-    return null;
-  }
-
-  const unitId = String(unit.id);
+  const unitId = unit.id;
 
   await seed_batch_add_students_to_unit(unitId, studentIds);
 

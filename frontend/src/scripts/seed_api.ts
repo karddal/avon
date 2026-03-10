@@ -1,9 +1,12 @@
 import type { DatabaseSync } from "node:sqlite";
 import { create_coursework } from "@/scripts/util/coursework";
+import { fixtureRequest } from "@/scripts/util/fixture-api";
 import { createUnitWithStudentsAndLecturers } from "@/scripts/util/create-unit-w-students";
 import { create_programme } from "@/scripts/util/programme";
 
 export async function api_seed(db: DatabaseSync) {
+  await fixtureRequest<void>("/testing/fixtures/reset-domain");
+
   const students = db
     .prepare("SELECT id FROM user WHERE user.role = 'user'")
     .all();
@@ -39,23 +42,19 @@ export async function api_seed(db: DatabaseSync) {
     },
   ];
 
+  const programmeIds = new Map<string, string>();
   for (const p of programmesToCreate) {
-    const r = await create_programme(p);
-    if (!r.success) throw new Error(`Failed to create programme: ${p.name}`);
+    const createdProgramme = await create_programme(p);
+    programmeIds.set(createdProgramme.name, createdProgramme.id);
   }
 
-  // Helper to get ID by name
-  const getProgId = (name: string) => {
-    const row = db
-      .prepare("SELECT id FROM programme WHERE name = ?")
-      .get(name) as { id: string };
-    if (!row) throw new Error(`Programme not found: ${name}`);
-    return row.id;
-  };
+  const idY1_2526 = programmeIds.get("Year 1 Computer Science 2025-2026");
+  const idY2_2526 = programmeIds.get("Year 2 Computer Science 2025-2026");
+  const idY1_2425 = programmeIds.get("Year 1 Computer Science 2024-2025");
 
-  const idY1_2526 = getProgId("Year 1 Computer Science 2025-2026");
-  const idY2_2526 = getProgId("Year 2 Computer Science 2025-2026");
-  const idY1_2425 = getProgId("Year 1 Computer Science 2024-2025");
+  if (!idY1_2526 || !idY2_2526 || !idY1_2425) {
+    throw new Error("Fixture programme creation did not return all expected IDs");
+  }
 
   // --- 2. Create Units & Coursework ---
 

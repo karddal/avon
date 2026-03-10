@@ -24,6 +24,7 @@ from app.core.helpers.gitlab import (
 from app.core.scopes.scopes import (
     ResourceInformation,
     Scopes,
+    authenticate_user,
     require_scopes,
 )
 from app.core.security import get_bearer, get_current_user_with_role
@@ -122,7 +123,7 @@ async def setup_progress(courseworkId: UUID, session: session_dependency, token:
     if coursework is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
     await require_scopes(
-            ResourceInformation(type=Unit, id=coursework.id),
+            ResourceInformation(type=Unit, id=coursework.unit_id),
             Scopes.UNIT_COURSEWORK_MANAGE,
             token=token,
             session=session,
@@ -201,7 +202,7 @@ async def get_coursework_update_form_data(id: UUID, session: session_dependency,
 
 
     await require_scopes(
-                ResourceInformation(type=Unit, id=coursework.id),
+                ResourceInformation(type=Unit, id=coursework.unit_id),
                 Scopes.UNIT_COURSEWORK_MANAGE,
                 token=token,
                 session=session,
@@ -225,6 +226,24 @@ async def get_coursework_update_form_data(id: UUID, session: session_dependency,
     )
 
 
+@router.get('/{id}/scopes')
+async def get_coursework_scopes(id: UUID, session: session_dependency, token: token_dependency):
+    coursework = session.get(Coursework, id)
+
+    if coursework is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found'
+        )
+
+    user = await authenticate_user(
+        resource=ResourceInformation(type=Unit, id=coursework.unit_id),
+        token=token,
+        session=session,
+    )
+
+    return {"scopes": [scope.value for scope in user.scopes]}
+
+
 @router.get('/{id}', response_model = CourseworkRead)
 async def get_coursework(id: UUID, session: session_dependency, token: token_dependency):
     coursework = session.get(Coursework,id)
@@ -234,7 +253,7 @@ async def get_coursework(id: UUID, session: session_dependency, token: token_dep
 
 
     await require_scopes(
-                ResourceInformation(type=Unit, id=coursework.id),
+                ResourceInformation(type=Unit, id=coursework.unit_id),
                 Scopes.UNIT_READ,
                 token=token,
                 session=session,
@@ -251,7 +270,7 @@ async def delete_coursework(id: UUID, session: session_dependency, token: token_
     #print("\n\n\n\n\n\n\n")
     #
     await require_scopes(
-                    ResourceInformation(type=Unit, id=coursework.id),
+                    ResourceInformation(type=Unit, id=coursework.unit_id),
                     Scopes.UNIT_COURSEWORK_DELETE,
                     token=token,
                     session=session,
@@ -281,7 +300,7 @@ async def update_coursework(id: UUID, coursework: CourseworkUpdate, session: ses
         raise HTTPException(status_code=404, detail='Coursework not found')
 
     await require_scopes(
-                        ResourceInformation(type=Unit, id=coursework_db.id),
+                        ResourceInformation(type=Unit, id=coursework_db.unit_id),
                         Scopes.UNIT_COURSEWORK_MANAGE,
                         token=token,
                         session=session,
@@ -315,7 +334,7 @@ async def template_exists(courseworkId: UUID, session: session_dependency, token
     if coursework is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
     await require_scopes(
-                            ResourceInformation(type=Unit, id=coursework.id),
+                            ResourceInformation(type=Unit, id=coursework.unit_id),
                             Scopes.UNIT_COURSEWORK_GITLAB,
                             token=token,
                             session=session,
@@ -345,7 +364,7 @@ async def activate_template(cw_id: UUID, gitLabId: str, session: session_depende
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
 
     await require_scopes(
-                            ResourceInformation(type=Unit, id=coursework.id),
+                            ResourceInformation(type=Unit, id=coursework.unit_id),
                             Scopes.UNIT_COURSEWORK_GITLAB,
                             token=token,
                             session=session,

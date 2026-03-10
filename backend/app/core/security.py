@@ -19,6 +19,7 @@ ALGORITHM = "HS256"
 logger = logging.getLogger("security")
 
 password_hash = PasswordHash.recommended()
+http_bearer = HTTPBearer(auto_error=True)
 
 
 def hash_password(password: str) -> str:
@@ -49,9 +50,10 @@ class PasswordIncorrectError(Exception):
     def __init__(self, message: str):
         self.message = message
 
-def get_bearer():
-    yield HTTPBearer(auto_error=True)
-
+async def get_bearer(
+    token: Annotated[HTTPAuthorizationCredentials, Depends(http_bearer)],
+):
+    return token
 
 def credentials_exception():
     return HTTPException(

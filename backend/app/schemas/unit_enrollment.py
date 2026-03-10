@@ -13,8 +13,8 @@ def is_valid_user_id(user_id: str) -> str:
 
 
 def is_valid_enrollment_type(type: str) -> str:
-    if type not in ("lecturer", "student"):
-        raise ValueError("type must be 'lecturer' or 'student'")
+    if type not in ("lecturer", "student", "owner"):
+        raise ValueError("type must be 'lecturer', 'student' or 'owner'")
 
     return type
 

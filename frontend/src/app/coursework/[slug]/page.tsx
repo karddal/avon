@@ -25,6 +25,10 @@ async function CourseworkPageContent({
 
   const scopes: Set<string> = await get_coursework_scopes(slug);
   console.log("scopes are ", scopes);
+  const canLoadCourseworkTools = scopes.has("unit:coursework_manage");
+  const data = canLoadCourseworkTools
+    ? await get_cw_update_data(slug)
+    : undefined;
 
   return (
     <>
@@ -47,6 +51,7 @@ async function CourseworkPageContent({
               <CourseworkLectDropdown
                 slug={slug}
                 scopes={scopes}
+                coursework_update_data={data}
               ></CourseworkLectDropdown>
             </div>
           </Suspense>
@@ -83,9 +88,7 @@ async function CourseworkPageContent({
           */}
         {scopes.has("unit:coursework_gitlab") && (
           <div className="flex flex-col col-span-3 min-h-0">
-            <Suspense>
-              <SetupProgress cw_id={(await get_cw_update_data(slug)).id} />
-            </Suspense>
+            <Suspense>{data && <SetupProgress cw_id={data.id} />}</Suspense>
           </div>
         )}
       </section>
