@@ -10,7 +10,7 @@ function CreateCoursework() {
   return (
     <div>
       <Button asChild variant="outline" size="sm" className="mt-2">
-        <Link href={"/coursework/create-coursework"}>
+        <Link href={"/coursework/createCoursework"}>
           <ClipboardPlus />
           Create coursework
         </Link>

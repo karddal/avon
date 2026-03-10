@@ -10,10 +10,8 @@ import {
 
 export default async function Layout({
   children,
-  modal,
 }: {
   children: React.ReactNode;
-  modal: React.ReactNode;
 }) {
   return (
     <SidebarProvider>
@@ -31,8 +29,6 @@ export default async function Layout({
           </div>
         </header>
         <div className="flex min-h-0 flex-col gap-4 px-4">{children}</div>
-
-        {modal}
       </SidebarInset>
     </SidebarProvider>
   );
