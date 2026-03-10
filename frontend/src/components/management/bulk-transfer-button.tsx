@@ -29,17 +29,14 @@ export default function BulkTransferButton({
   const handleDelete = async () => {
     try {
       setStatus(1);
-      console.log("unitIdFrom:", unitIdFrom);
-      console.log("unitIdsTo:", unitIdsTo);
-      console.log("OmittedMembers:", omittedMembers);
+
       if (unitIdFrom) {
         const result = await transfer_unit_members({
           unitIdFrom,
           unitIdsTo,
           omittedMembers,
         });
-        console.log("result:");
-        console.log(result);
+
         if (result.success) {
           toast.success("Unit Members transferred successfully");
           setStatus(0);
@@ -69,7 +66,6 @@ export default function BulkTransferButton({
       {status === 1 && (
         <Button variant="outline" disabled>
           <Spinner className="mr-2 h-4 w-4" />
-          {/* <ArrowRightLeft className="h-4 w-4" /> */}
           Transferring...
         </Button>
       )}

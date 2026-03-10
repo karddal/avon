@@ -34,7 +34,6 @@ export default function OmitMembers({
 }: OmittedMembersProps) {
   const [users, setUsers] = useState<UserInfo[]>([]);
   const [loading, setLoading] = useState(true);
-  
 
   useEffect(() => {
     async function loadUsers() {
