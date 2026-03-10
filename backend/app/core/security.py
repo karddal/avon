@@ -49,8 +49,9 @@ class PasswordIncorrectError(Exception):
     def __init__(self, message: str):
         self.message = message
 
+def get_bearer():
+    yield HTTPBearer(auto_error=True)
 
-get_bearer = HTTPBearer(auto_error=True)
 
 def credentials_exception():
     return HTTPException(

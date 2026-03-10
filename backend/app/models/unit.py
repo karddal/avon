@@ -8,10 +8,10 @@ from app.schemas.unit import CourseworkReadWithoutUnit
 from app.models.colour import Colour
 
 if TYPE_CHECKING:
-    from programme import Programme
-    from unit_enrollment import UnitEnrollment
-    from coursework import Coursework
-    from notification import Notification
+    from app.models.programme import Programme
+    from app.models.unit_enrollment import UnitEnrollment
+    from app.models.coursework import Coursework
+    from app.models.notification import Notification
 
 
 class Unit(SQLModel, table=True):

@@ -62,6 +62,7 @@ async def create_coursework(coursework: CourseworkCreate, session: session_depen
         token=token,
         session=session,
     )
+    
     if courseworkAlreadyExists:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Coursework already made that belongs to the same unit and has the same name")
 

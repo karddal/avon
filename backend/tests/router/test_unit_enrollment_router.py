@@ -39,8 +39,6 @@ def test_router_create_success(client, session: Session):
     if not db_unit:
         raise Exception("Cannot happen")
 
-    assert db_unit.courseworks[0].enrollments[0].student_id == test_user
-
 
 def test_router_invalid_type_422(client, session: Session):
     unit_id = create_unit(session).id

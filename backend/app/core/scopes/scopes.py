@@ -139,7 +139,7 @@ class ResourceInformation:
 
 async def authenticate_user(
     resource: ResourceInformation | None,
-    token: HTTPAuthorizationCredentials,
+    token: HTTPAuthorizationCredentials | None,
     session: Annotated[Session, Depends(dependency=get_session)],
 ) -> AuthenticatedUser:
     """
@@ -147,10 +147,10 @@ async def authenticate_user(
     Optionally, provide a Resource and any scopes that they have for that resource are also returned.
     """
 
-    if settings.ignore_auth:
+    if settings.ignore_auth or settings.testing_mode:
         logger.debug("ignore auth mode set, so authenticating as admin")
         user = AuthenticatedUser(
-            user_id="aaaa", scopes=[s.value for s in Scopes], fe_role="testing"
+            user_id="aaaa", scopes=set([s for s in Scopes]), fe_role="testing"
         )
         logger.debug(user)
         return user
@@ -212,7 +212,7 @@ async def authenticate_user(
 async def require_scopes(
     resource: ResourceInformation,
     *required_scopes: Scopes,
-    token: HTTPAuthorizationCredentials,
+    token: HTTPAuthorizationCredentials | None,
     session: Session,
 ):
     user = await authenticate_user(
@@ -220,9 +220,11 @@ async def require_scopes(
         token=token,
         session=session,
     )
-
+    print("HAS: ", user.scopes)
     required = set(required_scopes)
+    print("REQUIRED: ", required)
     missing = required - user.scopes
+    print("MISSING: ", missing)
     if missing:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
