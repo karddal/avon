@@ -96,9 +96,6 @@ CREATE INDEX ix_coursework_name ON coursework (name);
 CREATE INDEX ix_coursework_due_date ON coursework (due_date);
 CREATE INDEX ix_coursework_unit_id ON coursework (unit_id);
 
-CREATE TABLE courseworkenrollment (
-    student_id VARCHAR NOT NULL,
-    coursework_id UUID NOT NULL,
     individual_due_date TIMESTAMP NOT NULL,
     gl_repo_id VARCHAR NOT NULL,
     CONSTRAINT coursework_id

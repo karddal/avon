@@ -1,6 +1,5 @@
 drop table if exists account;
 
-drop table if exists courseworkenrollment;
 
 drop table if exists coursework;
 

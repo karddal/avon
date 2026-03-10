@@ -5,7 +5,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 
 from app.db.session import get_session
-from app.models.coursework_enrollment import CourseworkEnrollment
 from app.models.unit import Unit
 from app.models.unit_enrollment import UnitEnrollment
 from app.schemas.unit_enrollment import (
@@ -43,22 +42,8 @@ def enroll_unit(payload: UnitEnrollmentCreate, session: session_dependency):
 
     # add the user to any ongoing courseworks
 
-    coursework_enrollments: list[CourseworkEnrollment] = []
-    for coursework in unit.courseworks:
-        if coursework.due_date >= datetime.today():
-            continue  # skip if the coursework is already done
-
-        coursework_enrollments.append(
-            CourseworkEnrollment(
-                student_id=payload.user_id,
-                coursework_id=coursework.id,
-                individual_due_date=coursework.due_date,
-                gl_repo_id="asdfadsfsadf",
-            )
-        )
 
     session.add(enrollment)
-    session.add_all(coursework_enrollments)
     session.commit()
     session.refresh(enrollment)
     return enrollment
@@ -121,7 +106,7 @@ def enroll_unit_batch_lecturers(payload: UnitEnrollmentBatchCreate, session: ses
 
     if existing_user_ids:
         raise HTTPException(
-            status_code=409, 
+            status_code=409,
             detail="Some users are already enrolled!"
         )
 
@@ -130,9 +115,8 @@ def enroll_unit_batch_lecturers(payload: UnitEnrollmentBatchCreate, session: ses
         UnitEnrollment(unit_id=payload.unit_id, user_id=user_id, type="lecturer")
         for user_id in payload.user_ids
     ]
-    
+
     session.add_all(new_enrollments)
     session.commit()
-    
+
     return {"message": f"{len(new_enrollments)} users enrolled successfully"}
-        
