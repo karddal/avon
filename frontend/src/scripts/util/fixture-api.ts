@@ -35,7 +35,8 @@ export async function fixtureRequest<TResponse>(
 
     try {
       const json = await response.json();
-      detail = typeof json.detail === "string" ? json.detail : JSON.stringify(json);
+      detail =
+        typeof json.detail === "string" ? json.detail : JSON.stringify(json);
     } catch {
       detail = await response.text();
     }

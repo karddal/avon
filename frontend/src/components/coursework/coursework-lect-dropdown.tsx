@@ -61,7 +61,8 @@ export default function CourseworkLectDropdown({
   const hasDeleteScope = scopes.has("unit:coursework_delete");
   const canEdit = hasManageScope && coursework_update_data;
   const canManageTemplates = hasGitlabScope && coursework_update_data;
-  const canProvision = hasGitlabScope && coursework_update_data?.templateId != null;
+  const canProvision =
+    hasGitlabScope && coursework_update_data?.templateId != null;
   const hasEntries =
     hasEngineScope || hasManageScope || hasGitlabScope || hasDeleteScope;
 

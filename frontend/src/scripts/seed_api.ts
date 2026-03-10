@@ -1,7 +1,7 @@
 import type { DatabaseSync } from "node:sqlite";
 import { create_coursework } from "@/scripts/util/coursework";
-import { fixtureRequest } from "@/scripts/util/fixture-api";
 import { createUnitWithStudentsAndLecturers } from "@/scripts/util/create-unit-w-students";
+import { fixtureRequest } from "@/scripts/util/fixture-api";
 import { create_programme } from "@/scripts/util/programme";
 
 export async function api_seed(db: DatabaseSync) {
@@ -53,7 +53,9 @@ export async function api_seed(db: DatabaseSync) {
   const idY1_2425 = programmeIds.get("Year 1 Computer Science 2024-2025");
 
   if (!idY1_2526 || !idY2_2526 || !idY1_2425) {
-    throw new Error("Fixture programme creation did not return all expected IDs");
+    throw new Error(
+      "Fixture programme creation did not return all expected IDs",
+    );
   }
 
   // --- 2. Create Units & Coursework ---

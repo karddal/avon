@@ -28,22 +28,22 @@ declare global {
     interface Chainable {
       login(email: string, password: string, student: boolean): Chainable<void>;
       getByCy(value: string): Chainable<JQuery<HTMLElement>>;
-      testResetDomain(): Chainable<Response<any>>;
-      testCreateProgramme(
-        payload: TestProgrammePayload,
-      ): Chainable<Response<any>>;
-      testCreateUnit(payload: TestUnitPayload): Chainable<Response<any>>;
-      testCreateCoursework(
-        payload: TestCourseworkPayload,
-      ): Chainable<Response<any>>;
-      testEnrollStudents(
-        unitId: string,
-        userIds: string[],
-      ): Chainable<Response<any>>;
-      testEnrollLecturers(
-        unitId: string,
-        userIds: string[],
-      ): Chainable<Response<any>>;
+      // testResetDomain(): Chainable<Response<any>>;
+      // testCreateProgramme(
+      //   payload: TestProgrammePayload,
+      // ): Chainable<Response<any>>;
+      // testCreateUnit(payload: TestUnitPayload): Chainable<Response<any>>;
+      // testCreateCoursework(
+      //   payload: TestCourseworkPayload,
+      // ): Chainable<Response<any>>;
+      // testEnrollStudents(
+      //   unitId: string,
+      //   userIds: string[],
+      // ): Chainable<Response<any>>;
+      // testEnrollLecturers(
+      //   unitId: string,
+      //   userIds: string[],
+      // ): Chainable<Response<any>>;
     }
   }
 }
