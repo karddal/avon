@@ -17,6 +17,7 @@ import { HexColorInput, HexColorPicker } from "react-colorful";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
+import { useCourseworkCreateClose } from "@/components/coursework/coursework-create-close";
 
 const Calendar29 = dynamic(
   () => import("@/components/calendar").then((mod) => mod.Calendar29),
@@ -51,6 +52,7 @@ import { Progress } from "@/components/ui/progress";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { create_coursework } from "@/lib/actions/create_coursework";
+import { getRequestJWT } from "@/lib/auth-utils";
 
 export type UnitOption = {
   id: string;
@@ -109,6 +111,7 @@ export const IntForm = ({ units }: FormProps) => {
   const [selectedUnitError, setSelectedUnitError] = useState<string | null>(
     null,
   );
+  const { setBeforeClose } = useCourseworkCreateClose();
 
   const today = new Date();
 
@@ -155,7 +158,7 @@ export const IntForm = ({ units }: FormProps) => {
       unit_id: "",
       name: "",
       description: "",
-      due_date: buildDefaultDueDate(),
+      due_date: new Date(new Date(today).setHours(today.getHours() + 25)),
       color: "#abcdef",
     },
     mode: "onTouched",
@@ -179,13 +182,21 @@ export const IntForm = ({ units }: FormProps) => {
         setSelectedUnitError(null);
         setSelectedUnitData(null);
 
-        const response = await fetch(`/api/units/${unitId}/with-dates`, {
-          cache: "no-cache",
-        });
+        const token = await getRequestJWT();
+
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/units/${unitId}/with_dates`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            cache: "no-cache",
+          },
+        );
 
         if (!response.ok) {
-          const text = await response.text();
-          throw new Error(text || "Failed to load unit dates.");
+          throw new Error("Failed to load unit dates.");
         }
 
         const unit: UnitData = await response.json();
@@ -340,31 +351,17 @@ export const IntForm = ({ units }: FormProps) => {
     setSelectedUnitError(null);
   }, [form]);
 
+  useEffect(() => {
+    setBeforeClose(() => resetAll);
+
+    return () => {
+      setBeforeClose(null);
+    };
+  }, [setBeforeClose, resetAll]);
+
   return (
     <div className="flex w-full justify-center p-6 md:p-8">
-      <div className="w-full max-w-3xl space-y-4">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-semibold">Create a coursework</h1>
-            <p className="text-muted-foreground text-sm">
-              Fill in the details below.
-            </p>
-          </div>
-
-          <Link href="/coursework">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                resetAll();
-              }}
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to courseworks
-            </Button>
-          </Link>
-        </div>
-
+      <div className="w-full max-w-3xl">
         <Card className={"w-full border-0 shadow-none text-base"}>
           <Progress value={step * 50} className={"rounded-none"}></Progress>
           <CardHeader>
