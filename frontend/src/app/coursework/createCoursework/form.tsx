@@ -179,14 +179,14 @@ export const IntForm = ({ units }: FormProps) => {
         setSelectedUnitError(null);
         setSelectedUnitData(null);
 
-          const response = await fetch(`/api/units/${unitId}/with-dates`, {
-              cache: "no-cache",
-          });
+        const response = await fetch(`/api/units/${unitId}/with-dates`, {
+          cache: "no-cache",
+        });
 
-          if (!response.ok) {
-              const text = await response.text();
-              throw new Error(text || "Failed to load unit dates.");
-          }
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(text || "Failed to load unit dates.");
+        }
 
         const unit: UnitData = await response.json();
         setSelectedUnitData(unit);
@@ -341,31 +341,31 @@ export const IntForm = ({ units }: FormProps) => {
   }, [form]);
 
   return (
-      <div className="flex w-full justify-center p-6 md:p-8">
-          <div className="w-full max-w-3xl space-y-4">
-              <div className="flex items-center justify-between gap-4">
-                  <div>
-                      <h1 className="text-2xl font-semibold">Create a coursework</h1>
-                      <p className="text-muted-foreground text-sm">
-                          Fill in the details below.
-                      </p>
-                  </div>
+    <div className="flex w-full justify-center p-6 md:p-8">
+      <div className="w-full max-w-3xl space-y-4">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-semibold">Create a coursework</h1>
+            <p className="text-muted-foreground text-sm">
+              Fill in the details below.
+            </p>
+          </div>
 
-                  <Link href="/coursework">
-                      <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => {
-                              resetAll();
-                          }}
-                      >
-                          <ArrowLeft className="mr-2 h-4 w-4" />
-                          Back to courseworks
-                      </Button>
-                  </Link>
-              </div>
+          <Link href="/coursework">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                resetAll();
+              }}
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to courseworks
+            </Button>
+          </Link>
+        </div>
 
-          <Card className={"w-full border-0 shadow-none text-base"}>
+        <Card className={"w-full border-0 shadow-none text-base"}>
           <Progress value={step * 50} className={"rounded-none"}></Progress>
           <CardHeader>
             <CardTitle>Create a coursework</CardTitle>
