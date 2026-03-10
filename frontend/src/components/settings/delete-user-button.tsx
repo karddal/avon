@@ -6,7 +6,6 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { delete_unit_members } from "@/lib/actions/delete_unit_members";
 import { delete_user } from "@/lib/actions/delete_user";
 
 interface DeleteUserProps {
@@ -14,7 +13,10 @@ interface DeleteUserProps {
   closeDialog: () => void;
 }
 
-export default function DeleteUserButton({ user_id, closeDialog }: DeleteUserProps) {
+export default function DeleteUserButton({
+  user_id,
+  closeDialog,
+}: DeleteUserProps) {
   const [status, setStatus] = useState<number>(0);
   const router = useRouter();
 

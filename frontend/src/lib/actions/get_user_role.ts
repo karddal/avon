@@ -2,11 +2,9 @@
 
 import { getRequestJWT } from "../auth-utils";
 
-export async function get_user_role(
-  userId: string,
-): Promise<string> {
+export async function get_user_role(userId: string): Promise<string> {
   const token = await getRequestJWT();
-  try{
+  try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/unit_enrollment/role/${userId}`,
       {

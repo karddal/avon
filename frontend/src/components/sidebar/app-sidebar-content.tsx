@@ -1,5 +1,6 @@
 import {
   BookCheck,
+  BookUser,
   Calendar,
   ChartLine,
   Layers,
@@ -8,7 +9,6 @@ import {
   SettingsIcon,
   SwatchBook,
   User,
-  BookUser,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -85,7 +85,6 @@ const adminItems = [
     url: "/management",
     icon: BookUser,
     bottom: false,
-
   },
   {
     title: "Calendar",
@@ -239,7 +238,7 @@ export default async function AppSidebarContent() {
                     </SidebarMenuItem>
                   </DialogTrigger>
                 </SidebarMenuButton>
-                <DialogContent>
+                <DialogContent className="max-w-full! lg:max-w-[80%]! xl:max-w-[70%]! w-full p-4 overflow-y-auto max-h-[90vh]">
                   <DialogHeader>
                     <DialogTitle>Settings</DialogTitle>
                   </DialogHeader>

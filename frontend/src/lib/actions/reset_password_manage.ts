@@ -5,7 +5,6 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { requireSession } from "../auth-utils";
 
-
 export type resetResponse = {
   success: boolean;
   error?: string;
@@ -17,10 +16,10 @@ export async function reset_password_manage(
 ): Promise<resetResponse> {
   // Make sure user is admin
   const s = await requireSession();
-  const role = s.user.role
+  const role = s.user.role;
 
-  if (role !== "admin"){
-    throw new Error("Unauthorized access, should be admin")
+  if (role !== "admin") {
+    throw new Error("Unauthorized access, should be admin");
   }
 
   if (newPasswordInput.length < 8) {
@@ -30,20 +29,20 @@ export async function reset_password_manage(
     return { success: false, error: "Password must be at most 128 characters" };
   }
 
-  try{
-    const response = (await auth.api.setUserPassword({
+  try {
+    const response = await auth.api.setUserPassword({
       body: {
         newPassword: newPasswordInput,
         userId: userId,
       },
       headers: await headers(),
-    }));
+    });
 
     return { success: true } as resetResponse;
-  } catch (err: any){
+  } catch (err: any) {
     return {
       success: false,
-      error: err?.message ?? "Password Reset Failed"
-    }
+      error: err?.message ?? "Password Reset Failed",
+    };
   }
 }

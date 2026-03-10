@@ -1,15 +1,11 @@
 "use client";
 
-import { XIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { RotateCcwKey, XIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { RotateCcwKey } from "lucide-react";
-import { delete_user } from "@/lib/actions/delete_user";
 import { reset_password_manage } from "@/lib/actions/reset_password_manage";
-
 
 interface ResetPasswordProps {
   user_id: string;
@@ -18,7 +14,12 @@ interface ResetPasswordProps {
   disabled: boolean;
 }
 
-export default function ResetPasswordButtonManage({ user_id, new_password, closeDialog, disabled }: ResetPasswordProps) {
+export default function ResetPasswordButtonManage({
+  user_id,
+  new_password,
+  closeDialog,
+  disabled,
+}: ResetPasswordProps) {
   const [status, setStatus] = useState<number>(0);
 
   const handleReset = async () => {
@@ -26,7 +27,7 @@ export default function ResetPasswordButtonManage({ user_id, new_password, close
       setStatus(1);
 
       const result = await reset_password_manage(user_id, new_password);
-      
+
       if (result.success) {
         toast.success("Password reseted successfully");
         setStatus(0);
@@ -58,7 +59,7 @@ export default function ResetPasswordButtonManage({ user_id, new_password, close
           onClick={handleReset}
           disabled={disabled}
         >
-          <RotateCcwKey/>
+          <RotateCcwKey />
           Reset Password
         </Button>
       )}

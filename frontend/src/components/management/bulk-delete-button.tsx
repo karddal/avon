@@ -7,14 +7,20 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { delete_unit_members } from "@/lib/actions/delete_unit_members";
+
 interface DeleteUnitMembersProps {
-  unit_id : string;
+  unit_id: string;
   omitted_user_ids: string[];
   closeDialog: () => void;
   onSuccess: () => void;
 }
 
-export default function BulkDeleteButton({ unit_id, omitted_user_ids, closeDialog, onSuccess }: DeleteUnitMembersProps) {
+export default function BulkDeleteButton({
+  unit_id,
+  omitted_user_ids,
+  closeDialog,
+  onSuccess,
+}: DeleteUnitMembersProps) {
   const [status, setStatus] = useState<number>(0);
   const router = useRouter();
 
@@ -22,7 +28,7 @@ export default function BulkDeleteButton({ unit_id, omitted_user_ids, closeDialo
     try {
       setStatus(1);
 
-      const result = await delete_unit_members({unit_id, omitted_user_ids});
+      const result = await delete_unit_members({ unit_id, omitted_user_ids });
 
       if (result.success) {
         toast.success("Unit Members deleted successfully");
@@ -31,7 +37,9 @@ export default function BulkDeleteButton({ unit_id, omitted_user_ids, closeDialo
         router.push("/management");
         closeDialog();
       } else if (result.status === 409) {
-        toast.error("No Users are enrolled on given unit, that aren't excluded / omitted");
+        toast.error(
+          "No Users are enrolled on given unit, that aren't excluded / omitted",
+        );
         setStatus(2);
       } else {
         throw new Error();

@@ -1,18 +1,19 @@
 "use client";
 
-import { useCallback, useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import type { UUID } from "node:crypto";
+  type Dispatch,
+  type SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { Button } from "@/components/ui/button";
-import { get_username_from_id } from "@/lib/actions/get_username";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { get_user_image_from_id } from "@/lib/actions/get_image";
-import UserSelectionOmittion from "./user-selection-omittion";
-import ListOmittedusers from "./list-omitted-users";
 import { get_students } from "@/lib/actions/get_students";
+import { get_username_from_id } from "@/lib/actions/get_username";
+import ListOmittedusers from "./list-omitted-users";
+import UserSelectionOmittion from "./user-selection-omittion";
 
 interface OmittedMembersProps {
   omittedMembersIds: string[];
@@ -51,7 +52,7 @@ export default function OmitMembers({
           id,
           displayName: (await get_username_from_id(id)) || "Unknown",
           src: await get_user_image_from_id(id),
-        }))
+        })),
       );
       setUsers(enriched);
     } finally {
@@ -71,10 +72,11 @@ export default function OmitMembers({
     <Dialog open={openState} onOpenChange={setOpenState}>
       <DialogContent className="max-w-full! lg:max-w-[80%]! xl:max-w-[70%]! w-full p-0 border-none bg-transparent shadow-none overflow-visible">
         <div className="flex flex-col lg:flex-row gap-4 w-full items-stretch">
-
           <div className="flex-1 flex flex-col bg-background border rounded-lg shadow-sm overflow-hidden">
             <div className="p-6 border-b">
-              <DialogTitle className="text-base font-semibold">Omit users from deletion</DialogTitle>
+              <DialogTitle className="text-base font-semibold">
+                Omit users from deletion
+              </DialogTitle>
               <p className="text-sm text-muted-foreground mt-1">
                 Select users to be omitted from deletion
               </p>
@@ -91,7 +93,9 @@ export default function OmitMembers({
 
           <div className="flex-1 flex flex-col bg-background border rounded-lg shadow-sm overflow-hidden self-stretch">
             <div className="p-6 border-b">
-              <DialogTitle className="text-base font-semibold">Selected users</DialogTitle>
+              <DialogTitle className="text-base font-semibold">
+                Selected users
+              </DialogTitle>
             </div>
             <div className="flex-1 p-4">
               <ListOmittedusers
@@ -107,12 +111,14 @@ export default function OmitMembers({
                 disabled={omittedMembersIds.length === 0}
                 onClick={() => setOpenState(false)}
               >
-                Omit {omittedMembersIds.length > 0 ? `${omittedMembersIds.length} ` : ""}
+                Omit{" "}
+                {omittedMembersIds.length > 0
+                  ? `${omittedMembersIds.length} `
+                  : ""}
                 {omittedMembersIds.length === 1 ? "user" : "users"}
               </Button>
             </div>
           </div>
-
         </div>
       </DialogContent>
     </Dialog>

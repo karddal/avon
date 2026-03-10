@@ -1,20 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, type Dispatch, type SetStateAction } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Skeleton } from "@/components/ui/skeleton";
+import { ArrowLeft, ArrowRight, Pencil, UserIcon } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Empty,
   EmptyDescription,
@@ -22,23 +11,10 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import UserCard from "@/components/user-card";
-import type { UUID } from "node:crypto";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import AddMember from "@/components/units/add-member";
-import AddMemberLecturer from "@/components/units/add-member-lec";
-import LecturerList from "@/components/units/lecturer-list";
-import StudentList from "@/components/units/student-list";
-import { requireSession } from "@/lib/auth-utils";
-import { get_unit_users } from "@/lib/actions/get_unit_users";
-import { get_username_from_id } from "@/lib/actions/get_username";
-import { get_user_image_from_id } from "@/lib/actions/get_image";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
-import { ArrowLeft, ArrowRight, Menu, Pencil, TextSearch, UserIcon, X } from "lucide-react";
+import UserCard from "@/components/user-card";
 
 interface OmittedMembersProps {
   users: UserInfo[];
@@ -51,38 +27,40 @@ type UserInfo = {
   id: string;
   displayName: string;
   src?: string;
-}
+};
 
+export default function UserSelectionOmittion({
+  users,
+  loading,
+  omittedMembersIds,
+  setOmittedUserIds,
+}: OmittedMembersProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [offset, setOffset] = useState<number>(0);
+  const [length, setLength] = useState<number>(0);
+  const limit = 5;
 
-export default function UserSelectionOmittion({ users, loading, omittedMembersIds, setOmittedUserIds }: OmittedMembersProps) {
-    const [searchQuery, setSearchQuery] = useState("");
-    const [offset, setOffset] = useState<number>(0);
-    const [length, setLength] = useState<number>(0);
-    const limit = 5;
-
-    async function safeOmit(id : string) {
-        if (!omittedMembersIds.includes(id)){
-            setOmittedUserIds([...omittedMembersIds, id]);
-        }
+  async function safeOmit(id: string) {
+    if (!omittedMembersIds.includes(id)) {
+      setOmittedUserIds([...omittedMembersIds, id]);
     }
+  }
 
-    async function safeDelete(id: string) {
-        setOmittedUserIds(
-            omittedMembersIds.filter(memberId => memberId !== id)
-        );
-    };
+  async function safeDelete(id: string) {
+    setOmittedUserIds(omittedMembersIds.filter((memberId) => memberId !== id));
+  }
 
-    const filteredUsers = useMemo(() => {
-        return users.filter((lecturer) =>
-          lecturer.displayName.toLowerCase().includes(searchQuery.toLowerCase()),
-        );
-    }, [users, searchQuery]);
+  const filteredUsers = useMemo(() => {
+    return users.filter((lecturer) =>
+      lecturer.displayName.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+  }, [users, searchQuery]);
 
-    const paginatedUsers = useMemo(() => {
-      return filteredUsers.slice(offset, offset + limit);
-    }, [filteredUsers, offset]);
+  const paginatedUsers = useMemo(() => {
+    return filteredUsers.slice(offset, offset + limit);
+  }, [filteredUsers, offset]);
 
-    if (loading)
+  if (loading)
     return (
       <div className="flex flex-col items-center gap-4 w-full">
         <Input
@@ -102,7 +80,10 @@ export default function UserSelectionOmittion({ users, loading, omittedMembersId
           className="w-full"
           placeholder="Search users by name..."
           value={searchQuery}
-          onChange={(e) => {setSearchQuery(e.target.value); setOffset(0);}}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            setOffset(0);
+          }}
         />
       </div>
       {loading && searchQuery.length === 0 ? (
@@ -117,29 +98,29 @@ export default function UserSelectionOmittion({ users, loading, omittedMembersId
       {searchQuery.length === 0 ? (
         <></>
       ) : (
-      <div className="flex flex-col gap-2 overflow-y-scroll max-h-48 bg-accent p-2">
-        {filteredUsers.length > 0 ? (
-          paginatedUsers.map((user) => (
-            <div className="group relative w-full" key={user.id}>
-              <UserCard
-                id={user.id}
-                name={user.displayName}
-                image={user.src}
-              />
-              <div className="absolute top-2 right-2 w-8 h-8">
-                <Checkbox
+        <div className="flex flex-col gap-2 overflow-y-scroll max-h-48 bg-accent p-2">
+          {filteredUsers.length > 0 ? (
+            paginatedUsers.map((user) => (
+              <div className="group relative w-full" key={user.id}>
+                <UserCard
+                  id={user.id}
+                  name={user.displayName}
+                  image={user.src}
+                />
+                <div className="absolute top-2 right-2 w-8 h-8">
+                  <Checkbox
                     checked={omittedMembersIds.includes(user.id)}
                     onCheckedChange={(checked) => {
-                        if (checked) {
-                          safeOmit(user.id)
-                        } else {
-                          safeDelete(user.id)
-                        }
+                      if (checked) {
+                        safeOmit(user.id);
+                      } else {
+                        safeDelete(user.id);
+                      }
                     }}
                     className="peer w-full h-full z-10 bg-card/80 shadow rounded-none border data-[state=checked]:bg-primary"
-                />
-                <div
-                className="
+                  />
+                  <div
+                    className="
     absolute inset-0 flex items-center justify-center 
     pointer-events-none 
     transition-all 
@@ -149,16 +130,16 @@ export default function UserSelectionOmittion({ users, loading, omittedMembersId
     peer-data-[state=checked]:scale-0
     peer-data-[state=checked]:rotate-90
 "
-                >
-                  <Pencil size={20} className="text-muted-foreground" />
+                  >
+                    <Pencil size={20} className="text-muted-foreground" />
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
-        ) : (
-          <></>
-        )}
-        {!loading && searchQuery.length > 0 && filteredUsers.length === 0 ? (
+            ))
+          ) : (
+            <></>
+          )}
+          {!loading && searchQuery.length > 0 && filteredUsers.length === 0 ? (
             <Empty>
               <EmptyHeader>
                 <EmptyMedia variant="icon">
@@ -174,45 +155,46 @@ export default function UserSelectionOmittion({ users, loading, omittedMembersId
           ) : (
             <></>
           )}
-      </div>
+        </div>
       )}
       {filteredUsers.length > 0 && searchQuery.length > 0 ? (
-            <div className="flex flex-row items-center text-center my-2">
-              <Button
-                size="icon"
-                variant="outline"
-                disabled={offset / limit + 1 === 1}
-                onClick={() => {
-                  const newOffset = Math.max(0, offset - limit);
-                  setOffset(newOffset);
-                }}
-              >
-                <ArrowLeft></ArrowLeft>
-              </Button>
-              <span className="font-light text-center w-full">
-                {offset / limit + 1}/{Math.ceil(filteredUsers.length / limit)} -
-                Showing {paginatedUsers.length} results out of {filteredUsers.length}
-              </span>
-              <Button
-                size="icon"
-                variant="outline"
-                disabled={
-                  offset / limit + 1 === Math.ceil(filteredUsers.length / limit)
-                }
-                onClick={() => {
-                  const newOffset = Math.min(
-                    offset + limit,
-                    filteredUsers.length - 1,
-                  );
-                  setOffset(newOffset);
-                }}
-              >
-                <ArrowRight></ArrowRight>
-              </Button>
-            </div>
-          ) : (
-            <></>
-          )}
+        <div className="flex flex-row items-center text-center my-2">
+          <Button
+            size="icon"
+            variant="outline"
+            disabled={offset / limit + 1 === 1}
+            onClick={() => {
+              const newOffset = Math.max(0, offset - limit);
+              setOffset(newOffset);
+            }}
+          >
+            <ArrowLeft></ArrowLeft>
+          </Button>
+          <span className="font-light text-center w-full">
+            {offset / limit + 1}/{Math.ceil(filteredUsers.length / limit)} -
+            Showing {paginatedUsers.length} results out of{" "}
+            {filteredUsers.length}
+          </span>
+          <Button
+            size="icon"
+            variant="outline"
+            disabled={
+              offset / limit + 1 === Math.ceil(filteredUsers.length / limit)
+            }
+            onClick={() => {
+              const newOffset = Math.min(
+                offset + limit,
+                filteredUsers.length - 1,
+              );
+              setOffset(newOffset);
+            }}
+          >
+            <ArrowRight></ArrowRight>
+          </Button>
+        </div>
+      ) : (
+        <></>
+      )}
     </div>
   );
 }

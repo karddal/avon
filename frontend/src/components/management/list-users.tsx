@@ -1,12 +1,7 @@
 "use client";
 
 import type { User } from "better-auth";
-import {
-  ArrowLeft,
-  ArrowRight,
-  UserIcon,
-  Pencil,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, Pencil, UserIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -25,26 +20,13 @@ import {
   search_by_name_all_users,
 } from "@/lib/actions/search_by_name_all_users";
 
-function _getInitials(name: string) {
-  if (!name || typeof name !== "string") return "?";
-  const allNames = name.trim().split(" ");
-  if (allNames.length === 0) return "?";
-
-  const first = allNames[0].charAt(0);
-  const last =
-    allNames.length > 1 ? allNames[allNames.length - 1].charAt(0) : "";
-  return (first + last).toUpperCase();
-}
-  
-
-export default function ListMembers({externalSetSelectedUser}: {externalSetSelectedUser: (user: User | null) => void}) {
-    const units = [
-        { id: "u1", name: "Year 1 Computer Science 2025/2026" },
-        { id: "u2", name: "Year 2 Computer Science 2025/2026" },
-    ];
+export default function ListMembers({
+  externalSetSelectedUser,
+}: {
+  externalSetSelectedUser: (user: User | null) => void;
+}) {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
   const [response, setResponse] = useState<SearchResponse>({
     users: [],
     total: 0,
@@ -53,8 +35,7 @@ export default function ListMembers({externalSetSelectedUser}: {externalSetSelec
   });
   const [offset, setOffset] = useState<number>(0);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [length, setLength] = useState<number>(0);
-  const [disabledUsers, setDisabledUsers] = useState<string[]>([]);
+  const [disabledUsers, _setDisabledUsers] = useState<string[]>([]);
 
   const limit = 5;
 
@@ -69,7 +50,7 @@ export default function ListMembers({externalSetSelectedUser}: {externalSetSelec
     setResponse(response);
   }
 
-  async function usersbyProgramme(programme: string){
+  async function usersbyProgramme(programme: string) {
     const usersByPrograme = "";
   }
 
@@ -99,8 +80,8 @@ export default function ListMembers({externalSetSelectedUser}: {externalSetSelec
       {searchQuery.length === 0 ? (
         <></>
       ) : (
-      <div className="flex flex-col gap-2 overflow-y-scroll p-2">
-        {response.users.length > 0 ? (
+        <div className="flex flex-col gap-2 overflow-y-scroll p-2">
+          {response.users.length > 0 ? (
             response.users.map((user: User) => (
               <div className="group relative w-full" key={user.id}>
                 <UserCard
@@ -110,7 +91,7 @@ export default function ListMembers({externalSetSelectedUser}: {externalSetSelec
                   email={user.email}
                 />
 
-               <div className="absolute top-2 right-2 w-8 h-8">
+                <div className="absolute top-2 right-2 w-8 h-8">
                   <Checkbox
                     disabled={disabledUsers.includes(user.id)}
                     checked={selectedUser?.id === user.id}
