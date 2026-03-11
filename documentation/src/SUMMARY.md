@@ -40,8 +40,8 @@
     - [13-02-2026 Sprint 5 Review Meeting](meetings/sprint5/13-02-2026-team.md)
   - [Sprint 6](meetings/sprint6/README.md)
     - [16-02-2026 Sprint 6 Client Meeting](meetings/sprint6/16-02-2026-team.md)
-    - [16-02-2026 Sprint 6 Midweek Meeting / Mentor](meetings/sprint6/16-02-2026-team.md)
-    - [16-02-2026 Sprint 6 Review Meeting](meetings/sprint6/16-02-2026-team.md)
+    - [16-02-2026 Sprint 6 Midweek Meeting / Mentor](meetings/sprint6/18-02-2026-team.md)
+    - [16-02-2026 Sprint 6 Review Meeting](meetings/sprint6/20-02-2026-team.md)
 
 # Agendas (Discontinued)
  - [What happened to the agendas?](agendas/README.md)
