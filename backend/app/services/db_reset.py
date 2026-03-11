@@ -6,7 +6,7 @@ from pathlib import Path
 from sqlalchemy import Column, MetaData, String, Table, select as sa_select, text
 from sqlmodel import Session, select
 
-import app.models  # noqa: F401
+from app.models.notification import Notification
 from app.db.session import engine
 from app.models.coursework import Coursework
 from app.models.programme import Programme
