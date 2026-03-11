@@ -53,6 +53,10 @@ Cypress.Commands.add(
   },
 );
 
+Cypress.Commands.add("resetDb", () => {
+  cy.exec("npm run db:seed");
+});
+
 Cypress.Commands.add("getByCy", (value: string) => {
   return cy.get(`[data-cy="${value}"]`);
 });

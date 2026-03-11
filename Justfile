@@ -87,5 +87,5 @@ reset-db:
 serve-doc:
     mdbook serve --open
 
-new-seed-be:
-    uv run python -m app.cli.manage seed
+seeding-be:
+    uv run python -m app.cli.manage seeding
