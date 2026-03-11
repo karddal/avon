@@ -10,6 +10,7 @@ from app.routers import unit
 from app.routers import check, me
 from app.routers import programme
 from app.routers import unit_enrollment
+from app.routers import seeding
 from dotenv import load_dotenv
 import os
 
@@ -36,6 +37,7 @@ app.include_router(me.router)
 app.include_router(programme.router)
 app.include_router(project.router)
 app.include_router(notification.router)
+app.include_router(seeding.router)
 Coursework.model_rebuild()
 UnitWithCourseworks.model_rebuild()
 

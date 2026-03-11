@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 BACKEND_DIR = Path(__file__).resolve().parents[2]
 DEFAULT_ENV_FILE = BACKEND_DIR / ".env"
 DEV_ENV_FILE = BACKEND_DIR / ".env.dev"
-DEFAULT_TEST_RESET_URL = "http://localhost:8000/testing/reset-db"
+DEFAULT_SEEDING_URL = "http://localhost:8000/seeding/reset-db"
 
 
 def _load_cli_env() -> None:
@@ -55,7 +55,7 @@ def _reset_locally(args: argparse.Namespace) -> dict[str, str]:
     )
 
 
-def cmd_test_reset(args: argparse.Namespace) -> None:
+def cmd_seeding(args: argparse.Namespace) -> None:
     reset_key = os.getenv("TEST_RESET_KEY")
     if not reset_key:
         raise RuntimeError("TEST_RESET_KEY missing from backend/.env.dev")
@@ -80,11 +80,11 @@ def build_parser() -> argparse.ArgumentParser:
     seed_parser.add_argument("--seed-sql", default=str(DEFAULT_SEED_SQL))
     seed_parser.set_defaults(func=cmd_seed)
 
-    test_reset_parser = subparsers.add_parser("test-reset")
-    test_reset_parser.add_argument("--url", default=DEFAULT_TEST_RESET_URL)
-    test_reset_parser.add_argument("--drop-sql", default=str(DEFAULT_DROP_SQL))
-    test_reset_parser.add_argument("--seed-sql", default=str(DEFAULT_SEED_SQL))
-    test_reset_parser.set_defaults(func=cmd_test_reset)
+    seeding_parser = subparsers.add_parser("seeding")
+    seeding_parser.add_argument("--url", default=DEFAULT_SEEDING_URL)
+    seeding_parser.add_argument("--drop-sql", default=str(DEFAULT_DROP_SQL))
+    seeding_parser.add_argument("--seed-sql", default=str(DEFAULT_SEED_SQL))
+    seeding_parser.set_defaults(func=cmd_seeding)
 
     return parser
 
