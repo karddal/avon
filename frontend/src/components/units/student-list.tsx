@@ -22,7 +22,13 @@ type studentInfo = {
   src?: string;
 };
 
-export default function StudentList({ unit_id }: { unit_id: string }) {
+export default function StudentList({
+  canManageEnrollment,
+  unit_id,
+}: {
+  canManageEnrollment: boolean;
+  unit_id: string;
+}) {
   const [students, setStudents] = useState<studentInfo[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [loading, setLoading] = useState(true);
@@ -106,15 +112,17 @@ export default function StudentList({ unit_id }: { unit_id: string }) {
                       <TextSearch></TextSearch>
                       View Student
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => handleDelete(student.id)}
-                      className="text-destructive hover:text-destructive"
-                    >
-                      <X className="text-destructive hover:text-destructive"></X>
-                      <p className="text-destructive hover:text-destructive">
-                        Remove Student
-                      </p>
-                    </DropdownMenuItem>
+                    {canManageEnrollment && (
+                      <DropdownMenuItem
+                        onClick={() => handleDelete(student.id)}
+                        className="text-destructive hover:text-destructive"
+                      >
+                        <X className="text-destructive hover:text-destructive"></X>
+                        <p className="text-destructive hover:text-destructive">
+                          Remove Student
+                        </p>
+                      </DropdownMenuItem>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>

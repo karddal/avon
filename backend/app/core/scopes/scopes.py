@@ -115,9 +115,9 @@ async def resolve_programme_scopes(
 
 
 ROLE_TYPE_SCOPES = {
-    FERoles.ADMIN: [s for s in Scopes],  # admin role grants access to all scopes
-    FERoles.LECTURER: [],  # lecturer role grants no default access
-    FERoles.USER: [],  # user role grants no default access
+    "admin": [s for s in Scopes],  # admin role grants access to all scopes
+    "lecturer": [],  # lecturer role grants no default access
+    "user": [],  # user role grants no default access
 }
 
 RESOURCE_TYPE_RESOLVERS = {ResourceType.UNIT: resolve_unit_scopes}
@@ -170,6 +170,7 @@ async def authenticate_user(
     Optionally, provide a Resource and any scopes that they have for that resource are also returned.
     """
 
+
     if settings.ignore_auth:
         logger.debug("ignore auth mode set, so authenticating as admin")
         user = AuthenticatedUser(
@@ -191,7 +192,6 @@ async def authenticate_user(
             )
 
         scopes: set[Scopes] = set()
-
         role_scopes = ROLE_TYPE_SCOPES.get(role)
         if role_scopes:
             logger.debug(f"role of {role} found, adding scopes {role_scopes}")

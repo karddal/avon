@@ -24,7 +24,6 @@ async function CourseworkPageContent({
   // Hardcoded the template id here, when merged, I should be able to get the template id from jack's code
 
   const scopes: Set<string> = await get_coursework_scopes(slug);
-  console.log("scopes are ", scopes);
   const canLoadCourseworkTools = scopes.has("unit:coursework_manage");
   const data = canLoadCourseworkTools
     ? await get_cw_update_data(slug)

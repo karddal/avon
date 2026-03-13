@@ -30,9 +30,11 @@ type lecturerInfo = {
 };
 
 export default function lecturerList({
+  canManageEnrollment,
   unit_id,
   me,
 }: {
+  canManageEnrollment: boolean;
   unit_id: string;
   me: string;
 }) {
@@ -182,18 +184,18 @@ export default function lecturerList({
                       <Crown className="text-foreground"></Crown>
                       Transfer Ownership
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => handleDeleteDialog(lecturer.id)}
-                      className="text-destructive hover:text-destructive"
-                      disabled={
-                        lecturer.id === me || lecturer.role || !userIsOwner
-                      }
-                    >
-                      <X className="text-destructive hover:text-destructive"></X>
-                      <p className="text-destructive hover:text-destructive">
-                        Remove Lecturer
-                      </p>
-                    </DropdownMenuItem>
+                    {canManageEnrollment && (
+                      <DropdownMenuItem
+                        onClick={() => handleDeleteDialog(lecturer.id)}
+                        className="text-destructive hover:text-destructive"
+                        disabled={lecturer.id === me || lecturer.role}
+                      >
+                        <X className="text-destructive hover:text-destructive"></X>
+                        <p className="text-destructive hover:text-destructive">
+                          Remove Lecturer
+                        </p>
+                      </DropdownMenuItem>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>

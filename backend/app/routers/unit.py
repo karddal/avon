@@ -3,7 +3,7 @@ from typing import Annotated
 from uuid import UUID
 
 from app.core.helpers.gitlab import gl_create_unit, gl_delete_unit, gl_update_unit
-from app.core.scopes.scopes import FERoles, ResourceInformation, Scopes, require_role, require_scopes
+from app.core.scopes.scopes import FERoles, ResourceInformation, Scopes, authenticate_user, require_role, require_scopes
 from app.routers.unit_enrollment import create_owner_enrollment
 from fastapi import APIRouter, Depends, HTTPException, status, Response
 from fastapi.security import HTTPAuthorizationCredentials
@@ -349,3 +349,20 @@ async def get_units(session: session_dependency, token: token_dependency):
     statement = select(Unit)
     units = session.exec(statement).all()
     return {"units": units}
+
+@router.get('/{id}/scopes')
+async def get_unit_scopes(id: UUID, session: session_dependency, token: token_dependency):
+    unit = session.get(Unit, id)
+
+    if unit is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail='Unit not found'
+        )
+
+    user = await authenticate_user(
+        resource=ResourceInformation(type=Unit, id=id),
+        token=token,
+        session=session,
+    )
+
+    return {"scopes": [scope.value for scope in user.scopes]}
