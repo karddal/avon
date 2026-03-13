@@ -47,6 +47,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { create_unit } from "@/lib/actions/create_unit";
 import { getProgrammes } from "@/lib/actions/get_all_programmes";
 import { multistep_unit_flow } from "./multistep_unit_flow";
+import UserCard from "@/components/user-card";
 
 interface FormProps {
   slug: Promise<{ slug: string }>;
@@ -359,6 +360,15 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                         >
                           Add an owner to the unit
                         </FieldLabel>
+                        {selectedOwner && (
+                          <UserCard
+                            id={selectedOwner}
+                            name={ownerName}
+                            image={null}
+                            user_role={true}
+                          ></UserCard>
+                        )}
+
                         <AddMemberLecturerAll
                           onOwnerSelect={setSelectedOwner}
                           selectedOwnerId={selectedOwner}
@@ -583,9 +593,14 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                               {programme ? programmeName : "Not provided."}
                             </ItemDescription>
                             <ItemTitle>Owner</ItemTitle>
-                            <ItemDescription>
-                              {ownerName ? ownerName : "Not provided."}
-                            </ItemDescription>
+                            {selectedOwner && (
+                              <UserCard
+                                id={selectedOwner}
+                                name={ownerName}
+                                image={null}
+                                user_role={true}
+                              ></UserCard>
+                            )}
                             <ItemTitle>Colour</ItemTitle>
                             <ItemDescription>{colour}</ItemDescription>
                             <p
