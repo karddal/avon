@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import DeleteDialog from "@/components/units/delete-lecturer-dialog";
+import TransferDialog from "@/components/units/transfer-dialog";
 import UserCard from "@/components/user-card";
 import { get_user_image_from_id } from "@/lib/actions/get_image";
 import { get_lecturers } from "@/lib/actions/get_lecturers";
@@ -19,8 +21,6 @@ import { get_username_from_id } from "@/lib/actions/get_username";
 import { remove_user_enrollment } from "@/lib/actions/remove_user_enrollment";
 import { transfer_ownership } from "@/lib/actions/transfer_ownership";
 import { requireSession } from "@/lib/auth-utils";
-import TransferDialog from "@/components/units/transfer-dialog";
-import DeleteDialog from "@/components/units/delete-lecturer-dialog";
 
 type lecturerInfo = {
   id: string;

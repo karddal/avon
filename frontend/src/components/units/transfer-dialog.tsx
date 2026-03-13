@@ -1,13 +1,13 @@
+import type { Dispatch, SetStateAction } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
-  DialogTitle,
   DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
+  DialogTitle,
 } from "@/components/ui/dialog";
-import { Dispatch, SetStateAction } from "react";
 
 type TransferDialogProps = {
   open_state: boolean;

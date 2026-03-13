@@ -41,7 +41,10 @@ export default function UserCard(props: UserCardProps) {
             </Avatar>
 
             {props.user_role ? (
-              <Crown className="fill-black dark:fill-white" strokeWidth={1.5} />
+              <Crown
+                className="fill-black dark:fill-white scale-[0.8]"
+                strokeWidth={1.5}
+              />
             ) : (
               <></>
             )}
