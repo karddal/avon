@@ -19,6 +19,8 @@ import { get_username_from_id } from "@/lib/actions/get_username";
 import { remove_user_enrollment } from "@/lib/actions/remove_user_enrollment";
 import { transfer_ownership } from "@/lib/actions/transfer_ownership";
 import { requireSession } from "@/lib/auth-utils";
+import TransferDialog from "@/components/units/transfer-dialog";
+import DeleteDialog from "@/components/units/delete-lecturer-dialog";
 
 type lecturerInfo = {
   id: string;
@@ -39,8 +41,13 @@ export default function lecturerList({
   const [loading, setLoading] = useState(true);
   const [_role, setRole] = useState<string | null | undefined>();
   const [userIsOwner, setUserIsOwner] = useState<boolean>(false);
+  const [showTransfer, setShowTransfer] = useState<boolean>(false);
+  const [showDelete, setShowDelete] = useState<boolean>(false);
+  const [ownerID, setOwnerID] = useState<string>("");
+  const [deleteID, setDeleteID] = useState<string>("");
 
-  async function handleDelete(id: string) {
+  async function handleDelete() {
+    const id = deleteID;
     const result = await remove_user_enrollment(unit_id, id);
     if (result) {
       toast.success("Lecturer unenrolled successfully");
@@ -50,7 +57,18 @@ export default function lecturerList({
     loadlecturers();
   }
 
-  async function handleTransfer(new_owner_id: string) {
+  async function handleDeleteDialog(lecturer: string) {
+    setShowDelete(true);
+    setDeleteID(lecturer);
+  }
+
+  async function handleTransferDialog(new_owner_id: string) {
+    setShowTransfer(true);
+    setOwnerID(new_owner_id);
+  }
+
+  async function handleTransfer() {
+    const new_owner_id = ownerID;
     const result = await transfer_ownership(unit_id, new_owner_id);
     if (result) {
       toast.success("Ownership transferred successfully.");
@@ -124,6 +142,18 @@ export default function lecturerList({
         />
       </div>
 
+      <TransferDialog
+        open_state={showTransfer}
+        set_open_state={setShowTransfer}
+        callback={handleTransfer}
+      />
+
+      <DeleteDialog
+        open_state={showDelete}
+        set_open_state={setShowDelete}
+        callback={handleDelete}
+      />
+
       <div className="flex flex-col gap-2 overflow-y-scroll max-h-48 bg-accent p-2">
         {filteredlecturers.length > 0 ? (
           filteredlecturers.map((lecturer) => (
@@ -146,14 +176,14 @@ export default function lecturerList({
                       View Lecturer
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={() => handleTransfer(lecturer.id)}
+                      onClick={() => handleTransferDialog(lecturer.id)}
                       disabled={!userIsOwner}
                     >
-                      <Crown className="text-black"></Crown>
+                      <Crown className="text-foreground"></Crown>
                       Transfer Ownership
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={() => handleDelete(lecturer.id)}
+                      onClick={() => handleDeleteDialog(lecturer.id)}
                       className="text-destructive hover:text-destructive"
                       disabled={
                         lecturer.id === me || lecturer.role || !userIsOwner
