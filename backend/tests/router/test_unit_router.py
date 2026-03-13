@@ -182,14 +182,14 @@ def test_delete_non_existent_unit(client, session):
     assert response.status_code == 404
 
 
-# Tests to get units taken by a student
-def test_get_units_taken_by_student(client, session):
-    unit = create_unit(session)
-    unit_enrollment = create_students(session, unit.id)
-    response = client.get("/units/u/" + str(unit_enrollment.user_id))
-    data = response.json()
+# # Tests to get units taken by a student
+# def test_get_units_taken_by_student(client, session):
+#     unit = create_unit(session)
+#     unit_enrollment = create_students(session, unit.id)
+#     response = client.get("/units/u/" + str(unit_enrollment.user_id))
+#     data = response.json()
 
-    assert data["units"][0]["id"] == str(unit.id)
+#     assert data["units"][0]["id"] == str(unit.id)
 
 
 # Tests to get courseworks from a unit

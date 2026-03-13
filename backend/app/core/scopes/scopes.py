@@ -25,6 +25,10 @@ class ResourceType(Enum):
     UNIT = "unit"
     PROGRAMME = "programme"
 
+class FERoles(Enum):
+    ADMIN = "admin"
+    USER = "user"
+    LECTURER = "lecturer"
 
 class Scopes(Enum):
     """
@@ -56,8 +60,6 @@ ENROLLMENT_TYPE_SCOPES: dict[str, list[Scopes]] = {
     "lecturer": [
         Scopes.UNIT_READ,
         Scopes.UNIT_MANAGE,
-        Scopes.UNIT_ENROLL,
-        Scopes.UNIT_DELETE,
         Scopes.UNIT_SEND_NOTIFICATION,
         Scopes.UNIT_COURSEWORK_CREATE,
         Scopes.UNIT_COURSEWORK_MANAGE,
@@ -113,9 +115,9 @@ async def resolve_programme_scopes(
 
 
 ROLE_TYPE_SCOPES = {
-    "admin": [s for s in Scopes],  # admin role grants access to all scopes
-    "lecturer": [],  # lecturer role grants no default access
-    "user": [],  # user role grants no default access
+    FERoles.ADMIN: [s for s in Scopes],  # admin role grants access to all scopes
+    FERoles.LECTURER: [],  # lecturer role grants no default access
+    FERoles.USER: [],  # user role grants no default access
 }
 
 RESOURCE_TYPE_RESOLVERS = {ResourceType.UNIT: resolve_unit_scopes}
@@ -233,3 +235,24 @@ async def require_scopes(
         )
 
     return user
+
+async def require_role(
+    role: FERoles,
+    token: HTTPAuthorizationCredentials | None,
+    session: Session,
+):
+    """
+    A more generic check that only requires a specific role.
+    """
+    user = await authenticate_user(
+        resource=None,
+        token=token,
+        session=session,
+    )
+    
+    if user.fe_role == role:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+        detail=f"Authentication error. Not correct role: {role}")
+    
+    return True
+
