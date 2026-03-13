@@ -50,10 +50,6 @@ export default function ListMembers({
     setResponse(response);
   }
 
-  async function _usersbyProgramme(_programme: string) {
-    const _usersByPrograme = "";
-  }
-
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-row gap-2">

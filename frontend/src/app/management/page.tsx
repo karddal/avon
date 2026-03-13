@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 import ManagementComponent from "@/components/management/management-component";
-import { requireSession } from "@/lib/auth-utils";
+import { requireAdminSession } from "@/lib/auth-utils";
 
 async function PageContent() {
-  const s = await requireSession();
-  const isAdmin = s.user.role === "admin";
+  await requireAdminSession();
+  const isAdmin = true;
   return <ManagementComponent isAdmin={isAdmin} />;
 }
 export default function ManagementPage() {

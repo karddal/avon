@@ -25,6 +25,9 @@ export async function search_by_name_all_users(
       offset: offset,
       sortBy: "name",
       searchOperator: "contains",
+      filterField: "role",
+      filterValue: "admin",
+      filterOperator: "ne",
     },
     headers: await headers(),
   })) as unknown;
