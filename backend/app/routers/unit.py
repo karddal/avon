@@ -66,6 +66,8 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
         programme_id=unit.programme_id,
         gitlab_id=gl_data["gitlabGroupId"]
     )
+    if unit.unlocked:
+        db_unit.unlocked = unit.unlocked
     # Add validation for the start and end dates below
 
     statement = select(Unit.id).where(Unit.name==unit.name, Unit.unit_code==unit.unit_code, Unit.programme_id == unit.programme_id)

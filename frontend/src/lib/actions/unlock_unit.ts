@@ -8,7 +8,6 @@ type UnlockUnit = {
 export async function unlock_unit(req: UnlockUnit) {
   "use server";
   const token = await getRequestJWT();
-  console.log("\n\n\n\n\n HELLLWWWOWOOO")
   const data = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/units/${req.id}/unlock`,
     {

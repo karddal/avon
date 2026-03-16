@@ -6,6 +6,7 @@ type createUnitReq = {
   unit_code: string;
   colour: string;
   programme_id: string;
+  unlocked: boolean | null;
 };
 
 export async function create_unit(req: createUnitReq) {

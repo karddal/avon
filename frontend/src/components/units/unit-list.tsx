@@ -11,6 +11,7 @@ export type UnitData = {
   creation_date: string;
   unit_code: string;
   colour: string;
+  unlocked: boolean;
 };
 
 type Programme = {
@@ -91,11 +92,13 @@ export default async function UnitList({ finished }: { finished: boolean }) {
           >
             {programme.units.map((unit) => (
               <div className={"mb-3"} key={unit.id}>
-                <Unit
+                {((unit.unlocked && role === "user") || (role !== "user"))  && (
+                  <Unit
                   key={unit.id}
                   props={unit}
                   hasPermissions={hasPermissions}
-                />
+                  />
+                )}
               </div>
             ))}
           </TabsContent>
