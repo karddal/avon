@@ -22,6 +22,7 @@ type UnitDataResponse = {
   unit_code: string;
   colour: string;
   programme_id: string;
+  unlocked: boolean;
 };
 
 type UnitUpdateData = {
@@ -31,6 +32,7 @@ type UnitUpdateData = {
   colour: string;
   unit_code: string;
   programme_id: string;
+  unlocked: boolean;
 };
 
 async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
@@ -62,6 +64,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
     colour: c.colour,
     unit_code: c.unit_code,
     programme_id: c.programme_id,
+    unlocked: c.unlocked,
   };
 
   return (

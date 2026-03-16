@@ -1,7 +1,7 @@
 "use client";
 
-import { Menu, Siren, SquarePen, SquareX, Users } from "lucide-react";
-import { useState } from "react";
+import { Menu, Siren, SquarePen, SquareX, Users, LockOpen, } from "lucide-react";
+import { useCallback, useState } from "react";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -19,10 +19,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import DeleteUnitButton from "@/components/units/delete-unit-button";
 import EditUnit from "@/components/units/edit-unit";
 import ListMembers from "@/components/units/list-members";
 import SendNotification from "@/components/units/send-notification";
+import { unlock_unit } from "@/lib/actions/unlock_unit";
 
 type UnitUpdateData = {
   id: string;
@@ -31,6 +34,7 @@ type UnitUpdateData = {
   colour: string;
   unit_code: string;
   programme_id: string;
+  unlocked: boolean;
 };
 
 export default function LecturerDropdown({
@@ -46,6 +50,16 @@ export default function LecturerDropdown({
   const [showDelete, setShowDelete] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showSendNotif, setShowSendNotif] = useState(false);
+  const router = useRouter();
+
+  const unlockUnit = useCallback(async () => {
+    try {
+      const result = await unlock_unit({id: unit_update_data.id});
+      router.refresh();
+    } catch (err) {
+      toast.error("Unlocking Unit Failed");     
+    }
+  },[])
 
   return (
     <div className="aspect-square">
@@ -70,6 +84,11 @@ export default function LecturerDropdown({
 
           <DropdownMenuItem onSelect={() => setShowSendNotif(true)}>
             <Siren className="mr-2 h-4 w-4" /> Send Notification
+          </DropdownMenuItem>
+
+          <DropdownMenuItem className="text-green-700 focus:text-green-700" onSelect={() => unlockUnit()} disabled={unit_update_data.unlocked}>
+            <LockOpen className="text-green-700 mr-2 h-4 w-4" />
+            Unlock Unit
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />

@@ -41,6 +41,7 @@ class UnitRead(BaseModel):
     unit_code: str
     colour: Colour
     programme_id: uuid.UUID
+    unlocked: bool
 
 class UnitReadWithDates(UnitRead):
     start_date: datetime
