@@ -1,7 +1,17 @@
 "use client";
 
-import { Menu, Siren, SquarePen, SquareX, Users, LockOpen, } from "lucide-react";
-import { useCallback, useState } from "react";
+import {
+  LockKeyholeOpen,
+  LockOpen,
+  Menu,
+  Siren,
+  SquarePen,
+  SquareX,
+  Users,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -19,8 +29,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import DeleteUnitButton from "@/components/units/delete-unit-button";
 import EditUnit from "@/components/units/edit-unit";
 import ListMembers from "@/components/units/list-members";
@@ -52,14 +60,14 @@ export default function LecturerDropdown({
   const [showSendNotif, setShowSendNotif] = useState(false);
   const router = useRouter();
 
-  const unlockUnit = useCallback(async () => {
+  const unlockUnit = async () => {
     try {
-      const result = await unlock_unit({id: unit_update_data.id});
+      await unlock_unit({ id: unit_update_data.id });
       router.refresh();
-    } catch (err) {
-      toast.error("Unlocking Unit Failed");     
+    } catch (_err) {
+      toast.error("Unlocking Unit Failed");
     }
-  },[])
+  };
 
   return (
     <div className="aspect-square">
@@ -86,9 +94,26 @@ export default function LecturerDropdown({
             <Siren className="mr-2 h-4 w-4" /> Send Notification
           </DropdownMenuItem>
 
-          <DropdownMenuItem className="text-green-700 focus:text-green-700" onSelect={() => unlockUnit()} disabled={unit_update_data.unlocked}>
-            <LockOpen className="text-green-700 mr-2 h-4 w-4" />
-            Unlock Unit
+          <DropdownMenuItem
+            className={
+              unit_update_data.unlocked
+                ? "text-green-700 focus:text-green-700"
+                : ""
+            }
+            onSelect={unlockUnit}
+            disabled={unit_update_data.unlocked}
+          >
+            {unit_update_data.unlocked ? (
+              <>
+                <LockOpen className="text-green-700 mr-2 h-4 w-4" />
+                Unlocked
+              </>
+            ) : (
+              <>
+                <LockKeyholeOpen className="mr-2 h-4 w-4" />
+                Unlock Unit
+              </>
+            )}
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />
