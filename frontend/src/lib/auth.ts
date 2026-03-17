@@ -7,9 +7,9 @@ import { Pool } from "pg";
 import { ac, admin, lecturer, user } from "@/lib/permissions";
 
 var dbPath = "../sqlite.db";
-if (process.env.CI_MODE === "True") {
-  dbPath = path.resolve(process.cwd(), "../../..", "sqlite.db");
-}
+// if (process.env.CI_MODE === "True") {
+//   dbPath = path.resolve(process.cwd(), "../../..", "sqlite.db");
+// }
 
 console.log(dbPath);
 

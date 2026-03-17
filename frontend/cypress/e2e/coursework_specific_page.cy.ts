@@ -1,6 +1,6 @@
 describe("Coursework page", () => {
   before(() => {
-   cy.resetDb();
+    cy.resetDb();
   });
 
   beforeEach(() => {
