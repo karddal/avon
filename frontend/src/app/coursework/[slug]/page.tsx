@@ -43,7 +43,7 @@ async function CourseworkPageContent({
           >
             <div
               className={
-                "flex flex-row gap-4 justify-between items-center mt-4 flex-wrap"
+                "flex flex-row gap-4 justify-between items-center my-2"
               }
             >
               <CourseworkName slug={slug} token={token} />

@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     jwt_issuer: str
     jwks_url: str
     ignore_auth: bool = False
+<<<<<<< HEAD
     enable_test_fixtures: bool = Field(
         default=False,
         validation_alias=AliasChoices("ENABLE_TEST_FIXTURES", "TESTING_MODE"),
@@ -15,6 +16,12 @@ class Settings(BaseSettings):
         default=False,
         validation_alias=AliasChoices("ALLOW_HISTORICAL_SEED_DATA", "TESTING_MODE"),
     )
+||||||| parent of b3b4707 (take updated scopes stuff from scopes branch)
+    testing_mode: bool = False
+    model_config = SettingsConfigDict(env_file=".env") # Keep on getting warnings in tests to do this, it's the updated version of the code below
+=======
+    testing_mode: bool = False
+>>>>>>> b3b4707 (take updated scopes stuff from scopes branch)
     test_fixture_key: str | None = None
     model_config = SettingsConfigDict(
         env_file=".env"
@@ -23,9 +30,14 @@ class Settings(BaseSettings):
     #     env_file = ".env"
     # Please Ensure to test This in the PR, need to make sure it works
 
+<<<<<<< HEAD
     @property
     def testing_mode(self) -> bool:
         return self.enable_test_fixtures
 
+||||||| parent of b3b4707 (take updated scopes stuff from scopes branch)
+settings = Settings()
+=======
+>>>>>>> b3b4707 (take updated scopes stuff from scopes branch)
 
 settings = Settings()

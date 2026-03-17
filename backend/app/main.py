@@ -17,7 +17,13 @@ from app.routers import programme
 from app.routers import unit_enrollment
 from app.core.settings import settings
 from app.core.testing import ensure_test_fixture_key_configured
+<<<<<<< HEAD
 from app.routers import seeding
+||||||| parent of b3b4707 (take updated scopes stuff from scopes branch)
+from dotenv import load_dotenv
+import os
+=======
+>>>>>>> b3b4707 (take updated scopes stuff from scopes branch)
 
 if os.getenv("ENV") == "dev":
     env_file = ".env.dev"
@@ -53,7 +59,12 @@ UnitWithCourseworks.model_rebuild()
 
 app.include_router(unit_enrollment.router)
 
+<<<<<<< HEAD
 if settings.enable_test_fixtures:
+||||||| parent of b3b4707 (take updated scopes stuff from scopes branch)
+=======
+if settings.testing_mode:
+>>>>>>> b3b4707 (take updated scopes stuff from scopes branch)
     from app.routers import testing_fixtures
 
     ensure_test_fixture_key_configured()

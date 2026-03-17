@@ -35,5 +35,9 @@ export default async function CourseworkName({
 
   const coursework: courseworkData = await res.json();
 
-  return <span className="text-3xl lg:text-5xl">{coursework.name}</span>;
+  return (
+    <div>
+      <span className="font-light">{coursework.code}</span> {coursework.name}
+    </div>
+  );
 }

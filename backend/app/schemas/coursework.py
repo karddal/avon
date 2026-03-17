@@ -1,9 +1,6 @@
-from typing import Annotated, Literal
-import re
-from uuid import UUID
 import datetime
+import re
 
-from pydantic import AfterValidator, BaseModel, ConfigDict
 from app.core.settings import settings
 
 
@@ -27,10 +24,9 @@ def is_valid_due_date(date: datetime.datetime) -> datetime.datetime:
 
     if date.tzinfo is None:
         now = datetime.datetime.now()
-    else:
+else:
         now = datetime.datetime.now(datetime.timezone.utc)
         date = date.astimezone(datetime.timezone.utc)
-
     one_year_onwards = now + datetime.timedelta(days=365)
 
     if date <= now:
@@ -95,6 +91,7 @@ class CourseworkUpdate(BaseModel):
     unit_id: UUID | None = None
     due_date: DueDate | None = None
     colour: Colour | None = None
+
 
 
 class CourseworkDelete(BaseModel):

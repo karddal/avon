@@ -51,6 +51,7 @@ class UnitRead(BaseModel):
     unlocked: bool
 
 
+
 class UnitReadWithDates(UnitRead):
     start_date: datetime
     end_date: datetime
@@ -90,6 +91,14 @@ class UnitCreateOwner(BaseModel):
     unlocked: bool | None = None
 
 
+class UnitCreateOwner(BaseModel):
+    name: Name
+    description: Description
+    unit_code: UnitCode
+    colour: Colour
+    programme_id: uuid.UUID
+    owner: str
+
 class UnitUpdate(BaseModel):
     name: Name
     description: str
@@ -111,6 +120,7 @@ class UnitWithoutProgramme(BaseModel):
     unit_code: str
     colour: str
     unlocked: bool
+
 
 
 class ProgrammeWithUnits(BaseModel):
