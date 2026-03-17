@@ -4,7 +4,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException, Request, status
 
-from app.services.db_reset import reset_database
+from app.services.db_reset import reset_app_data, reset_database
 
 BACKEND_DIR = Path(__file__).resolve().parents[2]
 DEV_ENV_FILE = BACKEND_DIR / ".env.dev"
@@ -33,3 +33,11 @@ def reset_db(request: Request):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
 
     return reset_database()
+
+
+@router.post("/reset-app-data", include_in_schema=False)
+def reset_app_seed_data(request: Request):
+    if not reset_route_enabled() or not request_is_local(request):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
+
+    return reset_app_data()

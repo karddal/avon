@@ -187,6 +187,13 @@ FULL_RESET_TABLES = (
     _jwks_table,
     _user_table,
 )
+APP_RESET_TABLES = (
+    Notification.__table__,
+    Coursework.__table__,
+    UnitEnrollment.__table__,
+    Unit.__table__,
+    Programme.__table__,
+)
 
 
 def read_sql_file(path: Path) -> str:
@@ -226,6 +233,12 @@ def drop_tables(tables: Sequence[Table] = FULL_RESET_TABLES) -> None:
     with engine.begin() as conn:
         for table in tables:
             table.drop(bind=conn, checkfirst=True)
+
+
+def clear_tables(tables: Sequence[Table] = APP_RESET_TABLES) -> None:
+    with engine.begin() as conn:
+        for table in tables:
+            conn.execute(table.delete())
 
 
 def _fetch_user_ids_by_role(session: Session, role: str) -> list[str]:
@@ -330,3 +343,18 @@ def reset_database(
         engine.dispose()
 
     return {"status": "ok", "message": "Database reset and seeded"}
+
+
+def reset_app_data() -> dict[str, str]:
+    with RESET_LOCK:
+        clear_tables()
+
+        with Session(engine) as session:
+            try:
+                seed_database_data(session)
+                session.commit()
+            except Exception:
+                session.rollback()
+                raise
+
+    return {"status": "ok", "message": "Application data reset and seeded"}

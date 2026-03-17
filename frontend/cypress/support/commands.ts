@@ -54,7 +54,11 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add("resetDb", () => {
-  cy.request("POST", `http://localhost:8000/seeding/reset-db`);
+  return cy
+    .request("POST", "http://localhost:8000/seeding/reset-app-data")
+    .its("body.status")
+    .should("eq", "ok")
+    .then(() => undefined);
 });
 
 Cypress.Commands.add("getByCy", (value: string) => {
