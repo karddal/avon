@@ -7,6 +7,4 @@ from pydantic import Field
 # licensed under CC BY-SA 4.0
 # by Joey
 
-Colour = Annotated[str, Field(
-    pattern=r"[0-9a-fA-F]{6}$"
-)]
+Colour = Annotated[str, Field(pattern=r"[0-9a-fA-F]{6}$")]

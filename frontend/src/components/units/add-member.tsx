@@ -129,6 +129,7 @@ export default function AddMember({ unit_id }: { unit_id: string }) {
                   name={user.name}
                   image={user.image}
                   email={user.email}
+                  user_role={false}
                 />
 
                 <div className="absolute top-2 right-2 w-8 h-8">

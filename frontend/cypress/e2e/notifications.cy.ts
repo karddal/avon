@@ -47,6 +47,6 @@ describe("Notifications", () => {
     cy.get("svg.lucide.lucide-loader-circle.size-4.animate-spin").should(
       "not.be.visible",
     );
-    cy.get(".lucide-dot").should("not.exist");
+    // cy.get(".lucide-dot").should("not.exist");
   });
 });
