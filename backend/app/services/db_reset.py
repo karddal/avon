@@ -1,5 +1,4 @@
 import threading
-import uuid
 from datetime import date, datetime
 from pathlib import Path
 from typing import Sequence

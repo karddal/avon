@@ -2,7 +2,7 @@ import argparse
 import json
 import os
 from pathlib import Path
-from typing import Optional, Sequence
+from typing import Callable, Optional, Sequence
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
@@ -12,6 +12,7 @@ BACKEND_DIR = Path(__file__).resolve().parents[2]
 DEFAULT_ENV_FILE = BACKEND_DIR / ".env"
 DEV_ENV_FILE = BACKEND_DIR / ".env.dev"
 DEFAULT_SEEDING_URL = "http://localhost:8000/seeding/reset-db"
+DEFAULT_SEED_SQL = BACKEND_DIR / "sql" / "seed.sql"
 
 
 def _load_cli_env() -> None:
@@ -25,10 +26,15 @@ def _load_cli_env() -> None:
 
 _load_cli_env()
 
-from app.services.db_reset import DEFAULT_SEED_SQL, reset_database
+
+def _get_reset_database() -> Callable[..., dict[str, str]]:
+    from app.services.db_reset import reset_database
+
+    return reset_database
 
 
 def cmd_seed(args: argparse.Namespace) -> None:
+    reset_database = _get_reset_database()
     reset_database(
         seed_sql_path=Path(args.seed_sql).resolve(),
     )
@@ -47,6 +53,7 @@ def _reset_via_backend(url: str) -> dict[str, object]:
 
 
 def _reset_locally(args: argparse.Namespace) -> dict[str, str]:
+    reset_database = _get_reset_database()
     return reset_database(
         seed_sql_path=Path(args.seed_sql).resolve(),
     )
