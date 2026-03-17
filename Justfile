@@ -12,7 +12,7 @@ set windows-shell := ["powershell.exe", "-NoProfile", "-Command"]
     just -f Justfile -d documentation {{cmd}}-doc {{args}}
 
 @db cmd *args:
-    just -f Justfile {{cmd}}-db {{args}}
+    just -f Justfile -d backend {{cmd}}-db {{args}}
 
 # real command
 default:
@@ -78,14 +78,8 @@ sync:
     just fe sync
     just be sync
 
-seed-db:
-    just fe run db:seed
-
-reset-db:
-    just fe run db:reset
-
 serve-doc:
     mdbook serve --open
 
-seeding-be:
+seeding-db:
     uv run python -m app.cli.manage seeding

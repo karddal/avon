@@ -1,6 +1,6 @@
 describe("Notifications", () => {
   before(() => {
-    cy.exec("npm run db:seed");
+    cy.resetDb();
   });
 
   it("shows no notifications with no notifications in the system", () => {
