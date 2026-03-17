@@ -71,6 +71,24 @@ I also used GH Copilot for autocompletion sometimes to save time.
 
 `How can I clean out a full subgroup in Gitlab without deleting it using the API? So all subgroups and projects in it should be deleted.`
 
+
+#### Used to design and set up the test running system
+
+I used it to write the dockerfile and script for the test running system, then customised the result. I used it because I am not very familiar with how docker works, and best practices for untrusted code. Me and Josh also used it initially with earlier attempts with Kubernetes, and also to try and architect a better design. We found it helpful because we don't have much experience with this.
+Once I had a working script, I was able to modify it for our own purpose. I also used it to help debug and iterate. 
+Example prompts:
+- ```Sure! What's the cleaner way to do this? It doesn't look like with this setup there is a clean way to git clone the code and then run the lecturer's dockerfile.```
+- ```Okay, so how about this, maybe we can just install uv, pip, all 'python' things into a single container, and then this is just a limitation of the system. Then the lecturer can define a series of commands to run in that container, and then we handle logging etc from this. Can you set up the container for this? This sounds clean.```
+- ```Yes that sounds important, clean it up, make sure it is as clean and simple and easy to maintain as possible, and prevent exploits. Make no mistakes, you are an expert aws engineer.```
+- ```Can i set the ecs task to have a timeout rather than having to do it manually in the python script?```
+- ```Can I test this locally @ChatGPT ?```
+- ```how can I give perms for the runner to be able to download the projects? Do I use an API key in gitlab?```
+- ```How can I use service accounts for this? I can generate a service account and pass it in in the git clone url with the service account token, to authenticate https git clones. Update the script.```
+- ```How will s3 and sqs auth work when deployed? How can it log in?```
+- ```how do I get the runner.py into the dockerifle? it says it cant find it```
+- ```how will I know whether it worked? nothing gets printed out```
+- ```How can I troubleshoot aws login etc errors? Can you add code to do that?```
+
 ### Josh
 
 **Tools used**
