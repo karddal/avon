@@ -13,7 +13,7 @@
     "cy:run": "cypress run --headed",
     "test": "npm run db:seed && cross-env CI_MODE=True TESTING_MODE=True NEXT_PUBLIC_API_URL=http://localhost:8000 NEXT_PUBLIC_CDN_PATH= npm run build && npm run test:run",
     "test:run": "cross-env CI_MODE=True TESTING_MODE=True ENV=development BETTER_AUTH_SECRET=wwZgZ19qBU3L0Rxf4oVzAbpw7xkmDOLG BETTER_AUTH_URL=https://localhost:3000 start-server-and-test start:backend http-get://localhost:8000/check/health start http://localhost:3000 cy:run",
-    "db:seed": "cd ../backend && uv run python -m app.cli.manage seeding"
+    "db:seed": "cd ../backend && cross-env DATABASE_URL=sqlite:///../sqlite.db uv run python -m app.cli.manage seeding"
   },
   "dependencies": {
     "16": "^0.0.2",
@@ -80,6 +80,3 @@
     "typescript": "^5.9.3"
   }
 }
-
-
-

@@ -54,7 +54,7 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add("resetDb", () => {
-  cy.exec("npm run db:seed");
+  cy.request("POST", `http://localhost:8000/seeding/reset-db`);
 });
 
 Cypress.Commands.add("getByCy", (value: string) => {

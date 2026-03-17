@@ -1,9 +1,8 @@
 import os
 from pathlib import Path
-from typing import Annotated
 
 from dotenv import load_dotenv
-from fastapi import APIRouter, Header, HTTPException, status
+from fastapi import APIRouter, HTTPException, Request, status
 
 from app.services.db_reset import reset_database
 
@@ -20,28 +19,17 @@ def reset_route_enabled() -> bool:
     return os.getenv("ENV") == "dev"
 
 
-def configured_reset_key() -> str:
-    return os.getenv("TEST_RESET_KEY", "")
+def request_is_local(request: Request) -> bool:
+    client = request.client
+    if client is None:
+        return False
+
+    return client.host in {"127.0.0.1", "::1"}
 
 
 @router.post("/reset-db", include_in_schema=False)
-def reset_db(
-    x_test_reset_key: Annotated[str | None, Header()] = None,
-):
-    if not reset_route_enabled():
+def reset_db(request: Request):
+    if not reset_route_enabled() or not request_is_local(request):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
-
-    reset_key = configured_reset_key()
-    if not reset_key:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Test reset key not configured",
-        )
-
-    if x_test_reset_key != reset_key:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Invalid test reset key",
-        )
 
     return reset_database()

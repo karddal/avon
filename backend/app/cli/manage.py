@@ -25,22 +25,20 @@ def _load_cli_env() -> None:
 
 _load_cli_env()
 
-from app.services.db_reset import DEFAULT_DROP_SQL, DEFAULT_SEED_SQL, reset_database
+from app.services.db_reset import DEFAULT_SEED_SQL, reset_database
 
 
 def cmd_seed(args: argparse.Namespace) -> None:
     reset_database(
-        drop_sql_path=Path(args.drop_sql).resolve(),
         seed_sql_path=Path(args.seed_sql).resolve(),
     )
     print("Seed successful")
 
 
-def _reset_via_backend(url: str, reset_key: str) -> dict[str, object]:
+def _reset_via_backend(url: str) -> dict[str, object]:
     request = Request(
         url,
         method="POST",
-        headers={"X-Test-Reset-Key": reset_key},
     )
 
     with urlopen(request) as response:
@@ -50,18 +48,13 @@ def _reset_via_backend(url: str, reset_key: str) -> dict[str, object]:
 
 def _reset_locally(args: argparse.Namespace) -> dict[str, str]:
     return reset_database(
-        drop_sql_path=Path(args.drop_sql).resolve(),
         seed_sql_path=Path(args.seed_sql).resolve(),
     )
 
 
 def cmd_seeding(args: argparse.Namespace) -> None:
-    reset_key = os.getenv("TEST_RESET_KEY")
-    if not reset_key:
-        raise RuntimeError("TEST_RESET_KEY missing from backend/.env.dev")
-
     try:
-        result = _reset_via_backend(args.url, reset_key)
+        result = _reset_via_backend(args.url)
     except HTTPError as exc:
         body = exc.read().decode("utf-8", errors="replace")
         raise RuntimeError(body or f"HTTP {exc.code}") from exc
@@ -76,13 +69,11 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     seed_parser = subparsers.add_parser("seed")
-    seed_parser.add_argument("--drop-sql", default=str(DEFAULT_DROP_SQL))
     seed_parser.add_argument("--seed-sql", default=str(DEFAULT_SEED_SQL))
     seed_parser.set_defaults(func=cmd_seed)
 
     seeding_parser = subparsers.add_parser("seeding")
     seeding_parser.add_argument("--url", default=DEFAULT_SEEDING_URL)
-    seeding_parser.add_argument("--drop-sql", default=str(DEFAULT_DROP_SQL))
     seeding_parser.add_argument("--seed-sql", default=str(DEFAULT_SEED_SQL))
     seeding_parser.set_defaults(func=cmd_seeding)
 
