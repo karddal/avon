@@ -5,6 +5,9 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+if os.getenv("ENV") == "dev":
+    env_file = ".env.dev"
+    load_dotenv(dotenv_path=env_file)
 from app.core.settings import settings
 from app.core.testing import ensure_test_fixture_key_configured
 from app.db.session import create_db_and_tables, lifespan
@@ -70,7 +73,6 @@ UnitWithCourseworks.model_rebuild()
 app.include_router(unit_enrollment.router)
 
 if settings.enable_test_fixtures:
-if settings.testing_mode:
     from app.routers import testing_fixtures
 
     ensure_test_fixture_key_configured()

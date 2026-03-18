@@ -1,0 +1,133 @@
+"use client"
+
+import {Controller, useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import z from "zod";
+import {Field, FieldDescription, FieldError, FieldLabel} from "@/components/ui/field";
+import {Input} from "@/components/ui/input";
+import {Textarea} from "@/components/ui/textarea";
+import {Button} from "@/components/ui/button";
+import {useState} from "react";
+import {Spinner} from "@/components/ui/spinner";
+import {create_base_image} from "@/lib/actions/create_base_image";
+import {toast} from "sonner";
+import {useRouter} from "next/navigation";
+
+const formSchema = z.object({
+  name: z.string().min(1).max(64),
+  description: z.string().min(1).max(500),
+  imageURI: z.string().nonempty()
+})
+
+export function CreateBIForm() {
+
+  const [submitState, setSubmitState] = useState<boolean>(false);
+  const router = useRouter();
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      imageURI: "",
+    }
+  })
+
+  function onSubmit(data: z.infer<typeof formSchema>) {
+    setSubmitState(true)
+
+    const req = {
+      name: data.name,
+      description: data.description,
+      image_uri: data.imageURI,
+    }
+    create_base_image(req).then((s) => {
+      if (!s.success) {
+        toast.error("Failed to create the base image.");
+        setSubmitState(false);
+      }
+      else {
+        toast.success("Base image created.")
+        setSubmitState(false);
+        router.refresh();
+      }
+    })
+  }
+
+  return (
+      <form onSubmit={form.handleSubmit(onSubmit)} className={"w-full flex flex-col gap-2"}>
+        <Controller
+            name="name"
+            control={form.control}
+            render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor={field.name}>Name</FieldLabel>
+                  <Input
+                      {...field}
+                      id={field.name}
+                      type="text"
+                      aria-invalid={fieldState.invalid}
+                  />
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                </Field>
+            )}
+        />
+        <Controller
+            name="description"
+            control={form.control}
+            render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="form-rhf-textarea-about">Description</FieldLabel>
+                  <Textarea
+                      {...field}
+                      id="form-rhf-textarea-about"
+                      aria-invalid={fieldState.invalid}
+                      placeholder="My awesome base image..."
+                      className="min-h-[120px]"
+                  />
+                  <FieldDescription>
+                    Write some information about the base image
+                  </FieldDescription>
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                </Field>
+            )}
+        />
+
+        <Controller
+            name="imageURI"
+            control={form.control}
+            render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor={field.name}>Image URI</FieldLabel>
+                  <Input
+                      {...field}
+                      id={field.name}
+                      type="string"
+                      aria-invalid={fieldState.invalid}
+                  />
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                </Field>
+            )}
+        />
+
+        <Button type="button" variant="outline" onClick={() => form.reset()}>
+          Reset
+        </Button>
+
+        {submitState && (
+            <Button type={"submit"} variant={"ghost"} disabled>
+              <Spinner/>
+              Submit
+            </Button>
+        )}
+
+        {
+          (!submitState) && (
+                <Button type={"submit"} variant={"default"}>
+                  Submit
+                </Button>
+            )
+        }
+
+      </form>
+  )
+}
