@@ -1,5 +1,6 @@
 drop table if exists account;
 
+drop table if exists studentrepo;
 
 drop table if exists coursework;
 

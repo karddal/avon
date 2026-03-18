@@ -417,6 +417,7 @@ async def gl_create_fork(name, user_id, group_id, template_id):
             print(f"Network Error: {err}")
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
 
+    print("CREATE FORK DATA: ", data)
     return data
 
 async def gl_create_project(name, user_id, group_id, template_group_id, template_id):
