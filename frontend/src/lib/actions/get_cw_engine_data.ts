@@ -2,8 +2,8 @@ import {getRequestJWT} from "@/lib/auth-utils";
 
 export type GetCWEngineDataResponse = {
   cw_id: string;
-  base_image_id: string | undefined;
-  tester_command: string | undefined;
+  base_image_id: string | null;
+  tester_command: string | null;
 }
 
 export type GetCWEngineDataRequest = {

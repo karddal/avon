@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   DropdownMenu,
-  DropdownMenuContent,
+  DropdownMenuContent, DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -37,6 +37,9 @@ import CreateTemplate from "./create-templates";
 import ProvisionCoursework from "./provision-coursework";
 import {BaseImage, get_base_images_cw_specific} from "@/lib/actions/get_base_images_cw_specific";
 import {GetCWEngineDataResponse} from "@/lib/actions/get_cw_engine_data";
+import {Item, ItemContent, ItemMedia, ItemTitle} from "../ui/item";
+import {Progress} from "@/components/ui/progress";
+import {Field, FieldLabel} from "@/components/ui/field";
 
 export default function CourseworkLectDropdown({
   slug,
@@ -75,7 +78,9 @@ export default function CourseworkLectDropdown({
   if (!hasEntries) {
     return null;
   }
-
+  console.log("--a-df-asdf0-dsaf")
+  console.log(cw_engine_data?.base_image_id)
+  const engine_is_setup = !(cw_engine_data?.base_image_id == null || cw_engine_data?.tester_command == null)
   return (
     <div className="aspect-square">
       <DropdownMenu>
@@ -91,35 +96,61 @@ export default function CourseworkLectDropdown({
 
           {hasEngineScope && (
             <>
-              <DropdownMenuItem key={"Engine"} disabled={true}>
-                <ServerCog className="mr-2 h-4 w-4" />
-                Engine
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                key={"Dockerfiles"}
-                onSelect={() => setShowDocker(true)}
-              >
-                <Container className="mr-2 h-4 w-4" />
-                Create Dockerfile
-              </DropdownMenuItem>
+              <DropdownMenuGroup>
+                {(!engine_is_setup) && (
+                    <div>
+                      <Item variant={"outline"} className={"mb-2"}>
+                        <ItemMedia variant={"icon"}>
+                          <Container/>
+                        </ItemMedia>
+                        <ItemContent>
+                          <ItemTitle>Engine Setup</ItemTitle>
+                        </ItemContent>
+
+                        <Field className={"w-full max-w-sm"}>
+                          <FieldLabel htmlFor={"progress-engine"}>
+                            <span className={"font-normal"}>Configure engine to run tests</span>
+                            <span className={"ml-auto"}>0/1</span>
+                          </FieldLabel>
+                        </Field>
+                        <Progress id="progress-engine" value={0}></Progress>
+                      </Item>
+                      <DropdownMenuItem key={"Engine"} disabled={true}>
+                        <ServerCog className="mr-2 h-4 w-4" />
+                        Tests
+                      </DropdownMenuItem>
+                    </div>
+                )}
+                {(engine_is_setup && (
+                    <DropdownMenuItem key={"Engine"} disabled={false}>
+                      <ServerCog className="mr-2 h-4 w-4" />
+                      Tests
+                    </DropdownMenuItem>
+                ))}
+                <DropdownMenuItem
+                    key={"Dockerfiles"}
+                    onSelect={() => setShowDocker(true)}
+                >
+                  <Container className="mr-2 h-4 w-4" />
+                  Configure testing
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
             </>
           )}
 
           {hasManageScope && (
             <>
               {hasEngineScope && <DropdownMenuSeparator />}
-              <DropdownMenuItem key={"Results"} disabled={true}>
-                <BookCheck className="mr-2 h-4 w-4" />
-                Results
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                key={"Edit"}
-                onSelect={() => setShowEdit(true)}
-                disabled={!canEdit}
-              >
-                <SquarePen className="mr-2 h-4 w-4" />
-                Edit coursework
-              </DropdownMenuItem>
+              <DropdownMenuGroup>
+                <DropdownMenuItem
+                    key={"Edit"}
+                    onSelect={() => setShowEdit(true)}
+                    disabled={!canEdit}
+                >
+                  <SquarePen className="mr-2 h-4 w-4" />
+                  Edit coursework
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
             </>
           )}
 
