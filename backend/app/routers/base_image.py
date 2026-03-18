@@ -17,7 +17,7 @@ router = APIRouter(prefix="/base_image", tags=["base_image"])
 session_dependency = Annotated[Session, Depends(dependency=get_session)]
 
 @router.get(path="/", response_model=BaseImageList)
-async def get_base_images(session: session_dependency, token: token_dependency):
+async def get_base_images_admin(session: session_dependency, token: token_dependency):
     # this is an admin route, so require admin fe role
 
     await require_role(FERoles.ADMIN, token=token, session=session)

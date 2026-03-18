@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
-import CreateDockerfile from "@/components/coursework/create-dockerfile";
+import ConfigureCWTesting from "@/components/coursework/configure-c-w-testing";
 import DeleteCourseworkButton from "@/components/coursework/delete_coursework_button";
 import EditCoursework from "@/components/coursework/edit-coursework";
 import {
@@ -35,15 +35,18 @@ import {
 import type { CourseworkUpdateData } from "@/lib/actions/get_coursework_update_data";
 import CreateTemplate from "./create-templates";
 import ProvisionCoursework from "./provision-coursework";
+import {BaseImage, get_base_images_cw_specific} from "@/lib/actions/get_base_images_cw_specific";
 
 export default function CourseworkLectDropdown({
   slug,
   scopes,
   coursework_update_data,
+    avail_images_data,
 }: {
   slug: string;
   scopes: Set<string>;
   coursework_update_data?: CourseworkUpdateData;
+  avail_images_data?: BaseImage[]
 }) {
   const [showDelete, setShowDelete] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
@@ -157,11 +160,14 @@ export default function CourseworkLectDropdown({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <CreateDockerfile
-        open_state={showDocker}
-        set_open_state={setShowDocker}
-        refresh={refresh}
-      />
+      {avail_images_data && (
+          <ConfigureCWTesting
+              open_state={showDocker}
+              set_open_state={setShowDocker}
+              refresh={refresh}
+              available_images={avail_images_data}
+          />
+      )}
 
       {coursework_update_data && (
         <EditCoursework

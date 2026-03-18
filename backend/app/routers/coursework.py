@@ -30,9 +30,11 @@ from app.core.scopes.scopes import (
 from app.core.security import get_bearer, get_current_user_with_role
 from app.core.settings import settings
 from app.db.session import get_session
+from app.models.base_image import BaseImage
 from app.models.coursework import Coursework
 from app.models.unit import Unit, UnitWithCourseworks
 from app.models.unit_enrollment import UnitEnrollment
+from app.schemas.base_image import BaseImageList
 from app.schemas.coursework import (
     CourseworkCreate,
     CourseworkDelete,
@@ -53,6 +55,23 @@ router = APIRouter(prefix = "/coursework", tags=["coursework"])
 session_dependency = Annotated[Session, Depends(get_session)]
 token_dependency = Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]
 
+@router.get(path="/{id}/available_images", response_model=BaseImageList)
+async def get_base_images(id: str, session: session_dependency, token: token_dependency):
+    # this is a coursework route, so require engine role
+    coursework = session.get(Coursework,UUID(id))
+    if coursework is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
+    await require_scopes(
+        ResourceInformation(type=Unit, id=coursework.unit_id),
+        Scopes.UNIT_COURSEWORK_ENGINE,
+        token=token,
+        session=session
+    )
+
+    images = list(session.exec(select(BaseImage)).all())
+
+    return BaseImageList(images=images)
+
 @router.post('/create', response_model = CourseworkRead, status_code=status.HTTP_201_CREATED)
 async def create_coursework(coursework: CourseworkCreate, session: session_dependency, token: token_dependency):
     courseworkAlreadyExists = session.exec(select(Coursework).where((Coursework.unit_id == coursework.unit_id) & (Coursework.name == coursework.name) & (Coursework.due_date == coursework.due_date))).first()
@@ -63,7 +82,7 @@ async def create_coursework(coursework: CourseworkCreate, session: session_depen
         token=token,
         session=session,
     )
-    
+
     if courseworkAlreadyExists:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Coursework already made that belongs to the same unit and has the same name")
 
