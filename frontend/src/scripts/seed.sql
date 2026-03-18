@@ -93,6 +93,16 @@ CREATE TABLE coursework (
                                 ON DELETE CASCADE
 );
 
+-- base image definition
+
+CREATE TABLE baseimage (
+    id UUID NOT NULL,
+    name VARCHAR NOT NULL,
+    description VARCHAR NOT NULL,
+    image_uri VARCHAR NOT NULL,
+    PRIMARY KEY (id)
+)
+
 CREATE INDEX ix_coursework_name ON coursework (name);
 CREATE INDEX ix_coursework_due_date ON coursework (due_date);
 CREATE INDEX ix_coursework_unit_id ON coursework (unit_id);
