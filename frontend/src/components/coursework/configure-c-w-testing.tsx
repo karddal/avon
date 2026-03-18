@@ -253,7 +253,6 @@ export default function ConfigureCWTesting({
                           onChange={(e) =>
                             updateFinalCommand(cmd.id, e.target.value)
                           }
-                          disabled={index === 0}
                           placeholder="e.g. ./setup.sh"
                           className="font-mono text-sm"
                         />
