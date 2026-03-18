@@ -73,7 +73,15 @@ CREATE TABLE unitenrollment (
                                 FOREIGN KEY(unit_id) REFERENCES unit (id)
 );
 
+-- base image definition
 
+CREATE TABLE baseimage (
+    id UUID NOT NULL,
+    name VARCHAR NOT NULL,
+    description VARCHAR NOT NULL,
+    image_uri VARCHAR NOT NULL,
+    PRIMARY KEY (id)
+);
 -- coursework definition
 
 CREATE TABLE coursework (
@@ -86,21 +94,17 @@ CREATE TABLE coursework (
                             colour VARCHAR NOT NULL,
                             gitlab_id VARCHAR NOT NULL,
                             template_id INTEGER,
+                            base_image_id UUID,
+                            tester_command VARCHAR,
                             PRIMARY KEY (id),
                             CONSTRAINT unit_id
                                 FOREIGN KEY (unit_id) REFERENCES unit (id)
-                                ON DELETE CASCADE
+                                ON DELETE CASCADE,
+                            CONSTRAINT base_image_id
+                                FOREIGN KEY (base_image_id) REFERENCES baseimage (id)
 );
 
--- base image definition
 
-CREATE TABLE baseimage (
-    id UUID NOT NULL,
-    name VARCHAR NOT NULL,
-    description VARCHAR NOT NULL,
-    image_uri VARCHAR NOT NULL,
-    PRIMARY KEY (id)
-);
 
 -- student repo definition
 

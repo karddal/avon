@@ -10,6 +10,7 @@ from starlette import status
 from app.core.scopes.scopes import FERoles, require_role
 from app.db.session import get_session
 from app.models.base_image import BaseImage
+from app.models.coursework import Coursework
 from app.routers.unit import token_dependency
 from app.schemas.base_image import BaseImageCreate, BaseImageList
 
@@ -53,6 +54,13 @@ async def delete_base_image(id: str, session: session_dependency, token: token_d
 
     if not db_image:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Base image not found with that ID")
+
+    # check to make sure the image is not in use
+
+    cws = session.exec(select(Coursework).where(Coursework.base_image == id)).all()
+    if len(cws) > 0:
+        x = ','.join(map(lambda c: str(c.name), cws))
+        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Base image is in use, so cannot delete. users = {x}")
 
     session.delete(instance=db_image)
     session.commit()

@@ -572,6 +572,7 @@ async def gl_delete_coursework(gitlab_group_id):
             except httpx.RequestError as err:
                 print(f"Network Error: {err}")
                 raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
+
     return {
         "success": True
     }

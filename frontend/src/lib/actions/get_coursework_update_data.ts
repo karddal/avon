@@ -26,8 +26,8 @@ export type CourseworkUpdateData = {
   unit_name: string;
   unit_code: string;
   gitlabId: string;
-  templateId: string;
   max_end_date: Date;
+  templateId: string;
 };
 
 export async function get_cw_update_data(
