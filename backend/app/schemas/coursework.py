@@ -8,6 +8,8 @@ import re
 
 from app.core.settings import settings
 
+from app.models.student_repo import StudentRepo
+
 
 def is_valid_name(name: str) -> str:
     if 1 <= len(name) <= 100:
@@ -56,6 +58,9 @@ Description = Annotated[str, AfterValidator(is_valid_description)]
 DueDate = Annotated[datetime.datetime, AfterValidator(is_valid_due_date)]  # Fixed
 Colour = Annotated[str, AfterValidator(is_valid_colour)]
 
+class CourseworkStudentRepos(BaseModel):
+    repos: list[StudentRepo]
+
 class CourseworkEngineData(BaseModel):
     cw_id: UUID
     base_image_id: UUID | None
@@ -82,6 +87,7 @@ class CourseworkUpdateFormData(CourseworkRead):
     unit_code: str
     gitlabId: str
     max_end_date: datetime.date
+    templateId: int | None
 
 
 class CourseworkCreate(BaseModel):
