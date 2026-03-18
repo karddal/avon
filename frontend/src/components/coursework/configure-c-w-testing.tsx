@@ -71,11 +71,15 @@ export default function ConfigureCWTesting({
     cw_engine_data,
 }: DockerProps) {
   const [submitState, setSubmitState] = useState<boolean>(false);
-  const image_id = available_images.findIndex((i) => i.id == cw_engine_data.base_image_id)
+  let img = available_images.find((i) => i.id == cw_engine_data.base_image_id)
+  if (!img) {
+      img = available_images[0]
+  }
   const [config, setConfig] = useState<DockerConfig>({
-    baseImage: available_images[image_id],
+    baseImage: img,
     finalCommands: cw_engine_data.tester_command ? cw_engine_data.tester_command : "",
   });
+
 
   const setBaseImage = (id: string) => {
     let baseImage = available_images.find((i) => i.id == id);
@@ -226,13 +230,13 @@ export default function ConfigureCWTesting({
                     <FileCheck
                         className="mr-2 w-4 h-4"
                     />{" "}
-                    Apply Dockerfile
+                    Save
                   </Button>
               )}
               {(submitState) && (
                   <Button variant="ghost" disabled className="w-full">
                     <Spinner/>
-                    Apply Dockerfile
+                    Save
                   </Button>
               )}
 
