@@ -260,7 +260,6 @@ export default function ConfigureCWTesting({
                           variant="ghost"
                           size="icon"
                           onClick={() => removeFinalCommand(cmd.id)}
-                          disabled={index === 0}
                         >
                           <Trash2 className="w-4 h-4 text-destructive" />
                         </Button>
