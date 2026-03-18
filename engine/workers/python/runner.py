@@ -86,7 +86,8 @@ def run_tests():
             cwd=repo_dir,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
-            text=True
+            text=True,
+            env=None,
         )
 
         for line in proc.stdout:

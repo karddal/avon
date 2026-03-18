@@ -10,6 +10,7 @@ import Loading from "../loading";
 import CourseworkDescription from "./description";
 import CourseworkInformation from "./information";
 import CourseworkName from "./name";
+import {get_base_images_cw_specific} from "@/lib/actions/get_base_images_cw_specific";
 
 async function CourseworkPageContent({
   params,
@@ -28,6 +29,9 @@ async function CourseworkPageContent({
   const data = canLoadCourseworkTools
     ? await get_cw_update_data(slug)
     : undefined;
+
+  const canGetAvailImages = scopes.has("unit:coursework_engine")
+  const images = canGetAvailImages ? await get_base_images_cw_specific({coursework_id: slug}) : undefined;
 
   return (
     <>
@@ -51,6 +55,7 @@ async function CourseworkPageContent({
                 slug={slug}
                 scopes={scopes}
                 coursework_update_data={data}
+                avail_images_data={images?.images}
               ></CourseworkLectDropdown>
             </div>
           </Suspense>

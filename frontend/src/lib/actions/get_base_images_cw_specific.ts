@@ -11,11 +11,15 @@ export type GetBaseImagesResponse = {
   images: BaseImage[];
 }
 
-export async function get_base_images() {
+export type GetBaseImagesRequest = {
+  coursework_id: string;
+}
+
+export async function get_base_images_cw_specific(request: GetBaseImagesRequest) {
   const token = await getRequestJWT();
 
   const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/base_image/`,
+      `${process.env.NEXT_PUBLIC_API_URL}/coursework/${request.coursework_id}/available_images`,
       {
         method: "GET",
         headers: {

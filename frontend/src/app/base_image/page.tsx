@@ -1,7 +1,7 @@
 import {BaseImage, columns} from "@/components/base_image/columns";
 import {BaseImageTable} from "@/components/base_image/base_image_table";
 import {Suspense} from "react";
-import {get_base_images} from "@/lib/actions/get_base_images";
+import {get_base_images_admin} from "@/lib/actions/get_base_images_admin";
 import {Button} from "@/components/ui/button";
 import {LayersPlus} from "lucide-react";
 import {
@@ -16,7 +16,7 @@ import z from "zod";
 import {CreateBIForm} from "@/app/base_image/create_form";
 
 async function getData(): Promise<BaseImage[]> {
-  return (await get_base_images()).images
+  return (await get_base_images_admin()).images
 }
 
 async function PageContents() {

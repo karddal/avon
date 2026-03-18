@@ -1,6 +1,6 @@
 "use server";
 import { getRequestJWT } from "@/lib/auth-utils";
-import {BaseImage} from "@/lib/actions/get_base_images";
+import {BaseImage} from "@/lib/actions/get_base_images_admin";
 
 type CreateBaseImageRequest = {
   name: string;
