@@ -36,16 +36,19 @@ import type { CourseworkUpdateData } from "@/lib/actions/get_coursework_update_d
 import CreateTemplate from "./create-templates";
 import ProvisionCoursework from "./provision-coursework";
 import {BaseImage, get_base_images_cw_specific} from "@/lib/actions/get_base_images_cw_specific";
+import {GetCWEngineDataResponse} from "@/lib/actions/get_cw_engine_data";
 
 export default function CourseworkLectDropdown({
   slug,
   scopes,
   coursework_update_data,
     avail_images_data,
+    cw_engine_data,
 }: {
   slug: string;
   scopes: Set<string>;
   coursework_update_data?: CourseworkUpdateData;
+  cw_engine_data?: GetCWEngineDataResponse;
   avail_images_data?: BaseImage[]
 }) {
   const [showDelete, setShowDelete] = useState(false);
@@ -160,12 +163,13 @@ export default function CourseworkLectDropdown({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {avail_images_data && (
+      {avail_images_data && cw_engine_data && (
           <ConfigureCWTesting
               open_state={showDocker}
               set_open_state={setShowDocker}
               refresh={refresh}
               available_images={avail_images_data}
+              cw_engine_data={cw_engine_data}
           />
       )}
 

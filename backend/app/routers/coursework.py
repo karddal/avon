@@ -38,6 +38,7 @@ from app.schemas.base_image import BaseImageList
 from app.schemas.coursework import (
     CourseworkCreate,
     CourseworkDelete,
+    CourseworkEngineData,
     CourseworkEventRead,
     CourseworkRead,
     CourseworkSetupProgress,
@@ -47,6 +48,7 @@ from app.schemas.coursework import (
     CourseworkTemplateUploadZip,
     CourseworkTemplateUrl,
     CourseworkUpdate,
+    CourseworkUpdateEngineData,
     CourseworkUpdateFormData,
 )
 from app.schemas.security import CurrentUser
@@ -56,9 +58,9 @@ session_dependency = Annotated[Session, Depends(get_session)]
 token_dependency = Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]
 
 @router.get(path="/{id}/available_images", response_model=BaseImageList)
-async def get_base_images(id: str, session: session_dependency, token: token_dependency):
+async def get_base_images(id: UUID, session: session_dependency, token: token_dependency):
     # this is a coursework route, so require engine role
-    coursework = session.get(Coursework,UUID(id))
+    coursework = session.get(Coursework,id)
     if coursework is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
     await require_scopes(
@@ -71,6 +73,46 @@ async def get_base_images(id: str, session: session_dependency, token: token_dep
     images = list(session.exec(select(BaseImage)).all())
 
     return BaseImageList(images=images)
+
+@router.get(path="/{id}/engine_data", response_model=CourseworkEngineData)
+async def get_engine_data(id: UUID, session: session_dependency, token: token_dependency):
+    # this is a coursework route, so require engine role
+    coursework = session.get(Coursework,id)
+    if coursework is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
+    await require_scopes(
+        ResourceInformation(type=Unit, id=coursework.unit_id),
+        Scopes.UNIT_COURSEWORK_ENGINE,
+        token=token,
+        session=session
+    )
+
+    print(f"SENDING CW ENGINE DATA, ID = {coursework.id}")
+    return CourseworkEngineData(cw_id=coursework.id, base_image_id=coursework.base_image_id, tester_command=coursework.tester_command)
+
+@router.put('/{id}/update_engine', status_code=status.HTTP_200_OK)
+async def update_engine_setup(id: UUID, cw: CourseworkUpdateEngineData, session: session_dependency, token: token_dependency):
+    print(f"INCOMING ID: {id}")
+    coursework = session.get(Coursework,id)
+    if coursework is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
+    await require_scopes(
+        ResourceInformation(type=Unit, id=coursework.unit_id),
+        Scopes.UNIT_COURSEWORK_ENGINE,
+        token=token,
+        session=session
+    )
+
+    coursework.base_image_id = cw.base_image_id
+    coursework.tester_command = cw.tester_command
+
+    session.add(coursework)
+    session.commit()
+    session.refresh(coursework)
+    return {"message": "Updated coursework engine"}
+
+
+
 
 @router.post('/create', response_model = CourseworkRead, status_code=status.HTTP_201_CREATED)
 async def create_coursework(coursework: CourseworkCreate, session: session_dependency, token: token_dependency):
@@ -102,7 +144,7 @@ async def create_coursework(coursework: CourseworkCreate, session: session_depen
             detail="Database failed. GitLab group rolled back."
     )
 
-    db_coursework = Coursework(name=coursework.name,description=coursework.description,unit_id=coursework.unit_id, due_date=coursework.due_date, colour=coursework.colour, gitlab_id=gl_data["gitlabGroupId"])
+    db_coursework = Coursework(name=coursework.name,description=coursework.description,unit_id=coursework.unit_id, due_date=coursework.due_date, colour=coursework.colour, gitlab_id=gl_data["gitlabGroupId"], template_id=None, base_image_id=None, tester_command=None)
 
     session.add(db_coursework)
     session.commit()
@@ -240,7 +282,6 @@ async def get_coursework_update_form_data(id: UUID, session: session_dependency,
         unit_name=unit.name,
         unit_code=unit.unit_code,
         gitlabId=coursework.gitlab_id,
-        templateId=coursework.template_id,
         max_end_date=unit.programme.end_date,
     )
 
@@ -295,11 +336,13 @@ async def delete_coursework(id: UUID, session: session_dependency, token: token_
                     session=session,
                 )
     session.delete(coursework)
-    session.commit()
+    # cascade delete should make sure any entries in studentrepo should be deleted too
+
 
     try:
         if not settings.testing_mode:
             await gl_delete_coursework(coursework.gitlab_id)
+
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
@@ -309,6 +352,7 @@ async def delete_coursework(id: UUID, session: session_dependency, token: token_
     #print("got here")
     courseworkDeleted = CourseworkDelete(id=id, deletion_successful=True)
     #print(courseworkDeleted)
+    session.commit()
     return courseworkDeleted
 
 @router.put('/{id}', response_model=CourseworkRead)

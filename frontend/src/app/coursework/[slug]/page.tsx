@@ -11,6 +11,7 @@ import CourseworkDescription from "./description";
 import CourseworkInformation from "./information";
 import CourseworkName from "./name";
 import {get_base_images_cw_specific} from "@/lib/actions/get_base_images_cw_specific";
+import {get_cw_engine_data} from "@/lib/actions/get_cw_engine_data";
 
 async function CourseworkPageContent({
   params,
@@ -32,6 +33,7 @@ async function CourseworkPageContent({
 
   const canGetAvailImages = scopes.has("unit:coursework_engine")
   const images = canGetAvailImages ? await get_base_images_cw_specific({coursework_id: slug}) : undefined;
+  const cw_engine_data = canGetAvailImages ? await get_cw_engine_data({coursework_id: slug}) : undefined;
 
   return (
     <>
@@ -56,6 +58,7 @@ async function CourseworkPageContent({
                 scopes={scopes}
                 coursework_update_data={data}
                 avail_images_data={images?.images}
+                cw_engine_data={cw_engine_data}
               ></CourseworkLectDropdown>
             </div>
           </Suspense>
@@ -85,16 +88,6 @@ async function CourseworkPageContent({
             <CourseworkInformation slug={slug} token={token} />
           </Suspense>
         </div>
-
-        {/*
-        TODO: In the future, this should check the backend to ensure that they are a lecturer on this specific unit. For now this is okay for the demo, but this
-        needs to be fixed because a lect could be a student on a nother unit.
-          */}
-        {scopes.has("unit:coursework_gitlab") && (
-          <div className="flex flex-col col-span-3 min-h-0">
-            <Suspense>{data && <SetupProgress cw_id={data.id} />}</Suspense>
-          </div>
-        )}
       </section>
     </>
   );

@@ -2,7 +2,9 @@
 import uuid
 from uuid import UUID
 
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, Relationship, SQLModel
+
+from app.models.coursework import Coursework
 
 
 class BaseImage(SQLModel, table=True):
@@ -10,3 +12,4 @@ class BaseImage(SQLModel, table=True):
     name: str = Field(nullable=False)
     description: str = Field(nullable=False)
     image_uri: str = Field(nullable=False)
+    courseworks: list["Coursework"] = Relationship(back_populates="base_image", cascade_delete=True)

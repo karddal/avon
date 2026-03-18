@@ -1,4 +1,9 @@
 import datetime
+import os
+import re
+from typing import Annotated, Literal
+from uuid import UUID
+import datetime
 import re
 
 from app.core.settings import settings
@@ -51,6 +56,15 @@ Description = Annotated[str, AfterValidator(is_valid_description)]
 DueDate = Annotated[datetime.datetime, AfterValidator(is_valid_due_date)]  # Fixed
 Colour = Annotated[str, AfterValidator(is_valid_colour)]
 
+class CourseworkEngineData(BaseModel):
+    cw_id: UUID
+    base_image_id: UUID | None
+    tester_command: str | None
+
+class CourseworkUpdateEngineData(BaseModel):
+    base_image_id: UUID
+    tester_command: str
+
 
 class CourseworkRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -67,7 +81,6 @@ class CourseworkUpdateFormData(CourseworkRead):
     unit_name: str
     unit_code: str
     gitlabId: str
-    templateId: int | None = None
     max_end_date: datetime.date
 
 

@@ -11,7 +11,7 @@ import {
   Search,
   Trash2,
 } from "lucide-react";
-import { type Dispatch, type SetStateAction, useMemo, useState } from "react";
+import {type Dispatch, type SetStateAction, useEffect, useMemo, useState} from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
@@ -33,10 +33,14 @@ import {Field, FieldContent, FieldDescription, FieldGroup, FieldLabel, FieldTitl
 import {RadioGroup, RadioGroupItem} from "@/components/ui/radio-group";
 import {get_base_images_cw_specific} from "@/lib/actions/get_base_images_cw_specific";
 import {Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty";
+import {GetCWEngineDataResponse} from "@/lib/actions/get_cw_engine_data";
+import {update_coursework_engine} from "@/lib/actions/update_coursework_engine";
+import {Spinner} from "@/components/ui/spinner";
+import {AppRouterInstance} from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 interface DockerConfig {
   baseImage: BaseImage;
-  finalCommands: { id: string; value: string }[];
+  finalCommands: string;
 }
 
 interface Tool {
@@ -54,8 +58,9 @@ interface BaseImage {
 type DockerProps = {
   open_state: boolean;
   set_open_state: Dispatch<SetStateAction<boolean>>;
-  refresh?: () => void;
+  refresh: () => void;
   available_images: BaseImage[];
+  cw_engine_data: GetCWEngineDataResponse;
 };
 
 export default function ConfigureCWTesting({
@@ -63,36 +68,14 @@ export default function ConfigureCWTesting({
   set_open_state,
   refresh,
     available_images,
+    cw_engine_data,
 }: DockerProps) {
+  const [submitState, setSubmitState] = useState<boolean>(false);
+  const image_id = available_images.findIndex((i) => i.id == cw_engine_data.base_image_id)
   const [config, setConfig] = useState<DockerConfig>({
-    baseImage: available_images[0],
-    finalCommands: [],
+    baseImage: available_images[image_id],
+    finalCommands: cw_engine_data.tester_command ? cw_engine_data.tester_command : "",
   });
-
-  const dockerfileContent = useMemo(() => {
-    const sections = [];
-
-    const chainedCmd = config.finalCommands
-      .filter((c) => c.value.trim() !== "")
-      .map((c) => c.value)
-      .join(" && ");
-
-    if (chainedCmd) {
-      sections.push(`CMD ["sh", "-c", ${JSON.stringify(chainedCmd)}]`);
-    }
-
-    return sections.join("\n\n");
-  }, [config]);
-
-  const addFinalCommand = () => {
-    setConfig({
-      ...config,
-      finalCommands: [
-        ...config.finalCommands,
-        { id: crypto.randomUUID(), value: "" },
-      ],
-    });
-  };
 
   const setBaseImage = (id: string) => {
     let baseImage = available_images.find((i) => i.id == id);
@@ -102,38 +85,22 @@ export default function ConfigureCWTesting({
     setConfig({...config, baseImage: baseImage});
   }
 
-  const updateFinalCommand = (id: string, value: string) => {
-    const newCmds = config.finalCommands.map((cmd) =>
-      cmd.id === id ? { ...cmd, value } : cmd,
-    );
-    setConfig({ ...config, finalCommands: newCmds });
-  };
-
-  const removeFinalCommand = (id: string) => {
-    const newCmds = config.finalCommands.filter((cmd) => cmd.id !== id);
-    setConfig({ ...config, finalCommands: newCmds });
-  };
-
-  const downloadDockerfile = () => {
-    const blob = new Blob([dockerfileContent], {
-      type: "application/octet-stream",
-    });
-
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "Dockerfile";
-    document.body.appendChild(link);
-    link.click();
-    toast.success("Downloaded Dockerfile!");
-
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+  const updateFinalCommand = (command: string) => {
+    setConfig({ ...config, finalCommands: command });
   };
 
   const applyDockerfile = () => {
-    refresh?.();
+    setSubmitState(true);
+    update_coursework_engine(cw_engine_data.cw_id, {base_image_id: config.baseImage.id, tester_command: config.finalCommands}).then((res) => {
+      if (res.success) {
+        toast.success("Successfully saved engine configuration.")
+        setSubmitState(false);
+        refresh();
+      } else {
+        toast.error("Failed to save engine configuration.")
+        setSubmitState(false);
+      }
+    })
   };
 
   return (
@@ -231,60 +198,44 @@ export default function ConfigureCWTesting({
                         Final Command Chain
                       </DialogTitle>
                       <p className="text-sm text-muted-foreground mb-2">
-                        These commands will be <strong>executed</strong> in the
+                        This command will be <strong>executed</strong> in the
                         coursework folder.
                       </p>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={addFinalCommand}
-                      className="h-8 gap-1"
-                    >
-                      <Plus className="w-4 h-4" /> Add Step
-                    </Button>
                   </div>
 
                   <div className="space-y-2 max-h-40 overflow-y-auto bg-accent p-4 border rounded-md">
-                    {config.finalCommands.map((cmd, index) => (
-                      <div key={cmd.id} className="flex gap-2">
+                      <div className="flex gap-2">
                         <Input
-                          value={cmd.value}
+                          defaultValue={config.finalCommands}
                           onChange={(e) =>
-                            updateFinalCommand(cmd.id, e.target.value)
+                            updateFinalCommand(e.target.value)
                           }
                           placeholder="e.g. ./setup.sh"
                           className="font-mono text-sm"
                         />
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => removeFinalCommand(cmd.id)}
-                        >
-                          <Trash2 className="w-4 h-4 text-destructive" />
-                        </Button>
                       </div>
-                    ))}
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="mt-auto flex flex-col gap-2 p-8 border-t bg-background">
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => downloadDockerfile()}
-              >
-                <Download className="mr-2 w-4 h-4" /> Download Dockerfile
-              </Button>
-              <Button variant="default" className="w-full">
-                <FileCheck
-                  onClick={() => applyDockerfile()}
-                  className="mr-2 w-4 h-4"
-                />{" "}
-                Apply Dockerfile
-              </Button>
+              {(!submitState) && (
+                  <Button variant="default" className="w-full" onClick={() => applyDockerfile()}>
+                    <FileCheck
+                        className="mr-2 w-4 h-4"
+                    />{" "}
+                    Apply Dockerfile
+                  </Button>
+              )}
+              {(submitState) && (
+                  <Button variant="ghost" disabled className="w-full">
+                    <Spinner/>
+                    Apply Dockerfile
+                  </Button>
+              )}
+
             </div>
           </div>
         </div>
