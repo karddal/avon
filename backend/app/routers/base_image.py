@@ -44,7 +44,7 @@ async def create_base_image(image: BaseImageCreate, session: session_dependency,
     session.refresh(db_base_image)
     return db_base_image
 
-@router.delete(path="/delete/{id}", status_code=status.HTTP_200_OK)
+@router.delete(path="/{id}", status_code=status.HTTP_200_OK)
 async def delete_base_image(id: str, session: session_dependency, token: token_dependency):
 
     await require_role(FERoles.ADMIN, token=token, session=session)
