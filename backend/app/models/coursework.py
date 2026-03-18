@@ -6,8 +6,8 @@ from uuid import UUID
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
+    from app.models.student_repo import StudentRepo
     from app.models.unit import Unit
-
 
 class Coursework(SQLModel, table=True):
     id: UUID = Field(primary_key=True, default_factory=uuid.uuid4)
@@ -24,3 +24,4 @@ class Coursework(SQLModel, table=True):
     colour: str
     gitlab_id: str = Field(nullable=False)
     template_id: int = Field(nullable=True)
+    student_repos: list["StudentRepo"] = Relationship(back_populates="coursework", cascade_delete=True)

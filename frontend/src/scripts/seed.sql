@@ -101,7 +101,19 @@ CREATE TABLE baseimage (
     description VARCHAR NOT NULL,
     image_uri VARCHAR NOT NULL,
     PRIMARY KEY (id)
-)
+);
+
+-- student repo definition
+
+CREATE TABLE studentrepo(
+    student_id VARCHAR NOT NULL,
+    repo_url VARCHAR NOT NULL,
+    cw_id UUID NOT NULL,
+    PRIMARY KEY (student_id, cw_id),
+    CONSTRAINT cw_id
+        FOREIGN KEY (cw_id) REFERENCES coursework(id)
+        ON DELETE CASCADE
+);
 
 CREATE INDEX ix_coursework_name ON coursework (name);
 CREATE INDEX ix_coursework_due_date ON coursework (due_date);

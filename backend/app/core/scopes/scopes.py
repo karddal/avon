@@ -249,10 +249,9 @@ async def require_role(
         token=token,
         session=session,
     )
-    
+
     if user.fe_role == role:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
         detail=f"Authentication error. Not correct role: {role}")
-    
-    return True
 
+    return True

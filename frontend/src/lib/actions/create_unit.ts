@@ -20,10 +20,10 @@ export async function create_unit(req: createUnitReq) {
         ${process.env.NEXT_PUBLIC_API_URL}/units/create`,
     {
       method: "POST",
-      credentials: "include",
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
       },
       body: JSON.stringify(req),
     },
