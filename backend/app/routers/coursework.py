@@ -42,6 +42,8 @@ from app.schemas.coursework import (
     CourseworkEventRead,
     CourseworkRead,
     CourseworkSetupProgress,
+    CourseworkStudent,
+    CourseworkStudentRepos,
     CourseworkTemplateActivate,
     CourseworkTemplateExists,
     CourseworkTemplateFile,
@@ -56,6 +58,24 @@ from app.schemas.security import CurrentUser
 router = APIRouter(prefix = "/coursework", tags=["coursework"])
 session_dependency = Annotated[Session, Depends(get_session)]
 token_dependency = Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]
+
+@router.get("/{id}/student_repos", response_model=CourseworkStudentRepos)
+async def get_student_repos(id: UUID, session: session_dependency, token: token_dependency):
+    coursework = session.get(Coursework,id)
+    if coursework is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
+    await require_scopes(
+        ResourceInformation(type=Unit, id=coursework.unit_id),
+        Scopes.UNIT_COURSEWORK_ENGINE,
+        token=token,
+        session=session
+    )
+
+    repos = map(lambda sr: sr,coursework.student_repos)
+
+    return CourseworkStudentRepos(repos=list(repos))
+
+
 
 @router.get(path="/{id}/available_images", response_model=BaseImageList)
 async def get_base_images(id: UUID, session: session_dependency, token: token_dependency):
@@ -282,6 +302,7 @@ async def get_coursework_update_form_data(id: UUID, session: session_dependency,
         unit_name=unit.name,
         unit_code=unit.unit_code,
         gitlabId=coursework.gitlab_id,
+        templateId=coursework.template_id,
         max_end_date=unit.programme.end_date,
     )
 

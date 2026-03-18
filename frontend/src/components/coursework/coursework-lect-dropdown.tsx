@@ -40,6 +40,7 @@ import {GetCWEngineDataResponse} from "@/lib/actions/get_cw_engine_data";
 import {Item, ItemContent, ItemMedia, ItemTitle} from "../ui/item";
 import {Progress} from "@/components/ui/progress";
 import {Field, FieldLabel} from "@/components/ui/field";
+import StartTestBatchPopup from "@/components/coursework/start_test_batch";
 
 export default function CourseworkLectDropdown({
   slug,
@@ -58,6 +59,7 @@ export default function CourseworkLectDropdown({
   const [showEdit, setShowEdit] = useState(false);
   const [showDocker, setShowDocker] = useState(false);
   const [showTemplates, setShowTemplate] = useState(false);
+  const [showStartTests, setShowStartTests] = useState<boolean>(false);
   const router = useRouter();
   const refresh = useCallback(() => {
     router.refresh();
@@ -117,14 +119,14 @@ export default function CourseworkLectDropdown({
                       </Item>
                       <DropdownMenuItem key={"Engine"} disabled={true}>
                         <ServerCog className="mr-2 h-4 w-4" />
-                        Tests
+                        Start test batch
                       </DropdownMenuItem>
                     </div>
                 )}
                 {(engine_is_setup && (
-                    <DropdownMenuItem key={"Engine"} disabled={false}>
+                    <DropdownMenuItem key={"Engine"} disabled={false} onSelect={() => setShowStartTests(true)}>
                       <ServerCog className="mr-2 h-4 w-4" />
-                      Tests
+                      Start test batch
                     </DropdownMenuItem>
                 ))}
                 <DropdownMenuItem
@@ -132,7 +134,7 @@ export default function CourseworkLectDropdown({
                     onSelect={() => setShowDocker(true)}
                 >
                   <Container className="mr-2 h-4 w-4" />
-                  Configure testing
+                  Configure engine
                 </DropdownMenuItem>
               </DropdownMenuGroup>
             </>
@@ -194,6 +196,9 @@ export default function CourseworkLectDropdown({
         </DropdownMenuContent>
       </DropdownMenu>
 
+      {engine_is_setup && cw_engine_data && (
+          <StartTestBatchPopup open_state={showStartTests} set_open_state={setShowStartTests} courseworkId={slug} refresh={refresh}></StartTestBatchPopup>
+      )}
       {avail_images_data && cw_engine_data && (
           <ConfigureCWTesting
               open_state={showDocker}
