@@ -5,9 +5,23 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.core.settings import settings
+from app.core.testing import ensure_test_fixture_key_configured
 from app.db.session import create_db_and_tables, lifespan
 from app.models.coursework import Coursework
 from app.models.unit import UnitWithCourseworks
+from app.routers import (
+    base_image,
+    check,
+    coursework,
+    me,
+    notification,
+    programme,
+    project,
+    structure,
+    unit,
+    unit_enrollment,
+)
 from app.routers import coursework, structure
 from app.routers import project
 from app.routers import notification
@@ -17,14 +31,9 @@ from app.routers import programme
 from app.routers import unit_enrollment
 from app.core.settings import settings
 from app.core.testing import ensure_test_fixture_key_configured
-<<<<<<< HEAD
 from app.routers import seeding
-||||||| parent of b3b4707 (take updated scopes stuff from scopes branch)
 from dotenv import load_dotenv
 import os
-=======
->>>>>>> b3b4707 (take updated scopes stuff from scopes branch)
-
 if os.getenv("ENV") == "dev":
     env_file = ".env.dev"
     load_dotenv(dotenv_path=env_file)
@@ -54,17 +63,14 @@ app.include_router(structure.router)
 app.include_router(project.router)
 app.include_router(notification.router)
 app.include_router(seeding.router)
+app.include_router(base_image.router)
 Coursework.model_rebuild()
 UnitWithCourseworks.model_rebuild()
 
 app.include_router(unit_enrollment.router)
 
-<<<<<<< HEAD
 if settings.enable_test_fixtures:
-||||||| parent of b3b4707 (take updated scopes stuff from scopes branch)
-=======
 if settings.testing_mode:
->>>>>>> b3b4707 (take updated scopes stuff from scopes branch)
     from app.routers import testing_fixtures
 
     ensure_test_fixture_key_configured()
