@@ -61,13 +61,6 @@ Colour = Annotated[str, AfterValidator(is_valid_colour)]
 class CourseworkStudentRepos(BaseModel):
     repos: list[StudentRepo]
 
-class CourseworkRepoTreeItem(BaseModel):
-    id: str
-    name: str
-    type: Literal["blob", "tree"]
-    path: str
-    mode: str
-
 class CourseworkRepoCommit(BaseModel):
     id: str
     short_id: str
@@ -81,7 +74,6 @@ class CourseworkRepoCommit(BaseModel):
 class CourseworkStudentRepoRead(BaseModel):
     repo_url: str
     commits: list[CourseworkRepoCommit]
-    files: list[CourseworkRepoTreeItem]
 
 class CourseworkEngineData(BaseModel):
     cw_id: UUID
