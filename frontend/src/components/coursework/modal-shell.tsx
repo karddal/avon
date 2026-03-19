@@ -34,7 +34,7 @@ export default function ModalShell({
         }}
       >
         <DialogContent
-          className="!w-[92vw] !max-w-5xl !p-0 max-h-[90vh] overflow-hidden"
+          className="!w-[92vw] !max-w-5xl !p-0 max-h-[90vh] gap-0 overflow-x-hidden overflow-y-auto overscroll-contain"
           onPointerDownOutside={(e) => e.preventDefault()}
           onInteractOutside={(e) => e.preventDefault()}
         >
