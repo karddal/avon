@@ -25,7 +25,6 @@ async function CourseworkPageContent({
 }) {
   const p = await params;
   const slug = p.slug;
-  console.log("CW", slug);
   const token = await getRequestJWT();
   // Hardcoded the template id here, when merged, I should be able to get the template id from jack's code
 
@@ -53,7 +52,7 @@ async function CourseworkPageContent({
     <>
       {/* Header */}
       <div className="flex flex-col col-span-3">
-        <div className="font-semibold text-5xl text-shadow-2xs">
+        <div className="font-semibold text-5xl text-shadow-2xs mt-2">
           <Suspense
             fallback={
               <div className={"h-16"}>
@@ -88,7 +87,7 @@ async function CourseworkPageContent({
         </Suspense>
       )}
       <section className="mb-2 pb-6 grid min-h-0 grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-        <div className="flex h-full flex-col gap-4 md:col-span-2 xl:col-span-2 xl:h-[16rem]">
+        <div className="flex h-full flex-col gap-4 md:col-span-2 xl:col-span-2 xl:h-64">
           <Card className="h-full min-h-0">
             <CardHeader>
               <CardTitle>
@@ -105,7 +104,7 @@ async function CourseworkPageContent({
             </CardContent>
           </Card>
         </div>
-        <div className="h-full md:col-span-2 xl:col-span-1 xl:h-[16rem]">
+        <div className="h-full md:col-span-2 xl:col-span-1 xl:h-64">
           <Suspense>
             <CourseworkInformation slug={slug} token={token} />
           </Suspense>
