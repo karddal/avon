@@ -1,9 +1,6 @@
 describe("Coursework listing page - admin tests", () => {
-  before(() => {
-    cy.exec("npm run db:seed");
-  });
-
   beforeEach(() => {
+    cy.exec("npm run db:seed");
     cy.login("admin@bris.ac.uk", "changeme", false);
   });
 
@@ -14,19 +11,23 @@ describe("Coursework listing page - admin tests", () => {
 
   it("has tabs", () => {
     cy.visit("/coursework");
-    cy.get('[data-slot="tabs"]').should("be.visible");
+    cy.getByCy("coursework-tabs").should("be.visible");
   });
 
   // Ongoing coursework stuff
 
   it("has default ongoing unit", () => {
     cy.visit("/coursework");
-    cy.get("span").should("contain", "Computer Architecture");
+    cy.getByCy("coursework-unit-tab-computer-architecture-2025-2026").should(
+      "be.visible",
+    );
   });
 
   it("has default finished coursework", () => {
     cy.visit("/coursework");
-    cy.get("p").should("contain", "Encrypt");
+    cy.getByCy("coursework-link-computer-architecture-2025-2026-encrypt").should(
+      "be.visible",
+    );
   });
 
   it("Allows navigation through the ongoing coursework tabslist", () => {
@@ -44,9 +45,11 @@ describe("Coursework listing page - admin tests", () => {
 
   it("has default finished coursework", () => {
     cy.visit("/coursework");
-    cy.contains("button", "Finished").click();
-    cy.contains('[role="tab"]', "Computer Architecture").click();
-    cy.get("p").should("contain", "Encrypt");
+    cy.getByCy("coursework-tab-finished").click();
+    cy.getByCy("coursework-unit-tab-computer-architecture-2024-2025").click();
+    cy.getByCy("coursework-link-computer-architecture-2024-2025-encrypt").should(
+      "be.visible",
+    );
   });
 
   it("Allows navigation through the finsihed coursework tabslist", () => {
@@ -56,7 +59,21 @@ describe("Coursework listing page - admin tests", () => {
       '[role="tab"]',
       "Imperative and Functional Programming 2024-2025",
     ).click();
-    cy.get("p").should("contain", "Power to the People in 2024");
+    cy.getByCy(
+      "coursework-link-imperative-and-functional-programming-2024-2025-power-to-the-people-in-2024",
+    ).should(
+      "be.visible",
+    );
+  });
+
+  it("Admin can open the create coursework flow", () => {
+    cy.visit("/coursework");
+    cy.getByCy("create-coursework-link").click();
+    cy.url().should("include", "/coursework/create-coursework");
+    cy.getByCy("create-coursework-title").should("be.visible");
+    cy.getByCy("create-coursework-unit").should("be.visible");
+  });
+
   it("Admin can create coursework", () => {
     const courseworkName = `Cypress Created Coursework ${Date.now()}`;
     const courseworkSelectorName = courseworkName
@@ -96,12 +113,11 @@ describe("Coursework listing page - admin tests", () => {
   // Deletion
   it("Admin can delete coursework", () => {
     cy.visit("/coursework");
-    cy.contains("p", "Encrypt")
+    cy.getByCy("coursework-card-computer-architecture-2025-2026-encrypt")
       .should("be.visible")
-      .closest(".bg-muted")
       .as("courseworkCard");
     cy.get("@courseworkCard")
-      .find('button[data-slot="dropdown-menu-trigger"]')
+      .find('[data-cy="coursework-list-actions-trigger"]')
       .click();
     cy.get(`[data-slot="dropdown-menu-item"]`).click();
     cy.get(`[data-slot="button"]`).click();
