@@ -15,7 +15,10 @@ import {
 export default function NotificationBar() {
   return (
     <Dialog>
-      <DialogTrigger className="p-2 hover:cursor-pointer hover:bg-accent hover:ease-in-out">
+      <DialogTrigger
+        data-cy="notification-trigger"
+        className="p-2 hover:cursor-pointer hover:bg-accent hover:ease-in-out"
+      >
         <Suspense>
           <NotificationsBellIcon />
         </Suspense>

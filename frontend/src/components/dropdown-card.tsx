@@ -8,6 +8,7 @@ interface DropdownCardProps {
   openByDefault: boolean;
   children: React.ReactNode;
   className?: string;
+  dataCy?: string;
 }
 
 export function DropdownCard({
@@ -16,10 +17,11 @@ export function DropdownCard({
   openByDefault,
   children,
   className,
+  dataCy,
 }: DropdownCardProps) {
   const [open, setOpen] = useState(openByDefault);
   return (
-    <Card className={`flex flex-col gap-0 ${className}`}>
+    <Card data-cy={dataCy} className={`flex flex-col gap-0 ${className}`}>
       <CardHeader
         className="flex flex-row items-center gap-4 cursor-pointer select-none "
         onClick={() => setOpen(!open)}

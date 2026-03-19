@@ -365,7 +365,9 @@ export const IntForm = ({ units }: FormProps) => {
         <Card className={"w-full border-0 shadow-none text-base"}>
           <Progress value={step * 50} className={"rounded-none"}></Progress>
           <CardHeader>
-            <CardTitle>Create a coursework</CardTitle>
+            <CardTitle data-cy="create-coursework-title">
+              Create a coursework
+            </CardTitle>
             <CardDescription>
               <p>
                 Let's create a coursework! There's a couple of steps, but we'll
@@ -415,6 +417,7 @@ export const IntForm = ({ units }: FormProps) => {
                             </FieldLabel>
                             <select
                               {...field}
+                              data-cy="create-coursework-unit"
                               id="form-flow-unit"
                               aria-invalid={fieldState.invalid}
                               className="border-input bg-background w-full border p-2"
@@ -451,7 +454,7 @@ export const IntForm = ({ units }: FormProps) => {
                       )}
 
                       {selectedUnitData && (
-                        <Item variant="muted">
+                        <Item data-cy="create-coursework-selected-unit" variant="muted">
                           <ItemContent>
                             <ItemTitle>Selected unit</ItemTitle>
                             <ItemDescription>
@@ -480,6 +483,7 @@ export const IntForm = ({ units }: FormProps) => {
                             </FieldLabel>
                             <Input
                               {...field}
+                              data-cy="create-coursework-name"
                               id={"form-flow-name"}
                               aria-invalid={fieldState.invalid}
                               placeholder={"My amazing coursework"}
@@ -501,6 +505,7 @@ export const IntForm = ({ units }: FormProps) => {
                             </FieldLabel>
                             <Textarea
                               {...field}
+                              data-cy="create-coursework-description"
                               id={"form-flow-description"}
                               aria-invalid={fieldState.invalid}
                               placeholder={"A great description"}
@@ -559,6 +564,7 @@ export const IntForm = ({ units }: FormProps) => {
                       />
 
                       <Button
+                        data-cy="create-coursework-next-step-1"
                         type={"button"}
                         onClick={() => {
                           void validateOne().then((valid) => {
@@ -716,6 +722,7 @@ export const IntForm = ({ units }: FormProps) => {
                           Back
                         </Button>
                         <Button
+                          data-cy="create-coursework-next-step-2"
                           type={"button"}
                           onClick={() => {
                             form.trigger(["color"]).then((_result) => {

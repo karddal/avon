@@ -12,6 +12,7 @@ export default async function SetupPogress({ cw_id }: setupProgress) {
     // Need to use reusable components for the buttons and sections, just place with names or smth
     // Add links to each one and actually do backend for it as well
     <DropdownCard
+      dataCy="coursework-setup-progress"
       title={"Setup Progress"}
       desc={"View the progress in setting up the coursework"}
       openByDefault={true}

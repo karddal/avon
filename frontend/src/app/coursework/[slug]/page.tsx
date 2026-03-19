@@ -116,7 +116,7 @@ async function CourseworkPageContent({
 
       <section className="grid gap-4 grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 min-h-0 mb-2">
         <div className="flex flex-col gap-4 col-span-3 lg:col-span-2">
-          <Card>
+          <Card data-cy="coursework-description-section">
             <CardHeader>
               <CardTitle>
                 <div className="text-2xl">Description</div>

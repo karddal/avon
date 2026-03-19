@@ -56,6 +56,7 @@ export default async function CourseworkInformation({
 
   return (
     <DropdownCard
+      dataCy="coursework-information-section"
       title={"Information"}
       desc={"Deadlines and scheduling details."}
       openByDefault={true}

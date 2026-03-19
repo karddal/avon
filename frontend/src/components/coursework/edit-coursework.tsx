@@ -157,6 +157,7 @@ export default function EditCoursework({
                     </FieldLabel>
                     <Input
                       {...field}
+                      data-cy="coursework-edit-name"
                       id={"form-flow-name"}
                       aria-invalid={fieldState.invalid}
                       placeholder={"My amazing coursework"}
@@ -178,6 +179,7 @@ export default function EditCoursework({
                     </FieldLabel>
                     <Textarea
                       {...field}
+                      data-cy="coursework-edit-description"
                       id={"form-flow-description"}
                       aria-invalid={fieldState.invalid}
                       placeholder={"A great description"}
@@ -332,7 +334,7 @@ export default function EditCoursework({
                     </Button>
                   )}
                   {!submitState && (
-                    <Button type={"submit"}>
+                    <Button data-cy="coursework-edit-save" type={"submit"}>
                       <Save />
                       Save changes
                     </Button>
