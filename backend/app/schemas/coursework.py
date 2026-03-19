@@ -70,6 +70,7 @@ class CourseworkRepoCommit(BaseModel):
 class CourseworkStudentRepoRead(BaseModel):
     repo_url: str
     commits: list[CourseworkRepoCommit]
+    total_commits: int
 
 class CourseworkEngineData(BaseModel):
     cw_id: UUID
