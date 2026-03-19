@@ -10,7 +10,10 @@ function CreateCoursework() {
   return (
     <div>
       <Button asChild variant="outline" size="sm" className="mt-2">
-        <Link data-cy="create-coursework-link" href={"/coursework/create-coursework"}>
+        <Link
+          data-cy="create-coursework-link"
+          href={"/coursework/create-coursework"}
+        >
           <ClipboardPlus />
           Create coursework
         </Link>

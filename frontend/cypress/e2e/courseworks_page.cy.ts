@@ -41,17 +41,15 @@ describe("Coursework listing page", () => {
     ).click();
     cy.getByCy(
       "coursework-link-imperative-and-functional-programming-2024-2025-power-to-the-people-in-2024",
-    ).should(
-      "be.visible",
-    );
+    ).should("be.visible");
   });
 
   it("Allows navigation through the finsihed coursework tabslist", () => {
     cy.visit("/coursework");
     cy.getByCy("coursework-tab-finished").click();
     cy.getByCy("coursework-unit-tab-computer-architecture-2024-2025").click();
-    cy.getByCy("coursework-link-computer-architecture-2024-2025-encrypt").should(
-      "be.visible",
-    );
+    cy.getByCy(
+      "coursework-link-computer-architecture-2024-2025-encrypt",
+    ).should("be.visible");
   });
 });

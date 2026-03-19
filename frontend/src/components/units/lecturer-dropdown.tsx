@@ -64,7 +64,10 @@ export default function LecturerDropdown({
             <Users className="mr-2 h-4 w-4" /> Members
           </DropdownMenuItem>
 
-          <DropdownMenuItem onSelect={() => setShowEdit(true)}>
+          <DropdownMenuItem
+            data-cy="unit-edit-menu-item"
+            onSelect={() => setShowEdit(true)}
+          >
             <SquarePen className="mr-2 h-4 w-4" /> Edit Unit
           </DropdownMenuItem>
 

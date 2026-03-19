@@ -129,7 +129,7 @@ export default function EditUnit({
       description: values.description,
       unit_code: values.unit_code,
       colour: colour.substring(1),
-      programme_id: values.programme_id,
+      programme_id: unit_update_data.programme_id,
     };
     await update_unit(req).then((r) => {
       if (!r.success) {
@@ -243,6 +243,7 @@ export default function EditUnit({
                       </FieldLabel>
                       <Input
                         {...field}
+                        data-cy="unit-edit-name"
                         id={"form-flow-name"}
                         aria-invalid={fieldState.invalid}
                         placeholder={"My amazing unit"}
@@ -408,6 +409,7 @@ export default function EditUnit({
                 )}
                 {!submitState && (
                   <Button
+                    data-cy="unit-edit-save"
                     type={"submit"}
                     form="edit-unit-form"
                     className="w-full"

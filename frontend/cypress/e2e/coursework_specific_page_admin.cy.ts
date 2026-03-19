@@ -1,6 +1,7 @@
 describe("Coursework page", () => {
   beforeEach(() => {
     cy.exec("npm run db:seed");
+    cy.clearAuthSession();
     // cy.visit("/login");
     // cy.get("#email").type("admin@bris.ac.uk");
     // cy.get("#password").type("changeme");
@@ -14,9 +15,11 @@ describe("Coursework page", () => {
     cy.visit("/coursework");
     cy.getByCy("coursework-tab-finished").click();
     cy.getByCy("coursework-unit-tab-computer-architecture-2024-2025").click();
-    cy.getByCy("coursework-link-computer-architecture-2024-2025-encrypt").click({
-      force: true,
-    });
+    cy.getByCy("coursework-link-computer-architecture-2024-2025-encrypt").click(
+      {
+        force: true,
+      },
+    );
     cy.url().should("include", "/coursework/");
   });
 
@@ -24,9 +27,11 @@ describe("Coursework page", () => {
     cy.visit("/coursework");
     cy.getByCy("coursework-tab-finished").click();
     cy.getByCy("coursework-unit-tab-computer-architecture-2024-2025").click();
-    cy.getByCy("coursework-link-computer-architecture-2024-2025-encrypt").click({
-      force: true,
-    });
+    cy.getByCy("coursework-link-computer-architecture-2024-2025-encrypt").click(
+      {
+        force: true,
+      },
+    );
     cy.getByCy("coursework-title").should("contain", "Encrypt");
   });
 
@@ -34,9 +39,11 @@ describe("Coursework page", () => {
     cy.visit("/coursework");
     cy.getByCy("coursework-tab-finished").click();
     cy.getByCy("coursework-unit-tab-computer-architecture-2024-2025").click();
-    cy.getByCy("coursework-link-computer-architecture-2024-2025-encrypt").click({
-      force: true,
-    });
+    cy.getByCy("coursework-link-computer-architecture-2024-2025-encrypt").click(
+      {
+        force: true,
+      },
+    );
     cy.getByCy("coursework-description-section").should("be.visible");
     cy.getByCy("coursework-description-content").should("be.visible");
   });
@@ -45,46 +52,67 @@ describe("Coursework page", () => {
     cy.visit("/coursework");
     cy.getByCy("coursework-tab-finished").click();
     cy.getByCy("coursework-unit-tab-computer-architecture-2024-2025").click();
-    cy.getByCy("coursework-link-computer-architecture-2024-2025-encrypt").click({
-      force: true,
-    });
+    cy.getByCy("coursework-link-computer-architecture-2024-2025-encrypt").click(
+      {
+        force: true,
+      },
+    );
     cy.getByCy("coursework-information-section").should("be.visible");
   });
 
   it("Admin can edit a coursework name", () => {
     cy.visit("/coursework");
     cy.getByCy("coursework-unit-tab-computer-architecture-2025-2026").click();
-    cy.getByCy("coursework-link-computer-architecture-2025-2026-encrypt").click({
-      force: true,
-    });
+    cy.getByCy("coursework-link-computer-architecture-2025-2026-encrypt").click(
+      {
+        force: true,
+      },
+    );
     cy.getByCy("coursework-lect-dropdown").click();
     cy.getByCy("coursework-edit-menu-item").click();
     cy.getByCy("coursework-edit-name").clear().type("Encrypt 2");
     cy.getByCy("coursework-edit-save").click();
+    cy.contains("Coursework updated successfully.").should("be.visible");
+    cy.getByCy("coursework-title").should("contain", "Encrypt 2");
+    cy.get('[data-cy="coursework-edit-name"]').should("not.exist");
     cy.visit("/coursework");
     cy.getByCy("coursework-unit-tab-computer-architecture-2025-2026").click();
-    cy.getByCy("coursework-link-computer-architecture-2025-2026-encrypt-2").should(
-      "be.visible",
-    );
+    cy.getByCy(
+      "coursework-link-computer-architecture-2025-2026-encrypt-2",
+    ).should("be.visible");
   });
 
   it("Admin can edit a coursework description", () => {
     cy.visit("/coursework");
     cy.getByCy("coursework-unit-tab-computer-architecture-2025-2026").click();
-    cy.getByCy("coursework-link-computer-architecture-2025-2026-encrypt").click({
-      force: true,
-    });
+    cy.getByCy("coursework-link-computer-architecture-2025-2026-encrypt").click(
+      {
+        force: true,
+      },
+    );
     cy.getByCy("coursework-lect-dropdown").click();
     cy.getByCy("coursework-edit-menu-item").click();
-    cy.getByCy("coursework-edit-description").clear().type("UNique Text 2837t37");
+    cy.getByCy("coursework-edit-description")
+      .clear()
+      .type("UNique Text 2837t37");
     cy.getByCy("coursework-edit-save").click();
+    cy.contains("Coursework updated successfully.").should("be.visible");
+    cy.getByCy("coursework-description-content").should(
+      "contain",
+      "UNique Text 2837t37",
+    );
+    cy.get('[data-cy="coursework-edit-description"]').should("not.exist");
     cy.visit("/coursework");
     cy.getByCy("coursework-unit-tab-computer-architecture-2025-2026").click();
-    cy.getByCy("coursework-link-computer-architecture-2025-2026-encrypt").click({
-      force: true,
-    });
-    cy.getByCy("coursework-description-content")
-      .should("contain", "UNique Text 2837t37");
+    cy.getByCy("coursework-link-computer-architecture-2025-2026-encrypt").click(
+      {
+        force: true,
+      },
+    );
+    cy.getByCy("coursework-description-content").should(
+      "contain",
+      "UNique Text 2837t37",
+    );
   });
 
   // it("Admin can edit a coursework date", () => {
@@ -107,9 +135,11 @@ describe("Coursework page", () => {
     cy.visit("/coursework");
     cy.getByCy("coursework-tab-finished").click();
     cy.getByCy("coursework-unit-tab-computer-architecture-2024-2025").click();
-    cy.getByCy("coursework-link-computer-architecture-2024-2025-encrypt").click({
-      force: true,
-    });
+    cy.getByCy("coursework-link-computer-architecture-2024-2025-encrypt").click(
+      {
+        force: true,
+      },
+    );
     cy.getByCy("coursework-setup-progress").should("be.visible");
   });
 });

@@ -4,6 +4,7 @@ describe("Unit page", () => {
   });
 
   beforeEach(() => {
+    cy.clearAuthSession();
     cy.login("admin@bris.ac.uk", "changeme", false);
   });
 
@@ -46,9 +47,12 @@ describe("Unit page", () => {
     cy.url().should("not.eq", `${Cypress.config().baseUrl}/units`);
     cy.url().should("include", "/units/");
     cy.get("#unit-dropdown", { timeout: 10000 }).click();
-    cy.get(`[data-slot="dropdown-menu-item"]`).contains("Edit Unit").click();
-    cy.get('[name="name"]').clear().type("Mathematics for Computer Science B");
-    cy.get(".mt-auto > .flex > .inline-flex").click();
+    cy.getByCy("unit-edit-menu-item").click();
+    cy.getByCy("unit-edit-name")
+      .clear()
+      .type("Mathematics for Computer Science B");
+    cy.getByCy("unit-edit-save").click();
+    cy.contains("Unit updated successfully.").should("be.visible");
     cy.visit("/units");
     cy.get("p")
       .contains("Mathematics for Computer Science B")

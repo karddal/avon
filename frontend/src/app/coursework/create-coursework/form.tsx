@@ -468,7 +468,10 @@ export const IntForm = ({ units }: FormProps) => {
                       )}
 
                       {selectedUnitData && (
-                        <Item data-cy="create-coursework-selected-unit" variant="muted">
+                        <Item
+                          data-cy="create-coursework-selected-unit"
+                          variant="muted"
+                        >
                           <ItemContent>
                             <ItemTitle>Selected unit</ItemTitle>
                             <ItemDescription>
@@ -739,8 +742,8 @@ export const IntForm = ({ units }: FormProps) => {
                           data-cy="create-coursework-next-step-2"
                           type={"button"}
                           onClick={() => {
-                            form.trigger(["color"]).then((_result) => {
-                              if (form.formState.isValid) {
+                            form.trigger(["color"]).then((result) => {
+                              if (result) {
                                 nextStep(step, setStep);
                               }
                             });
@@ -858,7 +861,10 @@ export const IntForm = ({ units }: FormProps) => {
                               <ArrowLeft />
                               Back
                             </Button>
-                            <Button data-cy="create-coursework-submit" type={"submit"}>
+                            <Button
+                              data-cy="create-coursework-submit"
+                              type={"submit"}
+                            >
                               <Send />
                               Submit
                             </Button>
