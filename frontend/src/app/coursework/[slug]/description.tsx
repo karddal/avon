@@ -35,7 +35,7 @@ export default async function CourseworkDescription({
   const coursework: courseworkData = await res.json();
 
   return (
-    <div className="flex flex-col overflow-y-auto wrap-break-word h-32 border bg-accent p-2">
+    <div className="h-full overflow-y-auto whitespace-pre-wrap break-words rounded-md border bg-accent p-3">
       {coursework.description ? (
         coursework.description
       ) : (

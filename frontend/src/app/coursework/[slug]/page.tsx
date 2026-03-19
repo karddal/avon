@@ -8,7 +8,7 @@ import { get_base_images_cw_specific } from "@/lib/actions/get_base_images_cw_sp
 import { get_coursework_scopes } from "@/lib/actions/get_coursework_scopes";
 import { get_cw_update_data } from "@/lib/actions/get_coursework_update_data";
 import { get_cw_engine_data } from "@/lib/actions/get_cw_engine_data";
-import { getRequestJWT, requireSession } from "@/lib/auth-utils";
+import { getRequestJWT } from "@/lib/auth-utils";
 import Loading from "../loading";
 import CourseworkDescription from "./description";
 import CourseworkInformation from "./information";
@@ -22,13 +22,15 @@ async function CourseworkPageContent({
   const p = await params;
   const slug = p.slug;
   console.log("CW", slug);
-  const s = await requireSession();
-  const role = s.user.role;
   const token = await getRequestJWT();
   // Hardcoded the template id here, when merged, I should be able to get the template id from jack's code
 
   const scopes: Set<string> = await get_coursework_scopes(slug);
-  const _canLoadCourseworkTools = scopes.has("unit:coursework_manage");
+  const canViewSetupProgress =
+    scopes.has("unit:coursework_manage") ||
+    scopes.has("unit:coursework_gitlab") ||
+    scopes.has("unit:coursework_engine") ||
+    scopes.has("unit:coursework_delete");
   // const data = canLoadCourseworkTools
   //   ? await get_cw_update_data(slug)
   //   : undefined;
@@ -45,7 +47,7 @@ async function CourseworkPageContent({
   return (
     <>
       {/* Header */}
-      <div className="flex flex-col col-span-3 min-h-0">
+      <div className="flex flex-col col-span-3">
         <div className="font-semibold text-5xl text-shadow-2xs">
           <Suspense
             fallback={
@@ -75,9 +77,9 @@ async function CourseworkPageContent({
         deadline={data.due_date}
         warningThreshold={7}
       ></CourseworkDeadlineBanner>
-      <section className="grid gap-4 grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 min-h-0 mb-2">
-        <div className="flex flex-col gap-4 col-span-3 lg:col-span-2">
-          <Card>
+      <section className="mb-2 grid min-h-0 grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="flex h-full flex-col gap-4 md:col-span-2 xl:col-span-2 xl:h-[16rem]">
+          <Card className="h-full min-h-0">
             <CardHeader>
               <CardTitle>
                 <div className="text-2xl">Description</div>
@@ -86,21 +88,20 @@ async function CourseworkPageContent({
                 </div>
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="min-h-0 flex-1">
               <Suspense>
                 <CourseworkDescription slug={slug} token={token} />
               </Suspense>
             </CardContent>
           </Card>
         </div>
-        <div className="col-span-3 lg:col-span-1 gap-4">
+        <div className="h-full md:col-span-1 xl:col-span-1 xl:h-[16rem]">
           <Suspense>
             <CourseworkInformation slug={slug} token={token} />
           </Suspense>
         </div>
-        <div className="flex flex-col gap-4 col-span-3 lg:col-span-2"></div>
-        <div className="col-span-3 lg:col-span-1 gap-4">
-          {(role === "lecturer" || role === "admin") && (
+        <div className="h-full md:col-span-1 xl:col-span-1 xl:col-start-3">
+          {canViewSetupProgress && (
             <Suspense>
               <SetupProgress cw_id={slug}></SetupProgress>
             </Suspense>
