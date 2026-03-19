@@ -11,7 +11,7 @@ export default async function SetupProgress({ cw_id }: setupProgress) {
   return (
     // Need to use reusable components for the buttons and sections, just place with names or smth
     // Add links to each one and actually do backend for it as well
-    <Card>
+    <Card className="h-full">
       <CardHeader className="flex flex-col ">
         <CardTitle>
           <div className="text-2xl">Setup Progress</div>
