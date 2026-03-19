@@ -1,7 +1,8 @@
 import {
   BookCheck,
   Calendar,
-  ChartLine, Container,
+  ChartLine,
+  Container,
   Layers,
   LayoutDashboard,
   NotepadText,
@@ -90,8 +91,7 @@ const adminItems = [
     url: "/base_image",
     icon: Container,
     bottom: false,
-
-  }
+  },
 ];
 
 const lecturerItems = [

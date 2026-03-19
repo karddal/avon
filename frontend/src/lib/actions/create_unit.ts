@@ -1,6 +1,6 @@
 "use server";
 
-import {getRequestJWT} from "@/lib/auth-utils";
+import { getRequestJWT } from "@/lib/auth-utils";
 
 type createUnitReq = {
   name: string;
@@ -22,7 +22,7 @@ export async function create_unit(req: createUnitReq) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(req),
     },
