@@ -10,6 +10,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "bcrypt<5",
+    "beautifulsoup4>=4.14.3",
     "cryptography>=46.0.3",
     "fastapi[standard-no-fastapi-cloud-cli]>=0.121.0",
     "httpx>=0.28.1",
