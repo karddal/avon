@@ -61,3 +61,44 @@ export function CourseworkDeadlineBanner({
     </div>
   );
 }
+
+type CourseworkDeadlineBannerData = {
+  due_date: string;
+};
+
+export async function CourseworkDeadlineBannerFromSlug({
+  slug,
+  token,
+  warningThreshold = 3,
+  className = "",
+}: {
+  slug: string;
+  token?: string;
+  warningThreshold?: number;
+  className?: string;
+}) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/coursework/${slug}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      cache: "no-cache",
+    },
+  );
+
+  if (!res.ok) {
+    return null;
+  }
+
+  const coursework: CourseworkDeadlineBannerData = await res.json();
+
+  return (
+    <CourseworkDeadlineBanner
+      deadline={coursework.due_date}
+      warningThreshold={warningThreshold}
+      className={className}
+    />
+  );
+}
