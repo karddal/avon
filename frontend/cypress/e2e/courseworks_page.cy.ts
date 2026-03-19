@@ -48,8 +48,10 @@ describe("Coursework listing page", () => {
 
   it("Allows navigation through the finsihed coursework tabslist", () => {
     cy.visit("/coursework");
-    cy.contains("button", "Finished").click();
-    cy.contains('[role="tab"]', "Computer Architecture 2024-2025").click();
-    cy.get("p").should("contain", "Encrypt");
+    cy.getByCy("coursework-tab-finished").click();
+    cy.getByCy("coursework-unit-tab-computer-architecture-2024-2025").click();
+    cy.getByCy("coursework-link-computer-architecture-2024-2025-encrypt").should(
+      "be.visible",
+    );
   });
 });
