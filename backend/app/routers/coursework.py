@@ -42,7 +42,6 @@ from app.schemas.coursework import (
     CourseworkEventRead,
     CourseworkRead,
     CourseworkSetupProgress,
-    CourseworkStudent,
     CourseworkStudentRepos,
     CourseworkTemplateActivate,
     CourseworkTemplateExists,
