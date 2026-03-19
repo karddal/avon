@@ -1,75 +1,44 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import DashboardLayoutEditor from "@/components/modules/dashboard-layout-editor";
-import {
-  type DashboardModuleKey,
-  dashboardModuleRegistry,
-} from "@/components/modules/dashboard-module-registry";
+import type { DashboardModuleKey } from "@/components/modules/dashboard-module-registry";
 import DashboardRenderer from "@/components/modules/dashboard-renderer";
 import type { GridItem } from "@/components/modules/dashboard-types";
+import { defaultDashboardLayout } from "@/lib/dashboard-layout";
 
 type DashboardClientProps = {
   initialLayout: GridItem[];
   availableModules: DashboardModuleKey[];
+  saveLayout: (layout: GridItem[]) => Promise<void>;
 };
-
-const STORAGE_KEY = "dashboard-layout";
-
-function isValidGridItem(value: unknown): value is GridItem {
-  if (!value || typeof value !== "object") return false;
-
-  const item = value as Record<string, unknown>;
-
-  return (
-    typeof item.id === "string" &&
-    typeof item.moduleKey === "string" &&
-    item.moduleKey in dashboardModuleRegistry &&
-    typeof item.x === "number" &&
-    typeof item.y === "number" &&
-    typeof item.w === "number" &&
-    typeof item.h === "number"
-  );
-}
 
 export default function DashboardClient({
   initialLayout,
   availableModules,
+  saveLayout,
 }: DashboardClientProps) {
-  const [layout, setLayout] = useState<GridItem[]>(initialLayout);
-  const [hasLoadedStorage, setHasLoadedStorage] = useState(false);
+  const [layout, setLayout] = useState<GridItem[]>(
+    initialLayout.length > 0 ? initialLayout : defaultDashboardLayout,
+  );
+  const hasMounted = useRef(false);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (!saved) return;
-
-      const parsed = JSON.parse(saved) as unknown;
-
-      if (!Array.isArray(parsed)) {
-        localStorage.removeItem(STORAGE_KEY);
-        return;
-      }
-
-      const validItems = parsed.filter(isValidGridItem);
-
-      if (validItems.length === parsed.length) {
-        setLayout(validItems);
-      } else {
-        localStorage.removeItem(STORAGE_KEY);
-      }
-    } catch (error) {
-      console.error("Failed to load dashboard layout from localStorage", error);
-    } finally {
-      setHasLoadedStorage(true);
+    if (!hasMounted.current) {
+      hasMounted.current = true;
+      return;
     }
-  }, []);
 
-  useEffect(() => {
-    if (!hasLoadedStorage) return;
+    const timeoutId = window.setTimeout(() => {
+      void saveLayout(layout).catch((error) => {
+        console.error("Failed to save dashboard layout", error);
+      });
+    }, 400);
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(layout));
-  }, [hasLoadedStorage, layout]);
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [layout, saveLayout]);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4 md:gap-6">
