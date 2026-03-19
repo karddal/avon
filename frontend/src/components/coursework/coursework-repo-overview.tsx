@@ -42,7 +42,7 @@ export default function CourseworkRepoOverview({
     };
   }, [courseworkId]);
 
-  const previewRepos = repos.slice(0, 5);
+  const sorted = repos.sort((a, b) => a.student.localeCompare(b.student));
 
   return (
     <Card className="h-full">
@@ -107,9 +107,9 @@ export default function CourseworkRepoOverview({
               <div className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                 Repository Preview
               </div>
-              {previewRepos.length > 0 ? (
+              {sorted.length > 0 ? (
                 <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
-                  {previewRepos.map((repo) => (
+                  {sorted.map((repo) => (
                     <div
                       key={`${repo.student}-${repo.repo_url}`}
                       className="flex items-center justify-between gap-3 rounded-md border px-3 py-2"

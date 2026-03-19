@@ -51,7 +51,9 @@ async function StudentRepoActivityContent({
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <GitCommitHorizontal className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+                  <GitCommitHorizontal
+                    className={`mt-0.5 h-4 w-4 shrink-0 text-muted-foreground ${index === 0 ? "text-emerald-700 dark:text-emerald-300" : ""}`}
+                  />
                   <div className="min-w-0 flex-1">
                     {index === 0 && (
                       <div className="mb-1 text-[11px] font-medium uppercase tracking-wide text-emerald-700 dark:text-emerald-300">

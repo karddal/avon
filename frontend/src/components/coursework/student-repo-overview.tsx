@@ -5,6 +5,7 @@ import {
   PencilLine,
   Sparkles,
 } from "lucide-react";
+import Link from "next/link";
 import { Suspense } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -88,17 +89,26 @@ async function StudentRepoOverviewContent({
         </div>
 
         <div className="rounded-md border border-amber-300 bg-amber-50 p-4 text-amber-950 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-100">
-          <div className="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-amber-700 dark:text-amber-300">
+          <div className="mb-4 flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-amber-700 dark:text-amber-300">
             <Sparkles className="h-4 w-4" />
             Latest Activity
           </div>
           <div className="truncate text-lg font-semibold">
-            {latestCommit?.author_name ?? "No commits yet"}
+            {latestCommit?.title ?? "No commits yet"}
           </div>
           {latestCommit ? (
-            <div className="mt-2 space-y-1 text-sm text-amber-800 dark:text-amber-200">
+            <div className="mt-1 space-y-1 text-sm text-amber-800 dark:text-amber-200">
               <p>{formatCommitDate(latestCommit.authored_date)}</p>
-              <p className="line-clamp-2">{latestCommit.title}</p>
+              <p className="line-clamp-2">
+                by{" "}
+                <Link
+                  className="underline"
+                  href={`https://gitlab.com/${latestCommit.author_name}`}
+                  target="_blank"
+                >
+                  {latestCommit.author_name}
+                </Link>
+              </p>
             </div>
           ) : (
             <p className="mt-2 text-sm text-amber-800 dark:text-amber-200">

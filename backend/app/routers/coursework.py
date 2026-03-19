@@ -57,6 +57,7 @@ from app.schemas.coursework import (
     CourseworkUpdate,
     CourseworkUpdateEngineData,
     CourseworkUpdateFormData,
+    CourseworkUnitIdRead,
 )
 from app.schemas.security import CurrentUser
 
@@ -79,6 +80,25 @@ async def get_student_repos(id: UUID, session: session_dependency, token: token_
     repos = map(lambda sr: sr,coursework.student_repos)
 
     return CourseworkStudentRepos(repos=list(repos))
+
+@router.get("/{id}/unit", response_model=CourseworkUnitIdRead)
+async def get_coursework_unit_id(
+    id: UUID, session: session_dependency, token: token_dependency
+):
+    coursework = session.get(Coursework, id)
+    if coursework is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Coursework not found"
+        )
+
+    await require_scopes(
+        ResourceInformation(type=Unit, id=coursework.unit_id),
+        Scopes.UNIT_READ,
+        token=token,
+        session=session,
+    )
+
+    return CourseworkUnitIdRead(unit_id=coursework.unit_id)
 
 @router.get("/{id}/my_repo", response_model=CourseworkStudentRepoRead)
 async def get_my_student_repo(
