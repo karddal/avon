@@ -99,6 +99,14 @@ function buildDefaultDueDate() {
   return new Date(new Date(now).setHours(now.getHours() + 25));
 }
 
+function toDataCyValue(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 export const IntForm = ({ units }: FormProps) => {
   const [submitState, setSubmitState] = useState<boolean>(false);
   const [showAlert, setShowAlert] = useState<boolean>(false);
@@ -424,7 +432,13 @@ export const IntForm = ({ units }: FormProps) => {
                             >
                               <option value="">Select a unit</option>
                               {units.map((unit) => (
-                                <option key={unit.id} value={unit.id}>
+                                <option
+                                  key={unit.id}
+                                  data-cy={`create-coursework-unit-option-${toDataCyValue(
+                                    `${unit.unit_code} ${unit.name}`,
+                                  )}`}
+                                  value={unit.id}
+                                >
                                   {unit.unit_code} — {unit.name}
                                 </option>
                               ))}
@@ -844,7 +858,7 @@ export const IntForm = ({ units }: FormProps) => {
                               <ArrowLeft />
                               Back
                             </Button>
-                            <Button type={"submit"}>
+                            <Button data-cy="create-coursework-submit" type={"submit"}>
                               <Send />
                               Submit
                             </Button>

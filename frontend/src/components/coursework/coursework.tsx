@@ -50,7 +50,7 @@ export default function Coursework({
   };
   const [showDelete, setShowDelete] = useState(false);
   return (
-    <div>
+    <div data-cy={cardDataCy}>
       <div style={colouring} className="h-2 w-full"></div>
       <Card className="bg-muted h-full flex flex-row p-2 hover:bg-foreground/10">
         <Link className={"flex-1 h-full"} href={`/coursework/${props.id}`}>
@@ -79,6 +79,7 @@ export default function Coursework({
                 <DropdownMenuLabel>Coursework Options</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
+                  data-cy="coursework-list-delete-item"
                   onSelect={() => setShowDelete(true)}
                   className={
                     "text-destructive focus:text-destructive flex flex-row"
