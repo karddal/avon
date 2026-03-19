@@ -1,5 +1,7 @@
 import { Suspense } from "react";
+import { CourseworkDeadlineBanner } from "@/components/coursework/coursework-banner";
 import CourseworkLectDropdown from "@/components/coursework/coursework-lect-dropdown";
+import SetupProgress from "@/components/coursework/setup-progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { get_base_images_cw_specific } from "@/lib/actions/get_base_images_cw_specific";
@@ -20,15 +22,17 @@ async function CourseworkPageContent({
   const p = await params;
   const slug = p.slug;
   console.log("CW", slug);
-  const _s = await requireSession();
+  const s = await requireSession();
+  const role = s.user.role;
   const token = await getRequestJWT();
   // Hardcoded the template id here, when merged, I should be able to get the template id from jack's code
 
   const scopes: Set<string> = await get_coursework_scopes(slug);
-  const canLoadCourseworkTools = scopes.has("unit:coursework_manage");
-  const data = canLoadCourseworkTools
-    ? await get_cw_update_data(slug)
-    : undefined;
+  const _canLoadCourseworkTools = scopes.has("unit:coursework_manage");
+  // const data = canLoadCourseworkTools
+  //   ? await get_cw_update_data(slug)
+  //   : undefined;
+  const data = await get_cw_update_data(slug);
 
   const canGetAvailImages = scopes.has("unit:coursework_engine");
   const images = canGetAvailImages
@@ -67,7 +71,10 @@ async function CourseworkPageContent({
           </Suspense>
         </div>
       </div>
-
+      <CourseworkDeadlineBanner
+        deadline={data.due_date}
+        warningThreshold={7}
+      ></CourseworkDeadlineBanner>
       <section className="grid gap-4 grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 min-h-0 mb-2">
         <div className="flex flex-col gap-4 col-span-3 lg:col-span-2">
           <Card>
@@ -86,10 +93,18 @@ async function CourseworkPageContent({
             </CardContent>
           </Card>
         </div>
-        <div className="col-span-3 lg:col-span-1">
+        <div className="col-span-3 lg:col-span-1 gap-4">
           <Suspense>
             <CourseworkInformation slug={slug} token={token} />
           </Suspense>
+        </div>
+        <div className="flex flex-col gap-4 col-span-3 lg:col-span-2"></div>
+        <div className="col-span-3 lg:col-span-1 gap-4">
+          {(role === "lecturer" || role === "admin") && (
+            <Suspense>
+              <SetupProgress cw_id={slug}></SetupProgress>
+            </Suspense>
+          )}
         </div>
       </section>
     </>
