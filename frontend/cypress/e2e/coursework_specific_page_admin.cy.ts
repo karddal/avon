@@ -22,18 +22,23 @@ describe("Coursework page", () => {
 
   it("Contains a Title", () => {
     cy.visit("/coursework");
-    cy.contains("button", "Finished").click();
-    cy.contains('[role="tab"]', "Computer Architecture 2024-2025").click();
-    cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
-    cy.get("div").should("contain", "Encrypt");
+    cy.getByCy("coursework-tab-finished").click();
+    cy.getByCy("coursework-unit-tab-computer-architecture-2024-2025").click();
+    cy.getByCy("coursework-link-computer-architecture-2024-2025-encrypt").click({
+      force: true,
+    });
+    cy.getByCy("coursework-title").should("contain", "Encrypt");
   });
 
   it("Contains a Description", () => {
     cy.visit("/coursework");
-    cy.contains("button", "Finished").click();
-    cy.contains('[role="tab"]', "Computer Architecture 2024-2025").click();
-    cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
-    cy.get("div").find(".text-2xl").should("contain", "Description");
+    cy.getByCy("coursework-tab-finished").click();
+    cy.getByCy("coursework-unit-tab-computer-architecture-2024-2025").click();
+    cy.getByCy("coursework-link-computer-architecture-2024-2025-encrypt").click({
+      force: true,
+    });
+    cy.getByCy("coursework-description-section").should("be.visible");
+    cy.getByCy("coursework-description-content").should("be.visible");
   });
 
   it("Conatins an Information section", () => {
@@ -48,31 +53,31 @@ describe("Coursework page", () => {
 
   it("Admin can edit a coursework name", () => {
     cy.visit("/coursework");
-    cy.contains('[role="tab"]', "Computer Architecture 2025-2026").click();
-    cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
-    cy.get('[data-cy="coursework-lect-dropdown"]').click();
-    cy.get('[data-state="open"]')
-      .find('[data-slot="dropdown-menu-item"]')
-      .contains("Edit coursework")
-      .click();
-    cy.get('[name="name"]').clear().type("Encrypt 2");
-    cy.get(".mt-auto > .flex > .inline-flex").click();
+    cy.getByCy("coursework-unit-tab-computer-architecture-2025-2026").click();
+    cy.getByCy("coursework-link-computer-architecture-2025-2026-encrypt").click({
+      force: true,
+    });
+    cy.getByCy("coursework-lect-dropdown").click();
+    cy.getByCy("coursework-edit-menu-item").click();
+    cy.getByCy("coursework-edit-name").clear().type("Encrypt 2");
+    cy.getByCy("coursework-edit-save").click();
     cy.visit("/coursework");
-    cy.contains('[role="tab"]', "Computer Architecture 2025-2026").click();
-    cy.get("p").contains("Encrypt 2").should("be.visible");
+    cy.getByCy("coursework-unit-tab-computer-architecture-2025-2026").click();
+    cy.getByCy("coursework-link-computer-architecture-2025-2026-encrypt-2").should(
+      "be.visible",
+    );
   });
 
   it("Admin can edit a coursework description", () => {
     cy.visit("/coursework");
-    cy.contains('[role="tab"]', "Computer Architecture 2025-2026").click();
-    cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
-    cy.get('[data-cy="coursework-lect-dropdown"]').click();
-    cy.get('[data-state="open"]')
-      .find('[data-slot="dropdown-menu-item"]')
-      .contains("Edit coursework")
-      .click();
-    cy.get("#form-flow-description").clear().type("UNique Text 2837t37");
-    cy.get(".mt-auto > .flex > .inline-flex").click();
+    cy.getByCy("coursework-unit-tab-computer-architecture-2025-2026").click();
+    cy.getByCy("coursework-link-computer-architecture-2025-2026-encrypt").click({
+      force: true,
+    });
+    cy.getByCy("coursework-lect-dropdown").click();
+    cy.getByCy("coursework-edit-menu-item").click();
+    cy.getByCy("coursework-edit-description").clear().type("UNique Text 2837t37");
+    cy.getByCy("coursework-edit-save").click();
     cy.visit("/coursework");
     cy.getByCy("coursework-unit-tab-computer-architecture-2025-2026").click();
     cy.getByCy("coursework-link-computer-architecture-2025-2026-encrypt").click({
