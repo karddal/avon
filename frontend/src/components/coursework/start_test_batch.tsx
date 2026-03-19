@@ -79,11 +79,8 @@ export default function StartTestBatchPopup({
             </div>
           </div>
           <div className="lg:max-h-[50vh]! lg:max-w-[30vw]! lg:overflow-y-auto bg-background border rounded-xl shadow-lg justify-between flex flex-col">
-            <div className="">
-              <div className="p-8">
-                <Card>
-
-                  <CardHeader>
+                <Card className={"h-full w-full"}>
+                  <CardHeader className={""}>
                     <CardTitle className="text-xl">Confirm and submit</CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -130,7 +127,7 @@ export default function StartTestBatchPopup({
                               <FieldContent>
                                 <FieldTitle>Enable notifications</FieldTitle>
                                 <FieldDescription>
-                                  If this option if enabled, you will be sent a notification when this test run completes.
+                                  If this option if enabled, you will be sent a notification when this test run completes. You can change your notifications preferences in Settings.
                                 </FieldDescription>
                               </FieldContent>
                               <Switch id="switch-notifications" defaultChecked />
@@ -146,8 +143,6 @@ export default function StartTestBatchPopup({
               </div>
 
             </div>
-          </div>
-        </div>
       </DialogContent>
     </Dialog>
   );
