@@ -97,7 +97,7 @@ async function CourseworkPageContent({
           >
             <div
               className={
-                "flex flex-row gap-4 justify-between items-center my-2"
+                "flex flex-row gap-4 justify-between items-center mt-4 flex-wrap"
               }
             >
               <CourseworkName slug={slug} token={token} />
@@ -138,7 +138,11 @@ async function CourseworkPageContent({
           </Suspense>
         </div>
 
-        {(me === "lecturer" || me === "admin") && (
+        {/*
+        TODO: In the future, this should check the backend to ensure that they are a lecturer on this specific unit. For now this is okay for the demo, but this
+        needs to be fixed because a lect could be a student on a nother unit.
+          */}
+        {(me === "admin" || me === "lecturer") && (
           <div className="flex flex-col col-span-3 min-h-0">
             <Suspense>
               <SetupProgress cw_id={data.id} />

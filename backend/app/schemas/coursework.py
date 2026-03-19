@@ -2,7 +2,7 @@ from typing import Annotated, Literal
 import os
 
 import datetime
-from pydantic import BaseModel, AfterValidator
+from pydantic import BaseModel, AfterValidator, ConfigDict
 from uuid import UUID
 import re
 
@@ -51,6 +51,7 @@ DueDate = Annotated[datetime.datetime, AfterValidator(is_valid_due_date)]  # Fix
 Colour = Annotated[str, AfterValidator(is_valid_colour)]
 
 class CourseworkRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: UUID
     name: str
     description: str

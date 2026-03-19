@@ -9,19 +9,20 @@ from sqlalchemy.orm.strategy_options import selectinload
 from sqlmodel import Session, select
 from starlette import status
 
-from app.core.security import get_current_user
+from app.core.security import get_current_user, get_current_user_with_role
 from app.db.session import get_session
 from app.models.notification import Notification
 from app.models.programme import Programme
 from app.models.unit import Unit, UnitWithCourseworks
 from app.models.unit_enrollment import UnitEnrollment
+from app.schemas.coursework import CourseworkRead
 from app.schemas.notification import Notifications, ReadNotification, UnitWithNotifs, \
     NotificationsUnreadExist
-from app.schemas.unit import UnitAll, UnitAllByGroup
+from app.schemas.security import CurrentUser
+from app.schemas.unit import UnitAll, UnitAllByGroup, UnitRead
 
 router = APIRouter(prefix="/me", tags=["me"])
 session_dependency = Annotated[Session, Depends(get_session)]
-
 
 @router.get("/units", response_model=UnitAll)
 async def me_units(session: session_dependency, me: str = Depends(get_current_user)):
@@ -33,12 +34,25 @@ async def me_units(session: session_dependency, me: str = Depends(get_current_us
     )
 
 @router.get("/units/active", response_model=UnitAll)
-async def me_active_units(session: session_dependency, me: str = Depends(get_current_user)):
-    results = session.exec(
-        select(Unit).join(UnitEnrollment).where(UnitEnrollment.user_id == me)
-    ).all()
+async def me_active_units(
+        session: session_dependency,
+        me: CurrentUser = Depends(get_current_user_with_role),
+):
     today = datetime.date.today()
-    filtered = filter(lambda unit: unit.programme.start_date <= today <= unit.programme.end_date, results)
+
+    statement = select(Unit)
+
+    if not me.is_admin:
+        statement = statement.join(UnitEnrollment).where(UnitEnrollment.user_id == me.user_id)
+
+    results = session.exec(statement).all()
+
+    filtered = [
+        UnitRead.model_validate(unit)
+        for unit in results
+        if unit.programme.start_date <= today <= unit.programme.end_date
+    ]
+
     return UnitAll(
         units=filtered
     )
@@ -82,20 +96,31 @@ async def me_courseworks(
     )).model_dump() for unit in units]
     return results
 
-@router.get("/courseworks/active")
+@router.get("/courseworks/active", response_model=list[CourseworkRead])
 async def me_active_courseworks(
-    session: session_dependency, me: str = Depends(get_current_user)
+    session: session_dependency,
+    me: CurrentUser = Depends(get_current_user_with_role),
 ):
     # statement = select(Unit).join(UnitEnrollment).where(UnitEnrollment.user_id == me)
     # units = list(session.exec(statement))
     # results = [UnitWithCourseworks.model_validate(unit).model_dump() for unit in units]
-    units = session.exec(
-        select(Unit).join(UnitEnrollment).where(UnitEnrollment.user_id == me)
-    ).all()
+
     today = datetime.datetime.now()
+
+    statement = select(Unit)
+
+    if not me.is_admin:
+        statement = statement.join(UnitEnrollment).where(UnitEnrollment.user_id == me.user_id)
+
+    units = session.exec(statement).all()
+
     courseworks = [coursework for unit in units for coursework in unit.courseworks]
-    filtered = list(filter(lambda coursework: coursework.due_date >= today, courseworks))
-    return filtered
+    filtered = [coursework for coursework in courseworks if coursework.due_date >= today]
+
+    return [
+        CourseworkRead.model_validate(coursework)
+        for coursework in filtered
+    ]
 
 @router.get("/notifications", response_model=Notifications)
 async def me_notifications(session: session_dependency, me: str = Depends(get_current_user)):
