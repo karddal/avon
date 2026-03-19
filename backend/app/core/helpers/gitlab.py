@@ -520,6 +520,35 @@ async def gl_get_project_commits(project_path: str, per_page: int = 5):
 
     return data
 
+async def gl_get_commit_count(project_path: str, sha: str):
+    if not TOKEN or not BASE_URL:
+        raise HTTPException(status_code=500, detail="Missing GitLab configuration")
+
+    encoded_project_path = quote(project_path, safe="")
+    encoded_sha = quote(sha, safe="")
+
+    async with httpx.AsyncClient(base_url=BASE_URL) as client:
+        try:
+            response = await client.get(
+                f"/projects/{encoded_project_path}/repository/commits/{encoded_sha}/sequence",
+                headers={
+                    "PRIVATE-TOKEN": TOKEN,
+                    "Content-Type": "application/json"
+                },
+                timeout=10.0
+            )
+            data = response.json()
+            if response.status_code != 200:
+                return {
+                    "success": False,
+                    "error": data.get("message") or "Failed to fetch commit count"
+                }
+        except httpx.RequestError as err:
+            print(f"Network Error: {err}")
+            raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
+
+    return data
+
 async def gl_get_project_tree(project_path: str):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")

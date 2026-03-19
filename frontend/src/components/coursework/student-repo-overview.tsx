@@ -39,7 +39,7 @@ async function StudentRepoOverviewContent({
     );
   }
 
-  const commitCount = repo.commits.length;
+  const commitCount = repo.total_commits;
   const linesChanged = repo.commits.reduce(
     (total, commit) => total + commit.additions + commit.deletions,
     0,
@@ -72,7 +72,7 @@ async function StudentRepoOverviewContent({
           </div>
           <div className="text-3xl font-semibold">{commitCount}</div>
           <p className="mt-2 text-sm text-emerald-800 dark:text-emerald-200">
-            Counted from the recent commit activity shown for this repository.
+            Total number of commits in your repository.
           </p>
         </div>
 

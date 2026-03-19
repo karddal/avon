@@ -14,6 +14,7 @@ from sqlmodel import Session, select
 from app.core.helpers.gitlab import (
     gitlab_project_path_from_repo_url,
     gl_activate_template_project,
+    gl_get_commit_count,
     gl_create_coursework,
     gl_delete_coursework,
     gl_get_project_commits,
@@ -114,17 +115,28 @@ async def get_my_student_repo(
 
     if settings.testing_mode:
         commits = []
+        total_commits = 0
     else:
         project_path = gitlab_project_path_from_repo_url(student_repo.repo_url)
         commit_data = await gl_get_project_commits(
             project_path,
-            per_page=5,
+            per_page=3,
         )
         if isinstance(commit_data, dict) and commit_data.get("success") is False:
             raise HTTPException(
                 status_code=status.HTTP_502_BAD_GATEWAY,
                 detail="Failed to fetch GitLab commits",
             )
+        if len(commit_data) > 0:
+            count_data = await gl_get_commit_count(project_path, commit_data[0]["id"])
+            if isinstance(count_data, dict) and count_data.get("success") is False:
+                raise HTTPException(
+                    status_code=status.HTTP_502_BAD_GATEWAY,
+                    detail="Failed to fetch GitLab commit count",
+                )
+            total_commits = count_data.get("count", len(commit_data))
+        else:
+            total_commits = 0
         commits = [
             CourseworkRepoCommit(
                 id=commit["id"],
@@ -142,6 +154,7 @@ async def get_my_student_repo(
     return CourseworkStudentRepoRead(
         repo_url=student_repo.repo_url,
         commits=commits,
+        total_commits=total_commits,
     )
 
 

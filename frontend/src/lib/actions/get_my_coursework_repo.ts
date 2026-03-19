@@ -16,6 +16,7 @@ export type CourseworkRepoCommit = {
 export type CourseworkStudentRepo = {
   repo_url: string;
   commits: CourseworkRepoCommit[];
+  total_commits: number;
 };
 
 export async function get_my_coursework_repo(
