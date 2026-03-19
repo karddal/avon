@@ -39,8 +39,9 @@ import {BaseImage, get_base_images_cw_specific} from "@/lib/actions/get_base_ima
 import {GetCWEngineDataResponse} from "@/lib/actions/get_cw_engine_data";
 import {Item, ItemContent, ItemMedia, ItemTitle} from "../ui/item";
 import {Progress} from "@/components/ui/progress";
-import {Field, FieldLabel} from "@/components/ui/field";
+import {Field, FieldContent, FieldLabel} from "@/components/ui/field";
 import StartTestBatchPopup from "@/components/coursework/start_test_batch";
+import {Button} from "@/components/ui/button";
 
 export default function CourseworkLectDropdown({
   slug,
@@ -89,10 +90,11 @@ export default function CourseworkLectDropdown({
         <DropdownMenuTrigger
           data-cy="coursework-lect-dropdown"
           className="border hover:bg-accent hover:transition p-2"
+          asChild
         >
-          <Menu size={32} />
+          <Button variant={"ghost"} size={"icon-lg"}><Menu></Menu></Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="flex flex-col">
+        <DropdownMenuContent className="" align={"end"}>
           <DropdownMenuLabel>Coursework Options</DropdownMenuLabel>
           <DropdownMenuSeparator />
 
@@ -100,8 +102,9 @@ export default function CourseworkLectDropdown({
             <>
               <DropdownMenuGroup>
                 {(!engine_is_setup) && (
-                    <div>
-                      <Item variant={"outline"} className={"mb-2"}>
+                    <>
+                      <DropdownMenuLabel>Engine</DropdownMenuLabel>
+                      <Item variant={"outline"} className={"mb-2 "}>
                         <ItemMedia variant={"icon"}>
                           <Container/>
                         </ItemMedia>
@@ -109,19 +112,21 @@ export default function CourseworkLectDropdown({
                           <ItemTitle>Engine Setup</ItemTitle>
                         </ItemContent>
 
-                        <Field className={"w-full max-w-sm"}>
+                        <Field className={""}>
                           <FieldLabel htmlFor={"progress-engine"}>
-                            <span className={"font-normal"}>Configure engine to run tests</span>
-                            <span className={"ml-auto"}>0/1</span>
+                            <span className={"font-normal"}>Configure the Avon Engine to enable test running.</span>
                           </FieldLabel>
+                          <FieldContent>
+                            <Progress id="progress-engine" value={0}></Progress>
+                          </FieldContent>
                         </Field>
-                        <Progress id="progress-engine" value={0}></Progress>
                       </Item>
                       <DropdownMenuItem key={"Engine"} disabled={true}>
                         <ServerCog className="mr-2 h-4 w-4" />
                         Start test batch
                       </DropdownMenuItem>
-                    </div>
+                    </>
+
                 )}
                 {(engine_is_setup && (
                     <DropdownMenuItem key={"Engine"} disabled={false} onSelect={() => setShowStartTests(true)}>
@@ -140,25 +145,12 @@ export default function CourseworkLectDropdown({
             </>
           )}
 
-          {hasManageScope && (
-            <>
-              {hasEngineScope && <DropdownMenuSeparator />}
-              <DropdownMenuGroup>
-                <DropdownMenuItem
-                    key={"Edit"}
-                    onSelect={() => setShowEdit(true)}
-                    disabled={!canEdit}
-                >
-                  <SquarePen className="mr-2 h-4 w-4" />
-                  Edit coursework
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-            </>
-          )}
+
 
           {hasGitlabScope && (
             <>
               {(hasEngineScope || hasManageScope) && <DropdownMenuSeparator />}
+              <DropdownMenuLabel>GitLab</DropdownMenuLabel>
               <DropdownMenuItem
                 key={"Templates"}
                 onSelect={() => setShowTemplate(true)}
@@ -178,19 +170,39 @@ export default function CourseworkLectDropdown({
             </>
           )}
 
+          {hasManageScope && (
+              <>
+                {hasEngineScope && <DropdownMenuSeparator />}
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel>Manage</DropdownMenuLabel>
+                  <DropdownMenuItem
+                      key={"Edit"}
+                      onSelect={() => setShowEdit(true)}
+                      disabled={!canEdit}
+                  >
+                    <SquarePen className="mr-2 h-4 w-4" />
+                    Edit coursework
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+              </>
+          )}
+
           {hasDeleteScope && (
             <>
               {(hasEngineScope || hasManageScope || hasGitlabScope) && (
                 <DropdownMenuSeparator />
               )}
-              <DropdownMenuItem
-                key={"Delete"}
-                onSelect={() => setShowDelete(true)}
-                className="text-destructive focus:text-destructive"
-              >
-                <SquareX className="text-destructive mr-2 h-4 w-4" /> Delete
-                coursework
-              </DropdownMenuItem>
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>Destructive options</DropdownMenuLabel>
+                <DropdownMenuItem
+                    key={"Delete"}
+                    onSelect={() => setShowDelete(true)}
+                    className="text-destructive focus:text-destructive"
+                >
+                  <SquareX className="text-destructive mr-2 h-4 w-4" /> Delete
+                  coursework
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
             </>
           )}
         </DropdownMenuContent>
@@ -249,7 +261,7 @@ export default function CourseworkLectDropdown({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="">Cancel</AlertDialogCancel>
             <DeleteCourseworkButton courseworkId={slug} />
           </AlertDialogFooter>
         </AlertDialogContent>
