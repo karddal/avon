@@ -24,7 +24,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
 import {
   DropDrawer,
   DropDrawerContent,
@@ -81,7 +80,6 @@ export default function CourseworkLectDropdown({
   if (!hasEntries) {
     return null;
   }
-  console.log("--a-df-asdf0-dsaf");
   console.log(cw_engine_data?.base_image_id);
   const engine_is_setup = !(
     cw_engine_data?.base_image_id == null ||
@@ -93,11 +91,8 @@ export default function CourseworkLectDropdown({
         <DropDrawerTrigger
           data-cy="coursework-lect-dropdown"
           className="border hover:bg-accent hover:transition p-2"
-          asChild
         >
-          <Button variant={"ghost"} size={"icon-lg"}>
-            <Menu className={"scale-150"}></Menu>
-          </Button>
+          <Menu size={32} />
         </DropDrawerTrigger>
         <DropDrawerContent className="" align={"end"}>
           <DropDrawerLabel>Coursework Options</DropDrawerLabel>

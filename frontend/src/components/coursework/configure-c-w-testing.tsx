@@ -4,7 +4,7 @@ import { Container, FileCheck, Layers } from "lucide-react";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -35,6 +35,7 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Spinner } from "@/components/ui/spinner";
 import type { GetCWEngineDataResponse } from "@/lib/actions/get_cw_engine_data";
 import { update_coursework_engine } from "@/lib/actions/update_coursework_engine";
@@ -123,8 +124,8 @@ export default function ConfigureCWTesting({
             <div className="overflow-y-auto px-8">
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <div className="text-left">
-                    <DialogTitle className="font-medium text-sm">
+                  <div className="flex flex-col gap-0">
+                    <DialogTitle className="font-medium text-md">
                       Base Image
                     </DialogTitle>
                     <p className="text-sm text-muted-foreground mb-2">
@@ -132,21 +133,17 @@ export default function ConfigureCWTesting({
                     </p>
                   </div>
                   <div className={"flex flex-col gap-1"}>
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Currently selected</CardTitle>
-                        <CardContent>
-                          <Item variant={"outline"}>
-                            <ItemContent>
-                              <ItemTitle>{config.baseImage?.name}</ItemTitle>
-                              <ItemDescription>
-                                {config.baseImage?.description}
-                              </ItemDescription>
-                            </ItemContent>
-                          </Item>
-                        </CardContent>
-                      </CardHeader>
-                    </Card>
+                    <CardTitle className="text-sm">
+                      Currently selected
+                    </CardTitle>
+                    <Item variant={"outline"}>
+                      <ItemContent>
+                        <ItemTitle>{config.baseImage?.name}</ItemTitle>
+                        <ItemDescription>
+                          {config.baseImage?.description}
+                        </ItemDescription>
+                      </ItemContent>
+                    </Item>
                   </div>
                   <Dialog>
                     <form>
@@ -155,51 +152,55 @@ export default function ConfigureCWTesting({
                           Open base image gallery
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="w-full overflow-y-scroll max-h-[70%]">
+                      <DialogContent className="w-full max-w-2xl max-h-[85vh] overflow-hidden">
                         <DialogHeader>
                           <DialogTitle>Base image gallery</DialogTitle>
                           <DialogDescription>
                             Select one of the available base images.
                           </DialogDescription>
                         </DialogHeader>
-                        {available_images.length > 0 && (
-                          <RadioGroup
-                            onValueChange={(x) => setBaseImage(x)}
-                            defaultValue={config.baseImage.id}
-                            className={"w-full overflow-y-scroll!"}
-                          >
-                            {available_images.map((image) => (
-                              <FieldLabel key={image.id} htmlFor={image.id}>
-                                <Field orientation="horizontal">
-                                  <FieldContent>
-                                    <FieldTitle>{image.name}</FieldTitle>
-                                    <FieldDescription>
-                                      {image.description}
-                                    </FieldDescription>
-                                  </FieldContent>
-                                  <RadioGroupItem
-                                    value={image.id}
-                                    id={image.id}
-                                  />
-                                </Field>
-                              </FieldLabel>
-                            ))}
-                          </RadioGroup>
-                        )}
-                        {available_images.length === 0 && (
-                          <Empty className={"border border-dashed"}>
-                            <EmptyHeader>
-                              <EmptyMedia variant={"icon"}>
-                                <Layers />
-                              </EmptyMedia>
-                              <EmptyTitle>No base images available.</EmptyTitle>
-                              <EmptyDescription>
-                                We're sorry, but there are no base images
-                                available. Please, check back later.
-                              </EmptyDescription>
-                            </EmptyHeader>
-                          </Empty>
-                        )}
+                        <ScrollArea className="w-full max-h-[min(60vh,28rem)]">
+                          {available_images.length > 0 && (
+                            <RadioGroup
+                              onValueChange={(x) => setBaseImage(x)}
+                              value={config.baseImage.id}
+                              className="w-full space-y-2"
+                            >
+                              {available_images.map((image) => (
+                                <FieldLabel key={image.id} htmlFor={image.id}>
+                                  <Field orientation="horizontal">
+                                    <FieldContent>
+                                      <FieldTitle>{image.name}</FieldTitle>
+                                      <FieldDescription>
+                                        {image.description}
+                                      </FieldDescription>
+                                    </FieldContent>
+                                    <RadioGroupItem
+                                      value={image.id}
+                                      id={image.id}
+                                    />
+                                  </Field>
+                                </FieldLabel>
+                              ))}
+                            </RadioGroup>
+                          )}
+                          {available_images.length === 0 && (
+                            <Empty className={"border border-dashed"}>
+                              <EmptyHeader>
+                                <EmptyMedia variant={"icon"}>
+                                  <Layers />
+                                </EmptyMedia>
+                                <EmptyTitle>
+                                  No base images available.
+                                </EmptyTitle>
+                                <EmptyDescription>
+                                  We're sorry, but there are no base images
+                                  available. Please, check back later.
+                                </EmptyDescription>
+                              </EmptyHeader>
+                            </Empty>
+                          )}
+                        </ScrollArea>
                       </DialogContent>
                     </form>
                   </Dialog>
@@ -208,11 +209,11 @@ export default function ConfigureCWTesting({
                   <div className="flex justify-between items-end">
                     <div>
                       <DialogTitle className="font-medium text-sm">
-                        Final Command Chain
+                        Final Command
                       </DialogTitle>
                       <p className="text-sm text-muted-foreground mb-2">
                         This command will be <strong>executed</strong> in the
-                        coursework folder.
+                        coursework folder. Commonly the test command.
                       </p>
                     </div>
                   </div>
