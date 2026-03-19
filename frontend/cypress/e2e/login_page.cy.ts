@@ -38,6 +38,12 @@ describe("Login page", () => {
     },
   );
 
+  it("redirects authenticated users away from login page", () => {
+    cy.login("one@bris.ac.uk", "changeme", false);
+    cy.visit("/login");
+    cy.location("pathname").should("eq", "/dashboard");
+  });
+
   it("shows error with invalid credentials", () => {
     cy.visit("/");
 

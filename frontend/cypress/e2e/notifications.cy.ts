@@ -5,7 +5,7 @@ describe("Notifications", () => {
 
   it("shows no notifications with no notifications in the system", () => {
     cy.login("rohan@bris.ac.uk", "changeme", true);
-    cy.get("button.p-2:nth-child(2)").click();
+    cy.getByCy("notification-trigger").click();
     cy.get(".max-w-sm > .text-lg").should(
       "contain.text",
       "You have no notifications",
@@ -16,7 +16,7 @@ describe("Notifications", () => {
     cy.login("one@bris.ac.uk", "changeme", false);
     cy.contains("Units").click();
     cy.contains("Imperative and Functional Programming").click();
-    cy.get("div.aspect-square button").click();
+    cy.get("#unit-dropdown").click();
     cy.contains("Send Notification").click();
     cy.wait(500);
     cy.get("#notification-form-title").type("Test notification");
@@ -24,8 +24,9 @@ describe("Notifications", () => {
     cy.get("button.gap-2:nth-child(2)").click();
     cy.get('[data-content=""] > div').should("exist"); // sonner
 
+    cy.clearAuthSession();
     cy.login("rohan@bris.ac.uk", "changeme", true);
-    cy.get("button.p-2:nth-child(2)").click();
+    cy.getByCy("notification-trigger").click();
     cy.get("span.absolute").contains("1");
     cy.contains("button", "Imperative and Functional Programming").should(
       "exist",
@@ -36,14 +37,14 @@ describe("Notifications", () => {
 
   it("successfully marks a notification as read", () => {
     cy.login("rohan@bris.ac.uk", "changeme", true);
-    cy.get("button.p-2:nth-child(2)").click();
+    cy.getByCy("notification-trigger").click();
     cy.get("span.absolute").contains("1");
     cy.contains("button", "Imperative and Functional Programming").should(
       "exist",
     );
     cy.contains("button", "Imperative and Functional Programming").click();
     cy.contains("Test notification").should("exist");
-    cy.get('[data-slot="item-actions"] > .inline-flex').click();
+    cy.getByCy("mark-notification-read").click();
     cy.get("svg.lucide.lucide-loader-circle.size-4.animate-spin").should(
       "not.be.visible",
     );
