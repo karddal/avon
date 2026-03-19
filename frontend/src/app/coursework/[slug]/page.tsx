@@ -1,7 +1,11 @@
 import { Suspense } from "react";
-import { CourseworkDeadlineBanner } from "@/components/coursework/coursework-banner";
+import { CourseworkDeadlineBannerFromSlug } from "@/components/coursework/coursework-banner";
 import CourseworkLectDropdown from "@/components/coursework/coursework-lect-dropdown";
+import CourseworkRepoOverview from "@/components/coursework/coursework-repo-overview";
+import CourseworkStudentPanel from "@/components/coursework/coursework-student-panel";
 import SetupProgress from "@/components/coursework/setup-progress";
+import StudentRepoActivity from "@/components/coursework/student-repo-activity";
+import StudentRepoOverview from "@/components/coursework/student-repo-overview";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { get_base_images_cw_specific } from "@/lib/actions/get_base_images_cw_specific";
@@ -31,10 +35,11 @@ async function CourseworkPageContent({
     scopes.has("unit:coursework_gitlab") ||
     scopes.has("unit:coursework_engine") ||
     scopes.has("unit:coursework_delete");
-  // const data = canLoadCourseworkTools
-  //   ? await get_cw_update_data(slug)
-  //   : undefined;
-  const data = await get_cw_update_data(slug);
+  const canViewStudentRepos = scopes.has("unit:coursework_engine");
+  const canLoadCourseworkTools = scopes.has("unit:coursework_manage");
+  const data = canLoadCourseworkTools
+    ? await get_cw_update_data(slug)
+    : undefined;
 
   const canGetAvailImages = scopes.has("unit:coursework_engine");
   const images = canGetAvailImages
@@ -73,11 +78,16 @@ async function CourseworkPageContent({
           </Suspense>
         </div>
       </div>
-      <CourseworkDeadlineBanner
-        deadline={data.due_date}
-        warningThreshold={7}
-      ></CourseworkDeadlineBanner>
-      <section className="mb-2 grid min-h-0 grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+      {!canViewSetupProgress && (
+        <Suspense>
+          <CourseworkDeadlineBannerFromSlug
+            slug={slug}
+            token={token}
+            warningThreshold={7}
+          />
+        </Suspense>
+      )}
+      <section className="mb-2 pb-6 grid min-h-0 grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         <div className="flex h-full flex-col gap-4 md:col-span-2 xl:col-span-2 xl:h-[16rem]">
           <Card className="h-full min-h-0">
             <CardHeader>
@@ -95,15 +105,32 @@ async function CourseworkPageContent({
             </CardContent>
           </Card>
         </div>
-        <div className="h-full md:col-span-1 xl:col-span-1 xl:h-[16rem]">
+        <div className="h-full md:col-span-2 xl:col-span-1 xl:h-[16rem]">
           <Suspense>
             <CourseworkInformation slug={slug} token={token} />
           </Suspense>
         </div>
-        <div className="h-full md:col-span-1 xl:col-span-1 xl:col-start-3">
-          {canViewSetupProgress && (
+        <div className="h-full md:col-span-2 xl:col-span-2">
+          {canViewSetupProgress ? (
+            canViewStudentRepos ? (
+              <CourseworkRepoOverview courseworkId={slug} />
+            ) : (
+              <CourseworkStudentPanel />
+            )
+          ) : (
+            <Suspense>
+              <StudentRepoOverview courseworkId={slug} />
+            </Suspense>
+          )}
+        </div>
+        <div className="h-full md:col-span-2 xl:col-span-1 xl:col-start-3">
+          {canViewSetupProgress ? (
             <Suspense>
               <SetupProgress cw_id={slug}></SetupProgress>
+            </Suspense>
+          ) : (
+            <Suspense>
+              <StudentRepoActivity courseworkId={slug} />
             </Suspense>
           )}
         </div>

@@ -12,9 +12,12 @@ from sqlmodel import Session, select
 
 # GitLab helpers
 from app.core.helpers.gitlab import (
+    gitlab_project_path_from_repo_url,
     gl_activate_template_project,
     gl_create_coursework,
     gl_delete_coursework,
+    gl_get_project_commits,
+    gl_get_project_tree,
     gl_overwrite_zip,
     gl_template_files,
     gl_template_urls,
@@ -32,6 +35,7 @@ from app.core.settings import settings
 from app.db.session import get_session
 from app.models.base_image import BaseImage
 from app.models.coursework import Coursework
+from app.models.student_repo import StudentRepo
 from app.models.unit import Unit, UnitWithCourseworks
 from app.models.unit_enrollment import UnitEnrollment
 from app.schemas.base_image import BaseImageList
@@ -41,7 +45,10 @@ from app.schemas.coursework import (
     CourseworkEngineData,
     CourseworkEventRead,
     CourseworkRead,
+    CourseworkRepoCommit,
+    CourseworkRepoTreeItem,
     CourseworkSetupProgress,
+    CourseworkStudentRepoRead,
     CourseworkStudentRepos,
     CourseworkTemplateActivate,
     CourseworkTemplateExists,
@@ -73,6 +80,89 @@ async def get_student_repos(id: UUID, session: session_dependency, token: token_
     repos = map(lambda sr: sr,coursework.student_repos)
 
     return CourseworkStudentRepos(repos=list(repos))
+
+@router.get("/{id}/my_repo", response_model=CourseworkStudentRepoRead)
+async def get_my_student_repo(
+    id: UUID,
+    session: session_dependency,
+    token: token_dependency,
+    current_user: CurrentUser = Depends(get_current_user_with_role),
+):
+    coursework = session.get(Coursework, id)
+    if coursework is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Coursework not found"
+        )
+
+    await require_scopes(
+        ResourceInformation(type=Unit, id=coursework.unit_id),
+        Scopes.UNIT_READ,
+        token=token,
+        session=session,
+    )
+
+    student_repo = session.exec(
+        select(StudentRepo).where(
+            StudentRepo.cw_id == id,
+            StudentRepo.student_id == current_user.user_id,
+        )
+    ).first()
+
+    if student_repo is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Student repository not found for this coursework",
+        )
+
+    if settings.testing_mode:
+        commits = []
+        files = []
+    else:
+        project_path = gitlab_project_path_from_repo_url(student_repo.repo_url)
+        commit_data = await gl_get_project_commits(
+            project_path,
+            per_page=5,
+        )
+        tree_data = await gl_get_project_tree(project_path)
+        if isinstance(commit_data, dict) and commit_data.get("success") is False:
+            raise HTTPException(
+                status_code=status.HTTP_502_BAD_GATEWAY,
+                detail="Failed to fetch GitLab commits",
+            )
+        if isinstance(tree_data, dict) and tree_data.get("success") is False:
+            raise HTTPException(
+                status_code=status.HTTP_502_BAD_GATEWAY,
+                detail="Failed to fetch GitLab repository tree",
+            )
+        commits = [
+            CourseworkRepoCommit(
+                id=commit["id"],
+                short_id=commit["short_id"],
+                title=commit["title"],
+                author_name=commit.get("author_name"),
+                authored_date=commit.get("authored_date"),
+                web_url=commit.get("web_url"),
+                additions=commit.get("stats", {}).get("additions", 0),
+                deletions=commit.get("stats", {}).get("deletions", 0),
+            )
+            for commit in commit_data
+        ]
+        files = [
+            CourseworkRepoTreeItem(
+                id=file["id"],
+                name=file["name"],
+                type=file["type"],
+                path=file["path"],
+                mode=file["mode"],
+            )
+            for file in tree_data
+        ]
+
+    return CourseworkStudentRepoRead(
+        repo_url=student_repo.repo_url,
+        commits=commits,
+        files=files,
+    )
 
 
 
