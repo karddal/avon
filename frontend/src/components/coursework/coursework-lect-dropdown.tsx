@@ -99,18 +99,17 @@ export default function CourseworkLectDropdown({
           className="border hover:bg-accent hover:transition p-2"
           asChild
         >
-          <Button variant={"ghost"} size={"icon-lg"}><Menu></Menu></Button>
+          <Button variant={"ghost"} size={"icon-lg"}><Menu className={"scale-150"}></Menu></Button>
         </DropDrawerTrigger>
         <DropDrawerContent className="" align={"end"}>
           <DropDrawerLabel>Coursework Options</DropDrawerLabel>
           <DropDrawerSeparator />
 
           {hasEngineScope && (
-            <>
               <DropDrawerGroup>
+                <DropDrawerLabel>Engine</DropDrawerLabel>
                 {(!engine_is_setup) && (
                     <>
-                      <DropDrawerLabel>Engine</DropDrawerLabel>
                       <Item variant={"outline"} className={"p-2 m-2"}>
                         <ItemMedia variant={"icon"}>
                           <Container/>
@@ -147,7 +146,6 @@ export default function CourseworkLectDropdown({
                   Configure engine
                 </DropDrawerItem>
               </DropDrawerGroup>
-            </>
           )}
 
 
@@ -216,8 +214,16 @@ export default function CourseworkLectDropdown({
         </DropDrawerContent>
       </DropDrawer>
 
-      {engine_is_setup && cw_engine_data && (
-          <StartTestBatchPopup open_state={showStartTests} set_open_state={setShowStartTests} courseworkId={slug} refresh={refresh}></StartTestBatchPopup>
+      {engine_is_setup && cw_engine_data && avail_images_data && (
+          <StartTestBatchPopup
+              open_state={showStartTests}
+              set_open_state={setShowStartTests}
+              courseworkId={slug}
+              refresh={refresh}
+              cw_engine_data={cw_engine_data}
+            available_images={avail_images_data}
+          >
+          </StartTestBatchPopup>
       )}
       {avail_images_data && cw_engine_data && (
           <ConfigureCWTesting
@@ -269,7 +275,7 @@ export default function CourseworkLectDropdown({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="">Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="sm:h-full">Cancel</AlertDialogCancel>
             <DeleteCourseworkButton courseworkId={slug} />
           </AlertDialogFooter>
         </AlertDialogContent>
