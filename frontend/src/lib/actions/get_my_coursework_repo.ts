@@ -13,18 +13,9 @@ export type CourseworkRepoCommit = {
   deletions: number;
 };
 
-export type CourseworkRepoTreeItem = {
-  id: string;
-  name: string;
-  type: "blob" | "tree";
-  path: string;
-  mode: string;
-};
-
 export type CourseworkStudentRepo = {
   repo_url: string;
   commits: CourseworkRepoCommit[];
-  files: CourseworkRepoTreeItem[];
 };
 
 export async function get_my_coursework_repo(

@@ -17,7 +17,6 @@ from app.core.helpers.gitlab import (
     gl_create_coursework,
     gl_delete_coursework,
     gl_get_project_commits,
-    gl_get_project_tree,
     gl_overwrite_zip,
     gl_template_files,
     gl_template_urls,
@@ -46,7 +45,6 @@ from app.schemas.coursework import (
     CourseworkEventRead,
     CourseworkRead,
     CourseworkRepoCommit,
-    CourseworkRepoTreeItem,
     CourseworkSetupProgress,
     CourseworkStudentRepoRead,
     CourseworkStudentRepos,
@@ -116,23 +114,16 @@ async def get_my_student_repo(
 
     if settings.testing_mode:
         commits = []
-        files = []
     else:
         project_path = gitlab_project_path_from_repo_url(student_repo.repo_url)
         commit_data = await gl_get_project_commits(
             project_path,
             per_page=5,
         )
-        tree_data = await gl_get_project_tree(project_path)
         if isinstance(commit_data, dict) and commit_data.get("success") is False:
             raise HTTPException(
                 status_code=status.HTTP_502_BAD_GATEWAY,
                 detail="Failed to fetch GitLab commits",
-            )
-        if isinstance(tree_data, dict) and tree_data.get("success") is False:
-            raise HTTPException(
-                status_code=status.HTTP_502_BAD_GATEWAY,
-                detail="Failed to fetch GitLab repository tree",
             )
         commits = [
             CourseworkRepoCommit(
@@ -147,21 +138,10 @@ async def get_my_student_repo(
             )
             for commit in commit_data
         ]
-        files = [
-            CourseworkRepoTreeItem(
-                id=file["id"],
-                name=file["name"],
-                type=file["type"],
-                path=file["path"],
-                mode=file["mode"],
-            )
-            for file in tree_data
-        ]
 
     return CourseworkStudentRepoRead(
         repo_url=student_repo.repo_url,
         commits=commits,
-        files=files,
     )
 
 
@@ -219,8 +199,6 @@ async def update_engine_setup(id: UUID, cw: CourseworkUpdateEngineData, session:
     session.commit()
     session.refresh(coursework)
     return {"message": "Updated coursework engine"}
-
-
 
 
 @router.post('/create', response_model = CourseworkRead, status_code=status.HTTP_201_CREATED)
