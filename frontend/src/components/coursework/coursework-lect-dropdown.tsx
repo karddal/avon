@@ -123,7 +123,10 @@ export default function CourseworkLectDropdown({
             Results
           </DropdownMenuItem>
 
-          <DropdownMenuItem onSelect={() => setShowEdit(true)}>
+          <DropdownMenuItem
+            data-cy="coursework-edit-menu-item"
+            onSelect={() => setShowEdit(true)}
+          >
             <SquarePen className="mr-2 h-4 w-4" />
             Edit coursework
           </DropdownMenuItem>
