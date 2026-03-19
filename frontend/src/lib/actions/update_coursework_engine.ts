@@ -6,7 +6,10 @@ type UpdateCourseworkEngineRequest = {
   tester_command: string;
 };
 
-export async function update_coursework_engine(id: string, req: UpdateCourseworkEngineRequest) {
+export async function update_coursework_engine(
+  id: string,
+  req: UpdateCourseworkEngineRequest,
+) {
   const token = await getRequestJWT();
 
   const data = await fetch(

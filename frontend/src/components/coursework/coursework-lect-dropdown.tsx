@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  BookCheck,
   BookDashed,
   Container,
   LayersPlus,
@@ -15,6 +14,7 @@ import { useCallback, useState } from "react";
 import ConfigureCWTesting from "@/components/coursework/configure-c-w-testing";
 import DeleteCourseworkButton from "@/components/coursework/delete_coursework_button";
 import EditCoursework from "@/components/coursework/edit-coursework";
+import StartTestBatchPopup from "@/components/coursework/start_test_batch";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -24,44 +24,37 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent, DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import type { CourseworkUpdateData } from "@/lib/actions/get_coursework_update_data";
-import CreateTemplate from "./create-templates";
-import ProvisionCoursework from "./provision-coursework";
-import {BaseImage, get_base_images_cw_specific} from "@/lib/actions/get_base_images_cw_specific";
-import {GetCWEngineDataResponse} from "@/lib/actions/get_cw_engine_data";
-import {Item, ItemContent, ItemMedia, ItemTitle} from "../ui/item";
-import {Progress} from "@/components/ui/progress";
-import {Field, FieldContent, FieldLabel} from "@/components/ui/field";
-import StartTestBatchPopup from "@/components/coursework/start_test_batch";
-import {Button} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   DropDrawer,
   DropDrawerContent,
-  DropDrawerGroup, DropDrawerItem, DropDrawerLabel,
+  DropDrawerGroup,
+  DropDrawerItem,
+  DropDrawerLabel,
   DropDrawerSeparator,
-  DropDrawerTrigger
+  DropDrawerTrigger,
 } from "@/components/ui/dropdrawer";
+import { Field, FieldContent, FieldLabel } from "@/components/ui/field";
+import { Progress } from "@/components/ui/progress";
+import type { BaseImage } from "@/lib/actions/get_base_images_cw_specific";
+import type { CourseworkUpdateData } from "@/lib/actions/get_coursework_update_data";
+import type { GetCWEngineDataResponse } from "@/lib/actions/get_cw_engine_data";
+import { Item, ItemContent, ItemMedia, ItemTitle } from "../ui/item";
+import CreateTemplate from "./create-templates";
+import ProvisionCoursework from "./provision-coursework";
 
 export default function CourseworkLectDropdown({
   slug,
   scopes,
   coursework_update_data,
-    avail_images_data,
-    cw_engine_data,
+  avail_images_data,
+  cw_engine_data,
 }: {
   slug: string;
   scopes: Set<string>;
   coursework_update_data?: CourseworkUpdateData;
   cw_engine_data?: GetCWEngineDataResponse;
-  avail_images_data?: BaseImage[]
+  avail_images_data?: BaseImage[];
 }) {
   const [showDelete, setShowDelete] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
@@ -88,9 +81,12 @@ export default function CourseworkLectDropdown({
   if (!hasEntries) {
     return null;
   }
-  console.log("--a-df-asdf0-dsaf")
-  console.log(cw_engine_data?.base_image_id)
-  const engine_is_setup = !(cw_engine_data?.base_image_id == null || cw_engine_data?.tester_command == null)
+  console.log("--a-df-asdf0-dsaf");
+  console.log(cw_engine_data?.base_image_id);
+  const engine_is_setup = !(
+    cw_engine_data?.base_image_id == null ||
+    cw_engine_data?.tester_command == null
+  );
   return (
     <div className="aspect-square">
       <DropDrawer>
@@ -99,56 +95,66 @@ export default function CourseworkLectDropdown({
           className="border hover:bg-accent hover:transition p-2"
           asChild
         >
-          <Button variant={"ghost"} size={"icon-lg"}><Menu className={"scale-150"}></Menu></Button>
+          <Button variant={"ghost"} size={"icon-lg"}>
+            <Menu className={"scale-150"}></Menu>
+          </Button>
         </DropDrawerTrigger>
         <DropDrawerContent className="" align={"end"}>
           <DropDrawerLabel>Coursework Options</DropDrawerLabel>
           <DropDrawerSeparator />
 
           {hasEngineScope && (
-              <DropDrawerGroup>
-                <DropDrawerLabel>Engine</DropDrawerLabel>
-                {(!engine_is_setup) && (
-                    <>
-                      <Item variant={"outline"} className={"p-2 m-2"}>
-                        <ItemMedia variant={"icon"}>
-                          <Container/>
-                        </ItemMedia>
-                        <ItemContent>
-                          <ItemTitle>Engine Setup</ItemTitle>
-                        </ItemContent>
+            <DropDrawerGroup>
+              <DropDrawerLabel>Engine</DropDrawerLabel>
+              {!engine_is_setup && (
+                <>
+                  <Item variant={"outline"} className={"p-2 m-2"}>
+                    <ItemMedia variant={"icon"}>
+                      <Container />
+                    </ItemMedia>
+                    <ItemContent>
+                      <ItemTitle>Engine Setup</ItemTitle>
+                    </ItemContent>
 
-                        <Field className={"p-2"}>
-                          <FieldLabel htmlFor={"progress-engine"}>
-                            <span className={"font-normal"}>Configure the Avon Engine to enable test running.</span>
-                          </FieldLabel>
-                          <FieldContent>
-                            <Progress id="progress-engine" value={0}></Progress>
-                          </FieldContent>
-                        </Field>
-                      </Item>
-                      <DropDrawerItem key={"Engine"} disabled={true} icon={<ServerCog/>}>
-                        Start test batch
-                      </DropDrawerItem>
-                    </>
-
-                )}
-                {(engine_is_setup && (
-                    <DropDrawerItem key={"Engine"} icon={<ServerCog/>} disabled={false} onSelect={() => setShowStartTests(true)}>
-                      Start test batch
-                    </DropDrawerItem>
-                ))}
+                    <Field className={"p-2"}>
+                      <FieldLabel htmlFor={"progress-engine"}>
+                        <span className={"font-normal"}>
+                          Configure the Avon Engine to enable test running.
+                        </span>
+                      </FieldLabel>
+                      <FieldContent>
+                        <Progress id="progress-engine" value={0}></Progress>
+                      </FieldContent>
+                    </Field>
+                  </Item>
+                  <DropDrawerItem
+                    key={"Engine"}
+                    disabled={true}
+                    icon={<ServerCog />}
+                  >
+                    Start test batch
+                  </DropDrawerItem>
+                </>
+              )}
+              {engine_is_setup && (
                 <DropDrawerItem
-                    key={"Dockerfiles"}
-                    icon={<Container/>}
-                    onSelect={() => setShowDocker(true)}
+                  key={"Engine"}
+                  icon={<ServerCog />}
+                  disabled={false}
+                  onSelect={() => setShowStartTests(true)}
                 >
-                  Configure engine
+                  Start test batch
                 </DropDrawerItem>
-              </DropDrawerGroup>
+              )}
+              <DropDrawerItem
+                key={"Dockerfiles"}
+                icon={<Container />}
+                onSelect={() => setShowDocker(true)}
+              >
+                Configure engine
+              </DropDrawerItem>
+            </DropDrawerGroup>
           )}
-
-
 
           {hasGitlabScope && (
             <>
@@ -156,41 +162,40 @@ export default function CourseworkLectDropdown({
               <DropDrawerGroup>
                 <DropDrawerLabel>GitLab</DropDrawerLabel>
                 <DropDrawerItem
-                    key={"Templates"}
-                    onSelect={() => setShowTemplate(true)}
-                    disabled={!canManageTemplates}
-                    icon={<BookDashed/>}
+                  key={"Templates"}
+                  onSelect={() => setShowTemplate(true)}
+                  disabled={!canManageTemplates}
+                  icon={<BookDashed />}
                 >
                   Templates
                 </DropDrawerItem>
                 <DropDrawerItem
-                    key={"Provision-Coursework"}
-                    onSelect={() => setShowProvision(true)}
-                    disabled={!canProvision}
-                    icon={<LayersPlus/>}
+                  key={"Provision-Coursework"}
+                  onSelect={() => setShowProvision(true)}
+                  disabled={!canProvision}
+                  icon={<LayersPlus />}
                 >
                   Provision Coursework
                 </DropDrawerItem>
               </DropDrawerGroup>
-
             </>
           )}
 
           {hasManageScope && (
-              <>
-                {hasEngineScope && <DropDrawerSeparator />}
-                <DropDrawerGroup>
-                  <DropDrawerLabel>Manage</DropDrawerLabel>
-                  <DropDrawerItem
-                      key={"Edit"}
-                      onSelect={() => setShowEdit(true)}
-                      disabled={!canEdit}
-                      icon={<SquarePen/>}
-                  >
-                    Edit coursework
-                  </DropDrawerItem>
-                </DropDrawerGroup>
-              </>
+            <>
+              {hasEngineScope && <DropDrawerSeparator />}
+              <DropDrawerGroup>
+                <DropDrawerLabel>Manage</DropDrawerLabel>
+                <DropDrawerItem
+                  key={"Edit"}
+                  onSelect={() => setShowEdit(true)}
+                  disabled={!canEdit}
+                  icon={<SquarePen />}
+                >
+                  Edit coursework
+                </DropDrawerItem>
+              </DropDrawerGroup>
+            </>
           )}
 
           {hasDeleteScope && (
@@ -201,10 +206,10 @@ export default function CourseworkLectDropdown({
               <DropDrawerGroup>
                 <DropDrawerLabel>Destructive options</DropDrawerLabel>
                 <DropDrawerItem
-                    key={"Delete"}
-                    onSelect={() => setShowDelete(true)}
-                    className="text-destructive focus:text-destructive"
-                    icon={<SquareX className={"text-destructive"}/>}
+                  key={"Delete"}
+                  onSelect={() => setShowDelete(true)}
+                  className="text-destructive focus:text-destructive"
+                  icon={<SquareX className={"text-destructive"} />}
                 >
                   Delete coursework
                 </DropDrawerItem>
@@ -215,24 +220,23 @@ export default function CourseworkLectDropdown({
       </DropDrawer>
 
       {engine_is_setup && cw_engine_data && avail_images_data && (
-          <StartTestBatchPopup
-              open_state={showStartTests}
-              set_open_state={setShowStartTests}
-              courseworkId={slug}
-              refresh={refresh}
-              cw_engine_data={cw_engine_data}
-            available_images={avail_images_data}
-          >
-          </StartTestBatchPopup>
+        <StartTestBatchPopup
+          open_state={showStartTests}
+          set_open_state={setShowStartTests}
+          courseworkId={slug}
+          refresh={refresh}
+          cw_engine_data={cw_engine_data}
+          available_images={avail_images_data}
+        ></StartTestBatchPopup>
       )}
       {avail_images_data && cw_engine_data && (
-          <ConfigureCWTesting
-              open_state={showDocker}
-              set_open_state={setShowDocker}
-              refresh={refresh}
-              available_images={avail_images_data}
-              cw_engine_data={cw_engine_data}
-          />
+        <ConfigureCWTesting
+          open_state={showDocker}
+          set_open_state={setShowDocker}
+          refresh={refresh}
+          available_images={avail_images_data}
+          cw_engine_data={cw_engine_data}
+        />
       )}
 
       {coursework_update_data && (

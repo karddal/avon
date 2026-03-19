@@ -1,17 +1,16 @@
 import { Suspense } from "react";
 import CourseworkLectDropdown from "@/components/coursework/coursework-lect-dropdown";
-import SetupProgress from "@/components/coursework/setup-progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { get_base_images_cw_specific } from "@/lib/actions/get_base_images_cw_specific";
 import { get_coursework_scopes } from "@/lib/actions/get_coursework_scopes";
 import { get_cw_update_data } from "@/lib/actions/get_coursework_update_data";
+import { get_cw_engine_data } from "@/lib/actions/get_cw_engine_data";
 import { getRequestJWT, requireSession } from "@/lib/auth-utils";
 import Loading from "../loading";
 import CourseworkDescription from "./description";
 import CourseworkInformation from "./information";
 import CourseworkName from "./name";
-import {get_base_images_cw_specific} from "@/lib/actions/get_base_images_cw_specific";
-import {get_cw_engine_data} from "@/lib/actions/get_cw_engine_data";
 
 async function CourseworkPageContent({
   params,
@@ -31,9 +30,13 @@ async function CourseworkPageContent({
     ? await get_cw_update_data(slug)
     : undefined;
 
-  const canGetAvailImages = scopes.has("unit:coursework_engine")
-  const images = canGetAvailImages ? await get_base_images_cw_specific({coursework_id: slug}) : undefined;
-  const cw_engine_data = canGetAvailImages ? await get_cw_engine_data({coursework_id: slug}) : undefined;
+  const canGetAvailImages = scopes.has("unit:coursework_engine");
+  const images = canGetAvailImages
+    ? await get_base_images_cw_specific({ coursework_id: slug })
+    : undefined;
+  const cw_engine_data = canGetAvailImages
+    ? await get_cw_engine_data({ coursework_id: slug })
+    : undefined;
 
   return (
     <>
