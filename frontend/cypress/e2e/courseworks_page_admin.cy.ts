@@ -32,15 +32,21 @@ describe("Coursework listing page - admin tests", () => {
 
   it("Allows navigation through the ongoing coursework tabslist", () => {
     cy.visit("/coursework");
-    cy.contains('[role="tab"]', "Software Engineering Project").click();
-    cy.get("p").should("contain", "AI Bill Splitter");
+    cy.getByCy("coursework-unit-tab-software-engineering-project-2025-2026").click();
+    cy.getByCy(
+      "coursework-link-software-engineering-project-2025-2026-ai-bill-splitter",
+    ).should(
+      "be.visible",
+    );
   });
 
   // Finsihed coursework stuff
   it("has default finished unit", () => {
     cy.visit("/coursework");
-    cy.contains("button", "Finished").click();
-    cy.get("span").should("contain", "Computer Architecture");
+    cy.getByCy("coursework-tab-finished").click();
+    cy.getByCy("coursework-unit-tab-computer-architecture-2024-2025").should(
+      "be.visible",
+    );
   });
 
   it("has default finished coursework", () => {
@@ -54,10 +60,9 @@ describe("Coursework listing page - admin tests", () => {
 
   it("Allows navigation through the finsihed coursework tabslist", () => {
     cy.visit("/coursework");
-    cy.contains("button", "Finished").click();
-    cy.contains(
-      '[role="tab"]',
-      "Imperative and Functional Programming 2024-2025",
+    cy.getByCy("coursework-tab-finished").click();
+    cy.getByCy(
+      "coursework-unit-tab-imperative-and-functional-programming-2024-2025",
     ).click();
     cy.getByCy(
       "coursework-link-imperative-and-functional-programming-2024-2025-power-to-the-people-in-2024",
@@ -119,11 +124,10 @@ describe("Coursework listing page - admin tests", () => {
     cy.get("@courseworkCard")
       .find('[data-cy="coursework-list-actions-trigger"]')
       .click();
-    cy.get(`[data-slot="dropdown-menu-item"]`).click();
-    cy.get(`[data-slot="button"]`).click();
-    // cy.get('[data-content=""] > div').contains(
-    //   "Coursework deleted successfully",
-    // );
-    cy.get("p").should("not.contain", "Encrypt");
+    cy.getByCy("coursework-list-delete-item").click();
+    cy.getByCy("coursework-delete-confirm").click();
+    cy.get(
+      '[data-cy="coursework-link-computer-architecture-2025-2026-encrypt"]',
+    ).should("not.exist");
   });
 });
