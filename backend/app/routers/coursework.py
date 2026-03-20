@@ -4,7 +4,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.security import HTTPAuthorizationCredentials
-from gitlab.exceptions import GitlabDeleteError
+from gitlab.exceptions import GitlabDeleteError, GitlabGetError
 from sqlalchemy import and_, exists
 
 # Adding this back in
@@ -100,6 +100,8 @@ async def delete_repo(id: UUID, rid: str, session: session_dependency, token: to
 
     gitlab = get_gitlab()
     try:
+        p = gitlab.projects.get(rid)
+
         gitlab.projects.delete(rid)
         # delete the student repos in session
 
@@ -108,6 +110,10 @@ async def delete_repo(id: UUID, rid: str, session: session_dependency, token: to
             session.delete(o)
 
         session.commit()
+    except GitlabGetError:
+        # couldn't get the project, probably user error
+        return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="That id project doesnt exist.")
+
     except GitlabDeleteError as e:
         return {"status": "error", "details": e}
 

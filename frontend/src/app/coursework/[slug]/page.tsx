@@ -149,7 +149,7 @@ async function CourseworkPageContent({
         {!canViewSetupProgress && (
           <div
             id="coursework-students"
-            className="mb-8 h-full md:col-span-2 md:mb-10 xl:col-span-3 xl:mb-16"
+            className="mb-8 h-full pb-4 md:col-span-2 md:mb-10 xl:col-span-3 xl:mb-16"
           >
             <CourseworkStudentPanel />
           </div>

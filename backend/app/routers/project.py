@@ -96,6 +96,13 @@ async def create_fork(project: ProjectFork, session: session_dependency):
     statement = select(UnitEnrollment.user_id).where((UnitEnrollment.unit_id == unit_id) & (UnitEnrollment.type == "student"))
     students_enrolled = session.exec(statement).all()
 
+    # check whether any student repos already exist. if so bail out early
+    if session.exec(select(StudentRepo).where(StudentRepo.cw_id == project.coursework_id)).first():
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Some student repos have alrady been provisioned."
+        )
+
     for student in students_enrolled:
         try:
             # Call helper function to create project
