@@ -2,7 +2,6 @@
 
 import type { RowSelectionState } from "@tanstack/table-core";
 import { Send } from "lucide-react";
-import { refresh } from "next/dist/server/web/spec-extension/revalidate";
 import { type Dispatch, type SetStateAction, Suspense, useState } from "react";
 import { toast } from "sonner";
 import { StudentsTableWithMaybeRepos } from "@/components/coursework/stud_list_for_provisioning/studs-table";
@@ -38,6 +37,7 @@ export default function StudsListDialogForProvision({
   set_open_state,
   courseworkId,
   gitlabData,
+    refresh,
 }: Props) {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [loadingState, setLoadingState] = useState<boolean>(false);
@@ -49,7 +49,6 @@ export default function StudsListDialogForProvision({
       template_id: gitlab_data.template_id,
       student_ids: Object.keys(rowSelection),
     };
-    try {
       setLoadingState(true);
       setStatus(1);
       const result = await provision_individual_projects_for_specific(req);
@@ -64,10 +63,6 @@ export default function StudsListDialogForProvision({
         );
         setStatus(0);
       }
-    } catch (_error) {
-      toast.error("Failed to provision");
-      setStatus(0);
-    }
   };
 
   return (

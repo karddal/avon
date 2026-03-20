@@ -35,8 +35,10 @@ import { cn } from "@/lib/utils";
 
 export function StudentsTableWithMaybeRepos({
   coursework_id,
+    refresh,
 }: {
   coursework_id: string;
+  refresh: () => void;
 }) {
   const [data, setData] = useState<StudentNameAndPotentiallyRepo[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -44,13 +46,14 @@ export function StudentsTableWithMaybeRepos({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
+  const [refreshKey, setRefreshKey] = React.useState<number>(0);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
     data: data,
-    columns,
+    columns: columns(coursework_id, refresh, refreshKey, setRefreshKey),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -83,7 +86,7 @@ export function StudentsTableWithMaybeRepos({
       setLoading(false);
       table.setGrouping(["repo_url"]);
     });
-  }, [coursework_id, table.setGrouping]);
+  }, [coursework_id, table.setGrouping, refreshKey]);
 
   if (loading) {
     return (
