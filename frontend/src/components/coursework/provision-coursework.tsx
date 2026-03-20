@@ -9,6 +9,7 @@ import { Spinner } from "../ui/spinner";
 import {Item, ItemActions, ItemContent, ItemDescription, ItemHeader, ItemMedia, ItemTitle} from "@/components/ui/item";
 import {Component, UserIcon, Users} from "lucide-react";
 import StudsListDialog from "@/components/coursework/student-list/studs-table-dialog";
+import StudsListDialogForProvision from "@/components/coursework/stud_list_for_provisioning/studs-table-dialog";
 
 type GitlabData = {
   name: string;
@@ -146,7 +147,7 @@ export default function ProvisionCoursework({
               </Item>
             </div>
 
-            <StudsListDialog open_state={showStudsList} set_open_state={setShowStudsList} courseworkId={gitlab_data.coursework_id} refresh={refresh}/>
+            <StudsListDialogForProvision open_state={showStudsList} set_open_state={setShowStudsList} courseworkId={gitlab_data.coursework_id} refresh={refresh} gitlabData={gitlab_data}/>
 
             <div className="md:w-px md:h-auto h-px w-full bg-border self-stretch" />
 

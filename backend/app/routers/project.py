@@ -20,6 +20,7 @@ from app.models.coursework import Coursework
 from app.models.student_repo import StudentRepo
 from app.models.unit_enrollment import UnitEnrollment
 from app.schemas.project import (
+    CreateProjectForkForSpecificStudent,
     ProjectCreate,
     ProjectFork,
     ProjectRead,
@@ -124,6 +125,48 @@ async def create_fork(project: ProjectFork, session: session_dependency):
     # Get the number of students enrolled onto a unit, by the courseworkid courseworkid -> unit -> unit_enrollement
     # Make an API call to gitlab to create a project using a helper function for those many students
     return {"unit id": students_enrolled}
+
+@router.post("/create-fork-for-student", status_code=status.HTTP_201_CREATED)
+async def create_fork_specific_student(project: CreateProjectForkForSpecificStudent, session: session_dependency):
+    statement = select(Coursework.unit_id, Coursework.name, Coursework.gitlab_id).where(Coursework.id == project.coursework_id)
+    cw_object = session.exec(statement).first()
+    unit_id, name, gitlab_id = cw_object
+
+    created = []
+    failed = []
+    # Get the student enrollment
+    for student in project.student_ids:
+        try:
+            # Call helper function to create project
+            # create student_repo entry for each
+
+            # check whether student is actually enrolled in the unit
+            if not session.exec(select(UnitEnrollment).where((UnitEnrollment.unit_id == unit_id) & (UnitEnrollment.user_id == student) & (UnitEnrollment.type == "student"))).first():
+                return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Could not find that student")
+
+            data = await gl_create_fork(name, user_id=student, group_id=gitlab_id, template_id=project.template_id)
+            http_url_to_repo = data["http_url_to_repo"]
+
+            # we first check whether there is already a student repo db entry for this student
+            # if there is we delete it first
+
+            db_exists = session.exec(select(StudentRepo).where((StudentRepo.student_id == student) & (StudentRepo.cw_id == project.coursework_id))).first()
+            if db_exists:
+                session.delete(db_exists)
+                session.flush()
+
+            db_student_repo = StudentRepo(student_id=student, repo_url=http_url_to_repo, cw_id=project.coursework_id)
+            session.add(db_student_repo)
+            created.append(student)
+
+        except Exception:
+            # gitlab error occurred probably
+            # we don't save that student as created.
+            failed.append(student)
+    session.commit()
+    # Get the number of students enrolled onto a unit, by the courseworkid courseworkid -> unit -> unit_enrollement
+    # Make an API call to gitlab to create a project using a helper function for those many students
+    return {"created": created, "failed": failed}
 
 @router.get("/{project_id}", response_model=ProjectRead)
 async def get_specific_project(project_id: int):

@@ -61,7 +61,6 @@ export const columns: ColumnDef<StudentNameAndPotentiallyRepo>[] = [
   {
     id: "repo_url",
     accessorKey: "repo_url",
-    enableHiding: true,
     header: ({ column }) => {
       return (
           <div>Repo</div>
@@ -71,44 +70,6 @@ export const columns: ColumnDef<StudentNameAndPotentiallyRepo>[] = [
       const s = row.original;
       const repo_name = s.repo_url?.substring(s.repo_url.lastIndexOf("/") + 1, s.repo_url.indexOf(".git"));
           return(<div className="">{repo_name ? repo_name : "No repo provisioned"}</div>)
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const s = row.original;
-
-      return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-40">
-              <DropdownMenuGroup>
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuItem
-                    onClick={() => {
-                      if (s.repo_url) {
-                        navigator.clipboard.writeText(
-                            s.repo_url.substring(0, s.repo_url.indexOf(".git")),
-                        );
-                        toast.success("Repo URL copied to clipboard.");
-                    } else {
-                        toast.error("No repo URL");
-                      }
-                    }}
-                >
-                  <ClipboardCopy />
-                  Copy student repo URL
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-      );
     },
   },
 ];

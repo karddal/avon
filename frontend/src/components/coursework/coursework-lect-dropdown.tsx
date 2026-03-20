@@ -179,7 +179,7 @@ export default function CourseworkLectDropdown({
                   icon={<Gitlab/>}
                   onSelect={() => setViewRepos(true)}
                 >
-                  View student repos
+                  Manage student repos
                 </DropDrawerItem>
               </DropDrawerGroup>
             </>
