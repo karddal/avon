@@ -1,15 +1,17 @@
 import {
-  ExternalLink,
+  Activity,
+  ExternalLink, FolderGit,
   GitCommitHorizontal,
-  GitFork,
+  GitFork, MessageSquareDiff,
   PencilLine,
-  Sparkles,
+  Sparkles, ZapOff,
 } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { get_my_coursework_repo } from "@/lib/actions/get_my_coursework_repo";
+import {Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty";
 
 function formatCommitDate(date: string | null) {
   if (!date) {
@@ -34,9 +36,15 @@ async function StudentRepoOverviewContent({
 
   if (!repo) {
     return (
-      <div className="rounded-md border border-dashed p-6 text-sm text-muted-foreground">
-        No coursework repository has been provisioned for you yet.
-      </div>
+        <div className="border border-dashed p-4 text-sm h-full">
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant={"icon"}><ZapOff/></EmptyMedia>
+              <EmptyTitle>No data.</EmptyTitle>
+              <EmptyDescription>We can't show any data here because we don't have a repository on file for you. Please check back later, or ask your lecturer.</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        </div>
     );
   }
 
@@ -143,7 +151,7 @@ export default function StudentRepoOverview({
     <Card className="h-full">
       <CardHeader>
         <CardTitle>
-          <div className="text-2xl">Repository Overview</div>
+          <div className="text-2xl flex flex-row items-center gap-2"><Activity/>Repository Overview</div>
           <div className="font-light">
             A quick read on your recent coursework repository activity.
           </div>

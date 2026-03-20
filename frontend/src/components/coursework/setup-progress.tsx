@@ -1,4 +1,4 @@
-import { ArrowRight, CheckCircle, Circle } from "lucide-react";
+import {ArrowRight, CheckCircle, Circle, CircleDashed} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cw_setup_progress } from "@/lib/actions/coursework-setup-progress";
 
@@ -14,7 +14,7 @@ export default async function SetupProgress({ cw_id }: setupProgress) {
     <Card className="h-full">
       <CardHeader className="flex flex-col ">
         <CardTitle>
-          <div className="text-2xl">Setup Progress</div>
+          <div className="text-2xl flex flex-row items-center gap-2"><CircleDashed/>Setup Progress</div>
           <div className="font-light">
             View the progress in setting up the coursework.
           </div>

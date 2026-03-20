@@ -1,8 +1,9 @@
-import { GitCommitHorizontal } from "lucide-react";
+import {FolderGit, GitCommitHorizontal, GitGraph} from "lucide-react";
 import { Suspense } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { get_my_coursework_repo } from "@/lib/actions/get_my_coursework_repo";
+import {Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty";
 
 function formatCommitDate(date: string | null) {
   if (!date) {
@@ -27,8 +28,14 @@ async function StudentRepoActivityContent({
 
   if (!repo) {
     return (
-      <div className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
-        No coursework repository has been provisioned for you yet.
+      <div className="border border-dashed p-4 text-sm h-full">
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant={"icon"}><FolderGit/></EmptyMedia>
+            <EmptyTitle>No coursework repository provisioned.</EmptyTitle>
+            <EmptyDescription>No coursework repository has been provisioned for you yet, so no data is available. Please check back later, or ask your lecturer.</EmptyDescription>
+          </EmptyHeader>
+        </Empty>
       </div>
     );
   }
@@ -106,7 +113,7 @@ export default function StudentRepoActivity({
     <Card className="h-full">
       <CardHeader>
         <CardTitle>
-          <div className="text-2xl">Recent Commits</div>
+          <div className="text-2xl flex flex-row items-center gap-2"><GitGraph/>Recent Commits</div>
           <div className="font-light">
             Your coursework repository activity at a glance.
           </div>

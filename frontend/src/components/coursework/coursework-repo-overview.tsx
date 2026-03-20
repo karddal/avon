@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy, ExternalLink, FolderGit2, Users } from "lucide-react";
+import {Copy, ExternalLink, FolderGit, FolderGit2, Users} from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -48,7 +48,7 @@ export default function CourseworkRepoOverview({
     <Card className="h-full">
       <CardHeader>
         <CardTitle>
-          <div className="text-2xl">Student Repositories</div>
+          <div className="text-2xl flex flex-row items-center gap-2"><FolderGit2/>Student Repositories</div>
           <div className="font-light">
             A quick overview of provisioned GitLab repos for this coursework.
           </div>
@@ -64,7 +64,7 @@ export default function CourseworkRepoOverview({
             <div className="grid gap-3 md:grid-cols-2">
               <div className="rounded-md border bg-accent/40 p-3">
                 <div className="mb-1 flex items-center gap-2 text-xs text-muted-foreground">
-                  <FolderGit2 className="h-4 w-4" />
+                  <FolderGit className="h-4 w-4" />
                   Provisioned Repos
                 </div>
                 <div className="text-2xl font-semibold">{repos.length}</div>
