@@ -14,9 +14,9 @@ from sqlmodel import Session, select
 from app.core.helpers.gitlab import (
     gitlab_project_path_from_repo_url,
     gl_activate_template_project,
-    gl_get_commit_count,
     gl_create_coursework,
     gl_delete_coursework,
+    gl_get_commit_count,
     gl_get_project_commits,
     gl_overwrite_zip,
     gl_template_files,
@@ -49,15 +49,17 @@ from app.schemas.coursework import (
     CourseworkSetupProgress,
     CourseworkStudentRepoRead,
     CourseworkStudentRepos,
+    CourseworkStudentWithRepos,
     CourseworkTemplateActivate,
     CourseworkTemplateExists,
     CourseworkTemplateFile,
     CourseworkTemplateUploadZip,
     CourseworkTemplateUrl,
+    CourseworkUnitIdRead,
     CourseworkUpdate,
     CourseworkUpdateEngineData,
     CourseworkUpdateFormData,
-    CourseworkUnitIdRead,
+    StudentWithMaybeRepo,
 )
 from app.schemas.security import CurrentUser
 
@@ -80,6 +82,33 @@ async def get_student_repos(id: UUID, session: session_dependency, token: token_
     repos = map(lambda sr: sr,coursework.student_repos)
 
     return CourseworkStudentRepos(repos=list(repos))
+
+
+@router.get("/{id}/all_students_with_repos", response_model=CourseworkStudentWithRepos)
+async def get_all_students_with_repos(id: UUID, session: session_dependency, token: token_dependency):
+    """This function returns all students associated with the coursework, along with their repo URL if they have one."""
+    coursework = session.get(Coursework,id)
+    if coursework is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
+    await require_scopes(
+        ResourceInformation(type=Unit, id=coursework.unit_id),
+        Scopes.UNIT_COURSEWORK_ENGINE,
+        token=token,
+        session=session
+    )
+
+    students = list(map(lambda se: StudentWithMaybeRepo(id=se.user_id, repo_url=None), filter(lambda x : x.type == "student", coursework.unit.enrollments)))
+
+    for s in students:
+        # try and get the repo url
+        repo = session.exec(select(StudentRepo).where((StudentRepo.cw_id == coursework.id) & (StudentRepo.student_id == s.id))).first()
+
+        if repo:
+            s.repo_url = repo.repo_url
+
+    return CourseworkStudentWithRepos(students=students)
+
+
 
 @router.get("/{id}/unit", response_model=CourseworkUnitIdRead)
 async def get_coursework_unit_id(

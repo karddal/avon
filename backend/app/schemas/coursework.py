@@ -57,6 +57,13 @@ Colour = Annotated[str, AfterValidator(is_valid_colour)]
 class CourseworkStudentRepos(BaseModel):
     repos: list[StudentRepo]
 
+class StudentWithMaybeRepo(BaseModel):
+    id: str
+    repo_url: str | None
+
+class CourseworkStudentWithRepos(BaseModel):
+    students: list[StudentWithMaybeRepo]
+
 class CourseworkUnitIdRead(BaseModel):
     unit_id: UUID
 
