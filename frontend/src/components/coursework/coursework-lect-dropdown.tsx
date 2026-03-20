@@ -274,6 +274,7 @@ export default function CourseworkLectDropdown({
             coursework_id: coursework_update_data.id,
             template_id: String(coursework_update_data.templateId),
           }}
+          refresh={refresh}
         />
       )}
 

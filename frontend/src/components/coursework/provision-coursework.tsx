@@ -8,6 +8,7 @@ import { provision_individual_projects } from "@/lib/actions/provision_individua
 import { Spinner } from "../ui/spinner";
 import {Item, ItemActions, ItemContent, ItemDescription, ItemHeader, ItemMedia, ItemTitle} from "@/components/ui/item";
 import {Component, UserIcon, Users} from "lucide-react";
+import StudsListDialog from "@/components/coursework/student-list/studs-table-dialog";
 
 type GitlabData = {
   name: string;
@@ -19,15 +20,18 @@ type DockerProps = {
   open_state: boolean;
   set_open_state: Dispatch<SetStateAction<boolean>>;
   gitlab_data: GitlabData;
+  refresh: () => void;
 };
 
 export default function ProvisionCoursework({
   open_state,
   set_open_state,
   gitlab_data,
+    refresh,
 }: DockerProps) {
   const [loadingState, setLoadingState] = useState<boolean>(false);
   const [status, setStatus] = useState<number>(0);
+  const [showStudsList, setShowStudsList] = useState<boolean>(false);
 
   const provisionForIndividuals = async (gitlab_data: GitlabData) => {
     const req = {
@@ -131,42 +135,18 @@ export default function ProvisionCoursework({
                   </ItemDescription>
                 </ItemContent>
                 <ItemActions className={"w-full"}>
-                  {status === 0 && !loadingState && (
                       <Button
-                          onClick={() => provisionForIndividuals(gitlab_data)}
                           variant="outline"
                           className="w-full mt-4"
+                          onClick={() => setShowStudsList(true)}
                       >
                         Start selecting students
                       </Button>
-                  )}
-
-                  {status === 1 && !loadingState && (
-                      <Button className="w-full mt-4">
-                        <Spinner className="mr-2 h-4 w-4" />
-                      </Button>
-                  )}
-
-                  {loadingState && (
-                      <Button disabled className="w-full mt-4">
-                        <Spinner className="mr-2 h-4 w-4" />
-                        Provisioning...
-                      </Button>
-                  )}
-
-                  {status === 2 && !loadingState && (
-                      <Button
-                          size="lg"
-                          variant="outline"
-                          className="w-full border-green-500 text-green-600 cursor-default"
-                          disabled
-                      >
-                        ✓ All projects provisioned
-                      </Button>
-                  )}
                 </ItemActions>
               </Item>
             </div>
+
+            <StudsListDialog open_state={showStudsList} set_open_state={setShowStudsList} courseworkId={gitlab_data.coursework_id} refresh={refresh}/>
 
             <div className="md:w-px md:h-auto h-px w-full bg-border self-stretch" />
 
