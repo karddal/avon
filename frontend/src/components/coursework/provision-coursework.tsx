@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { provision_individual_projects } from "@/lib/actions/provision_individual_projects";
 import { Spinner } from "../ui/spinner";
+import {Item, ItemActions, ItemContent, ItemDescription, ItemHeader, ItemMedia, ItemTitle} from "@/components/ui/item";
+import {Component, UserIcon, Users} from "lucide-react";
 
 type GitlabData = {
   name: string;
@@ -42,10 +44,12 @@ export default function ProvisionCoursework({
         setStatus(2);
         toast.success("Projects successfully provisioned");
       } else {
-        toast.success("Failed to provision projects");
+        toast.error("Failed to provision projects. Are there already some repos provisioned for students?");
+        setStatus(0);
       }
     } catch (_error) {
       toast.error("Failed to provision");
+      setStatus(0);
     }
   };
 
@@ -56,71 +60,164 @@ export default function ProvisionCoursework({
           <div className="lg:max-h-[80vh]! flex-2 lg:overflow-y-auto bg-background border rounded-xl justify-between flex flex-col">
             <div className="p-8 pb-0">
               <DialogTitle className="text-xl">
-                Provision Coursework
+                Provision repos
               </DialogTitle>
               <p className="text-sm text-muted-foreground mb-6">
-                Decide how to provision courseworks
+                There are multiple ways to provision coursework repos. Please read through them and decide which one you would like to use.
               </p>
             </div>
           </div>
           <div className="flex flex-col md:flex-row mx-10 gap-8 justify-between mb-10">
             <div className="flex flex-col flex-1 gap-2">
-              <p className="text-lg font-semibold">Provision for Individuals</p>
-              <p className="text-sm text-muted-foreground">
-                Provision one repository for all students on the unit
-              </p>
-              <div className="flex flex-col gap-2">
-                {status === 0 && !loadingState && (
-                  <Button
-                    onClick={() => provisionForIndividuals(gitlab_data)}
-                    variant="outline"
-                    className="w-full mt-4"
-                  >
-                    Provision for Individuals
-                  </Button>
-                )}
+              <Item variant={"outline"}>
+                <ItemHeader>
+                  <ItemMedia variant={"icon"}><Users/></ItemMedia>
+                  <ItemTitle>Batch provision for individuals</ItemTitle>
+                </ItemHeader>
+                <ItemContent>
+                  <ItemDescription>
+                    Provision one repo for every student on the unit.
+                  </ItemDescription>
+                </ItemContent>
+                <ItemActions className={"w-full"}>
+                    {status === 0 && !loadingState && (
+                        <Button
+                            onClick={() => provisionForIndividuals(gitlab_data)}
+                            variant="outline"
+                            className="w-full mt-4"
+                        >
+                          Provision for all students
+                        </Button>
+                    )}
 
-                {status === 1 && !loadingState && (
-                  <Button className="w-full mt-4">
-                    <Spinner className="mr-2 h-4 w-4" />
-                  </Button>
-                )}
+                    {status === 1 && !loadingState && (
+                        <Button className="w-full mt-4">
+                          <Spinner className="mr-2 h-4 w-4" />
+                        </Button>
+                    )}
 
-                {loadingState && (
-                  <Button disabled className="w-full mt-4">
-                    <Spinner className="mr-2 h-4 w-4" />
-                    Provisioning...
-                  </Button>
-                )}
+                    {loadingState && (
+                        <Button disabled className="w-full mt-4">
+                          <Spinner className="mr-2 h-4 w-4" />
+                          Provisioning...
+                        </Button>
+                    )}
 
-                {status === 2 && !loadingState && (
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="w-full border-green-500 text-green-600 cursor-default"
-                    disabled
-                  >
-                    ✓ All projects provisioned
-                  </Button>
-                )}
-              </div>
+                    {status === 2 && !loadingState && (
+                        <Button
+                            size="lg"
+                            variant="outline"
+                            className="w-full border-green-500 text-green-600 cursor-default"
+                            disabled
+                        >
+                          ✓ All projects provisioned
+                        </Button>
+                    )}
+                </ItemActions>
+              </Item>
             </div>
 
             <div className="md:w-px md:h-auto h-px w-full bg-border self-stretch" />
 
             <div className="flex flex-col flex-1 gap-2">
-              <p className="text-lg font-semibold">Provision for Teams</p>
-              <p className="text-sm text-muted-foreground">
-                Drop in your teams using our CSV guide
-              </p>
-              <div className="flex flex-col gap-2 mt-auto pt-4">
-                <Button variant="outline" disabled className="w-full">
-                  Upload CSV
-                </Button>
-                <Button variant="outline" disabled className="w-full">
-                  Provision for Teams
-                </Button>
-              </div>
+              <Item variant={"outline"}>
+                <ItemHeader>
+                  <ItemMedia variant={"icon"}><UserIcon/></ItemMedia>
+                  <ItemTitle>Selective provisioning</ItemTitle>
+                </ItemHeader>
+                <ItemContent>
+                  <ItemDescription>
+                    Select individual students and provision repos for them.
+                  </ItemDescription>
+                </ItemContent>
+                <ItemActions className={"w-full"}>
+                  {status === 0 && !loadingState && (
+                      <Button
+                          onClick={() => provisionForIndividuals(gitlab_data)}
+                          variant="outline"
+                          className="w-full mt-4"
+                      >
+                        Start selecting students
+                      </Button>
+                  )}
+
+                  {status === 1 && !loadingState && (
+                      <Button className="w-full mt-4">
+                        <Spinner className="mr-2 h-4 w-4" />
+                      </Button>
+                  )}
+
+                  {loadingState && (
+                      <Button disabled className="w-full mt-4">
+                        <Spinner className="mr-2 h-4 w-4" />
+                        Provisioning...
+                      </Button>
+                  )}
+
+                  {status === 2 && !loadingState && (
+                      <Button
+                          size="lg"
+                          variant="outline"
+                          className="w-full border-green-500 text-green-600 cursor-default"
+                          disabled
+                      >
+                        ✓ All projects provisioned
+                      </Button>
+                  )}
+                </ItemActions>
+              </Item>
+            </div>
+
+            <div className="md:w-px md:h-auto h-px w-full bg-border self-stretch" />
+
+            <div className="flex flex-col flex-1 gap-2">
+              <Item variant={"muted"}>
+                <ItemHeader>
+                  <ItemMedia variant={"icon"}><Component/></ItemMedia>
+                  <ItemTitle>Group provisioning</ItemTitle>
+                </ItemHeader>
+                <ItemContent>
+                  <ItemDescription>
+                    Specify student groups using a CSV and provision repos accordingly.
+                  </ItemDescription>
+                </ItemContent>
+                <ItemActions className={"w-full"}>
+                  {status === 0 && !loadingState && (
+                      <Button
+                          onClick={() => provisionForIndividuals(gitlab_data)}
+                          disabled
+                          variant={"ghost"}
+                          className="w-full mt-4"
+                      >
+                        Coming soon...
+                      </Button>
+                  )}
+
+                  {status === 1 && !loadingState && (
+                      <Button className="w-full mt-4">
+                        <Spinner className="mr-2 h-4 w-4" />
+                      </Button>
+                  )}
+
+                  {loadingState && (
+                      <Button disabled className="w-full mt-4">
+                        <Spinner className="mr-2 h-4 w-4" />
+                        Provisioning...
+                      </Button>
+                  )}
+
+                  {status === 2 && !loadingState && (
+                      <Button
+                          size="lg"
+                          variant="outline"
+                          className="w-full border-green-500 text-green-600 cursor-default"
+                          disabled
+                      >
+                        ✓ All projects provisioned
+                      </Button>
+                  )}
+                </ItemActions>
+              </Item>
             </div>
           </div>
         </div>
