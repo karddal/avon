@@ -17,6 +17,7 @@ import Loading from "../loading";
 import CourseworkDescription from "./description";
 import CourseworkInformation from "./information";
 import CourseworkName from "./name";
+import {Info} from "lucide-react";
 
 async function CourseworkPageContent({
   params,
@@ -91,7 +92,7 @@ async function CourseworkPageContent({
           <Card className="h-full min-h-0">
             <CardHeader>
               <CardTitle>
-                <div className="text-2xl">Description</div>
+                <div className="text-2xl flex flex-row gap-2 items-center"><Info/>Description</div>
                 <div className="font-light">
                   Information about the coursework.
                 </div>
@@ -113,13 +114,15 @@ async function CourseworkPageContent({
           {canViewSetupProgress ? (
             canViewStudentRepos ? (
               <CourseworkRepoOverview courseworkId={slug} />
-            ) : (
-              <CourseworkStudentPanel />
-            )
+            ) : (<></>)
           ) : (
-            <Suspense>
-              <StudentRepoOverview courseworkId={slug} />
-            </Suspense>
+              <div className={"flex flex-col gap-4"}>
+                <CourseworkStudentPanel />
+                <Suspense>
+                  <StudentRepoOverview courseworkId={slug} />
+                </Suspense>
+              </div>
+
           )}
         </div>
         <div className="h-full md:col-span-2 xl:col-span-1 xl:col-start-3">

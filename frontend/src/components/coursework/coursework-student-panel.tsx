@@ -1,4 +1,4 @@
-import { GitCommitHorizontal, GitFork, Timer } from "lucide-react";
+import {GitCommitHorizontal, GitFork, HeartHandshake, Timer} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function CourseworkStudentPanel() {
@@ -6,7 +6,7 @@ export default function CourseworkStudentPanel() {
     <Card className="h-full">
       <CardHeader>
         <CardTitle>
-          <div className="text-2xl">Getting Started</div>
+          <div className="text-2xl flex flex-row items-center gap-2"><HeartHandshake/>Getting Started</div>
           <div className="font-light">
             A short checklist for working on this coursework.
           </div>
