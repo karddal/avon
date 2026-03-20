@@ -77,37 +77,42 @@ export const columns: ColumnDef<StudentNameAndPotentiallyRepo>[] = [
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const s = row.original;
-
+      if (row.getIsGrouped()) {
+        const s = row.groupingValue as string; // MUST EXIST AS WE JUST CHECKED IS GROUPED!! so safe
+        return (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-40">
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel>Repo actions</DropdownMenuLabel>
+                  <DropdownMenuItem
+                      onClick={() => {
+                        if (s) {
+                          navigator.clipboard.writeText(
+                              s.substring(0, s.indexOf(".git")),
+                          );
+                          toast.success("Repo URL copied to clipboard.");
+                        } else {
+                          toast.error("No repo URL");
+                        }
+                      }}
+                  >
+                    <ClipboardCopy />
+                    Copy student repo URL
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+        ) // repo options here!!!
+      }
       return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-40">
-              <DropdownMenuGroup>
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuItem
-                    onClick={() => {
-                      if (s.repo_url) {
-                        navigator.clipboard.writeText(
-                            s.repo_url.substring(0, s.repo_url.indexOf(".git")),
-                        );
-                        toast.success("Repo URL copied to clipboard.");
-                    } else {
-                        toast.error("No repo URL");
-                      }
-                    }}
-                >
-                  <ClipboardCopy />
-                  Copy student repo URL
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          // Student options here!!
+          <></>
       );
     },
   },
