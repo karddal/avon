@@ -1,3 +1,4 @@
+import { Info } from "lucide-react";
 import { Suspense } from "react";
 import { CourseworkDeadlineBannerFromSlug } from "@/components/coursework/coursework-banner";
 import CourseworkLectDropdown from "@/components/coursework/coursework-lect-dropdown";
@@ -17,7 +18,6 @@ import Loading from "../loading";
 import CourseworkDescription from "./description";
 import CourseworkInformation from "./information";
 import CourseworkName from "./name";
-import {Info} from "lucide-react";
 
 async function CourseworkPageContent({
   params,
@@ -87,12 +87,15 @@ async function CourseworkPageContent({
           />
         </Suspense>
       )}
-      <section className="mb-2 pb-6 grid min-h-0 grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <section className="mb-8 grid min-h-0 grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         <div className="flex h-full flex-col gap-4 md:col-span-2 xl:col-span-2 xl:h-64">
-          <Card className="h-full min-h-0">
+          <Card id="coursework-description" className="h-full min-h-0">
             <CardHeader>
               <CardTitle>
-                <div className="text-2xl flex flex-row gap-2 items-center"><Info/>Description</div>
+                <div className="text-2xl flex flex-row gap-2 items-center">
+                  <Info />
+                  Description
+                </div>
                 <div className="font-light">
                   Information about the coursework.
                 </div>
@@ -105,27 +108,34 @@ async function CourseworkPageContent({
             </CardContent>
           </Card>
         </div>
-        <div className="h-full md:col-span-2 xl:col-span-1 xl:h-64">
+        <div
+          id="coursework-information"
+          className="h-full md:col-span-2 xl:col-span-1 xl:h-64"
+        >
           <Suspense>
             <CourseworkInformation slug={slug} token={token} />
           </Suspense>
         </div>
-        <div className="h-full md:col-span-2 xl:col-span-2">
+        <div
+          id="coursework-repos"
+          className="h-full md:col-span-2 xl:col-span-2"
+        >
           {canViewSetupProgress ? (
             canViewStudentRepos ? (
               <CourseworkRepoOverview courseworkId={slug} />
-            ) : (<></>)
+            ) : (
+              <></>
+            )
           ) : (
-              <div className={"flex flex-col gap-4"}>
-                <CourseworkStudentPanel />
-                <Suspense>
-                  <StudentRepoOverview courseworkId={slug} />
-                </Suspense>
-              </div>
-
+            <Suspense>
+              <StudentRepoOverview courseworkId={slug} />
+            </Suspense>
           )}
         </div>
-        <div className="h-full md:col-span-2 xl:col-span-1 xl:col-start-3">
+        <div
+          id="coursework-activity"
+          className="h-full md:col-span-2 xl:col-span-1"
+        >
           {canViewSetupProgress ? (
             <Suspense>
               <SetupProgress cw_id={slug}></SetupProgress>
@@ -136,6 +146,14 @@ async function CourseworkPageContent({
             </Suspense>
           )}
         </div>
+        {!canViewSetupProgress && (
+          <div
+            id="coursework-students"
+            className="mb-8 h-full md:col-span-2 md:mb-10 xl:col-span-3 xl:mb-16"
+          >
+            <CourseworkStudentPanel />
+          </div>
+        )}
       </section>
     </>
   );
