@@ -1,9 +1,10 @@
-import {FolderGit, GitCommitHorizontal, GitGraph} from "lucide-react";
+import {CircleQuestionMark, FolderGit, GitCommitHorizontal, GitGraph} from "lucide-react";
 import { Suspense } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { get_my_coursework_repo } from "@/lib/actions/get_my_coursework_repo";
 import {Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty";
+import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
 
 function formatCommitDate(date: string | null) {
   if (!date) {
@@ -63,8 +64,24 @@ async function StudentRepoActivityContent({
                   />
                   <div className="min-w-0 flex-1">
                     {index === 0 && (
-                      <div className="mb-1 text-[11px] font-medium uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
-                        Marked Submission
+                      <div className="mb-1 text-[11px] font-medium flex flex-row gap-2 items-center uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
+                        Current submission <HoverCard openDelay={10} closeDelay={100}>
+                        <HoverCardTrigger asChild>
+                          <CircleQuestionMark
+                              className={""}
+                          />
+                        </HoverCardTrigger>
+                        <HoverCardContent
+                            className={"flex w-64 flex-col gap-0.5 text-sm"}
+                        >
+                          <div className={"font-medium"}>
+                            What is this?
+                          </div>
+                          <div>
+                            The Avon Engine always marks the most recent submission on the default branch. Ensure that when the coursework deadline passes, the default branch on your GitLab repository contains the code that you wish to submit.
+                          </div>
+                        </HoverCardContent>
+                      </HoverCard>
                       </div>
                     )}
                     <div className="truncate text-sm font-medium leading-5">
@@ -84,9 +101,16 @@ async function StudentRepoActivityContent({
             ))}
           </div>
         ) : (
-          <div className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
-            No commits found yet. Your recent GitLab activity will appear here
-            once you start pushing changes.
+          <div className="rounded-md border border-dashed p-4 text-sm h-full">
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia variant={"icon"}><GitCommitHorizontal/></EmptyMedia>
+                <EmptyTitle>No commits.</EmptyTitle>
+                <EmptyDescription>No commits found yet. Your recent GitLab activity will appear here
+                  once you start pushing changes.</EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+
           </div>
         )}
       </div>
