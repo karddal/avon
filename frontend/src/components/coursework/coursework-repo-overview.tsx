@@ -27,34 +27,11 @@ import {
 
 export default function CourseworkRepoOverview({
   courseworkId,
+ repos,
 }: {
   courseworkId: string;
+  repos: StudentNameAndRepo[];
 }) {
-  const [repos, setRepos] = useState<StudentNameAndRepo[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let mounted = true;
-
-    async function loadRepos() {
-      try {
-        const data = await get_student_repos({ coursework_id: courseworkId });
-        if (mounted) {
-          setRepos(data.repos);
-        }
-      } finally {
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    }
-
-    loadRepos();
-
-    return () => {
-      mounted = false;
-    };
-  }, [courseworkId]);
 
   const sorted = repos.sort((a, b) => a.student.localeCompare(b.student));
 
@@ -72,11 +49,6 @@ export default function CourseworkRepoOverview({
         </CardTitle>
       </CardHeader>
       <CardContent className="flex min-h-0 flex-1 flex-col space-y-4">
-        {loading ? (
-          <div className="flex min-h-32 items-center justify-center">
-            <Spinner className="h-8 w-8" />
-          </div>
-        ) : (
           <>
             <div className="grid gap-3 md:grid-cols-2">
               <div className="rounded-md border bg-accent/40 p-3">
@@ -181,7 +153,6 @@ export default function CourseworkRepoOverview({
               )}
             </div>
           </>
-        )}
       </CardContent>
     </Card>
   );

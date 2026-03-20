@@ -18,6 +18,7 @@ import Loading from "../loading";
 import CourseworkDescription from "./description";
 import CourseworkInformation from "./information";
 import CourseworkName from "./name";
+import {get_student_repos} from "@/lib/actions/get_student_repos";
 
 async function CourseworkPageContent({
   params,
@@ -42,6 +43,10 @@ async function CourseworkPageContent({
     : undefined;
 
   const canGetAvailImages = scopes.has("unit:coursework_engine");
+
+  const student_repos_data = canViewStudentRepos ? await get_student_repos({ coursework_id: slug }) : undefined;
+
+
   const images = canGetAvailImages
     ? await get_base_images_cw_specific({ coursework_id: slug })
     : undefined;
@@ -121,8 +126,8 @@ async function CourseworkPageContent({
           className="h-full md:col-span-2 xl:col-span-2"
         >
           {canViewSetupProgress ? (
-            canViewStudentRepos ? (
-              <CourseworkRepoOverview courseworkId={slug} />
+            canViewStudentRepos && student_repos_data ? (
+              <CourseworkRepoOverview courseworkId={slug} repos={student_repos_data?.repos} />
             ) : (
               <></>
             )
