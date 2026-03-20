@@ -112,7 +112,7 @@ async def create_fork(project: ProjectFork, session: session_dependency):
                 session.delete(db_exists)
                 session.flush()
 
-            db_student_repo = StudentRepo(student_id=student, repo_url=http_url_to_repo, cw_id=project.coursework_id)
+            db_student_repo = StudentRepo(student_id=student, repo_url=http_url_to_repo, cw_id=project.coursework_id, gl_repo_id=data["id"])
             session.add(db_student_repo)
 
         except Exception:
@@ -146,6 +146,7 @@ async def create_fork_specific_student(project: CreateProjectForkForSpecificStud
 
             data = await gl_create_fork(name, user_id=student, group_id=gitlab_id, template_id=project.template_id)
             http_url_to_repo = data["http_url_to_repo"]
+            repo_id = data["id"]
 
             # we first check whether there is already a student repo db entry for this student
             # if there is we delete it first
@@ -155,7 +156,7 @@ async def create_fork_specific_student(project: CreateProjectForkForSpecificStud
                 session.delete(db_exists)
                 session.flush()
 
-            db_student_repo = StudentRepo(student_id=student, repo_url=http_url_to_repo, cw_id=project.coursework_id)
+            db_student_repo = StudentRepo(student_id=student, repo_url=http_url_to_repo, cw_id=project.coursework_id, gl_repo_id=repo_id)
             session.add(db_student_repo)
             created.append(student)
 

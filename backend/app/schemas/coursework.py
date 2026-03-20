@@ -59,6 +59,7 @@ class CourseworkStudentRepos(BaseModel):
 
 class StudentWithMaybeRepo(BaseModel):
     id: str
+    repo_id: str | None
     repo_url: str | None
 
 class CourseworkStudentWithRepos(BaseModel):

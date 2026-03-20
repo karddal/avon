@@ -1,5 +1,5 @@
 import type { ColumnDef } from "@tanstack/table-core";
-import { ArrowUpDown, ClipboardCopy, MoreHorizontal } from "lucide-react";
+import {ArrowUpDown, ClipboardCopy, DeleteIcon, MoreHorizontal} from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -8,14 +8,16 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
+  DropdownMenuLabel, DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 
 export type StudentNameAndPotentiallyRepo = {
   id: string;
   name: string;
   repo_url: string | null;
+  repo_id: string | null;
 };
 
 export const columns: ColumnDef<StudentNameAndPotentiallyRepo>[] = [
@@ -63,7 +65,9 @@ export const columns: ColumnDef<StudentNameAndPotentiallyRepo>[] = [
     accessorKey: "repo_url",
     enableHiding: true,
     header: ({ column }) => {
-      return <div>Repo</div>;
+      return (
+          <div>Repo name</div>
+      );
     },
     cell: ({ row }) => {
       const s = row.original;
@@ -77,36 +81,54 @@ export const columns: ColumnDef<StudentNameAndPotentiallyRepo>[] = [
     },
   },
   {
+    id: "repo_id",
+    accessorKey: "repo_id",
+    enableHiding: true,
+    header: ({ column }) => {
+      return (
+          <div>Repo ID</div>
+      );
+    },
+    cell: ({ row }) => {
+      return(<div className="">{row.original.repo_id ? row.original.repo_id : "No repo provisioned"}</div>)
+    },
+  },
+  {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
       if (row.getIsGrouped()) {
         const s = row.groupingValue as string; // MUST EXIST AS WE JUST CHECKED IS GROUPED!! so safe
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-40">
-              <DropdownMenuGroup>
-                <DropdownMenuLabel>Repo actions</DropdownMenuLabel>
-                <DropdownMenuItem
-                  onClick={() => {
-                    if (s) {
-                      navigator.clipboard.writeText(
-                        s.substring(0, s.indexOf(".git")),
-                      );
-                      toast.success("Repo URL copied to clipboard.");
-                    } else {
-                      toast.error("No repo URL");
-                    }
-                  }}
-                >
-                  <ClipboardCopy />
-                  Copy student repo URL
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-40">
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel>Repo actions</DropdownMenuLabel>
+                  <DropdownMenuItem
+                      onClick={() => {
+                        if (s) {
+                          navigator.clipboard.writeText(
+                              s.substring(0, s.indexOf(".git")),
+                          );
+                          toast.success("Repo URL copied to clipboard.");
+                        } else {
+                          toast.error("No repo URL");
+                        }
+                      }}
+                  >
+
+                    <ClipboardCopy />
+                    Copy student repo URL
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator/>
+                  <DropdownMenuItem variant={"destructive"}>
+                    <DeleteIcon/> Delete repo
                 </DropdownMenuItem>
               </DropdownMenuGroup>
             </DropdownMenuContent>

@@ -603,7 +603,7 @@ async def gl_delete_project(project_id):
             print(f"Network Error: {err}")
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
 
-    return response.status_code
+    return response
 
 
 async def gl_get_projects(group_id):
@@ -642,7 +642,7 @@ async def gl_delete_projects(group_id: int):
     for project in projects_to_delete:
         if project["name"] != "skeleton-code":
             status_code = await gl_delete_project(project["id"])
-        if status_code == 202:
+        if status_code.status_code == 202:
             status["deleted"].append(project["name"])
         else:
             status["failed"].append(project["name"])

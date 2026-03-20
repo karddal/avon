@@ -112,6 +112,7 @@ CREATE TABLE studentrepo(
     student_id VARCHAR NOT NULL,
     repo_url VARCHAR NOT NULL,
     cw_id UUID NOT NULL,
+    gl_repo_id VARCHAR NOT NULL,
     PRIMARY KEY (student_id, cw_id),
     CONSTRAINT cw_id
         FOREIGN KEY (cw_id) REFERENCES coursework(id)

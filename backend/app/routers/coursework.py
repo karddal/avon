@@ -4,18 +4,21 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.security import HTTPAuthorizationCredentials
+from gitlab.exceptions import GitlabDeleteError
 from sqlalchemy import and_, exists
 
 # Adding this back in
 from sqlalchemy.orm import selectinload
-from sqlmodel import Session, select
+from sqlmodel import Session, delete, select
 
 # GitLab helpers
+from app.core.gitlab import get_gitlab
 from app.core.helpers.gitlab import (
     gitlab_project_path_from_repo_url,
     gl_activate_template_project,
     gl_create_coursework,
     gl_delete_coursework,
+    gl_delete_project,
     gl_get_commit_count,
     gl_get_project_commits,
     gl_overwrite_zip,
@@ -74,7 +77,7 @@ async def get_student_repos(id: UUID, session: session_dependency, token: token_
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
     await require_scopes(
         ResourceInformation(type=Unit, id=coursework.unit_id),
-        Scopes.UNIT_COURSEWORK_ENGINE,
+        Scopes.UNIT_COURSEWORK_GITLAB,
         token=token,
         session=session
     )
@@ -82,6 +85,34 @@ async def get_student_repos(id: UUID, session: session_dependency, token: token_
     repos = map(lambda sr: sr,coursework.student_repos)
 
     return CourseworkStudentRepos(repos=list(repos))
+
+@router.delete("/{id}/del_repo/{rid}")
+async def delete_repo(id: UUID, rid: str, session: session_dependency, token: token_dependency):
+    coursework = session.get(Coursework,id)
+    if coursework is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
+    await require_scopes(
+        ResourceInformation(type=Unit, id=coursework.unit_id),
+        Scopes.UNIT_COURSEWORK_GITLAB,
+        token=token,
+        session=session
+    )
+
+    gitlab = get_gitlab()
+    try:
+        gitlab.projects.delete(rid)
+        # delete the student repos in session
+
+        objects = session.exec(select(StudentRepo).where((StudentRepo.cw_id == id) & (StudentRepo.gl_repo_id == rid))).all()
+        for o in objects:
+            session.delete(o)
+
+        session.commit()
+    except GitlabDeleteError as e:
+        return {"status": "error", "details": e}
+
+    return {"status": "ok"}
+
 
 
 @router.get("/{id}/all_students_with_repos", response_model=CourseworkStudentWithRepos)
@@ -92,12 +123,12 @@ async def get_all_students_with_repos(id: UUID, session: session_dependency, tok
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
     await require_scopes(
         ResourceInformation(type=Unit, id=coursework.unit_id),
-        Scopes.UNIT_COURSEWORK_ENGINE,
+        Scopes.UNIT_COURSEWORK_GITLAB,
         token=token,
         session=session
     )
 
-    students = list(map(lambda se: StudentWithMaybeRepo(id=se.user_id, repo_url=None), filter(lambda x : x.type == "student", coursework.unit.enrollments)))
+    students = list(map(lambda se: StudentWithMaybeRepo(id=se.user_id, repo_url=None, repo_id=None), filter(lambda x : x.type == "student", coursework.unit.enrollments)))
 
     for s in students:
         # try and get the repo url
@@ -105,6 +136,7 @@ async def get_all_students_with_repos(id: UUID, session: session_dependency, tok
 
         if repo:
             s.repo_url = repo.repo_url
+            s.repo_id = repo.gl_repo_id
 
     return CourseworkStudentWithRepos(students=students)
 

@@ -49,3 +49,6 @@ node_modules/
 
 # frontend cypress
 /frontend/cypress/screenshots
+
+
+.zed

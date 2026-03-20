@@ -4,6 +4,7 @@ import { getRequestJWT } from "@/lib/auth-utils";
 export type StudentNameAndRepo = {
   student: string;
   repo_url: string;
+  repo_id: string;
 };
 
 export type StudentsRepositoriesResp = {
@@ -18,6 +19,7 @@ type StudentRepoResp = {
   student_id: string;
   repo_url: string;
   cw_id: string;
+  repo_id: string;
 };
 
 type GetCWEngineDataResponse = {
@@ -48,11 +50,11 @@ export async function get_student_repos(
   const data: GetCWEngineDataResponse = await response.json();
 
   // Deduplicate data, if two students have same repo they should join together
-  const m = new Map<string, Array<string>>();
+  const m = new Map<[string, string], Array<string>>();
   for (const student of data.repos) {
-    const l = m.get(student.repo_url);
+    const l = m.get([student.repo_url, student.repo_id]);
     if (!l) {
-      m.set(student.repo_url, [student.student_id]);
+      m.set([student.repo_url, student.repo_id], [student.student_id]);
     } else {
       l.push(student.student_id);
     }
@@ -62,7 +64,7 @@ export async function get_student_repos(
   // we want to turn it into a list of student names and repos
 
   const out: StudentNameAndRepo[] = [];
-  for (const [repo_url, student_list] of m.entries()) {
+  for (const [[repo_url, repo_id], student_list] of m.entries()) {
     const names = [];
     for (const student of student_list) {
       names.push(await get_username_from_id(student));
@@ -70,6 +72,7 @@ export async function get_student_repos(
     out.push({
       student: names.join(", "),
       repo_url: repo_url,
+      repo_id: repo_id,
     });
   }
   return {
