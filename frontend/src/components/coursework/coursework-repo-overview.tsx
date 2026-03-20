@@ -1,16 +1,29 @@
 "use client";
 
-import {Copy, ExternalLink, FolderGit, FolderGit2, GitBranch, Users, ZapOff} from "lucide-react";
+import {
+  Copy,
+  ExternalLink,
+  FolderGit,
+  FolderGit2,
+  GitBranch,
+  Users,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { Spinner } from "@/components/ui/spinner";
 import {
   get_student_repos,
   type StudentNameAndRepo,
 } from "@/lib/actions/get_student_repos";
-import {Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty";
 
 export default function CourseworkRepoOverview({
   courseworkId,
@@ -49,7 +62,10 @@ export default function CourseworkRepoOverview({
     <Card className="h-full">
       <CardHeader>
         <CardTitle>
-          <div className="text-2xl flex flex-row items-center gap-2"><FolderGit2/>Student Repositories</div>
+          <div className="text-2xl flex flex-row items-center gap-2">
+            <FolderGit2 />
+            Student Repositories
+          </div>
           <div className="font-light">
             A quick overview of provisioned GitLab repos for this coursework.
           </div>
@@ -151,9 +167,14 @@ export default function CourseworkRepoOverview({
                 <div className="rounded-md border border-dashed p-6 text-sm h-full">
                   <Empty>
                     <EmptyHeader>
-                      <EmptyMedia variant={"icon"}><GitBranch/></EmptyMedia>
+                      <EmptyMedia variant={"icon"}>
+                        <GitBranch />
+                      </EmptyMedia>
                       <EmptyTitle>No student repositories.</EmptyTitle>
-                      <EmptyDescription>There are no student repositories yet. Have you tried provisioning them?</EmptyDescription>
+                      <EmptyDescription>
+                        There are no student repositories yet. Have you tried
+                        provisioning them?
+                      </EmptyDescription>
                     </EmptyHeader>
                   </Empty>
                 </div>

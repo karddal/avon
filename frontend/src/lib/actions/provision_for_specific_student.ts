@@ -6,7 +6,7 @@ import { getRequestJWT } from "@/lib/auth-utils";
 type ServerResponse = {
   created: string[];
   failed: string[];
-}
+};
 
 type ProjectCreateForSpecificStudRequest = {
   name: string;
@@ -15,7 +15,9 @@ type ProjectCreateForSpecificStudRequest = {
   student_ids: string[];
 };
 
-export async function provision_individual_projects_for_specific(req: ProjectCreateForSpecificStudRequest) {
+export async function provision_individual_projects_for_specific(
+  req: ProjectCreateForSpecificStudRequest,
+) {
   "use server";
 
   const token = await getRequestJWT();

@@ -4,7 +4,6 @@ import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
 import UnitDescription from "@/app/units/[slug]/description";
 import UnitName from "@/app/units/[slug]/name";
-import { DropdownCard } from "@/components/dropdown-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -69,7 +68,6 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
     programme_id: c.programme_id,
     unlocked: c.unlocked,
   };
-
   return (
     <>
       {/* Header */}
@@ -103,7 +101,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
         {/* Left column */}
         <div className="flex flex-col lg:col-span-2 gap-4 lg:min-h-0">
           {/* Unit Description */}
-          <Card>
+          <Card id="unit-description">
             <CardHeader>
               <CardTitle>
                 <div className="text-2xl">Description</div>
@@ -125,7 +123,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
           </Card>
 
           {/* Coursework */}
-          <Card>
+          <Card id="unit-coursework">
             <CardHeader>
               <CardTitle>
                 <div className="text-2xl">Coursework</div>
@@ -178,45 +176,22 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
 
         {/* Right column */}
         <div className="flex flex-col xl:col-span-1 lg:col-span-2 gap-4 min-h-0">
-          {/* Create a coursework*/}
-
           {/* Unit Staff */}
           <Suspense fallback={<Loading />}>
-            <DropdownCard
-              openByDefault={true}
-              title="Unit staff"
-              desc="Lecturers and teachers appear here"
-              className={""}
-            >
-              <Lecturers unit_id={slug}></Lecturers>
-            </DropdownCard>
-          </Suspense>
-
-          {/* Announcements */}
-          <DropdownCard
-            openByDefault={false}
-            title="Announcements"
-            desc="Recent announcements appear here."
-            className={"mb-16"}
-          >
-            {[1, 2, 3].map((i) => (
-              <Card
-                key={i}
-                className="py-0 bg-accent flex flex-row items-center gap-4"
-              >
-                <div className="flex flex-row">
-                  <div className="bg-red-500 h-auto w-1" />
-                  <div className="flex flex-col px-2">
-                    <div className="text-xl font-semibold">New coursework!</div>
-                    <div className="font-light">
-                      <span className="font-bold">Sketch</span> has been
-                      released. Get started now!
-                    </div>
+            <Card id="unit-staff">
+              <CardHeader>
+                <CardTitle>
+                  <div className="text-2xl">Unit staff</div>
+                  <div className="font-light">
+                    Lecturers and teachers appear here
                   </div>
-                </div>
-              </Card>
-            ))}
-          </DropdownCard>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Lecturers unit_id={slug}></Lecturers>
+              </CardContent>
+            </Card>
+          </Suspense>
         </div>
       </section>
     </>

@@ -1,4 +1,4 @@
-import {BellElectric, CalendarDays, Clock} from "lucide-react";
+import { BellElectric, CalendarDays, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 type courseworkData = {
@@ -58,7 +58,10 @@ export default async function CourseworkInformation({
     <Card className="h-full">
       <CardHeader className="flex flex-col">
         <CardTitle>
-          <div className="text-2xl flex flex-row items-center gap-2"><BellElectric/>Information</div>
+          <div className="text-2xl flex flex-row items-center gap-2">
+            <BellElectric />
+            Information
+          </div>
           <div className="font-light">
             Information about the coursework is shown below.
           </div>

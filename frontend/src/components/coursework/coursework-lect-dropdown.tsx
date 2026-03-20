@@ -2,7 +2,8 @@
 
 import {
   BookDashed,
-  Container, Gitlab, GitlabIcon,
+  Container,
+  Gitlab,
   LayersPlus,
   Menu,
   ServerCog,
@@ -14,6 +15,7 @@ import { useCallback, useState } from "react";
 import ConfigureCWTesting from "@/components/coursework/configure-c-w-testing";
 import DeleteCourseworkButton from "@/components/coursework/delete_coursework_button";
 import EditCoursework from "@/components/coursework/edit-coursework";
+import ReposListDialog from "@/components/coursework/repos-list-dialog";
 import StartTestBatchPopup from "@/components/coursework/start_test_batch";
 import {
   AlertDialog,
@@ -41,7 +43,6 @@ import type { GetCWEngineDataResponse } from "@/lib/actions/get_cw_engine_data";
 import { Item, ItemContent, ItemMedia, ItemTitle } from "../ui/item";
 import CreateTemplate from "./create-templates";
 import ProvisionCoursework from "./provision-coursework";
-import ReposListDialog from "@/components/coursework/repos-list-dialog";
 
 export default function CourseworkLectDropdown({
   slug,
@@ -176,7 +177,7 @@ export default function CourseworkLectDropdown({
                 </DropDrawerItem>
                 <DropDrawerItem
                   key={"View-Repos"}
-                  icon={<Gitlab/>}
+                  icon={<Gitlab />}
                   onSelect={() => setViewRepos(true)}
                 >
                   Manage student repos
@@ -262,7 +263,12 @@ export default function CourseworkLectDropdown({
       )}
 
       {hasGitlabScope && (
-          <ReposListDialog open_state={viewRepos} set_open_state={setViewRepos} courseworkId={slug} refresh={refresh}></ReposListDialog>
+        <ReposListDialog
+          open_state={viewRepos}
+          set_open_state={setViewRepos}
+          courseworkId={slug}
+          refresh={refresh}
+        ></ReposListDialog>
       )}
 
       {coursework_update_data && (
