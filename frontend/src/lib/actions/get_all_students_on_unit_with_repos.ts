@@ -1,10 +1,11 @@
-import type { StudentNameAndPotentiallyRepo } from "@/components/coursework/student-list/columns";
 import { get_username_from_id } from "@/lib/actions/get_username";
 import { getRequestJWT } from "@/lib/auth-utils";
+import {StudentNameAndPotentiallyRepo} from "@/components/coursework/student-list/columns";
 
 type StudentIDAndMaybeRepo = {
   id: string;
   repo_url: string | null;
+  repo_id: string | null;
 };
 
 type ServerResponse = {
@@ -46,6 +47,7 @@ export async function get_all_students_with_maybe_repos(
       id: s.id,
       name: await get_username_from_id(s.id),
       repo_url: s.repo_url,
+      repo_id: s.repo_id,
     });
   }
   return out;
