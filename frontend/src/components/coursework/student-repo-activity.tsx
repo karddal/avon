@@ -78,7 +78,7 @@ async function StudentRepoActivityContent({
                             What is this?
                           </div>
                           <div>
-                            The Avon Engine always marks the most recent submission on the default branch. Ensure that when the coursework deadline passes, the default branch on your GitLab repository contains the code that you wish to submit.
+                            The Avon Engine always marks the most recent commit on the default branch. Ensure that when the coursework deadline passes, the default branch on your GitLab repository contains the code that you wish to submit.
                           </div>
                         </HoverCardContent>
                       </HoverCard>
@@ -107,7 +107,7 @@ async function StudentRepoActivityContent({
                 <EmptyMedia variant={"icon"}><GitCommitHorizontal/></EmptyMedia>
                 <EmptyTitle>No commits.</EmptyTitle>
                 <EmptyDescription>No commits found yet. Your recent GitLab activity will appear here
-                  once you start pushing changes.</EmptyDescription>
+                  once you start pushing changes. Please note that only commits to the default branch will appear here.</EmptyDescription>
               </EmptyHeader>
             </Empty>
 
@@ -139,7 +139,7 @@ export default function StudentRepoActivity({
         <CardTitle>
           <div className="text-2xl flex flex-row items-center gap-2"><GitGraph/>Recent Commits</div>
           <div className="font-light">
-            Your coursework repository activity at a glance.
+            Your coursework repository activity at a glance. We only show commits to the default branch here.
           </div>
         </CardTitle>
       </CardHeader>

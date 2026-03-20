@@ -492,6 +492,7 @@ def gitlab_project_path_from_repo_url(repo_url: str) -> str:
     return project_path
 
 async def gl_get_project_commits(project_path: str, per_page: int = 5):
+    """This function returns commits to MAIN!!!/default branch because it doesn't specify ref_name"""
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
 
