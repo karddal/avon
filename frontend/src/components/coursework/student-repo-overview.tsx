@@ -99,7 +99,7 @@ async function StudentRepoOverviewContent({
         <div className="rounded-md border border-amber-300 bg-amber-50 p-4 text-amber-950 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-100">
           <div className="mb-4 flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-amber-700 dark:text-amber-300">
             <Sparkles className="h-4 w-4" />
-            Latest Activity
+            Latest Default Branch Activity
           </div>
           <div className="truncate text-lg font-semibold">
             {latestCommit?.title ?? "No commits yet"}

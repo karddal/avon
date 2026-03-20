@@ -1,6 +1,6 @@
 "use client";
 
-import {Copy, ExternalLink, FolderGit, FolderGit2, Users} from "lucide-react";
+import {Copy, ExternalLink, FolderGit, FolderGit2, GitBranch, Users, ZapOff} from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import {
   get_student_repos,
   type StudentNameAndRepo,
 } from "@/lib/actions/get_student_repos";
+import {Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty";
 
 export default function CourseworkRepoOverview({
   courseworkId,
@@ -105,7 +106,7 @@ export default function CourseworkRepoOverview({
 
             <div className="flex min-h-0 flex-1 flex-col space-y-2">
               <div className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                Repository Preview
+                Student repositories
               </div>
               {sorted.length > 0 ? (
                 <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
@@ -147,8 +148,14 @@ export default function CourseworkRepoOverview({
                   ))}
                 </div>
               ) : (
-                <div className="rounded-md border border-dashed p-6 text-sm text-muted-foreground">
-                  No student repositories found yet.
+                <div className="rounded-md border border-dashed p-6 text-sm h-full">
+                  <Empty>
+                    <EmptyHeader>
+                      <EmptyMedia variant={"icon"}><GitBranch/></EmptyMedia>
+                      <EmptyTitle>No student repositories.</EmptyTitle>
+                      <EmptyDescription>There are no student repositories yet. Have you tried provisioning them?</EmptyDescription>
+                    </EmptyHeader>
+                  </Empty>
                 </div>
               )}
             </div>
