@@ -2,7 +2,7 @@
 
 import {
   BookDashed,
-  Container,
+  Container, Gitlab, GitlabIcon,
   LayersPlus,
   Menu,
   ServerCog,
@@ -41,6 +41,7 @@ import type { GetCWEngineDataResponse } from "@/lib/actions/get_cw_engine_data";
 import { Item, ItemContent, ItemMedia, ItemTitle } from "../ui/item";
 import CreateTemplate from "./create-templates";
 import ProvisionCoursework from "./provision-coursework";
+import ReposListDialog from "@/components/coursework/repos-list-dialog";
 
 export default function CourseworkLectDropdown({
   slug,
@@ -60,6 +61,7 @@ export default function CourseworkLectDropdown({
   const [showDocker, setShowDocker] = useState(false);
   const [showTemplates, setShowTemplate] = useState(false);
   const [showStartTests, setShowStartTests] = useState<boolean>(false);
+  const [viewRepos, setViewRepos] = useState<boolean>(false);
   const router = useRouter();
   const refresh = useCallback(() => {
     router.refresh();
@@ -162,7 +164,7 @@ export default function CourseworkLectDropdown({
                   disabled={!canManageTemplates}
                   icon={<BookDashed />}
                 >
-                  Templates
+                  Repo template configuration
                 </DropDrawerItem>
                 <DropDrawerItem
                   key={"Provision-Coursework"}
@@ -170,7 +172,14 @@ export default function CourseworkLectDropdown({
                   disabled={!canProvision}
                   icon={<LayersPlus />}
                 >
-                  Provision Coursework
+                  Provision student repos
+                </DropDrawerItem>
+                <DropDrawerItem
+                  key={"View-Repos"}
+                  icon={<Gitlab/>}
+                  onSelect={() => setViewRepos(true)}
+                >
+                  View student repos
                 </DropDrawerItem>
               </DropDrawerGroup>
             </>
@@ -250,6 +259,10 @@ export default function CourseworkLectDropdown({
           courseworkId={coursework_update_data.id}
           refresh={refresh}
         />
+      )}
+
+      {hasGitlabScope && (
+          <ReposListDialog open_state={viewRepos} set_open_state={setViewRepos} courseworkId={slug} refresh={refresh}></ReposListDialog>
       )}
 
       {coursework_update_data && (
