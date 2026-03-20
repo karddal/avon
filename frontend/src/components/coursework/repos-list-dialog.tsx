@@ -29,6 +29,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import type { BaseImage } from "@/lib/actions/get_base_images_cw_specific";
 import type { GetCWEngineDataResponse } from "@/lib/actions/get_cw_engine_data";
+import StudsListDialog from "@/components/coursework/student-list/studs-table-dialog";
 
 type Props = {
   open_state: boolean;
@@ -41,6 +42,7 @@ export default function ReposListDialog({
                                               open_state,
                                               set_open_state,
                                               courseworkId,
+    refresh,
                                             }: Props) {
 
   return (
@@ -58,7 +60,7 @@ export default function ReposListDialog({
                 <CardTitle>Repos</CardTitle>
                 <div className={"flex min-w-0 items-center gap-2 w-full"}>
                   <Suspense>
-                    <StudentReposTable coursework_id={courseworkId} />
+                    <StudsListDialog refresh={refresh} open_state={open_state} set_open_state={set_open_state} courseworkId={courseworkId} />
                   </Suspense>
                 </div>
               </div>
