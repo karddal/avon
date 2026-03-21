@@ -5,6 +5,7 @@ export type BaseImage = {
   name: string;
   description: string;
   task_description_name: string;
+  is_active: boolean;
 };
 
 export type GetBaseImagesResponse = {

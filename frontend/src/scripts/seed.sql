@@ -80,6 +80,7 @@ CREATE TABLE baseimage (
     name VARCHAR NOT NULL,
     description VARCHAR NOT NULL,
     task_description_name VARCHAR NOT NULL,
+    is_active BOOLEAN NOT NULL,
     PRIMARY KEY (id)
 );
 -- coursework definition

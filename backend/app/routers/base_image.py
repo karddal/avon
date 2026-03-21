@@ -11,7 +11,12 @@ from app.db.session import get_session
 from app.models.base_image import BaseImage
 from app.models.coursework import Coursework
 from app.routers.unit import token_dependency
-from app.schemas.base_image import BaseImageCreate, BaseImageList
+from app.schemas.base_image import (
+    BaseImageCreate,
+    BaseImageList,
+    BaseImageMarkActivityRequest,
+    BaseImageMarkActivityResponse,
+)
 
 router = APIRouter(prefix="/base_image", tags=["base_image"])
 session_dependency = Annotated[Session, Depends(dependency=get_session)]
@@ -26,6 +31,32 @@ async def get_base_images_admin(session: session_dependency, token: token_depend
     images = list(session.exec(select(BaseImage)).all())
 
     return BaseImageList(images=images)
+
+
+@router.post(path="/{id}/mark_status", response_model=BaseImageMarkActivityResponse)
+async def set_base_image_active_status(
+    id: UUID,
+    request: BaseImageMarkActivityRequest,
+    session: session_dependency,
+    token: token_dependency,
+):
+    await require_role(FERoles.ADMIN, token=token, session=session)
+
+    db_base_image = session.get(BaseImage, ident=id)
+    if not db_base_image:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Could not find that base image.",
+        )
+
+    db_base_image.is_active = request.new_active_status
+    session.add(db_base_image)
+    session.commit()
+    session.refresh(db_base_image)
+
+    return BaseImageMarkActivityResponse(
+        base_image_id=db_base_image.id, new_is_active=db_base_image.is_active
+    )
 
 
 @router.post(

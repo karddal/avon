@@ -14,3 +14,4 @@ class BaseImage(SQLModel, table=True):
     courseworks: list["Coursework"] = Relationship(
         back_populates="base_image", cascade_delete=True
     )
+    is_active: bool = Field(default=True, nullable=False)
