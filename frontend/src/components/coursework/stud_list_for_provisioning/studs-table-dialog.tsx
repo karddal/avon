@@ -42,6 +42,8 @@ export default function StudsListDialogForProvision({
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [loadingState, setLoadingState] = useState<boolean>(false);
   const [status, setStatus] = useState<number>(0);
+  const [refreshTable, setRefreshTable] = useState<number>(0);
+
   const provisionForIndividuals = async (gitlab_data: GitlabData) => {
     const req = {
       name: gitlab_data.name,
@@ -54,14 +56,16 @@ export default function StudsListDialogForProvision({
       const result = await provision_individual_projects_for_specific(req);
       setLoadingState(false);
       if (result.success) {
-        setStatus(2);
         toast.success("Projects successfully provisioned");
+        setRefreshTable(refreshTable + 1);
+        setStatus(0);
         refresh();
       } else {
         toast.error(
           "Failed to provision projects. Are there already some repos provisioned for students?",
         );
         setStatus(0);
+        setRefreshTable(refreshTable + 1);
       }
   };
 
@@ -89,6 +93,8 @@ export default function StudsListDialogForProvision({
                       coursework_id={courseworkId}
                       setRowSelection={setRowSelection}
                       rowSelection={rowSelection}
+                      refreshTable={refreshTable}
+                      setRefreshTable={setRefreshTable}
                     />
                   </Suspense>
                 </div>
@@ -100,7 +106,7 @@ export default function StudsListDialogForProvision({
                     variant="outline"
                     className="w-full mt-4"
                   >
-                    <Send></Send> Provision repository
+                    <Send></Send> Provision repositories
                   </Button>
                 )}
 
@@ -114,17 +120,6 @@ export default function StudsListDialogForProvision({
                   <Button disabled className="w-full mt-4">
                     <Spinner className="mr-2 h-4 w-4" />
                     Provisioning...
-                  </Button>
-                )}
-
-                {status === 2 && !loadingState && (
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="w-full border-green-500 text-green-600 cursor-default"
-                    disabled
-                  >
-                    ✓ Repositories provisioned
                   </Button>
                 )}
               </CardFooter>

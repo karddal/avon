@@ -1,6 +1,7 @@
 { pkgs, lib, config, inputs, ... }:
 
 {
+  process.manager.implementation = "process-compose";
   # https://devenv.sh/basics/
   env.GREET = "devenv";
 

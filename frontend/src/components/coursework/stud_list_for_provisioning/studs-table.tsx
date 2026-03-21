@@ -40,10 +40,14 @@ export function StudentsTableWithMaybeRepos({
   coursework_id,
   rowSelection,
   setRowSelection,
+    refreshTable,
+    setRefreshTable,
 }: {
   coursework_id: string;
   rowSelection: {};
   setRowSelection: Dispatch<SetStateAction<{}>>;
+  refreshTable: number;
+  setRefreshTable: Dispatch<SetStateAction<number>>;
 }) {
   const [data, setData] = useState<StudentNameAndPotentiallyRepo[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -91,7 +95,7 @@ export function StudentsTableWithMaybeRepos({
     updateData().then(() => {
       setLoading(false);
     });
-  }, [coursework_id]);
+  }, [coursework_id, refreshTable]);
 
   if (loading) {
     return (
