@@ -1,4 +1,3 @@
-
 from typing import Annotated
 from uuid import UUID
 
@@ -17,6 +16,7 @@ from app.schemas.base_image import BaseImageCreate, BaseImageList
 router = APIRouter(prefix="/base_image", tags=["base_image"])
 session_dependency = Annotated[Session, Depends(dependency=get_session)]
 
+
 @router.get(path="/", response_model=BaseImageList)
 async def get_base_images_admin(session: session_dependency, token: token_dependency):
     # this is an admin route, so require admin fe role
@@ -27,40 +27,65 @@ async def get_base_images_admin(session: session_dependency, token: token_depend
 
     return BaseImageList(images=images)
 
-@router.post(path="/create", response_model=BaseImage, status_code=status.HTTP_201_CREATED)
-async def create_base_image(image: BaseImageCreate, session: session_dependency, token: token_dependency):
 
+@router.post(
+    path="/create", response_model=BaseImage, status_code=status.HTTP_201_CREATED
+)
+async def create_base_image(
+    image: BaseImageCreate, session: session_dependency, token: token_dependency
+):
     await require_role(FERoles.ADMIN, token=token, session=session)
 
     base_image_already_exists = session.exec(
-        select(BaseImage).where((BaseImage.image_uri == image.image_uri) & (BaseImage.name == image.name) & (BaseImage.description == image.description))
+        select(BaseImage).where(
+            (BaseImage.task_description_name == image.task_description_name)
+            & (BaseImage.name == image.name)
+            & (BaseImage.description == image.description)
+        )
     ).first()
 
     if base_image_already_exists:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Base image with that data already exists")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Base image with that data already exists",
+        )
 
-    db_base_image = BaseImage(name=image.name, description=image.description, image_uri=image.image_uri)
+    db_base_image = BaseImage(
+        name=image.name,
+        description=image.description,
+        task_description_name=image.task_description_name,
+    )
     session.add(instance=db_base_image)
     session.commit()
     session.refresh(db_base_image)
     return db_base_image
 
-@router.delete(path="/{id}", status_code=status.HTTP_200_OK)
-async def delete_base_image(id: str, session: session_dependency, token: token_dependency):
 
+@router.delete(path="/{id}", status_code=status.HTTP_200_OK)
+async def delete_base_image(
+    id: str, session: session_dependency, token: token_dependency
+):
     await require_role(FERoles.ADMIN, token=token, session=session)
 
     db_image = session.get(BaseImage, ident=UUID(id))
 
     if not db_image:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Base image not found with that ID")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Base image not found with that ID",
+        )
 
     # check to make sure the image is not in use
 
-    cws = session.exec(select(Coursework).where(Coursework.base_image == id)).all()
+    cws = session.exec(
+        select(Coursework).where(Coursework.base_image_id == UUID(id))
+    ).all()
     if len(cws) > 0:
-        x = ','.join(map(lambda c: str(c.name), cws))
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail=f"Base image is in use, so cannot delete. users = {x}")
+        x = ",".join(map(lambda c: str(c.name), cws))
+        raise HTTPException(
+            status_code=status.HTTP_406_NOT_ACCEPTABLE,
+            detail=f"Base image is in use, so cannot delete. users = {x}",
+        )
 
     session.delete(instance=db_image)
     session.commit()

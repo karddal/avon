@@ -20,7 +20,7 @@ export type BaseImage = {
   id: string;
   name: string;
   description: string;
-  image_uri: string;
+  task_description_name: string;
 };
 
 export const columns: ColumnDef<BaseImage>[] = [
@@ -42,14 +42,14 @@ export const columns: ColumnDef<BaseImage>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
               onClick={() => {
-                navigator.clipboard.writeText(image.image_uri);
-                toast.success("Image URI copied to clipboard");
+                navigator.clipboard.writeText(image.task_description_name);
+                toast.success("Task description name copied to clipboard");
               }}
             >
               <ClipboardCopy />
               Copy image URI
             </DropdownMenuItem>
-            <DropdownMenuItem
+            <DropdownMenuItem variant={"destructive"}
               onClick={() => {
                 const deleteRequest = { id: image.id };
                 delete_base_image(deleteRequest).then((res) => {
@@ -80,7 +80,7 @@ export const columns: ColumnDef<BaseImage>[] = [
     header: "Description",
   },
   {
-    accessorKey: "image_uri",
-    header: "Image URI",
+    accessorKey: "task_description_name",
+    header: "AWS task description name",
   },
 ];

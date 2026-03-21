@@ -80,7 +80,7 @@ CREATE TABLE baseimage (
     id UUID NOT NULL,
     name VARCHAR NOT NULL,
     description VARCHAR NOT NULL,
-    image_uri VARCHAR NOT NULL,
+    task_description_name VARCHAR NOT NULL,
     PRIMARY KEY (id)
 );
 -- coursework definition

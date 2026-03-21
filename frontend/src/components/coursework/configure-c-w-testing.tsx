@@ -92,6 +92,14 @@ export default function ConfigureCWTesting({
   };
 
   const applyDockerfile = () => {
+    if (config.finalCommands.length === 0) {
+      toast.error("Final commands is empty!");
+      setSubmitState(false);
+    }
+    if (config.baseImage === null) {
+      toast.error("Base image is empty!");
+      setSubmitState(false);
+    }
     setSubmitState(true);
     update_coursework_engine(cw_engine_data.cw_id, {
       base_image_id: config.baseImage.id,
@@ -237,6 +245,7 @@ export default function ConfigureCWTesting({
                 <Button
                   variant="default"
                   className="w-full"
+                  disabled={config.finalCommands.length <= 0 || config.baseImage === undefined}
                   onClick={() => applyDockerfile()}
                 >
                   <FileCheck className="mr-2 w-4 h-4" /> Save

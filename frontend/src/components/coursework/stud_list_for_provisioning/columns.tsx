@@ -51,19 +51,19 @@ export const columns: ColumnDef<StudentNameAndPotentiallyRepo>[] = [
   },
   {
     id: "repo_url",
-    accessorKey: "repo_url",
-    header: ({ column }) => {
-      return <div>Repo</div>;
-    },
-    cell: ({ row }) => {
-      const s = row.original;
-      const repo_name = s.repo_url?.substring(
-        s.repo_url.lastIndexOf("/") + 1,
-        s.repo_url.indexOf(".git"),
-      );
-      return (
-        <div className="">{repo_name ? repo_name : "No repo provisioned"}</div>
-      );
-    },
+    // accessorKey: "repo_url",
+    // header: ({ column }) => {
+    //   return <div>Repo</div>;
+    // },
+    // cell: ({ row }) => {
+    //   const s = row.original;
+    //   const repo_name = s.repo_url?.substring(
+    //     s.repo_url.lastIndexOf("/") + 1,
+    //     s.repo_url.indexOf(".git"),
+    //   );
+    //   return (
+    //     <div className="">{repo_name ? repo_name : "No repo provisioned"}</div>
+    //   );
+    // },
   },
 ];
