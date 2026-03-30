@@ -56,6 +56,16 @@ Example prompts:
 - ```how do I get the runner.py into the dockerifle? it says it cant find it```
 - ```how will I know whether it worked? nothing gets printed out```
 - ```How can I troubleshoot aws login etc errors? Can you add code to do that?```
+- ```I have an architecture on a VLE where lecturers can pick a base task definition and a tester command, and we have multiple task defs (python, c etc) with different dependencies installed. The runner script in each case git clones student work and runs the tester command. This all runs in an ecs task. What would be a clean db schema for storing test runs? The ecs task updates the backend by sending a sqs notification on finish with the exit code and the s3 url where logs were uploaded, and the fastapi backend consumes this and updates the db. I worked really hard to have this architecture be fault tolerant - so we can handle multiple backends, eg if one dies etc, and data doesn’t get lost.```
+- ```Why do we need the sqs table? won’t the unique constraint on test run id be sufficient?```
+- ```How do we handle submissions? Right now, we just have a system where lecturers can click 'grade', and we just take the repo url, and git clone from the default branch. Do we need to formalise this? I see you made some submission table - can you explain the logic here?```
+- ```Yeah - we have help text on our UI telling students to ensure that when the submission deadline passes, just make sure that the code on their default branch is the code that they want to submit. When this all gets fully set up, we will use GitLab invites, and their access will have an expiration equal to the cw due date. So they lose access to the remote and their submission is set in stone.```
+- ```I'd like to use a linux epoch timestamp because I find dealing with different timezones etc difficult. I'm using fastapi - can I just use an int field and use datetime to get the linux epoch?```
+- ```okay, so would I just use an sqlmodel datetime type field? What method do I use to get the current time, and then get it back later on? There's so many different ones (now, utcnow etc) and numerous footguns```
+- ```don't we need to store things like the task definition used to run the tests, and the tester command?```
+- ```yes - the idea is that the admins can define runner images with different dependencies installed, docker build, upload to ecr, and define aws task definition. Then we have a way in our frontend for admins to register them as a BaseImage which a lecturer can select when setting up the test running. I think that we need the task_definition name when running ecs tasks so is that what we should save?```
+- ```When it comes to api responses, is it standard to return a HTTPException (error code, detail) or do we have a custom json type with status: error, detail: str?```
+
 
 ### Josh
 
