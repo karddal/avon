@@ -8,7 +8,9 @@ from sqlmodel import Field, Relationship, SQLModel
 if TYPE_CHECKING:
     from app.models.base_image import BaseImage
     from app.models.student_repo import StudentRepo
+    from app.models.test_run import TestRun
     from app.models.unit import Unit
+
 
 class Coursework(SQLModel, table=True):
     id: UUID = Field(primary_key=True, default_factory=uuid.uuid4)
@@ -25,7 +27,10 @@ class Coursework(SQLModel, table=True):
     colour: str
     gitlab_id: str = Field(nullable=False)
     template_id: int | None = Field(nullable=True)
-    base_image_id: UUID | None = Field(nullable = True, foreign_key="baseimage.id")
-    tester_command: str | None = Field(nullable = True)
-    student_repos: list["StudentRepo"] = Relationship(back_populates="coursework", cascade_delete=True)
+    base_image_id: UUID | None = Field(nullable=True, foreign_key="baseimage.id")
+    tester_command: str | None = Field(nullable=True)
+    student_repos: list["StudentRepo"] = Relationship(
+        back_populates="coursework", cascade_delete=True
+    )
     base_image: "BaseImage" = Relationship(back_populates="courseworks")
+    # test_runs: list["TestRun"] = Relationship(back_populates="coursework")
