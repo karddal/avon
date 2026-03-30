@@ -113,6 +113,8 @@ CREATE TABLE testrun (
     git_url VARCHAR NOT NULL,
     task_def VARCHAR NOT NULL,
     gitlab_repo_id VARCHAR NOT NULL,
+    started_by VARCHAR NOT NULL,
+    batch_id VARCHAR NOT NULL,
     tester_command VARCHAR NOT NULL,
     status VARCHAR NOT NULL,
     dispatched_at DATE NOT NULL,

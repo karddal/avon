@@ -7,6 +7,7 @@ from uuid import UUID
 from pydantic import AfterValidator, BaseModel, ConfigDict
 
 from app.models.student_repo import StudentRepo
+from app.models.test_run import TestRun, status_type
 
 
 def is_valid_name(name: str) -> str:
@@ -174,3 +175,15 @@ class CourseworkEventRead(BaseModel):
     unit_id: UUID
     unit_name: Name
     colour: Colour | None = None
+
+class TestRunBasicInfo(BaseModel):
+    id: UUID
+    batch_id: str
+    gitlab_repo_id: str
+    gitlab_repo_url: str
+    student_ids: list[str]
+    status: status_type
+
+
+class CourseworkTestRuns(BaseModel):
+    test_runs: list[TestRunBasicInfo]

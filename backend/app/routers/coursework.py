@@ -1,5 +1,6 @@
 import datetime
 import logging
+import uuid
 from typing import Annotated, Optional
 from uuid import UUID
 
@@ -9,7 +10,7 @@ from gitlab.exceptions import GitlabDeleteError, GitlabGetError
 from sqlalchemy import and_, exists
 
 # Adding this back in
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, load_only
 from sqlmodel import Session, delete, select
 
 # GitLab helpers
@@ -64,7 +65,7 @@ from app.schemas.coursework import (
     CourseworkUpdate,
     CourseworkUpdateEngineData,
     CourseworkUpdateFormData,
-    StudentWithMaybeRepo,
+    StudentWithMaybeRepo, CourseworkTestRuns, TestRunBasicInfo,
 )
 from app.schemas.security import CurrentUser
 from app.schemas.test_run import StartTestRun
@@ -73,6 +74,40 @@ logger = logging.getLogger("coursework")
 router = APIRouter(prefix="/coursework", tags=["coursework"])
 session_dependency = Annotated[Session, Depends(get_session)]
 token_dependency = Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]
+
+@router.get("/{id}/test_runs", response_model=CourseworkTestRuns)
+async def get_test_runs(
+        id: UUID, session: session_dependency, token: token_dependency
+):
+    coursework = session.get(Coursework, id)
+    if coursework is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Coursework not found"
+        )
+    user = await require_scopes(
+        ResourceInformation(type=Unit, id=coursework.unit_id),
+        Scopes.UNIT_COURSEWORK_ENGINE,
+        token=token,
+        session=session,
+    )
+    result = []
+    for tr in coursework.test_runs:
+        students = session.exec(select(StudentRepo).where((StudentRepo.cw_id == id) & (StudentRepo.gl_repo_id == tr.gitlab_repo_id)).options(load_only("student_id"))).all()
+        student_ids: list[str] = list(map(lambda s: s["student_id"], students))
+        result.append(
+            TestRunBasicInfo(
+                id=tr.id,
+                batch_id=tr.batch_id,
+                gitlab_repo_id=tr.gitlab_repo_id,
+                gitlab_repo_url=tr.git_url,
+                student_ids=student_ids,
+                status=tr.status,
+            )
+        )
+
+    return CourseworkTestRuns(
+        test_runs=result,
+    )
 
 @router.post("/{id}/start_test_batch", status_code=status.HTTP_201_CREATED)
 async def start_test_batch(
@@ -83,7 +118,7 @@ async def start_test_batch(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Coursework not found"
         )
-    await require_scopes(
+    user = await require_scopes(
         ResourceInformation(type=Unit, id=coursework.unit_id),
         Scopes.UNIT_COURSEWORK_ENGINE,
         token=token,
@@ -103,6 +138,7 @@ async def start_test_batch(
     successful_starts = 0
     fails = 0
     gl = get_gitlab()
+    batch_id = uuid.uuid4()
     for repo in request.repo_ids:
         # Try and get the repo url from gitlab, if not present, bail out now
         try:
@@ -117,6 +153,8 @@ async def start_test_batch(
                 status="running",
                 completed_at=None,
                 trigger="initial",
+                started_by=user.user_id,
+                batch_id=batch_id,
                 notifications_enabled=request.notifications_enabled
             )
             session.add(db_test_run)
