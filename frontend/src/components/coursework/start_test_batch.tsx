@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleQuestionMark, Layers, Send, TriangleAlert } from "lucide-react";
+import {Bell, CircleQuestionMark, Layers, Send, TriangleAlert} from "lucide-react";
 import {type Dispatch, type SetStateAction, Suspense, useState} from "react";
 import { StudentReposTable } from "@/components/coursework/repos_table";
 import { Button } from "@/components/ui/button";
@@ -62,10 +62,10 @@ export default function StartTestBatchPopup({
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
   const start_test_run = async () => {
-    const repo_urls = Object.keys(rowSelection);
+    const repo_ids = Object.keys(rowSelection);
     setSubmitting(true);
     try {
-      const d = await send_test_run_start_req(courseworkId, repo_urls, notificationsEnabled);
+      const d = await send_test_run_start_req(courseworkId, repo_ids, notificationsEnabled);
       toast.success(`${d.started} test runs started successfully; ${d.failed} runs failed to start.`);
       refresh();
     } catch (e) {
