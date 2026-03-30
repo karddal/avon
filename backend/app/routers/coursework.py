@@ -98,6 +98,7 @@ async def start_test_batch(
     # Just a stub for now
     print("Testing started...")
 
+    successful_starts = 0
     for repo in request.repo_urls:
         db_test_run = TestRun(
             coursework_id=coursework.id,
@@ -111,9 +112,10 @@ async def start_test_batch(
             notifications_enabled=request.notifications_enabled
         )
         session.add(db_test_run)
+        successful_starts += 1
 
     session.commit()
-    return {"status": "test run started"}
+    return {"started": successful_starts, "failed": 0}
 
 @router.get("/{id}/student_repos", response_model=CourseworkStudentRepos)
 async def get_student_repos(
