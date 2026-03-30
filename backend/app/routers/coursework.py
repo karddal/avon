@@ -39,6 +39,7 @@ from app.db.session import get_session
 from app.models.base_image import BaseImage
 from app.models.coursework import Coursework
 from app.models.student_repo import StudentRepo
+from app.models.test_run import TestRun
 from app.models.unit import Unit, UnitWithCourseworks
 from app.models.unit_enrollment import UnitEnrollment
 from app.schemas.base_image import BaseImageList
@@ -65,11 +66,54 @@ from app.schemas.coursework import (
     StudentWithMaybeRepo,
 )
 from app.schemas.security import CurrentUser
+from app.schemas.test_run import StartTestRun
 
 router = APIRouter(prefix="/coursework", tags=["coursework"])
 session_dependency = Annotated[Session, Depends(get_session)]
 token_dependency = Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]
 
+@router.post("/{id}/start_test_batch", status_code=status.HTTP_201_CREATED)
+async def start_test_batch(
+        id: UUID, request: StartTestRun, session: session_dependency, token: token_dependency
+):
+    coursework = session.get(Coursework, id)
+    if coursework is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Coursework not found"
+        )
+    await require_scopes(
+        ResourceInformation(type=Unit, id=coursework.unit_id),
+        Scopes.UNIT_COURSEWORK_ENGINE,
+        token=token,
+        session=session,
+    )
+
+    # Now we have the coursework and we have checked that the user is logged in and has the right scopes
+
+    if coursework.base_image_id is None or coursework.tester_command is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="CW testing is not configured"
+        )
+
+    # Just a stub for now
+    print("Testing started...")
+
+    for repo in request.repo_urls:
+        db_test_run = TestRun(
+            coursework_id=coursework.id,
+            ecs_task_arn="stub",
+            git_url=repo,
+            task_def=coursework.base_image.task_definition,
+            tester_command=coursework.tester_command,
+            status="running",
+            completed_at=None,
+            trigger="initial",
+            notifications_enabled=request.notifications_enabled
+        )
+        session.add(db_test_run)
+
+    session.commit()
+    return {"status": "test run started"}
 
 @router.get("/{id}/student_repos", response_model=CourseworkStudentRepos)
 async def get_student_repos(

@@ -22,7 +22,7 @@ export type BaseImage = {
   id: string;
   name: string;
   description: string;
-  task_description_name: string;
+  task_definition: string;
   is_active: boolean;
 };
 
@@ -63,7 +63,7 @@ export const columns: (router: AppRouterInstance) => ColumnDef<BaseImage>[] = (r
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
               onClick={() => {
-                navigator.clipboard.writeText(image.task_description_name);
+                navigator.clipboard.writeText(image.task_definition);
                 toast.success("Task description name copied to clipboard");
               }}
             >
@@ -113,7 +113,7 @@ export const columns: (router: AppRouterInstance) => ColumnDef<BaseImage>[] = (r
     header: "Description",
   },
   {
-    accessorKey: "task_description_name",
-    header: "AWS task description name",
+    accessorKey: "task_definition",
+    header: "AWS task definition family:revision",
   },
 ]}

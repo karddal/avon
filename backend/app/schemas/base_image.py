@@ -13,7 +13,7 @@ class BaseImageList(BaseModel):
 class BaseImageCreate(BaseModel):
     name: str
     description: str
-    task_description_name: str
+    task_definition: str
 
 
 class BaseImageMarkActivityRequest(BaseModel):

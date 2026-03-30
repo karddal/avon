@@ -21,7 +21,7 @@ import { create_base_image } from "@/lib/actions/create_base_image";
 const formSchema = z.object({
   name: z.string().min(1).max(64),
   description: z.string().min(1).max(500),
-  task_description_name: z.string().nonempty(),
+  task_definition: z.string().nonempty(),
 });
 
 export function CreateBIForm() {
@@ -32,7 +32,7 @@ export function CreateBIForm() {
     defaultValues: {
       name: "",
       description: "",
-      task_description_name: "",
+      task_definition: "",
     },
   });
 
@@ -42,7 +42,7 @@ export function CreateBIForm() {
     const req = {
       name: data.name,
       description: data.description,
-      task_description_name: data.task_description_name,
+      task_definition: data.task_definition,
     };
     create_base_image(req).then((s) => {
       if (!s.success) {
@@ -101,11 +101,11 @@ export function CreateBIForm() {
       />
 
       <Controller
-        name="task_description_name"
+        name="task_definition"
         control={form.control}
         render={({ field, fieldState }) => (
           <Field data-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor={field.name}>AWS task description name</FieldLabel>
+            <FieldLabel htmlFor={field.name}>AWS task definition name:revision</FieldLabel>
             <Input
               {...field}
               id={field.name}

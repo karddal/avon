@@ -49,7 +49,7 @@ interface BaseImage {
   id: string;
   name: string;
   description: string;
-  image_uri: string;
+  task_definition: string;
 }
 
 type DockerProps = {

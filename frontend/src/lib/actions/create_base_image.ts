@@ -5,7 +5,7 @@ import { getRequestJWT } from "@/lib/auth-utils";
 type CreateBaseImageRequest = {
   name: string;
   description: string;
-  task_description_name: string;
+  task_definition: string;
 };
 
 export async function create_base_image(req: CreateBaseImageRequest) {

@@ -4,7 +4,7 @@ export type BaseImage = {
   id: string;
   name: string;
   description: string;
-  image_uri: string;
+  task_definition: string;
 };
 
 export type GetBaseImagesResponse = {
