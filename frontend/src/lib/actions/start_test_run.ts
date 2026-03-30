@@ -7,6 +7,11 @@ type StartTestRunRequest = {
     notifications_enabled: boolean;
 };
 
+type SuccessResponse = {
+    started: number;
+    failed: number;
+}
+
 export async function send_test_run_start_req(coursework_id: string, repo_urls: string[], notifications_enabled: boolean) {
     "use server";
     const token = await getRequestJWT();
@@ -29,6 +34,7 @@ export async function send_test_run_start_req(coursework_id: string, repo_urls: 
         const json = await data.json();
         throw new Error(`could not start test run: ${json.detail ?? "no info"}`);
     } else {
-        return true;
+        const d: SuccessResponse = await data.json();
+        return d;
     }
 }

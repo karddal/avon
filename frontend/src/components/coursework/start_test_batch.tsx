@@ -65,8 +65,8 @@ export default function StartTestBatchPopup({
     const repo_urls = Object.keys(rowSelection);
     setSubmitting(true);
     try {
-      await send_test_run_start_req(courseworkId, repo_urls, notificationsEnabled);
-      toast.success("Test run started.");
+      const d = await send_test_run_start_req(courseworkId, repo_urls, notificationsEnabled);
+      toast.success(`${d.started} test runs started successfully; ${d.failed} runs failed to start.`);
       refresh();
     } catch (e) {
       toast.error("An error occurred when starting the test run.");
