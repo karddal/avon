@@ -112,6 +112,7 @@ CREATE TABLE testrun (
     ecs_task_arn VARCHAR NOT NULL,
     git_url VARCHAR NOT NULL,
     task_def VARCHAR NOT NULL,
+    gitlab_repo_id VARCHAR NOT NULL,
     tester_command VARCHAR NOT NULL,
     status VARCHAR NOT NULL,
     dispatched_at DATE NOT NULL,

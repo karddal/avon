@@ -1,4 +1,5 @@
 import datetime
+import logging
 from typing import Annotated, Optional
 from uuid import UUID
 
@@ -68,6 +69,7 @@ from app.schemas.coursework import (
 from app.schemas.security import CurrentUser
 from app.schemas.test_run import StartTestRun
 
+logger = logging.getLogger("coursework")
 router = APIRouter(prefix="/coursework", tags=["coursework"])
 session_dependency = Annotated[Session, Depends(get_session)]
 token_dependency = Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]
@@ -99,23 +101,35 @@ async def start_test_batch(
     print("Testing started...")
 
     successful_starts = 0
-    for repo in request.repo_urls:
-        db_test_run = TestRun(
-            coursework_id=coursework.id,
-            ecs_task_arn="stub",
-            git_url=repo,
-            task_def=coursework.base_image.task_definition,
-            tester_command=coursework.tester_command,
-            status="running",
-            completed_at=None,
-            trigger="initial",
-            notifications_enabled=request.notifications_enabled
-        )
-        session.add(db_test_run)
-        successful_starts += 1
+    fails = 0
+    gl = get_gitlab()
+    for repo in request.repo_ids:
+        # Try and get the repo url from gitlab, if not present, bail out now
+        try:
+            repo_url = gl.projects.get(repo).ssh_url_to_repo
+            db_test_run = TestRun(
+                coursework_id=coursework.id,
+                ecs_task_arn="stub",
+                gitlab_repo_id=repo,
+                git_url=repo_url,
+                task_def=coursework.base_image.task_definition,
+                tester_command=coursework.tester_command,
+                status="running",
+                completed_at=None,
+                trigger="initial",
+                notifications_enabled=request.notifications_enabled
+            )
+            session.add(db_test_run)
+            session.commit()
+            successful_starts += 1
+            logger.debug(f"Started test run for {repo} on coursework {coursework}")
+        except Exception as e:
+            logger.error(f"Failed to start test run for {repo} on coursework {coursework.id}: {e}")
+            session.rollback()
+            fails += 1
 
-    session.commit()
-    return {"started": successful_starts, "failed": 0}
+
+    return {"started": successful_starts, "failed": fails}
 
 @router.get("/{id}/student_repos", response_model=CourseworkStudentRepos)
 async def get_student_repos(

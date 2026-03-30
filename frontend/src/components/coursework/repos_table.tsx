@@ -65,7 +65,7 @@ export function StudentReposTable({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    getRowId: (row) => row.repo_url,
+    getRowId: (row) => row.repo_id,
     state: {
       sorting,
       columnFilters,

@@ -22,6 +22,7 @@ class TestRun(SQLModel, table=True):
     coursework_id: UUID = Field(foreign_key="coursework.id")
     coursework: "Coursework" = Relationship(back_populates="test_runs")
     ecs_task_arn: str = Field(nullable=False)
+    gitlab_repo_id: str = Field(nullable=False)
     git_url: str = Field(nullable=False)
     task_def: str = Field(nullable=False)
     tester_command: str = Field(nullable=False)

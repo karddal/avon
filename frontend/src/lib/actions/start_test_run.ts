@@ -3,7 +3,7 @@ import type { BaseImage } from "@/lib/actions/get_base_images_admin";
 import { getRequestJWT } from "@/lib/auth-utils";
 
 type StartTestRunRequest = {
-    repo_urls: string[];
+    repo_ids: string[];
     notifications_enabled: boolean;
 };
 
@@ -12,7 +12,7 @@ type SuccessResponse = {
     failed: number;
 }
 
-export async function send_test_run_start_req(coursework_id: string, repo_urls: string[], notifications_enabled: boolean) {
+export async function send_test_run_start_req(coursework_id: string, repo_ids: string[], notifications_enabled: boolean) {
     "use server";
     const token = await getRequestJWT();
     const data = await fetch(
@@ -25,7 +25,7 @@ export async function send_test_run_start_req(coursework_id: string, repo_urls: 
             },
             cache: "no-cache",
             body: JSON.stringify({
-                repo_urls: repo_urls,
+                repo_ids: repo_ids,
                 notifications_enabled: notifications_enabled,
             }),
         },

@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  BookDashed,
+  BookDashed, BookPlus, CircleDashed,
   Container,
   Gitlab,
   LayersPlus,
@@ -132,17 +132,34 @@ export default function CourseworkLectDropdown({
                   >
                     Start test batch
                   </DropDrawerItem>
+                  <DropDrawerItem
+                      key={"TestRuns"}
+                      disabled={true}
+                      icon={<CircleDashed />}
+                  >
+                    Test batches
+                  </DropDrawerItem>
                 </>
               )}
               {engine_is_setup && (
-                <DropDrawerItem
-                  key={"Engine"}
-                  icon={<ServerCog />}
-                  disabled={false}
-                  onSelect={() => setShowStartTests(true)}
-                >
-                  Start test batch
-                </DropDrawerItem>
+                  <>
+                    <DropDrawerItem
+                        key={"Engine"}
+                        icon={<ServerCog />}
+                        disabled={false}
+                        onSelect={() => setShowStartTests(true)}
+                    >
+                      Start test batch
+                    </DropDrawerItem>
+                    <DropDrawerItem
+                        key={"TestRuns"}
+                        disabled={false}
+                        icon={<CircleDashed />}
+                    >
+                      Test batches
+                    </DropDrawerItem>
+                  </>
+
               )}
               <DropDrawerItem
                 key={"Dockerfiles"}
@@ -171,7 +188,7 @@ export default function CourseworkLectDropdown({
                   key={"Provision-Coursework"}
                   onSelect={() => setShowProvision(true)}
                   disabled={!canProvision}
-                  icon={<LayersPlus />}
+                  icon={<BookPlus />}
                 >
                   Provision student repos
                 </DropDrawerItem>

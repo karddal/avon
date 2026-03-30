@@ -19,7 +19,7 @@ type StudentRepoResp = {
   student_id: string;
   repo_url: string;
   cw_id: string;
-  repo_id: string;
+  gl_repo_id: string;
 };
 
 type GetCWEngineDataResponse = {
@@ -52,9 +52,9 @@ export async function get_student_repos(
   // Deduplicate data, if two students have same repo they should join together
   const m = new Map<[string, string], Array<string>>();
   for (const student of data.repos) {
-    const l = m.get([student.repo_url, student.repo_id]);
+    const l = m.get([student.repo_url, student.gl_repo_id]);
     if (!l) {
-      m.set([student.repo_url, student.repo_id], [student.student_id]);
+      m.set([student.repo_url, student.gl_repo_id], [student.student_id]);
     } else {
       l.push(student.student_id);
     }
