@@ -69,7 +69,7 @@ async def create_base_image(
 
     base_image_already_exists = session.exec(
         select(BaseImage).where(
-            (BaseImage.task_description_name == image.task_description_name)
+            (BaseImage.task_definition == image.task_definition)
             & (BaseImage.name == image.name)
             & (BaseImage.description == image.description)
         )
@@ -84,7 +84,7 @@ async def create_base_image(
     db_base_image = BaseImage(
         name=image.name,
         description=image.description,
-        task_description_name=image.task_description_name,
+        task_definition=image.task_definition,
     )
     session.add(instance=db_base_image)
     session.commit()

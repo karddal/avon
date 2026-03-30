@@ -1,7 +1,7 @@
 "use client";
 
 import { CircleQuestionMark, Layers, Send, TriangleAlert } from "lucide-react";
-import { type Dispatch, type SetStateAction, Suspense } from "react";
+import {type Dispatch, type SetStateAction, Suspense, useState} from "react";
 import { StudentReposTable } from "@/components/coursework/repos_table";
 import { Button } from "@/components/ui/button";
 import { CardTitle } from "@/components/ui/card";
@@ -29,6 +29,10 @@ import {
 import { Switch } from "@/components/ui/switch";
 import type { BaseImage } from "@/lib/actions/get_base_images_cw_specific";
 import type { GetCWEngineDataResponse } from "@/lib/actions/get_cw_engine_data";
+import type {RowSelectionState} from "@tanstack/table-core";
+import {send_test_run_start_req} from "@/lib/actions/start_test_run";
+import {toast} from "sonner";
+import {Spinner} from "@/components/ui/spinner";
 
 type Props = {
   open_state: boolean;
@@ -43,14 +47,32 @@ export default function StartTestBatchPopup({
   open_state,
   set_open_state,
   courseworkId,
+    refresh,
   cw_engine_data,
   available_images,
 }: Props) {
   const image_name = available_images.find(
     (i) => i.id === cw_engine_data.base_image_id,
   );
+  const [notificationsEnabled, setNotificationsEnabled] = useState<boolean>(false);
+  const [submitting, setSubmitting] = useState(false);
   if (!image_name) {
     // undefined image!!
+  }
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+
+  const start_test_run = async () => {
+    const repo_urls = Object.keys(rowSelection);
+    setSubmitting(true);
+    try {
+      await send_test_run_start_req(courseworkId, repo_urls, notificationsEnabled);
+      toast.success("Test run started.");
+      refresh();
+    } catch (e) {
+      toast.error("An error occurred when starting the test run.");
+      refresh();
+    }
+    setSubmitting(false);
   }
 
   return (
@@ -69,13 +91,13 @@ export default function StartTestBatchPopup({
               <CardTitle>Choose students</CardTitle>
               <div className={"flex min-w-0 items-center gap-2 w-full"}>
                 <Suspense>
-                  <StudentReposTable coursework_id={courseworkId} />
+                  <StudentReposTable coursework_id={courseworkId} rowSelection={rowSelection} setRowSelection={setRowSelection} />
                 </Suspense>
               </div>
             </div>
           </div>
-          <div className="lg:max-h-[50vh]! lg:max-w-[30vw]! lg:overflow-y-auto bg-background border rounded-xl shadow-lg justify-between flex flex-col p-8">
-            <div className="flex flex-col gap-4">
+          <div className=" h-full lg:max-h-[80vh]! lg:max-w-[30vw]! lg:overflow-y-auto bg-background border rounded-xl shadow-lg justify-between flex flex-col p-8">
+            <div className="h-full flex flex-col gap-4">
               <div>
                 <CardTitle className="text-xl">Confirm and submit</CardTitle>
                 <p className="text-sm text-muted-foreground">
@@ -155,17 +177,17 @@ export default function StartTestBatchPopup({
                       <FieldContent>
                         <FieldTitle>Enable notifications</FieldTitle>
                         <FieldDescription>
-                          If this option if enabled, you will be sent a
+                          If this option if enabled, we'll send you a
                           notification when this test run completes.
                         </FieldDescription>
                       </FieldContent>
-                      <Switch id="switch-notifications" defaultChecked />
+                      <Switch onCheckedChange={(checked) => setNotificationsEnabled(checked)} id="switch-notifications" defaultChecked />
                     </Field>
                   </FieldLabel>
                 </>
               )}
-              <Button className={"w-full"} disabled={!image_name}>
-                <Send />
+              <Button className={"w-full mt-auto"} disabled={!image_name || submitting} onClick={() => start_test_run()}>
+                {submitting ? (<Spinner/>) : (<Send/>)}
                 Begin test run
               </Button>
             </div>

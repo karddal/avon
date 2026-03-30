@@ -4,11 +4,11 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
-  getSortedRowModel,
+  getSortedRowModel, RowSelectionState,
   type SortingState,
   type VisibilityState,
 } from "@tanstack/table-core";
-import React, { useEffect, useState } from "react";
+import React, {Dispatch, SetStateAction, useEffect, useState} from "react";
 import { columns } from "@/components/coursework/columns";
 import { Spinner } from "@/components/ui/spinner";
 import {
@@ -28,8 +28,12 @@ import { Input } from "../ui/input";
 
 export function StudentReposTable({
   coursework_id,
+  rowSelection,
+    setRowSelection,
 }: {
   coursework_id: string;
+  rowSelection: {};
+  setRowSelection: Dispatch<SetStateAction<{}>>;
 }) {
   const [data, setData] = useState<StudentNameAndRepo[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -49,7 +53,6 @@ export function StudentReposTable({
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
     data: data,
@@ -62,6 +65,7 @@ export function StudentReposTable({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    getRowId: (row) => row.repo_url,
     state: {
       sorting,
       columnFilters,

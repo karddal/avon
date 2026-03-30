@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from typing import Literal
 from uuid import UUID
 
+from sqlalchemy import String
 from sqlmodel import Field, SQLModel
 from sqlmodel.main import Relationship
 
@@ -22,15 +23,13 @@ class TestRun(SQLModel, table=True):
     coursework: "Coursework" = Relationship(back_populates="test_runs")
     ecs_task_arn: str = Field(nullable=False)
     git_url: str = Field(nullable=False)
-    git_commit_sha: str = Field(nullable=False)
     task_def: str = Field(nullable=False)
     tester_command: str = Field(nullable=False)
-    status: status_type = Field(nullable=False)
-    dispatched_at: datetime | None = Field(nullable=True)
+    status: status_type = Field(nullable=False, sa_type=String)
     completed_at: datetime | None = Field(nullable=True)
-    trigger: trigger_type = Field(nullable=False, default="initial")
+    trigger: trigger_type = Field(nullable=False, default="initial", sa_type=String)
     created_at: datetime = Field(nullable=False, default_factory=utcnow)
-
+    notifications_enabled: bool = Field(nullable=False, default=False)
 
 class TestRunResult(SQLModel, table=True):
     test_run_id: UUID = Field(primary_key=True, foreign_key="testrun.id")

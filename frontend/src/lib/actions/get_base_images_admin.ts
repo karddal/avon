@@ -4,7 +4,7 @@ export type BaseImage = {
   id: string;
   name: string;
   description: string;
-  task_description_name: string;
+  task_definition: string;
   is_active: boolean;
 };
 

@@ -33,4 +33,4 @@ class Coursework(SQLModel, table=True):
         back_populates="coursework", cascade_delete=True
     )
     base_image: "BaseImage" = Relationship(back_populates="courseworks")
-    # test_runs: list["TestRun"] = Relationship(back_populates="coursework")
+    test_runs: list["TestRun"] = Relationship(back_populates="coursework")

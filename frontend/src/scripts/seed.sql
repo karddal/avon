@@ -80,7 +80,7 @@ CREATE TABLE baseimage (
     id UUID NOT NULL,
     name VARCHAR NOT NULL,
     description VARCHAR NOT NULL,
-    task_description_name VARCHAR NOT NULL,
+    task_definition VARCHAR NOT NULL,
     is_active BOOLEAN NOT NULL,
     PRIMARY KEY (id)
 );
@@ -106,11 +106,39 @@ CREATE TABLE coursework (
                                 FOREIGN KEY (base_image_id) REFERENCES baseimage (id)
 );
 
+-- testrun definition
+CREATE TABLE testrun (
+    id UUID NOT NULL PRIMARY KEY,
+    coursework_id UUID NOT NULL,
+    ecs_task_arn VARCHAR NOT NULL,
+    git_url VARCHAR NOT NULL,
+    task_def VARCHAR NOT NULL,
+    tester_command VARCHAR NOT NULL,
+    status VARCHAR NOT NULL,
+    dispatched_at DATE NOT NULL,
+    completed_at DATE,
+    trigger VARCHAR NOT NULL,
+    created_at DATE NOT NULL,
+    notifications_enabled BOOLEAN NOT NULL,
+    CONSTRAINT coursework_id
+        FOREIGN KEY (coursework_id) REFERENCES coursework (id)
+        ON DELETE CASCADE
+);
 
+--testrunresult definition
+CREATE TABLE testrunresult(
+    test_run_id UUID PRIMARY KEY,
+    exit_code INT NOT NULL,
+    log_s3_uri VARCHAR NOT NULL,
+    received_at DATE NOT NULL,
+    CONSTRAINT test_run_id
+        FOREIGN KEY (test_run_id) REFERENCES testrun(id)
+        ON DELETE CASCADE
+);
 
 -- student repo definition
 
-CREATE TABLE studentrepo(
+CREATE TABLE studentrepo (
     student_id VARCHAR NOT NULL,
     repo_url VARCHAR NOT NULL,
     cw_id UUID NOT NULL,
