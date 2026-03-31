@@ -1,6 +1,8 @@
 "use client";
 
 import {
+  Lock,
+  LockKeyhole,
   LockKeyholeOpen,
   LockOpen,
   Menu,
@@ -21,6 +23,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -58,14 +61,27 @@ export default function LecturerDropdown({
   const [showDelete, setShowDelete] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showSendNotif, setShowSendNotif] = useState(false);
+  const [showUnlock, setShowUnlock] = useState(false);
+  const [showLock, setShowLock] = useState(false);
   const router = useRouter();
 
   const unlockUnit = async () => {
     try {
       await unlock_unit({ id: unit_update_data.id });
+      toast.success("Unit Unlocked Successfully");
       router.refresh();
     } catch (_err) {
       toast.error("Unlocking Unit Failed");
+    }
+  };
+
+  const lockUnit = async () => {
+    try {
+      // await lock_unit({ id: unit_update_data.id });
+      toast.success("Unit Locked Successfully");
+      router.refresh();
+    } catch (_err) {
+      toast.error("Locking Unit Failed");
     }
   };
 
@@ -95,23 +111,36 @@ export default function LecturerDropdown({
           </DropdownMenuItem>
 
           <DropdownMenuItem
-            className={
+            onSelect={() =>
               unit_update_data.unlocked
-                ? "text-green-700 focus:text-green-700"
-                : ""
+                ? setShowLock(true)
+                : setShowUnlock(true)
             }
-            onSelect={unlockUnit}
-            disabled={unit_update_data.unlocked}
+            className="group flex items-center cursor-pointer"
           >
             {unit_update_data.unlocked ? (
               <>
-                <LockOpen className="text-green-700 mr-2 h-4 w-4" />
-                Unlocked
+                <LockOpen className="mr-2 h-4 w-4 text-green-700 group-data-[highlighted]:hidden" />
+                <Lock className="mr-2 hidden h-4 w-4 text-red-600 group-data-[highlighted]:block" />
+
+                <span className="text-green-700 group-data-[highlighted]:hidden">
+                  Unlocked
+                </span>
+                <span className="hidden text-red-600 group-data-[highlighted]:inline">
+                  Lock Unit
+                </span>
               </>
             ) : (
               <>
-                <LockKeyholeOpen className="mr-2 h-4 w-4" />
-                Unlock Unit
+                <Lock className="mr-2 h-4 w-4 text-red-600 group-data-[highlighted]:hidden" />
+                <LockOpen className="mr-2 hidden h-4 w-4 text-green-700 group-data-[highlighted]:block" />
+
+                <span className="text-red-600 group-data-[highlighted]:hidden">
+                  Locked
+                </span>
+                <span className="hidden text-green-700 group-data-[highlighted]:inline">
+                  Unlock Unit
+                </span>
               </>
             )}
           </DropdownMenuItem>
@@ -158,6 +187,55 @@ export default function LecturerDropdown({
           <AlertDialogFooter>
             <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
             <DeleteUnitButton unitId={slug} />
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog open={showUnlock} onOpenChange={setShowUnlock}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action will unlock the unit, allowing students to access it.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
+            <Button
+              size="lg"
+              className="bg-green-700 text-white hover:bg-green-800 focus:bg-green-700"
+              onClick={() => {
+                unlockUnit();
+                setShowUnlock(false);
+              }}
+            >
+              <LockOpen className="mr-2 h-4 w-4" />
+              Unlock
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog open={showLock} onOpenChange={setShowLock}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action will lock the unit, preventing students from accessing
+              it.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
+            <Button
+              size="lg"
+              className="bg-red-600 text-white hover:bg-red-700 focus:bg-red-600"
+              onClick={() => {
+                lockUnit();
+                setShowLock(false);
+              }}
+            >
+              <Lock className="mr-2 h-4 w-4" />
+              Lock
+            </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
