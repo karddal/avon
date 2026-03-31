@@ -29,3 +29,28 @@ export async function unlock_unit(req: UnlockUnit) {
     };
   }
 }
+
+export async function lock_unit(req: UnlockUnit) {
+  "use server";
+  const token = await getRequestJWT();
+  const data = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/units/${req.id}/lock`,
+    {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      cache: "no-cache",
+    },
+  );
+  if (!data.ok) {
+    return {
+      success: false,
+    };
+  } else {
+    return {
+      success: true,
+    };
+  }
+}

@@ -302,3 +302,15 @@ async def unlockUnit(unit_id:UUID, session: session_dependency):
 
     return {"success" : True}
 
+@router.put("/{unit_id}/lock")
+async def lockUnit(unit_id:UUID, session: session_dependency):
+    db_unit = session.get(Unit, unit_id)
+    if not db_unit:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Unit not found")
+
+    db_unit.unlocked = False
+
+    session.commit()
+    session.refresh(db_unit)
+
+    return {"success" : True}

@@ -2,8 +2,6 @@
 
 import {
   Lock,
-  LockKeyhole,
-  LockKeyholeOpen,
   LockOpen,
   Menu,
   Siren,
@@ -36,7 +34,7 @@ import DeleteUnitButton from "@/components/units/delete-unit-button";
 import EditUnit from "@/components/units/edit-unit";
 import ListMembers from "@/components/units/list-members";
 import SendNotification from "@/components/units/send-notification";
-import { unlock_unit } from "@/lib/actions/unlock_unit";
+import { lock_unit, unlock_unit } from "@/lib/actions/unlock_lock_unit";
 
 type UnitUpdateData = {
   id: string;
@@ -77,7 +75,7 @@ export default function LecturerDropdown({
 
   const lockUnit = async () => {
     try {
-      // await lock_unit({ id: unit_update_data.id });
+      await lock_unit({ id: unit_update_data.id });
       toast.success("Unit Locked Successfully");
       router.refresh();
     } catch (_err) {
@@ -120,25 +118,25 @@ export default function LecturerDropdown({
           >
             {unit_update_data.unlocked ? (
               <>
-                <LockOpen className="mr-2 h-4 w-4 text-green-700 group-data-[highlighted]:hidden" />
-                <Lock className="mr-2 hidden h-4 w-4 text-red-600 group-data-[highlighted]:block" />
+                <LockOpen className="mr-2 h-4 w-4 text-green-700 group-data-highlighted:hidden" />
+                <Lock className="mr-2 hidden h-4 w-4 text-red-600 group-data-highlighted:block" />
 
-                <span className="text-green-700 group-data-[highlighted]:hidden">
+                <span className="text-green-700 group-data-highlighted:hidden">
                   Unlocked
                 </span>
-                <span className="hidden text-red-600 group-data-[highlighted]:inline">
+                <span className="hidden text-red-600 group-data-highlighted:inline">
                   Lock Unit
                 </span>
               </>
             ) : (
               <>
-                <Lock className="mr-2 h-4 w-4 text-red-600 group-data-[highlighted]:hidden" />
-                <LockOpen className="mr-2 hidden h-4 w-4 text-green-700 group-data-[highlighted]:block" />
+                <Lock className="mr-2 h-4 w-4 text-red-600 group-data-highlighted:hidden" />
+                <LockOpen className="mr-2 hidden h-4 w-4 text-green-700 group-data-highlighted:block" />
 
-                <span className="text-red-600 group-data-[highlighted]:hidden">
+                <span className="text-red-600 group-data-highlighted:hidden">
                   Locked
                 </span>
-                <span className="hidden text-green-700 group-data-[highlighted]:inline">
+                <span className="hidden text-green-700 group-data-highlighted:inline">
                   Unlock Unit
                 </span>
               </>
