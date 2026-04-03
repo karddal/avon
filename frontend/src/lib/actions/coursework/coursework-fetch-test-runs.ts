@@ -84,7 +84,7 @@ export async function fetch_test_runs(coursework_id: string): Promise<TestRun[]>
                     gitlab_repo_url: run.gitlab_repo_url,
                     status: run.status,
                     students: students,
-                    started: new Date(run.started),
+                    started: new Date(run.started + "Z"),
                 }
             )
         }

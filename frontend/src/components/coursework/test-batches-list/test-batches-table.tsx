@@ -46,18 +46,6 @@ export function TestBatchesTable({coursework_id, refreshTable}: {coursework_id: 
             columnFilters,
             columnVisibility,
         },
-        initialState: {
-            sorting: [
-                {
-                    id: "earliest_started",
-                    desc: true,
-                },
-                {
-                    id: "started",
-                    desc: true,
-                }
-            ]
-        }
     })
 
     useEffect(() => {
@@ -70,6 +58,12 @@ export function TestBatchesTable({coursework_id, refreshTable}: {coursework_id: 
         };
         updateData().then(() => {
             table.setGrouping(["batch_id"]);
+            table.setSorting([
+                {
+                    "id": "started",
+                    desc: true,
+                }
+            ])
             setLoading(false);
         });
     }, [coursework_id, refreshTable]);

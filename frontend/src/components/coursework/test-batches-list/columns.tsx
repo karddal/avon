@@ -9,7 +9,7 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import {Button} from "@/components/ui/button";
-import {ExternalLink, Gitlab, IdCard, MoreHorizontal} from "lucide-react";
+import {ArrowUpDown, ExternalLink, Gitlab, IdCard, MoreHorizontal} from "lucide-react";
 import {formatDistanceToNow} from "date-fns";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 
@@ -51,15 +51,24 @@ export const columns: ColumnDef<TestRun>[] = [
     },
     {
         accessorKey: "started",
-        header: "Batch start",
+        header: ({column}) => {
+          return (
+              <Button variant={"ghost"}
+                      onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+                  Started
+                  <ArrowUpDown className={"ml-2 h-4 w-4"}/>
+              </Button>
+          )
+        },
         aggregationFn: "min",
         cell: ({row}) => {
             return <></>
         },
+        sortingFn: "datetime",
         aggregatedCell: ({getValue}) => {
             const date = getValue<Date>();
             return <Tooltip>
-                <TooltipTrigger>{formatDistanceToNow(new Date(date), {
+                <TooltipTrigger className={"font-mono"}>{formatDistanceToNow(new Date(date), {
                     addSuffix: true,
                     includeSeconds: true})}</TooltipTrigger>
                 <TooltipContent>{date.toLocaleString()}</TooltipContent>
