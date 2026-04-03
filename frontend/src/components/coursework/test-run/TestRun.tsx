@@ -6,10 +6,13 @@ import {
   Calendar,
   CheckCircle2,
   Clock,
-  Copy, Download, File,
+  Copy,
+  Download,
+  File,
   GitBranch,
   Loader2,
-  RefreshCw, Scroll,
+  RefreshCw,
+  Scroll,
   ScrollText,
   Terminal,
   User,
@@ -21,13 +24,20 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { Spinner } from "@/components/ui/spinner";
 import {
   get_test_run_for_cw,
   type TestRunFullDetails,
 } from "@/lib/actions/test_run/cw-get-specific-test-run";
 import { cn } from "@/lib/utils";
-import {Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty";
 
 export default function TestRunComponent({
   test_run_id,
@@ -68,7 +78,7 @@ export default function TestRunComponent({
         });
         setData(updatedData);
         if (updatedData.log_text) {
-          const blob = new Blob([updatedData.log_text], { type: 'text/plain' });
+          const blob = new Blob([updatedData.log_text], { type: "text/plain" });
           setLogsBlob(blob);
         }
         setLastRefreshedAt(new Date());
@@ -570,33 +580,44 @@ export default function TestRunComponent({
             {/*</Button>*/}
           </div>
 
-            {data.log_text ? (
-                <div className="rounded-md border bg-muted/50 text-mono p-3 flex flex-col gap-4 w-full">
-                  <div className={"flex flex-row gap-2 items-center"}>
-                    <File/>
-                    <pre className={"text-sm text-ellipsis"}>{data.log_name}</pre>
-                    {logsBlob && (
-                        <Button asChild className={"ml-auto cursor-default"} variant={"outline"} size={"icon-lg"}><a download={data.log_name ?? "logs.log"} href={window.URL.createObjectURL(logsBlob)}><Download/></a></Button>
-                    )}
-                  </div>
+          {data.log_text ? (
+            <div className="rounded-md border bg-muted/50 text-mono p-3 flex flex-col gap-4 w-full">
+              <div className={"flex flex-row gap-2 items-center"}>
+                <File />
+                <pre className={"text-sm text-ellipsis"}>{data.log_name}</pre>
+                {logsBlob && (
+                  <Button
+                    asChild
+                    className={"ml-auto cursor-default"}
+                    variant={"outline"}
+                    size={"icon-lg"}
+                  >
+                    <a
+                      download={data.log_name ?? "logs.log"}
+                      href={window.URL.createObjectURL(logsBlob)}
+                    >
+                      <Download />
+                    </a>
+                  </Button>
+                )}
+              </div>
               <pre className="max-h-[100lh] text-muted-foreground overflow-auto overflow-x-scroll max-w-full whitespace-pre-wrap text-sm font-mono">
                 {data.log_text}
               </pre>
-                </div>
-
-            ) : (
-              <Empty className={"border border-dashed bg-muted/50"}>
-                <EmptyHeader>
-                  <EmptyMedia variant={"icon"}>
-                    <Scroll/>
-                  </EmptyMedia>
-                  <EmptyTitle>No logs.</EmptyTitle>
-                </EmptyHeader>
-                <EmptyContent>
-                  <EmptyDescription>No logs available yet.</EmptyDescription>
-                </EmptyContent>
-              </Empty>
-            )}
+            </div>
+          ) : (
+            <Empty className={"border border-dashed bg-muted/50"}>
+              <EmptyHeader>
+                <EmptyMedia variant={"icon"}>
+                  <Scroll />
+                </EmptyMedia>
+                <EmptyTitle>No logs.</EmptyTitle>
+              </EmptyHeader>
+              <EmptyContent>
+                <EmptyDescription>No logs available yet.</EmptyDescription>
+              </EmptyContent>
+            </Empty>
+          )}
         </CardContent>
       </Card>
     </div>
