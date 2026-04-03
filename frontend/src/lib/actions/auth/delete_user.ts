@@ -2,7 +2,7 @@
 
 import path from "node:path";
 import { DatabaseSync } from "node:sqlite";
-import { pool } from "@/lib/actions/db_pool";
+import { pool } from "@/lib/actions/auth/db_pool";
 
 var dbPath = "../sqlite.db";
 if (process.env.CI_MODE === "True") {

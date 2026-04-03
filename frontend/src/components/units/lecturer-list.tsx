@@ -18,7 +18,7 @@ import UserCard from "@/components/user-card";
 import { get_user_image_from_id } from "@/lib/actions/coursework/get_image";
 import { get_lecturers } from "@/lib/actions/unit/get_lecturers";
 import { get_owner_of_unit } from "@/lib/actions/unit/get_owner_of_unit";
-import { get_username_from_id } from "@/lib/actions/get_username";
+import { get_username_from_id } from "@/lib/actions/auth/get_username";
 import { remove_user_enrollment } from "@/lib/actions/unit/remove_user_enrollment";
 import { transfer_ownership } from "@/lib/actions/unit/transfer_ownership";
 import { requireSession } from "@/lib/auth-utils";

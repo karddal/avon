@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import UserCard from "@/components/user-card";
-import { get_batch_user_info } from "@/lib/actions/get_batch_user_details";
+import { get_batch_user_info } from "@/lib/actions/auth/get_batch_user_details";
 import { get_students } from "@/lib/actions/unit/get_students";
 import { remove_user_enrollment } from "@/lib/actions/unit/remove_user_enrollment";
 
