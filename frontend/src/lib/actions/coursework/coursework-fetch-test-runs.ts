@@ -1,5 +1,5 @@
 import {getRequestJWT} from "@/lib/auth-utils";
-import {get_username_from_id} from "@/lib/actions/get_username";
+import {get_username_from_id} from "@/lib/actions/auth/get_username";
 
 enum TestRunStatus {
     Pending,
