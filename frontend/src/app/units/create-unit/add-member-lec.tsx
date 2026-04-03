@@ -18,7 +18,7 @@ import UserCard from "@/components/user-card";
 import {
   type SearchResponse,
   search_by_name,
-} from "@/lib/actions/search_by_name";
+} from "@/lib/actions/unit/search_by_name";
 
 interface AddMemberLecturerAllProps {
   onOwnerSelect: (userId: string) => void;

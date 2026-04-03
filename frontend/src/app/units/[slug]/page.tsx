@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LecturerDropdown from "@/components/units/lecturer-dropdown";
 import Lecturers from "@/components/units/lecturers";
 import UnitsCourseworkList from "@/components/units/units-coursework-list";
-import { get_unit_scopes } from "@/lib/actions/get_unit_scopes";
+import { get_unit_scopes } from "@/lib/actions/unit/get_unit_scopes";
 import { getRequestJWT, requireSession } from "@/lib/auth-utils";
 
 type UnitDataResponse = {
