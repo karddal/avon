@@ -32,7 +32,7 @@ class TestRun(SQLModel, table=True):
     created_at: datetime = Field(nullable=False, default_factory=utcnow)
     notifications_enabled: bool = Field(nullable=False, default=False)
     started_by: str = Field(nullable=False)
-    batch_id: str = Field(nullable=False)
+    batch_id: UUID = Field(nullable=False)
 
 class TestRunResult(SQLModel, table=True):
     test_run_id: UUID = Field(primary_key=True, foreign_key="testrun.id")
