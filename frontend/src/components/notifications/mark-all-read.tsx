@@ -6,7 +6,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { set_all_read } from "@/lib/actions/set-all-read";
+import { set_all_read } from "@/lib/actions/notification/set-all-read";
 
 export default function MarkAllAsRead() {
   const [submitted, setSubmitted] = useState<boolean>(false);
