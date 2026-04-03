@@ -35,7 +35,7 @@ import { useRouter } from "next/navigation";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Spinner } from "@/components/ui/spinner";
-import { update_programme } from "@/lib/actions/update_programme";
+import { update_programme } from "@/lib/actions/programme/update_programme";
 
 interface FormProps {
   programme_update_data: ProgrammeUpdateData;

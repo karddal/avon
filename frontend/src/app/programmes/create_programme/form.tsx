@@ -40,7 +40,7 @@ import {
 } from "@/components/ui/item";
 import { Progress } from "@/components/ui/progress";
 import { Spinner } from "@/components/ui/spinner";
-import { create_programme } from "@/lib/actions/create_programme";
+import { create_programme } from "@/lib/actions/programme/create_programme";
 
 function nextStep(step: number, setStep: Dispatch<SetStateAction<number>>) {
   if (step <= 0) {
