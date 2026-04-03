@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import Editor from "@monaco-editor/react"
+import Editor from "@monaco-editor/react";
 import {
   type Dispatch,
   type SetStateAction,
@@ -28,7 +28,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Textarea } from "@/components/ui/textarea";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const Calendar29 = dynamic(
