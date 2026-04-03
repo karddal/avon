@@ -1,3 +1,4 @@
+import json
 import os
 import subprocess
 import sys
@@ -72,7 +73,10 @@ def clone_repo():
 
     subprocess.run(
         ["git", "clone", "--depth", "1", repo_url, str(repo_dir)],
-        check=True
+        check=True,
+        env={
+            "GIT_SSH_COMMAND": "ssh -o StrictHostKeyChecking=no"
+        }
     )
     log("Clone completed")
 
@@ -107,15 +111,20 @@ def upload_logs():
         key
     )
 
+    return key
 
-def send_result(code):
+
+def send_result(code, key):
+    log("Sending result to SQS")
     sqs.send_message(
         QueueUrl=RESULT_QUEUE_URL,
-        MessageBody=str({
+        MessageBody=json.dumps({
             "build_id": BUILD_ID,
-            "exit_code": code
+            "exit_code": code,
+            "s3_key": key
         })
     )
+    log("Result sent to SQS successfully.")
 
 
 def main():
@@ -125,17 +134,20 @@ def main():
     try:
         clone_repo()
         code = run_tests()
-    except Exception:
+    except Exception as e:
+        log(f"Failed to clone repo: {e}")
         code = 1
 
     try:
-        upload_logs()
-    except Exception:
-        pass
+        k = upload_logs()
+    except Exception as e:
+        log(f"Failed to upload logs: {e}")
+        k = None
 
     try:
-        send_result(code)
-    except Exception:
+        send_result(code, k)
+    except Exception as e:
+        log(f"Failed to send result to sqs: {e}")
         pass
 
     sys.exit(code)

@@ -132,7 +132,7 @@ CREATE TABLE testrun (
 CREATE TABLE testrunresult(
     test_run_id UUID PRIMARY KEY,
     exit_code INT NOT NULL,
-    log_s3_uri VARCHAR NOT NULL,
+    log_s3_uri VARCHAR,
     received_at DATE NOT NULL,
     CONSTRAINT test_run_id
         FOREIGN KEY (test_run_id) REFERENCES testrun(id)

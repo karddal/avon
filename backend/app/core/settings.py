@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     testing_mode: bool = False
 >>>>>>> b3b4707 (take updated scopes stuff from scopes branch)
     test_fixture_key: str | None = None
+    aws_ecs_cluster: str
+    aws_results_queue_url: str
+    aws_bucket: str
     model_config = SettingsConfigDict(
         env_file=".env"
     )  # Keep on getting warnings in tests to do this, it's the updated version of the code below

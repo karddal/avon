@@ -9,6 +9,7 @@ description = "FastAPI backend"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "aioboto3>=15.5.0",
     "bcrypt<5",
     "beautifulsoup4>=4.14.3",
     "cryptography>=46.0.3",
@@ -33,6 +34,7 @@ dev = [
     "pytest>=8.4.2",
     "ruff>=0.14.4",
     "ty>=0.0.24",
+    "types-aioboto3[ec2,ecs,sqs]>=15.5.0",
 ]
 
 [tool.setuptools]
