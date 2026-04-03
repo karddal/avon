@@ -14,8 +14,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Spinner } from "@/components/ui/spinner";
-import { delete_base_image } from "@/lib/actions/delete_base_image";
-import {set_base_image_status} from "@/lib/actions/set_base_image_status";
+import { delete_base_image } from "@/lib/actions/base_image/delete_base_image";
+import {set_base_image_status} from "@/lib/actions/base_image/set_base_image_status";
 import {AppRouterInstance} from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 export type BaseImage = {

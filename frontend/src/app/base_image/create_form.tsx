@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
-import { create_base_image } from "@/lib/actions/create_base_image";
+import { create_base_image } from "@/lib/actions/base_image/create_base_image";
 
 const formSchema = z.object({
   name: z.string().min(1).max(64),

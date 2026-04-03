@@ -12,7 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { get_base_images_admin } from "@/lib/actions/get_base_images_admin";
+import { get_base_images_admin } from "@/lib/actions/base_image/get_base_images_admin";
 
 async function getData(): Promise<BaseImage[]> {
   return (await get_base_images_admin()).images;
