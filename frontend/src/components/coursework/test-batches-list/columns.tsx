@@ -12,8 +12,14 @@ import {Button} from "@/components/ui/button";
 import {ArrowUpDown, ExternalLink, Gitlab, IdCard, MoreHorizontal} from "lucide-react";
 import {formatDistanceToNow} from "date-fns";
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
+import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger} from "@/components/ui/dialog";
+import {useState} from "react";
+import TestRunComponent from "@/components/coursework/test-run/TestRun";
 
-export const columns: ColumnDef<TestRun>[] = [
+export const columns: (coursework_id: string) => ColumnDef<TestRun>[] = (coursework_id) => {
+    const [show, setShow] = useState(false);
+
+    return [
     {
         accessorKey: "status",
         header: "Status",
@@ -29,7 +35,7 @@ export const columns: ColumnDef<TestRun>[] = [
             if (row.getIsGrouped()) {
                 return (<Tooltip>
                     <TooltipTrigger asChild><div>{row.original.batch_id.substring(0, 6)}...</div></TooltipTrigger>
-                    <TooltipContent>{row.original.batch_id}</TooltipContent>
+                    <TooltipContent side={"left"} className={"font-mono"}>{row.original.batch_id}</TooltipContent>
                 </Tooltip>)
             }
         }
@@ -86,30 +92,40 @@ export const columns: ColumnDef<TestRun>[] = [
                 return <></>
             }
             return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(testRun.id)}
-                        >
-                            <IdCard/>Copy test run ID
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(testRun.gitlab_repo_url)}
-                        >
-                            <Gitlab/>Copy repo URL
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem><ExternalLink/>View test run</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <Dialog open={show} onOpenChange={setShow}>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuItem
+                                onClick={() => navigator.clipboard.writeText(testRun.id)}
+                            >
+                                <IdCard/>Copy test run ID
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => navigator.clipboard.writeText(testRun.gitlab_repo_url)}
+                            >
+                                <Gitlab/>Copy repo URL
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DialogTrigger asChild>
+                                <DropdownMenuItem onClick={(e) => {setShow(true); e.preventDefault();}}><ExternalLink/>View test run</DropdownMenuItem>
+                            </DialogTrigger>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Test run</DialogTitle>
+                        </DialogHeader>
+                        <TestRunComponent test_run_id={testRun.id} coursework_id={coursework_id}/>
+                    </DialogContent>
+                </Dialog>
             )
         }
     },
-]
+]}

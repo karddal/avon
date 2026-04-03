@@ -75,6 +75,42 @@ router = APIRouter(prefix="/coursework", tags=["coursework"])
 session_dependency = Annotated[Session, Depends(get_session)]
 token_dependency = Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]
 
+@router.get("/{id}/test_run/{tid}", status_code=status.HTTP_200_OK, response_model=TestRun)
+async def get_test_run(
+        id: UUID,
+        tid: UUID,
+        session: session_dependency,
+        token: token_dependency
+):
+    coursework = session.get(Coursework, id)
+    if coursework is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Coursework not found"
+        )
+
+    user = await require_scopes(
+        ResourceInformation(type=Unit, id=coursework.unit_id),
+        Scopes.UNIT_COURSEWORK_ENGINE,
+        token=token,
+        session=session,
+    )
+
+    test_run = session.get(TestRun, tid)
+
+    if test_run is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Test run not found"
+        )
+
+    if test_run.coursework_id != coursework.id:
+        # This user cannot access this test run, lecturers can only read test runs scoped to their own courseworks
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied",
+        )
+
+    return test_run
+
 @router.get("/{id}/test_runs", response_model=CourseworkTestRuns)
 async def get_test_runs(
         id: UUID, session: session_dependency, token: token_dependency
