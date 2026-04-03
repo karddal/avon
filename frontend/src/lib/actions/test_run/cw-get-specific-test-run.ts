@@ -1,19 +1,8 @@
 import {getRequestJWT} from "@/lib/auth-utils";
 import {get_username_from_id} from "@/lib/actions/auth/get_username";
 
-enum TestRunStatus {
-    pending,
-    running,
-    succeeded,
-    failed,
-    error
-}
-
-enum Trigger {
-    initial,
-    retry,
-    manual_rerun
-}
+export type TestRunStatus = "pending" | "running" | "succeeded" | "failed" | "error";
+export type Trigger = "initial" | "retry" | "manual_rerun";
 
 type TestRunFullServerDetails = {
     id: string;
