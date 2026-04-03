@@ -6,7 +6,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { delete_unit } from "@/lib/actions/delete_unit";
+import { delete_unit } from "@/lib/actions/unit/delete_unit";
 
 interface DeleteUnitButtonProps {
   unitId: string;
