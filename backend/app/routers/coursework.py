@@ -1,7 +1,7 @@
 import datetime
 import logging
 import uuid
-from typing import Annotated, Optional
+from typing import Annotated, Optional, Sequence
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
@@ -92,8 +92,8 @@ async def get_test_runs(
     )
     result = []
     for tr in coursework.test_runs:
-        students = session.exec(select(StudentRepo).where((StudentRepo.cw_id == id) & (StudentRepo.gl_repo_id == tr.gitlab_repo_id)).options(load_only("student_id"))).all()
-        student_ids: list[str] = list(map(lambda s: s["student_id"], students))
+        students: Sequence[StudentRepo] = session.exec(select(StudentRepo).options(load_only(StudentRepo.student_id)).where((StudentRepo.cw_id == id) & (StudentRepo.gl_repo_id == tr.gitlab_repo_id))).all()
+        student_ids: list[str] = list(map(lambda s: s.student_id, students))
         result.append(
             TestRunBasicInfo(
                 id=tr.id,

@@ -183,7 +183,7 @@ class CourseworkEventRead(BaseModel):
 
 class TestRunBasicInfo(BaseModel):
     id: UUID
-    batch_id: str
+    batch_id: UUID
     gitlab_repo_id: str
     gitlab_repo_url: str
     student_ids: list[str]
