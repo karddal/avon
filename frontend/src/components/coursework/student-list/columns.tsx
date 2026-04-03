@@ -1,8 +1,27 @@
-"use client"
+"use client";
 
 import type { ColumnDef } from "@tanstack/table-core";
-import {ArrowUpDown, ClipboardCopy, DeleteIcon, MoreHorizontal, Trash2Icon} from "lucide-react";
+import {
+  ArrowUpDown,
+  ClipboardCopy,
+  DeleteIcon,
+  MoreHorizontal,
+  Trash2Icon,
+} from "lucide-react";
+import { type Dispatch, type SetStateAction, useState } from "react";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -10,19 +29,12 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel, DropdownMenuSeparator,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {coursework_delete_repo} from "@/lib/actions/coursework/coursework_delete_repo";
-import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel,
-  AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
-  AlertDialogHeader, AlertDialogMedia,
-  AlertDialogTitle,
-  AlertDialogTrigger
-} from "@/components/ui/alert-dialog";
-import {Dispatch, SetStateAction, useRef, useState} from "react";
-import {Spinner} from "@/components/ui/spinner";
+import { Spinner } from "@/components/ui/spinner";
+import { coursework_delete_repo } from "@/lib/actions/coursework/coursework_delete_repo";
 
 export type StudentNameAndPotentiallyRepo = {
   id: string;
@@ -31,28 +43,38 @@ export type StudentNameAndPotentiallyRepo = {
   repo_id: string | null;
 };
 
-export const columns: (cw_id: string, refresh: () => void, refreshKey: number, setRefreshKey: Dispatch<SetStateAction<number>>) => ColumnDef<StudentNameAndPotentiallyRepo>[] = (cw_id: string, refresh: () => void, refreshKey: number, setRefreshKey: Dispatch<SetStateAction<number>>) => {
+export const columns: (
+  cw_id: string,
+  refresh: () => void,
+  refreshKey: number,
+  setRefreshKey: Dispatch<SetStateAction<number>>,
+) => ColumnDef<StudentNameAndPotentiallyRepo>[] = (
+  cw_id: string,
+  refresh: () => void,
+  refreshKey: number,
+  setRefreshKey: Dispatch<SetStateAction<number>>,
+) => {
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
   return [
     {
       id: "select",
-      header: ({table}) => (
-          <Checkbox
-              checked={
-                  table.getIsAllPageRowsSelected() ||
-                  (table.getIsSomePageRowsSelected() && "indeterminate")
-              }
-              onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-              aria-label="Select all"
-          />
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
       ),
-      cell: ({row}) => (
-          <Checkbox
-              checked={row.getIsSelected()}
-              onCheckedChange={(value) => row.toggleSelected(!!value)}
-              aria-label="Select row"
-          />
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
       ),
       enableSorting: false,
       enableHiding: false,
@@ -60,37 +82,37 @@ export const columns: (cw_id: string, refresh: () => void, refreshKey: number, s
     {
       id: "name",
       accessorKey: "name",
-      header: ({column}) => {
+      header: ({ column }) => {
         return (
-            <Button
-                variant="ghost"
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            >
-              Student Name
-              <ArrowUpDown/>
-            </Button>
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Student Name
+            <ArrowUpDown />
+          </Button>
         );
       },
       enableHiding: false,
-      cell: ({row}) => <div className="">{row.getValue("name")}</div>,
+      cell: ({ row }) => <div className="">{row.getValue("name")}</div>,
     },
     {
       id: "repo_url",
       accessorKey: "repo_url",
       enableHiding: true,
-      header: ({column}) => {
-        return (
-            <div>Repo name</div>
-        );
+      header: ({ column }) => {
+        return <div>Repo name</div>;
       },
-      cell: ({row}) => {
+      cell: ({ row }) => {
         const s = row.original;
         const repo_name = s.repo_url?.substring(
-            s.repo_url.lastIndexOf("/") + 1,
-            s.repo_url.indexOf(".git"),
+          s.repo_url.lastIndexOf("/") + 1,
+          s.repo_url.indexOf(".git"),
         );
         return (
-            <div className="">{repo_name ? repo_name : "No repo provisioned"}</div>
+          <div className="">
+            {repo_name ? repo_name : "No repo provisioned"}
+          </div>
         );
       },
     },
@@ -98,27 +120,34 @@ export const columns: (cw_id: string, refresh: () => void, refreshKey: number, s
       id: "repo_id",
       accessorKey: "repo_id",
       enableHiding: true,
-      header: ({column}) => {
-        return (
-            <div>Repo ID</div>
-        );
+      header: ({ column }) => {
+        return <div>Repo ID</div>;
       },
-      cell: ({row}) => {
-        return (<div className="">{row.original.repo_id ? row.original.repo_id : "No repo provisioned"}</div>)
+      cell: ({ row }) => {
+        return (
+          <div className="">
+            {row.original.repo_id
+              ? row.original.repo_id
+              : "No repo provisioned"}
+          </div>
+        );
       },
     },
     {
       id: "actions",
       enableHiding: false,
-      cell: ({row}) => {
+      cell: ({ row }) => {
         if (row.getIsGrouped()) {
           const u = row.original.repo_url;
 
           const s = row.original.repo_id as string; // MUST EXIST AS WE JUST CHECKED IS GROUPED!! so safe
           const deleteAction = async () => {
             setShowSpinner(true);
-            const r = await coursework_delete_repo({repo_id: s, coursework_id: cw_id});
-            if (r.status == "ok") {
+            const r = await coursework_delete_repo({
+              repo_id: s,
+              coursework_id: cw_id,
+            });
+            if (r.status === "ok") {
               toast.success("Successfully deleted repo");
               setAlertOpen(false);
               setRefreshKey(refreshKey + 1);
@@ -131,42 +160,50 @@ export const columns: (cw_id: string, refresh: () => void, refreshKey: number, s
               setShowSpinner(false);
               refresh();
             }
-          }
-          if (s) return (
+          };
+          if (s)
+            return (
               <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost">
-                    <span className="sr-only">Open menu</span>
-                    <MoreHorizontal/>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-40">
-                  <DropdownMenuGroup>
-                    <DropdownMenuLabel>Repo actions</DropdownMenuLabel>
-                    <DropdownMenuItem
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost">
+                      <span className="sr-only">Open menu</span>
+                      <MoreHorizontal />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-40">
+                    <DropdownMenuGroup>
+                      <DropdownMenuLabel>Repo actions</DropdownMenuLabel>
+                      <DropdownMenuItem
                         onClick={() => {
                           if (u) {
                             navigator.clipboard.writeText(
-                                u.substring(0, u.indexOf(".git")),
+                              u.substring(0, u.indexOf(".git")),
                             );
                             toast.success("Repo URL copied to clipboard.");
                           } else {
                             toast.error("No repo URL");
                           }
                         }}
-                    >
-
-                      <ClipboardCopy/>
-                      Copy student repo URL
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator/>
+                      >
+                        <ClipboardCopy />
+                        Copy student repo URL
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
                       <AlertDialogTrigger asChild>
-                        <DropdownMenuItem onClick={(e) => {setAlertOpen(true); e.preventDefault();}} variant="destructive"><DeleteIcon/> Delete repo</DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={(e) => {
+                            setAlertOpen(true);
+                            e.preventDefault();
+                          }}
+                          variant="destructive"
+                        >
+                          <DeleteIcon /> Delete repo
+                        </DropdownMenuItem>
                       </AlertDialogTrigger>
-                  </DropdownMenuGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    </DropdownMenuGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <AlertDialogContent size="default">
                   <AlertDialogHeader>
                     <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
@@ -174,25 +211,35 @@ export const columns: (cw_id: string, refresh: () => void, refreshKey: number, s
                     </AlertDialogMedia>
                     <AlertDialogTitle>Delete user repo?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This will permanently delete this repository. This action cannot be undone.
+                      This will permanently delete this repository. This action
+                      cannot be undone.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel variant="outline">Cancel</AlertDialogCancel>
-                    <AlertDialogAction variant="destructive" disabled={showSpinner} onClick={(e) => {deleteAction(); e.preventDefault()}}>
-                      {showSpinner && (<Spinner/>)}
+                    <AlertDialogCancel variant="outline">
+                      Cancel
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      variant="destructive"
+                      disabled={showSpinner}
+                      onClick={(e) => {
+                        deleteAction();
+                        e.preventDefault();
+                      }}
+                    >
+                      {showSpinner && <Spinner />}
                       Delete
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
-          ); // repo options here!!!
+            ); // repo options here!!!
         }
         return (
-            // Student options here!!
-            <></>
+          // Student options here!!
+          <></>
         );
       },
     },
   ];
-}
+};

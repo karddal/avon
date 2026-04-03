@@ -3,7 +3,6 @@ from functools import lru_cache
 
 import gitlab
 
-from app.core.settings import settings
 
 TOKEN = os.getenv("GITLAB_API_TOKEN")
 BASE_URL = os.getenv("GITLAB_BASE_URL")

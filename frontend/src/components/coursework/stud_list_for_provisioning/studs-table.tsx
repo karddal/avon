@@ -40,8 +40,8 @@ export function StudentsTableWithMaybeRepos({
   coursework_id,
   rowSelection,
   setRowSelection,
-    refreshTable,
-    setRefreshTable,
+  refreshTable,
+  setRefreshTable,
 }: {
   coursework_id: string;
   rowSelection: {};
@@ -95,7 +95,7 @@ export function StudentsTableWithMaybeRepos({
     updateData().then(() => {
       setLoading(false);
     });
-  }, [coursework_id, refreshTable]);
+  }, [coursework_id]);
 
   if (loading) {
     return (

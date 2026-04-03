@@ -7,7 +7,7 @@ from uuid import UUID
 from pydantic import AfterValidator, BaseModel, ConfigDict
 
 from app.models.student_repo import StudentRepo
-from app.models.test_run import TestRun, status_type
+from app.models.test_run import status_type
 
 
 def is_valid_name(name: str) -> str:

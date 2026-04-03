@@ -13,12 +13,12 @@ import { get_base_images_cw_specific } from "@/lib/actions/coursework/get_base_i
 import { get_coursework_scopes } from "@/lib/actions/coursework/get_coursework_scopes";
 import { get_cw_update_data } from "@/lib/actions/coursework/get_coursework_update_data";
 import { get_cw_engine_data } from "@/lib/actions/coursework/get_cw_engine_data";
+import { get_student_repos } from "@/lib/actions/coursework/get_student_repos";
 import { getRequestJWT } from "@/lib/auth-utils";
 import Loading from "../loading";
 import CourseworkDescription from "./description";
 import CourseworkInformation from "./information";
 import CourseworkName from "./name";
-import {get_student_repos} from "@/lib/actions/coursework/get_student_repos";
 
 async function CourseworkPageContent({
   params,
@@ -44,8 +44,9 @@ async function CourseworkPageContent({
 
   const canGetAvailImages = scopes.has("unit:coursework_engine");
 
-  const student_repos_data = canViewStudentRepos ? await get_student_repos({ coursework_id: slug }) : undefined;
-
+  const student_repos_data = canViewStudentRepos
+    ? await get_student_repos({ coursework_id: slug })
+    : undefined;
 
   const images = canGetAvailImages
     ? await get_base_images_cw_specific({ coursework_id: slug })
@@ -127,7 +128,10 @@ async function CourseworkPageContent({
         >
           {canViewSetupProgress ? (
             canViewStudentRepos && student_repos_data ? (
-              <CourseworkRepoOverview courseworkId={slug} repos={student_repos_data?.repos} />
+              <CourseworkRepoOverview
+                courseworkId={slug}
+                repos={student_repos_data?.repos}
+              />
             ) : (
               <></>
             )

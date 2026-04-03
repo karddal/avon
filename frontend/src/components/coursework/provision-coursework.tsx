@@ -55,18 +55,18 @@ export default function ProvisionCoursework({
       if (result.success) {
         setStatus(2);
         toast.success("Projects successfully provisioned");
-        refresh()
+        refresh();
       } else {
         toast.error(
           "Failed to provision projects. Are there already some repos provisioned for students?",
         );
         setStatus(0);
-        refresh()
+        refresh();
       }
     } catch (_error) {
       toast.error("Failed to provision");
       setStatus(0);
-      refresh()
+      refresh();
     }
   };
 

@@ -37,7 +37,7 @@ export default function StudsListDialogForProvision({
   set_open_state,
   courseworkId,
   gitlabData,
-    refresh,
+  refresh,
 }: Props) {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [loadingState, setLoadingState] = useState<boolean>(false);
@@ -51,22 +51,22 @@ export default function StudsListDialogForProvision({
       template_id: gitlab_data.template_id,
       student_ids: Object.keys(rowSelection),
     };
-      setLoadingState(true);
-      setStatus(1);
-      const result = await provision_individual_projects_for_specific(req);
-      setLoadingState(false);
-      if (result.success) {
-        toast.success("Projects successfully provisioned");
-        setRefreshTable(refreshTable + 1);
-        setStatus(0);
-        refresh();
-      } else {
-        toast.error(
-          "Failed to provision projects. Are there already some repos provisioned for students?",
-        );
-        setStatus(0);
-        setRefreshTable(refreshTable + 1);
-      }
+    setLoadingState(true);
+    setStatus(1);
+    const result = await provision_individual_projects_for_specific(req);
+    setLoadingState(false);
+    if (result.success) {
+      toast.success("Projects successfully provisioned");
+      setRefreshTable(refreshTable + 1);
+      setStatus(0);
+      refresh();
+    } else {
+      toast.error(
+        "Failed to provision projects. Are there already some repos provisioned for students?",
+      );
+      setStatus(0);
+      setRefreshTable(refreshTable + 1);
+    }
   };
 
   return (

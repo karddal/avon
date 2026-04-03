@@ -60,15 +60,10 @@ export default function JumpUnits({
     >
       <CommandInput placeholder={"Jump to..."} className="h-14" />
 
-        <CommandList className="overflow-y-scroll max-h-none text-base">
-        <CommandEmpty className="py-6 text-center">
-          No results.
-        </CommandEmpty>
+      <CommandList className="overflow-y-scroll max-h-none text-base">
+        <CommandEmpty className="py-6 text-center">No results.</CommandEmpty>
 
-        <CommandGroup
-          heading={"Active units"}
-          className="py-3"
-        >
+        <CommandGroup heading={"Active units"} className="py-3">
           {units.map((unit) => (
             <CommandItem
               key={unit.id}

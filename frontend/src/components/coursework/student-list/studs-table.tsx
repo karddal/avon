@@ -35,7 +35,7 @@ import { cn } from "@/lib/utils";
 
 export function StudentsTableWithMaybeRepos({
   coursework_id,
-    refresh,
+  refresh,
 }: {
   coursework_id: string;
   refresh: () => void;
@@ -86,7 +86,7 @@ export function StudentsTableWithMaybeRepos({
       setLoading(false);
       table.setGrouping(["repo_url"]);
     });
-  }, [coursework_id, table.setGrouping, refreshKey]);
+  }, [coursework_id, table.setGrouping]);
 
   if (loading) {
     return (
