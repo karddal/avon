@@ -92,7 +92,7 @@ export function TestBatchesTable({coursework_id, refreshTable}: {coursework_id: 
                     className=""
                 />
             </div>
-            <div className="overflow-y-scroll rounded-md border">
+            <div className="overflow-y-scroll rounded-md border h-full">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -188,7 +188,7 @@ export function TestBatchesTable({coursework_id, refreshTable}: {coursework_id: 
                             <TableRow>
                                 <TableCell
                                     colSpan={columns.length}
-                                    className="h-24 text-center"
+                                    className="h-full text-center"
                                 >
                                     No results.
                                 </TableCell>
