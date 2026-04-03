@@ -76,6 +76,7 @@ I also used GH Copilot for autocompletion sometimes to save time.
 
 I used it to write the dockerfile and script for the test running system, then customised the result. I used it because I am not very familiar with how docker works, and best practices for untrusted code. Me and Josh also used it initially with earlier attempts with Kubernetes, and also to try and architect a better design. We found it helpful because we don't have much experience with this.
 Once I had a working script, I was able to modify it for our own purpose. I also used it to help debug and iterate. 
+
 Example prompts:
 - ```Sure! What's the cleaner way to do this? It doesn't look like with this setup there is a clean way to git clone the code and then run the lecturer's dockerfile.```
 - ```Okay, so how about this, maybe we can just install uv, pip, all 'python' things into a single container, and then this is just a limitation of the system. Then the lecturer can define a series of commands to run in that container, and then we handle logging etc from this. Can you set up the container for this? This sounds clean.```
@@ -97,8 +98,8 @@ Example prompts:
 - ```don't we need to store things like the task definition used to run the tests, and the tester command?```
 - ```yes - the idea is that the admins can define runner images with different dependencies installed, docker build, upload to ecr, and define aws task definition. Then we have a way in our frontend for admins to register them as a BaseImage which a lecturer can select when setting up the test running. I think that we need the task_definition name when running ecs tasks so is that what we should save?```
 - ```When it comes to api responses, is it standard to return a HTTPException (error code, detail) or do we have a custom json type with status: error, detail: str?```
-
-
+- ```Why isn't this formatting properly? Also, how can I display this nicely? This is a start date for a test run to be displayed in a data table. The formatting is just doing iso format which is ugly, not taking effect. CODE HERE```
+- ```CODE HERE this just prints DATE HERE in the row field.```
 ### Josh
 
 **Tools used**

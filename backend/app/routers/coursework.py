@@ -98,6 +98,7 @@ async def get_test_runs(
             TestRunBasicInfo(
                 id=tr.id,
                 batch_id=tr.batch_id,
+                started=tr.created_at,
                 gitlab_repo_id=tr.gitlab_repo_id,
                 gitlab_repo_url=tr.git_url,
                 student_ids=student_ids,

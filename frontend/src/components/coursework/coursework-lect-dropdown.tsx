@@ -43,6 +43,7 @@ import type { GetCWEngineDataResponse } from "@/lib/actions/coursework/get_cw_en
 import { Item, ItemContent, ItemMedia, ItemTitle } from "../ui/item";
 import CreateTemplate from "./create-templates";
 import ProvisionCoursework from "./provision-coursework";
+import TestBatchesDialog from "@/components/coursework/test-batches-list/test-batches-dialog";
 
 export default function CourseworkLectDropdown({
   slug,
@@ -62,6 +63,7 @@ export default function CourseworkLectDropdown({
   const [showDocker, setShowDocker] = useState(false);
   const [showTemplates, setShowTemplate] = useState(false);
   const [showStartTests, setShowStartTests] = useState<boolean>(false);
+  const [showTestBatches, setShowTestBatches] = useState<boolean>(false);
   const [viewRepos, setViewRepos] = useState<boolean>(false);
   const router = useRouter();
   const refresh = useCallback(() => {
@@ -155,6 +157,7 @@ export default function CourseworkLectDropdown({
                         key={"TestRuns"}
                         disabled={false}
                         icon={<CircleDashed />}
+                        onSelect={() => setShowTestBatches(true)}
                     >
                       Test batches
                     </DropDrawerItem>
@@ -242,14 +245,17 @@ export default function CourseworkLectDropdown({
       </DropDrawer>
 
       {engine_is_setup && cw_engine_data && avail_images_data && (
-        <StartTestBatchPopup
-          open_state={showStartTests}
-          set_open_state={setShowStartTests}
-          courseworkId={slug}
-          refresh={refresh}
-          cw_engine_data={cw_engine_data}
-          available_images={avail_images_data}
-        ></StartTestBatchPopup>
+          <>
+          <StartTestBatchPopup
+              open_state={showStartTests}
+              set_open_state={setShowStartTests}
+              courseworkId={slug}
+              refresh={refresh}
+              cw_engine_data={cw_engine_data}
+              available_images={avail_images_data}
+          ></StartTestBatchPopup>
+          <TestBatchesDialog open_state={showTestBatches} set_open_state={setShowTestBatches} courseworkId={slug} refresh={refresh}/>
+          </>
       )}
       {avail_images_data && cw_engine_data && (
         <ConfigureCWTesting
