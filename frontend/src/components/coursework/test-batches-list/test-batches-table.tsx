@@ -1,23 +1,26 @@
 import {fetch_test_runs, TestRun} from "@/lib/actions/coursework/coursework-fetch-test-runs";
-import {flexRender, getExpandedRowModel, getGroupedRowModel, useReactTable} from "@tanstack/react-table";
+import {
+    flexRender,
+    getExpandedRowModel,
+    getGroupedRowModel,
+    PaginationState,
+    useReactTable
+} from "@tanstack/react-table";
 import {columns} from "./columns";
 import {
     type ColumnFiltersState,
     getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
+    getFilteredRowModel, getPaginationRowModel,
     getSortedRowModel, type SortingState,
     type VisibilityState
 } from "@tanstack/table-core";
 import React, {useEffect, useState} from "react";
-import {get_all_students_with_maybe_repos} from "@/lib/actions/coursework/get_all_students_on_unit_with_repos";
 import {Spinner} from "@/components/ui/spinner";
 import {Input} from "@/components/ui/input";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
 import {ChevronDown, ChevronRight} from "lucide-react";
-
 
 export function TestBatchesTable({coursework_id, refreshTable}: {coursework_id: string, refreshTable: () => void}) {
     const [columnVisibility, setColumnVisibility] =
@@ -40,6 +43,8 @@ export function TestBatchesTable({coursework_id, refreshTable}: {coursework_id: 
         getGroupedRowModel: getGroupedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getExpandedRowModel: getExpandedRowModel(),
+        paginateExpandedRows: false,
+
         onColumnVisibilityChange: setColumnVisibility,
         state: {
             sorting,

@@ -27,7 +27,10 @@ export const columns: ColumnDef<TestRun>[] = [
         header: "Batch ID",
         cell: ({row}) => {
             if (row.getIsGrouped()) {
-                return (<div>{row.original.batch_id.substring(0, 6)}...</div>)
+                return (<Tooltip>
+                    <TooltipTrigger asChild><div>{row.original.batch_id.substring(0, 6)}...</div></TooltipTrigger>
+                    <TooltipContent>{row.original.batch_id}</TooltipContent>
+                </Tooltip>)
             }
         }
     },
@@ -71,7 +74,7 @@ export const columns: ColumnDef<TestRun>[] = [
                 <TooltipTrigger className={"font-mono"}>{formatDistanceToNow(new Date(date), {
                     addSuffix: true,
                     includeSeconds: true})}</TooltipTrigger>
-                <TooltipContent>{date.toLocaleString()}</TooltipContent>
+                <TooltipContent side={"right"}>{date.toLocaleString()}</TooltipContent>
             </Tooltip>
         }
     },

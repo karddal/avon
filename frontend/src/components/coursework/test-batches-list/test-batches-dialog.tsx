@@ -21,16 +21,16 @@ export default function TestBatchesDialog({
 }: Props) {
   return (
     <Dialog open={open_state} onOpenChange={set_open_state}>
-      <DialogContent className="max-w-full! lg:max-w-[80%]! xl:max-w-[70%]! w-full max-h-full! lg:max-h-[80vh]! overflow-y-auto p-0 border-none bg-transparent shadow-none">
-        <div className="flex min-w-0 flex-col gap-6 w-full justify-center items-stretch lg:flex-row">
-          <div className="min-w-0 lg:max-h-[80vh]! flex-2 lg:overflow-y-auto bg-background border shadow-lg justify-start flex flex-col">
-            <div className="p-8">
+      <DialogContent className="overscroll-none h-[90vh] xs:h-screen max-w-full! lg:max-w-[80%]! w-full overflow-y-auto p-0 border-none bg-transparent shadow-none">
+        <div className="h-full min-w-0 w-full overscroll-none">
+          <div className="h-full min-w-0 lg:overflow-y-auto bg-background border shadow-lg overscroll-none">
+            <div className="p-8 h-full overflow-y-auto overscroll-none">
               <DialogTitle className="text-xl">View test batches</DialogTitle>
               <p className="text-sm text-muted-foreground mb-6">
                 This table lists all test test batches for this coursework.
               </p>
               <CardTitle>Test batches</CardTitle>
-              <div className={"flex min-w-0 items-center gap-2 w-full"}>
+              <div className={"flex min-w-0 items-center overflow-y-scroll gap-2 w-full"}>
                 <Suspense>
                   <TestBatchesTable coursework_id={courseworkId} refreshTable={refresh}></TestBatchesTable>
                 </Suspense>
