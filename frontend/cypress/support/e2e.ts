@@ -15,6 +15,6 @@
 
 // Import commands.ts using ES2015 syntax:
 import "./commands";
-import 'cypress-real-events/support';
+import "cypress-real-events/support";
 
 beforeEach(() => {});

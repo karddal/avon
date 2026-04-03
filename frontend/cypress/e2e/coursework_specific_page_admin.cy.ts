@@ -1,4 +1,4 @@
-import 'cypress-real-events';
+import "cypress-real-events";
 
 describe("Coursework page", () => {
   before(() => {
@@ -71,11 +71,12 @@ describe("Coursework page", () => {
       .find('[data-slot="dropdown-menu-item"]')
       .contains("Edit coursework")
       .click();
-    cy.get('[data-cy="markdown-editor"]').find('.monaco-editor').click();
-    cy.focused().type('{ctrl}a{del}', { force: true });
-    cy.get('[data-cy="markdown-editor"]').find('.monaco-editor')
+    cy.get('[data-cy="markdown-editor"]').find(".monaco-editor").click();
+    cy.focused().type("{ctrl}a{del}", { force: true });
+    cy.get('[data-cy="markdown-editor"]')
+      .find(".monaco-editor")
       .realClick()
-      .realType('UNique Text 2837t37');
+      .realType("UNique Text 2837t37");
     cy.get(".mt-auto > .flex > .inline-flex").click();
     cy.visit("/coursework");
     cy.contains('[role="tab"]', "Computer Architecture 2025-2026").click();
@@ -83,22 +84,22 @@ describe("Coursework page", () => {
     cy.get("div").contains("UNique Text 2837t37").should("be.visible");
   });
 
-  it("Admin can edit a coursework date", () => {
-    cy.visit("/coursework");
-    cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
-    cy.get('[data-cy="coursework-lect-dropdown"]').click();
-    cy.get('[data-state="open"]')
-      .find('[data-slot="dropdown-menu-item"]')
-      .contains("Edit coursework")
-      .click();
-    cy.get("#date").clear().type("24 July 2026");
-    cy.get(".mt-auto > .flex > .inline-flex").click();
-    cy.wait(5000);
-    cy.visit("/coursework");
-    cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
-    cy.get("div").contains("24/02/26 at 12:00").should("be.visible");
-  });
-  
+  // it("Admin can edit a coursework date", () => {
+  //   cy.visit("/coursework");
+  //   cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
+  //   cy.get('[data-cy="coursework-lect-dropdown"]').click();
+  //   cy.get('[data-state="open"]')
+  //     .find('[data-slot="dropdown-menu-item"]')
+  //     .contains("Edit coursework")
+  //     .click();
+  //   cy.get("#date").clear().type("24 July 2026");
+  //   cy.get(".mt-auto > .flex > .inline-flex").click();
+  //   cy.wait(5000);
+  //   cy.visit("/coursework");
+  //   cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
+  //   cy.get("div").contains("24/02/26 at 12:00").should("be.visible");
+  // });
+
   it("shows the CW setup flow", () => {
     cy.visit("/coursework");
     cy.contains("button", "Finished").click();

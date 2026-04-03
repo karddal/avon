@@ -251,7 +251,10 @@ export default function EditCoursework({
                       <FieldLabel htmlFor={"form-flow-description"}>
                         Coursework description
                       </FieldLabel>
-                      <div data-cy="markdown-editor" className="overflow-hidden rounded-md border">
+                      <div
+                        data-cy="markdown-editor"
+                        className="overflow-hidden rounded-md border"
+                      >
                         <Editor
                           height="250px"
                           defaultLanguage="markdown"
