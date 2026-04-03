@@ -6,7 +6,7 @@ import { type Dispatch, type SetStateAction, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { delete_programme } from "@/lib/actions/delete_programme";
+import { delete_programme } from "@/lib/actions/programme/delete_programme";
 
 interface DeleteProgrammeButtonProps {
   programmeId: string;
