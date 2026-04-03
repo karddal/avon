@@ -6,7 +6,10 @@ RUN apt-get update && apt-get install -y \
     git \
     ca-certificates \
     tini \
+    openssh-client \
     && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir ~/.ssh && ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
 
 RUN pip install --no-cache-dir \
     uv \

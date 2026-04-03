@@ -4,6 +4,7 @@ import uuid
 from typing import Annotated, Optional, Sequence
 from uuid import UUID
 
+import aioboto3
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.security import HTTPAuthorizationCredentials
 from gitlab.exceptions import GitlabDeleteError, GitlabGetError
@@ -12,6 +13,7 @@ from sqlalchemy import and_, exists
 # Adding this back in
 from sqlalchemy.orm import selectinload, load_only
 from sqlmodel import Session, select
+from types_aiobotocore_ecs.type_defs import RunTaskResponseTypeDef
 
 # GitLab helpers
 from app.core.gitlab import get_gitlab
@@ -40,7 +42,7 @@ from app.db.session import get_session
 from app.models.base_image import BaseImage
 from app.models.coursework import Coursework
 from app.models.student_repo import StudentRepo
-from app.models.test_run import TestRun
+from app.models.test_run import TestRun, status_type
 from app.models.unit import Unit, UnitWithCourseworks
 from app.models.unit_enrollment import UnitEnrollment
 from app.schemas.base_image import BaseImageList
@@ -170,40 +172,86 @@ async def start_test_batch(
 
     # Just a stub for now
     print("Testing started...")
+    async with aioboto3.Session().client("ecs") as ecs:
+        successful_starts = 0
+        fails = 0
+        gl = get_gitlab()
+        batch_id = uuid.uuid4()
+        test_run_id = uuid.uuid4()
 
-    successful_starts = 0
-    fails = 0
-    gl = get_gitlab()
-    batch_id = uuid.uuid4()
-    for repo in request.repo_ids:
-        # Try and get the repo url from gitlab, if not present, bail out now
-        try:
-            repo_url = gl.projects.get(repo).ssh_url_to_repo
-            db_test_run = TestRun(
-                coursework_id=coursework.id,
-                ecs_task_arn="stub",
-                gitlab_repo_id=repo,
-                git_url=repo_url,
-                task_def=coursework.base_image.task_definition,
-                tester_command=coursework.tester_command,
-                status="running",
-                completed_at=None,
-                trigger="initial",
-                started_by=user.user_id,
-                batch_id=batch_id,
-                notifications_enabled=request.notifications_enabled
-            )
-            session.add(db_test_run)
-            session.commit()
-            successful_starts += 1
-            logger.debug(f"Started test run for {repo} on coursework {coursework}")
-        except Exception as e:
-            logger.error(f"Failed to start test run for {repo} on coursework {coursework.id}: {e}")
-            session.rollback()
-            fails += 1
+        if not settings.aws_results_queue_url:
+            logger.error("AWS results queue url not configured!!")
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        if not settings.aws_ecs_cluster:
+            logger.error("AWS ECS cluster name not configured!!")
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        for repo in request.repo_ids:
+            # Try and get the repo url from gitlab, if not present, bail out now
+            try:
+                repo_url = gl.projects.get(repo).http_url_to_repo
+
+                t: RunTaskResponseTypeDef = await ecs.run_task(
+                taskDefinition=coursework.base_image.task_definition,
+                    launchType="FARGATE",
+                    cluster=settings.aws_ecs_cluster,
+                    networkConfiguration={
+                        'awsvpcConfiguration': {
+                            'subnets': ['subnet-09059c64b92caed30', 'subnet-030101770693225a8'],
+                            'securityGroups': ['sg-0024f04dd642850d4'],
+                            'assignPublicIp': 'ENABLED',
+                        }
+                    },
+                    overrides={
+                        "containerOverrides": [{
+                            "name": "runner",
+                            "environment": [
+                                {"name": "STUDENT_REPO", "value": repo_url},
+                                {"name": "RUN_COMMAND", "value": coursework.tester_command},
+                                {"name": "BUILD_ID", "value": str(test_run_id)},
+                                {"name": "RESULT_QUEUE_URL", "value": settings.aws_results_queue_url},
+                                {"name": "LOG_BUCKET", "value": settings.aws_bucket},
+                                {"name": "RUN_TIMEOUT", "value": "300"}
+                            ]
+                        }]
+                    }
+                )
+
+                if len(t["failures"]) > 0:
+                    logger.error(f"Failed to start aws task for {repo} on coursework {coursework}: {t["failures"]}")
+                    s: status_type = "failed"
+                    fails += 1
+                else:
+                    s: status_type = "running"
+                    successful_starts += 1
+                    logger.debug(f"Started test run for {repo} on coursework {coursework}")
+
+                db_test_run = TestRun(
+                    id=test_run_id,
+                    coursework_id=coursework.id,
+                    ecs_task_arn="stub",
+                    gitlab_repo_id=repo,
+                    git_url=repo_url,
+                    task_def=coursework.base_image.task_definition,
+                    tester_command=coursework.tester_command,
+                    status=s,
+                    completed_at=None,
+                    trigger="initial",
+                    started_by=user.user_id,
+                    batch_id=batch_id,
+                    notifications_enabled=request.notifications_enabled
+                )
+
+                session.add(db_test_run)
+                session.commit()
+            except Exception as e:
+                logger.error(f"Failed to start test run for {repo} on coursework {coursework.id}: {e}")
+                session.rollback()
+                fails += 1
 
 
-    return {"started": successful_starts, "failed": fails}
+        return {"started": successful_starts, "failed": fails}
 
 @router.get("/{id}/student_repos", response_model=CourseworkStudentRepos)
 async def get_student_repos(

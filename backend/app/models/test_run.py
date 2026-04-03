@@ -37,5 +37,5 @@ class TestRun(SQLModel, table=True):
 class TestRunResult(SQLModel, table=True):
     test_run_id: UUID = Field(primary_key=True, foreign_key="testrun.id")
     exit_code: int = Field(nullable=False)
-    log_s3_uri: str = Field(nullable=False)
+    log_s3_uri: str | None = Field(nullable=False)
     received_at: datetime = Field(nullable=False, default_factory=utcnow)
