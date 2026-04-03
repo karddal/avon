@@ -27,10 +27,10 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import { Switch } from "@/components/ui/switch";
-import type { BaseImage } from "@/lib/actions/get_base_images_cw_specific";
-import type { GetCWEngineDataResponse } from "@/lib/actions/get_cw_engine_data";
+import type { BaseImage } from "@/lib/actions/coursework/get_base_images_cw_specific";
+import type { GetCWEngineDataResponse } from "@/lib/actions/coursework/get_cw_engine_data";
 import type {RowSelectionState} from "@tanstack/table-core";
-import {send_test_run_start_req} from "@/lib/actions/start_test_run";
+import {send_test_run_start_req} from "@/lib/actions/coursework/start_test_run";
 import {toast} from "sonner";
 import {Spinner} from "@/components/ui/spinner";
 

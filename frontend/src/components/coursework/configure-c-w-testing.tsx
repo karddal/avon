@@ -37,8 +37,8 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Spinner } from "@/components/ui/spinner";
-import type { GetCWEngineDataResponse } from "@/lib/actions/get_cw_engine_data";
-import { update_coursework_engine } from "@/lib/actions/update_coursework_engine";
+import type { GetCWEngineDataResponse } from "@/lib/actions/coursework/get_cw_engine_data";
+import { update_coursework_engine } from "@/lib/actions/coursework/update_coursework_engine";
 
 interface DockerConfig {
   baseImage: BaseImage;

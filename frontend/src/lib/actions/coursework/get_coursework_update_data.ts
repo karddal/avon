@@ -1,4 +1,4 @@
-import { getRequestJWT } from "../auth-utils";
+import { getRequestJWT } from "../../auth-utils";
 
 export type CourseworkUpdateReqResponse = {
   id: string;

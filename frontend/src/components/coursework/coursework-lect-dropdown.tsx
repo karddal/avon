@@ -37,9 +37,9 @@ import {
 } from "@/components/ui/dropdrawer";
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field";
 import { Progress } from "@/components/ui/progress";
-import type { BaseImage } from "@/lib/actions/get_base_images_cw_specific";
-import type { CourseworkUpdateData } from "@/lib/actions/get_coursework_update_data";
-import type { GetCWEngineDataResponse } from "@/lib/actions/get_cw_engine_data";
+import type { BaseImage } from "@/lib/actions/coursework/get_base_images_cw_specific";
+import type { CourseworkUpdateData } from "@/lib/actions/coursework/get_coursework_update_data";
+import type { GetCWEngineDataResponse } from "@/lib/actions/coursework/get_cw_engine_data";
 import { Item, ItemContent, ItemMedia, ItemTitle } from "../ui/item";
 import CreateTemplate from "./create-templates";
 import ProvisionCoursework from "./provision-coursework";

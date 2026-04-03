@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Spinner } from "@/components/ui/spinner";
-import { provision_individual_projects_for_specific } from "@/lib/actions/provision_for_specific_student";
+import { provision_individual_projects_for_specific } from "@/lib/actions/coursework/provision_for_specific_student";
 
 type GitlabData = {
   name: string;

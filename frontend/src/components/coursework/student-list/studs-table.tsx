@@ -30,7 +30,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { get_all_students_with_maybe_repos } from "@/lib/actions/get_all_students_on_unit_with_repos";
+import { get_all_students_with_maybe_repos } from "@/lib/actions/coursework/get_all_students_on_unit_with_repos";
 import { cn } from "@/lib/utils";
 
 export function StudentsTableWithMaybeRepos({

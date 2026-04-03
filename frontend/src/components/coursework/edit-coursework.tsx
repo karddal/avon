@@ -37,7 +37,7 @@ import { HexColorInput, HexColorPicker } from "react-colorful";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Spinner } from "@/components/ui/spinner";
-import { update_coursework } from "@/lib/actions/update_coursework";
+import { update_coursework } from "@/lib/actions/coursework/update_coursework";
 
 interface FormProps {
   coursework_update_data: CourseworkUpdateData;

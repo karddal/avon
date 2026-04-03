@@ -22,7 +22,7 @@ import {
 import {
   get_student_repos,
   type StudentNameAndRepo,
-} from "@/lib/actions/get_student_repos";
+} from "@/lib/actions/coursework/get_student_repos";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 

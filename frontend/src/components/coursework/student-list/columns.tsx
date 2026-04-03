@@ -13,7 +13,7 @@ import {
   DropdownMenuLabel, DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {coursework_delete_repo} from "@/lib/actions/coursework_delete_repo";
+import {coursework_delete_repo} from "@/lib/actions/coursework/coursework_delete_repo";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel,
   AlertDialogContent, AlertDialogDescription, AlertDialogFooter,

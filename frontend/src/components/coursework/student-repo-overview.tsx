@@ -18,7 +18,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
-import { get_my_coursework_repo } from "@/lib/actions/get_my_coursework_repo";
+import { get_my_coursework_repo } from "@/lib/actions/coursework/get_my_coursework_repo";
 
 function formatCommitDate(date: string | null) {
   if (!date) {

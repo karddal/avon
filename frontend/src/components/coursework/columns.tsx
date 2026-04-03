@@ -10,7 +10,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { StudentNameAndRepo } from "@/lib/actions/get_student_repos";
+import type { StudentNameAndRepo } from "@/lib/actions/coursework/get_student_repos";
 import { Button } from "../ui/button";
 
 export const columns: ColumnDef<StudentNameAndRepo>[] = [
