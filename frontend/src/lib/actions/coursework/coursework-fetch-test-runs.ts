@@ -14,13 +14,14 @@ type StudentNameAndId = {
     name: string;
 }
 
-type TestRun = {
+export type TestRun = {
     id: string;
     batch_id: string;
     gitlab_repo_id: string;
     gitlab_repo_url: string;
     students: StudentNameAndId[];
     status: TestRunStatus;
+    started: Date;
 }
 
 type ServerTestRunInfo = {
@@ -30,6 +31,7 @@ type ServerTestRunInfo = {
     gitlab_repo_url: string;
     student_ids: string[];
     status: TestRunStatus;
+    started: string;
 }
 
 type ServerSuccessResponse = {
@@ -81,7 +83,8 @@ export async function fetch_test_runs(coursework_id: string): Promise<TestRun[]>
                     gitlab_repo_id: run.gitlab_repo_id,
                     gitlab_repo_url: run.gitlab_repo_url,
                     status: run.status,
-                    students: students
+                    students: students,
+                    started: new Date(run.started),
                 }
             )
         }
