@@ -245,7 +245,10 @@ export default function ConfigureCWTesting({
                 <Button
                   variant="default"
                   className="w-full"
-                  disabled={config.finalCommands.length <= 0 || config.baseImage === undefined}
+                  disabled={
+                    config.finalCommands.length <= 0 ||
+                    config.baseImage === undefined
+                  }
                   onClick={() => applyDockerfile()}
                 >
                   <FileCheck className="mr-2 w-4 h-4" /> Save

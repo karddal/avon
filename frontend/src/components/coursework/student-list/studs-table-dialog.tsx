@@ -16,7 +16,7 @@ export default function StudsListDialog({
   open_state,
   set_open_state,
   courseworkId,
-    refresh,
+  refresh,
 }: Props) {
   return (
     <Dialog open={open_state} onOpenChange={set_open_state}>
@@ -33,7 +33,10 @@ export default function StudsListDialog({
               <CardTitle>Repos</CardTitle>
               <div className={"flex min-w-0 items-center gap-2 w-full"}>
                 <Suspense>
-                  <StudentsTableWithMaybeRepos refresh={refresh} coursework_id={courseworkId} />
+                  <StudentsTableWithMaybeRepos
+                    refresh={refresh}
+                    coursework_id={courseworkId}
+                  />
                 </Suspense>
               </div>
             </div>

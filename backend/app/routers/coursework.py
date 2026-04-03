@@ -11,7 +11,7 @@ from sqlalchemy import and_, exists
 
 # Adding this back in
 from sqlalchemy.orm import selectinload, load_only
-from sqlmodel import Session, delete, select
+from sqlmodel import Session, select
 
 # GitLab helpers
 from app.core.gitlab import get_gitlab
@@ -20,7 +20,6 @@ from app.core.helpers.gitlab import (
     gl_activate_template_project,
     gl_create_coursework,
     gl_delete_coursework,
-    gl_delete_project,
     gl_get_commit_count,
     gl_get_project_commits,
     gl_overwrite_zip,
@@ -88,7 +87,7 @@ async def get_test_run(
             status_code=status.HTTP_404_NOT_FOUND, detail="Coursework not found"
         )
 
-    user = await require_scopes(
+    await require_scopes(
         ResourceInformation(type=Unit, id=coursework.unit_id),
         Scopes.UNIT_COURSEWORK_ENGINE,
         token=token,
@@ -120,7 +119,7 @@ async def get_test_runs(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Coursework not found"
         )
-    user = await require_scopes(
+    await require_scopes(
         ResourceInformation(type=Unit, id=coursework.unit_id),
         Scopes.UNIT_COURSEWORK_ENGINE,
         token=token,
@@ -245,7 +244,7 @@ async def delete_repo(
 
     gitlab = get_gitlab()
     try:
-        p = gitlab.projects.get(rid)
+        gitlab.projects.get(rid)
 
         gitlab.projects.delete(rid)
         # delete the student repos in session

@@ -105,7 +105,9 @@ export function CreateBIForm() {
         control={form.control}
         render={({ field, fieldState }) => (
           <Field data-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor={field.name}>AWS task definition name:revision</FieldLabel>
+            <FieldLabel htmlFor={field.name}>
+              AWS task definition name:revision
+            </FieldLabel>
             <Input
               {...field}
               id={field.name}

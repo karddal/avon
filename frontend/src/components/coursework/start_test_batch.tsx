@@ -1,7 +1,9 @@
 "use client";
 
-import {Bell, CircleQuestionMark, Layers, Send, TriangleAlert} from "lucide-react";
-import {type Dispatch, type SetStateAction, Suspense, useState} from "react";
+import type { RowSelectionState } from "@tanstack/table-core";
+import { CircleQuestionMark, Layers, Send, TriangleAlert } from "lucide-react";
+import { type Dispatch, type SetStateAction, Suspense, useState } from "react";
+import { toast } from "sonner";
 import { StudentReposTable } from "@/components/coursework/repos_table";
 import { Button } from "@/components/ui/button";
 import { CardTitle } from "@/components/ui/card";
@@ -26,13 +28,11 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item";
+import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
 import type { BaseImage } from "@/lib/actions/coursework/get_base_images_cw_specific";
 import type { GetCWEngineDataResponse } from "@/lib/actions/coursework/get_cw_engine_data";
-import type {RowSelectionState} from "@tanstack/table-core";
-import {send_test_run_start_req} from "@/lib/actions/coursework/start_test_run";
-import {toast} from "sonner";
-import {Spinner} from "@/components/ui/spinner";
+import { send_test_run_start_req } from "@/lib/actions/coursework/start_test_run";
 
 type Props = {
   open_state: boolean;
@@ -47,14 +47,15 @@ export default function StartTestBatchPopup({
   open_state,
   set_open_state,
   courseworkId,
-    refresh,
+  refresh,
   cw_engine_data,
   available_images,
 }: Props) {
   const image_name = available_images.find(
     (i) => i.id === cw_engine_data.base_image_id,
   );
-  const [notificationsEnabled, setNotificationsEnabled] = useState<boolean>(true);
+  const [notificationsEnabled, setNotificationsEnabled] =
+    useState<boolean>(true);
   const [submitting, setSubmitting] = useState(false);
   if (!image_name) {
     // undefined image!!
@@ -66,15 +67,21 @@ export default function StartTestBatchPopup({
     setSubmitting(true);
     console.log(notificationsEnabled);
     try {
-      const d = await send_test_run_start_req(courseworkId, repo_ids, notificationsEnabled);
-      toast.success(`${d.started} test runs started successfully; ${d.failed} runs failed to start.`);
+      const d = await send_test_run_start_req(
+        courseworkId,
+        repo_ids,
+        notificationsEnabled,
+      );
+      toast.success(
+        `${d.started} test runs started successfully; ${d.failed} runs failed to start.`,
+      );
       refresh();
-    } catch (e) {
+    } catch (_e) {
       toast.error("An error occurred when starting the test run.");
       refresh();
     }
     setSubmitting(false);
-  }
+  };
 
   return (
     <Dialog open={open_state} onOpenChange={set_open_state}>
@@ -92,7 +99,11 @@ export default function StartTestBatchPopup({
               <CardTitle>Choose students</CardTitle>
               <div className={"flex min-w-0 items-center gap-2 w-full"}>
                 <Suspense>
-                  <StudentReposTable coursework_id={courseworkId} rowSelection={rowSelection} setRowSelection={setRowSelection} />
+                  <StudentReposTable
+                    coursework_id={courseworkId}
+                    rowSelection={rowSelection}
+                    setRowSelection={setRowSelection}
+                  />
                 </Suspense>
               </div>
             </div>
@@ -182,13 +193,23 @@ export default function StartTestBatchPopup({
                           notification when this test run completes.
                         </FieldDescription>
                       </FieldContent>
-                      <Switch onCheckedChange={(checked) => setNotificationsEnabled(checked)} id="switch-notifications" defaultChecked />
+                      <Switch
+                        onCheckedChange={(checked) =>
+                          setNotificationsEnabled(checked)
+                        }
+                        id="switch-notifications"
+                        defaultChecked
+                      />
                     </Field>
                   </FieldLabel>
                 </>
               )}
-              <Button className={"w-full mt-auto"} disabled={!image_name || submitting} onClick={() => start_test_run()}>
-                {submitting ? (<Spinner/>) : (<Send/>)}
+              <Button
+                className={"w-full mt-auto"}
+                disabled={!image_name || submitting}
+                onClick={() => start_test_run()}
+              >
+                {submitting ? <Spinner /> : <Send />}
                 Begin test run
               </Button>
             </div>

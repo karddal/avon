@@ -4,11 +4,16 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
-  getSortedRowModel, RowSelectionState,
+  getSortedRowModel,
   type SortingState,
   type VisibilityState,
 } from "@tanstack/table-core";
-import React, {Dispatch, SetStateAction, useEffect, useState} from "react";
+import React, {
+  type Dispatch,
+  type SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { columns } from "@/components/coursework/columns";
 import { Spinner } from "@/components/ui/spinner";
 import {
@@ -29,7 +34,7 @@ import { Input } from "../ui/input";
 export function StudentReposTable({
   coursework_id,
   rowSelection,
-    setRowSelection,
+  setRowSelection,
 }: {
   coursework_id: string;
   rowSelection: {};

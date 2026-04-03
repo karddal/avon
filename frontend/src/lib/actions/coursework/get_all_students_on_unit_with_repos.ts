@@ -1,6 +1,6 @@
+import type { StudentNameAndPotentiallyRepo } from "@/components/coursework/student-list/columns";
 import { get_username_from_id } from "@/lib/actions/auth/get_username";
 import { getRequestJWT } from "@/lib/auth-utils";
-import {StudentNameAndPotentiallyRepo} from "@/components/coursework/student-list/columns";
 
 type StudentIDAndMaybeRepo = {
   id: string;

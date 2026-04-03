@@ -1,10 +1,11 @@
 "use client";
 
 import {
-  BookDashed, BookPlus, CircleDashed,
+  BookDashed,
+  BookPlus,
+  CircleDashed,
   Container,
   Gitlab,
-  LayersPlus,
   Menu,
   ServerCog,
   SquarePen,
@@ -17,6 +18,7 @@ import DeleteCourseworkButton from "@/components/coursework/delete_coursework_bu
 import EditCoursework from "@/components/coursework/edit-coursework";
 import ReposListDialog from "@/components/coursework/repos-list-dialog";
 import StartTestBatchPopup from "@/components/coursework/start_test_batch";
+import TestBatchesDialog from "@/components/coursework/test-batches-list/test-batches-dialog";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -43,7 +45,6 @@ import type { GetCWEngineDataResponse } from "@/lib/actions/coursework/get_cw_en
 import { Item, ItemContent, ItemMedia, ItemTitle } from "../ui/item";
 import CreateTemplate from "./create-templates";
 import ProvisionCoursework from "./provision-coursework";
-import TestBatchesDialog from "@/components/coursework/test-batches-list/test-batches-dialog";
 
 export default function CourseworkLectDropdown({
   slug,
@@ -135,34 +136,33 @@ export default function CourseworkLectDropdown({
                     Start test batch
                   </DropDrawerItem>
                   <DropDrawerItem
-                      key={"TestRuns"}
-                      disabled={true}
-                      icon={<CircleDashed />}
+                    key={"TestRuns"}
+                    disabled={true}
+                    icon={<CircleDashed />}
                   >
                     Test batches
                   </DropDrawerItem>
                 </>
               )}
               {engine_is_setup && (
-                  <>
-                    <DropDrawerItem
-                        key={"Engine"}
-                        icon={<ServerCog />}
-                        disabled={false}
-                        onSelect={() => setShowStartTests(true)}
-                    >
-                      Start test batch
-                    </DropDrawerItem>
-                    <DropDrawerItem
-                        key={"TestRuns"}
-                        disabled={false}
-                        icon={<CircleDashed />}
-                        onSelect={() => setShowTestBatches(true)}
-                    >
-                      Test batches
-                    </DropDrawerItem>
-                  </>
-
+                <>
+                  <DropDrawerItem
+                    key={"Engine"}
+                    icon={<ServerCog />}
+                    disabled={false}
+                    onSelect={() => setShowStartTests(true)}
+                  >
+                    Start test batch
+                  </DropDrawerItem>
+                  <DropDrawerItem
+                    key={"TestRuns"}
+                    disabled={false}
+                    icon={<CircleDashed />}
+                    onSelect={() => setShowTestBatches(true)}
+                  >
+                    Test batches
+                  </DropDrawerItem>
+                </>
               )}
               <DropDrawerItem
                 key={"Dockerfiles"}
@@ -245,17 +245,22 @@ export default function CourseworkLectDropdown({
       </DropDrawer>
 
       {engine_is_setup && cw_engine_data && avail_images_data && (
-          <>
+        <>
           <StartTestBatchPopup
-              open_state={showStartTests}
-              set_open_state={setShowStartTests}
-              courseworkId={slug}
-              refresh={refresh}
-              cw_engine_data={cw_engine_data}
-              available_images={avail_images_data}
+            open_state={showStartTests}
+            set_open_state={setShowStartTests}
+            courseworkId={slug}
+            refresh={refresh}
+            cw_engine_data={cw_engine_data}
+            available_images={avail_images_data}
           ></StartTestBatchPopup>
-          <TestBatchesDialog open_state={showTestBatches} set_open_state={setShowTestBatches} courseworkId={slug} refresh={refresh}/>
-          </>
+          <TestBatchesDialog
+            open_state={showTestBatches}
+            set_open_state={setShowTestBatches}
+            courseworkId={slug}
+            refresh={refresh}
+          />
+        </>
       )}
       {avail_images_data && cw_engine_data && (
         <ConfigureCWTesting
