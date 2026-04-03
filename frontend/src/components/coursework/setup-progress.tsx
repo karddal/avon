@@ -1,6 +1,6 @@
 import { ArrowRight, CheckCircle, Circle, CircleDashed } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cw_setup_progress } from "@/lib/actions/coursework-setup-progress";
+import { cw_setup_progress } from "@/lib/actions/coursework/coursework-setup-progress";
 
 interface setupProgress {
   cw_id: string;

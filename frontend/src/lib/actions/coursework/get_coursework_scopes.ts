@@ -1,6 +1,6 @@
 "use server";
 
-import { getRequestJWT } from "../auth-utils";
+import { getRequestJWT } from "../../auth-utils";
 
 export type ScopesResponse = {
   scopes: string[];

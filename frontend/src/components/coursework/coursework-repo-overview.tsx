@@ -23,7 +23,7 @@ import { Spinner } from "@/components/ui/spinner";
 import {
   get_student_repos,
   type StudentNameAndRepo,
-} from "@/lib/actions/get_student_repos";
+} from "@/lib/actions/coursework/get_student_repos";
 
 export default function CourseworkRepoOverview({
   courseworkId,

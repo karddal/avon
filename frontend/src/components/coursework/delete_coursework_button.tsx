@@ -6,7 +6,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { delete_coursework } from "@/lib/actions/delete_coursework";
+import { delete_coursework } from "@/lib/actions/coursework/delete_coursework";
 
 interface DeleteCourseworkButtonProps {
   courseworkId: string;

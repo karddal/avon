@@ -15,7 +15,7 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item";
-import { provision_individual_projects } from "@/lib/actions/provision_individual_projects";
+import { provision_individual_projects } from "@/lib/actions/coursework/provision_individual_projects";
 import { Spinner } from "../ui/spinner";
 
 type GitlabData = {

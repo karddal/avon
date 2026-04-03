@@ -9,16 +9,16 @@ import StudentRepoActivity from "@/components/coursework/student-repo-activity";
 import StudentRepoOverview from "@/components/coursework/student-repo-overview";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { get_base_images_cw_specific } from "@/lib/actions/get_base_images_cw_specific";
-import { get_coursework_scopes } from "@/lib/actions/get_coursework_scopes";
-import { get_cw_update_data } from "@/lib/actions/get_coursework_update_data";
-import { get_cw_engine_data } from "@/lib/actions/get_cw_engine_data";
+import { get_base_images_cw_specific } from "@/lib/actions/coursework/get_base_images_cw_specific";
+import { get_coursework_scopes } from "@/lib/actions/coursework/get_coursework_scopes";
+import { get_cw_update_data } from "@/lib/actions/coursework/get_coursework_update_data";
+import { get_cw_engine_data } from "@/lib/actions/coursework/get_cw_engine_data";
 import { getRequestJWT } from "@/lib/auth-utils";
 import Loading from "../loading";
 import CourseworkDescription from "./description";
 import CourseworkInformation from "./information";
 import CourseworkName from "./name";
-import {get_student_repos} from "@/lib/actions/get_student_repos";
+import {get_student_repos} from "@/lib/actions/coursework/get_student_repos";
 
 async function CourseworkPageContent({
   params,

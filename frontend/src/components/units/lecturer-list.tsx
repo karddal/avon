@@ -15,7 +15,7 @@ import { Spinner } from "@/components/ui/spinner";
 import DeleteDialog from "@/components/units/delete-lecturer-dialog";
 import TransferDialog from "@/components/units/transfer-dialog";
 import UserCard from "@/components/user-card";
-import { get_user_image_from_id } from "@/lib/actions/get_image";
+import { get_user_image_from_id } from "@/lib/actions/coursework/get_image";
 import { get_lecturers } from "@/lib/actions/get_lecturers";
 import { get_owner_of_unit } from "@/lib/actions/get_owner_of_unit";
 import { get_username_from_id } from "@/lib/actions/get_username";
