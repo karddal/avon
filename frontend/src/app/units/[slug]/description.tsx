@@ -1,3 +1,6 @@
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
+
 type UnitData = {
   id: string;
   name: string;
@@ -27,7 +30,11 @@ export default async function UnitDescription({
   return (
     <div className="flex flex-col overflow-y-auto break-words h-32 border bg-accent p-2">
       {unit.description ? (
-        unit.description
+        <div className="prose prose-sm max-w-none">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {unit.description}
+          </ReactMarkdown>
+        </div>
       ) : (
         <span className="text-muted-foreground italic">
           No description available.

@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import Editor from "@monaco-editor/react"
 import {
   type Dispatch,
   type SetStateAction,
@@ -262,13 +263,22 @@ export default function EditUnit({
                       <FieldLabel htmlFor={"form-flow-description"}>
                         Unit description
                       </FieldLabel>
-                      <Textarea
-                        {...field}
-                        id={"form-flow-description"}
-                        aria-invalid={fieldState.invalid}
-                        placeholder={"A great description"}
-                        autoComplete={"off"}
-                      />
+                      <div className="overflow-hidden rounded-md border">
+                        <Editor
+                          height="250px"
+                          defaultLanguage="markdown"
+                          value={field.value}
+                          onChange={(v) => field.onChange(v ?? "")}
+                          options={{
+                            minimap: { enabled: false },
+                            wordWrap: "on",
+                            lineNumbers: "off",
+                            folding: false,
+                            scrollBeyondLastLine: false,
+                            fontSize: 14,
+                          }}
+                        />
+                      </div>
                       {fieldState.invalid && (
                         <FieldError errors={[fieldState.error]} />
                       )}
