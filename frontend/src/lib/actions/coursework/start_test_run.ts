@@ -1,5 +1,5 @@
 "use server";
-import type { BaseImage } from "@/lib/actions/get_base_images_admin";
+import type { BaseImage } from "@/lib/actions/base_image/get_base_images_admin";
 import { getRequestJWT } from "@/lib/auth-utils";
 
 type StartTestRunRequest = {
