@@ -100,6 +100,14 @@ Example prompts:
 - ```When it comes to api responses, is it standard to return a HTTPException (error code, detail) or do we have a custom json type with status: error, detail: str?```
 - ```Why isn't this formatting properly? Also, how can I display this nicely? This is a start date for a test run to be displayed in a data table. The formatting is just doing iso format which is ugly, not taking effect. CODE HERE```
 - ```CODE HERE this just prints DATE HERE in the row field.```
+
+#### Used to design and build the specific test run page
+I used AI to build the specific test run page, once I had already built the test runs list, start tests component etc. - it was given a popup set up with the data, and I asked it to build a layout to
+display the data nicely. I also asked it to add features like auto refreshing and fix some bugs. This was useful because
+it allowed me to quickly iterate the design, and get something that I can build on top of. Helped to overcome the 'blank page' problem.
+
+See the transcript in `transcript.md` in this folder.
+
 ### Josh
 
 **Tools used**
