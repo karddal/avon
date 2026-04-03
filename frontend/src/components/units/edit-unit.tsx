@@ -262,7 +262,7 @@ export default function EditUnit({
                       <FieldLabel htmlFor={"form-flow-description"}>
                         Unit description
                       </FieldLabel>
-                      <div className="overflow-hidden rounded-md border">
+                      <div data-cy="markdown-editor" className="overflow-hidden rounded-md border">
                         <Editor
                           height="250px"
                           defaultLanguage="markdown"

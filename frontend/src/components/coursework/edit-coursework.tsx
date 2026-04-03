@@ -251,20 +251,22 @@ export default function EditCoursework({
                       <FieldLabel htmlFor={"form-flow-description"}>
                         Coursework description
                       </FieldLabel>
-                      <Editor
-                        height="250px"
-                        defaultLanguage="markdown"
-                        value={field.value}
-                        onChange={(v) => field.onChange(v ?? "")}
-                        options={{
-                          minimap: { enabled: false },
-                          wordWrap: "on",
-                          lineNumbers: "off",
-                          folding: false,
-                          scrollBeyondLastLine: false,
-                          fontSize: 14,
-                        }}
-                      />
+                      <div data-cy="markdown-editor" className="overflow-hidden rounded-md border">
+                        <Editor
+                          height="250px"
+                          defaultLanguage="markdown"
+                          value={field.value}
+                          onChange={(v) => field.onChange(v ?? "")}
+                          options={{
+                            minimap: { enabled: false },
+                            wordWrap: "on",
+                            lineNumbers: "off",
+                            folding: false,
+                            scrollBeyondLastLine: false,
+                            fontSize: 14,
+                          }}
+                        />
+                      </div>
                       {fieldState.invalid && (
                         <FieldError errors={[fieldState.error]} />
                       )}
