@@ -2,12 +2,10 @@ import asyncio
 import json
 import logging
 from datetime import datetime, timezone
-from typing import Any, Generator
 from uuid import UUID
 
 import aioboto3
 from sqlmodel import Session
-from types_aiobotocore_sqs.type_defs import MessageTypeDef
 
 from app.models.test_run import TestRunResult, TestRun
 
@@ -50,12 +48,12 @@ async def process_message(msg, db: Session):
 
 
 async def sqs_worker(s, queue_url: str):
-    logger.info(f"Starting up background worker")
+    logger.info("Starting up background worker")
     logger.info(f"Working on queue {queue_url}")
     session = aioboto3.Session()
 
     async with session.client("sqs") as sqs:
-        logger.info(f"Logged into aws, starting up loop")
+        logger.info("Logged into aws, starting up loop")
         while True:
             try:
                 resp = await sqs.receive_message(
