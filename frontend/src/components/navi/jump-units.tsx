@@ -56,18 +56,18 @@ export default function JumpUnits({
     <CommandDialog
       open={open}
       onOpenChange={setOpen}
-      className="sm:max-w-4xl h-[min(80vh,760px)]"
+      className="min-w-[70vw] max-w-[70vw] xs:min-w-full max-h-[70vh] flex flex-col w-full"
     >
-      <CommandInput placeholder={"Jump to..."} className="text-lg h-14" />
+      <CommandInput placeholder={"Jump to..."} className="h-14" />
 
-      <CommandList className="flex-1 overflow-y-auto max-h-none text-base">
-        <CommandEmpty className="py-6 text-lg">
-          No results found :(
+        <CommandList className="overflow-y-scroll max-h-none text-base">
+        <CommandEmpty className="py-6 text-center">
+          No results.
         </CommandEmpty>
 
         <CommandGroup
           heading={"Active units"}
-          className="[&_[cmdk-group-heading]]:text-lg [&_[cmdk-group-heading]]:py-3"
+          className="py-3"
         >
           {units.map((unit) => (
             <CommandItem
@@ -77,7 +77,7 @@ export default function JumpUnits({
                 setOpen(false);
                 router.push(`/units/${unit.id}`);
               }}
-              className="py-4 text-lg gap-4"
+              className="py-4 gap-4"
             >
               <Book className="h-6 w-6" />
               <div className="flex items-baseline gap-2">
@@ -94,7 +94,7 @@ export default function JumpUnits({
 
         <CommandGroup
           heading={"Active courseworks"}
-          className="[&_[cmdk-group-heading]]:text-lg [&_[cmdk-group-heading]]:py-3"
+          className="[&_[cmdk-group-heading]]:py-3"
         >
           {coursework.map((cw) => (
             <CommandItem
@@ -104,7 +104,7 @@ export default function JumpUnits({
                 setOpen(false);
                 router.push(`/coursework/${cw.id}`);
               }}
-              className="py-4 text-lg gap-4"
+              className="py-4 gap-4"
             >
               <NotepadText className="h-6 w-6" />
               <div className="flex items-baseline gap-2">
