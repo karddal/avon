@@ -2,11 +2,11 @@ import {getRequestJWT} from "@/lib/auth-utils";
 import {get_username_from_id} from "@/lib/actions/auth/get_username";
 
 enum TestRunStatus {
-    Pending,
-    Running,
-    Succeeded,
-    Failed,
-    Error
+    pending,
+    running,
+    succeeded,
+    failed,
+    error
 }
 
 type StudentNameAndId = {

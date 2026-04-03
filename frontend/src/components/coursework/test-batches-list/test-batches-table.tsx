@@ -31,10 +31,10 @@ export function TestBatchesTable({coursework_id, refreshTable}: {coursework_id: 
     const [data, setData] = React.useState<TestRun[]>([]);
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [loading, setLoading] = useState<boolean>(true);
-
+    const c = columns(coursework_id);
     const table = useReactTable({
         data,
-        columns,
+        columns: c,
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
         getCoreRowModel: getCoreRowModel(),
