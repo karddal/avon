@@ -24,6 +24,9 @@ type TestRunFullServerDetails = {
   notifications_enabled: boolean;
   started_by: string;
   batch_id: string;
+  tester_exit_code: number | null;
+  log_name: string | null;
+  log_text: string | null;
 };
 
 type ServerFailedResponse = {
@@ -46,6 +49,9 @@ export type TestRunFullDetails = {
   started_by_name: string;
   started_by_id: string;
   batch_id: string;
+  tester_exit_code: number | null;
+  log_name: string | null;
+  log_text: string | null;
 };
 
 export async function get_test_run_for_cw({
@@ -93,6 +99,9 @@ export async function get_test_run_for_cw({
       task_def: tr.task_def,
       tester_command: tr.tester_command,
       trigger: tr.trigger,
+      tester_exit_code: tr.tester_exit_code,
+      log_name: tr.log_name,
+      log_text: tr.log_text,
     };
   }
 }

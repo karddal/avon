@@ -9,7 +9,7 @@ import re
 from app.core.settings import settings
 
 from app.models.student_repo import StudentRepo
-from app.models.test_run import status_type
+from app.models.test_run import status_type, trigger_type
 
 
 def is_valid_name(name: str) -> str:
@@ -190,6 +190,24 @@ class TestRunBasicInfo(BaseModel):
     student_ids: list[str]
     status: status_type
 
+class TestRunFullInfo(BaseModel):
+        id: UUID
+        coursework_id: UUID
+        ecs_task_arn: str
+        gitlab_repo_id: str
+        git_url: str
+        task_def: str
+        tester_command: str
+        status: status_type
+        completed_at: datetime.datetime | None
+        trigger: trigger_type
+        created_at: datetime.datetime
+        notifications_enabled: bool
+        started_by: str
+        batch_id: UUID
+        tester_exit_code: int | None
+        log_name: str | None
+        log_text: str | None
 
 class CourseworkTestRuns(BaseModel):
     test_runs: list[TestRunBasicInfo]
