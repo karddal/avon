@@ -42,7 +42,7 @@ from app.db.session import get_session
 from app.models.base_image import BaseImage
 from app.models.coursework import Coursework
 from app.models.student_repo import StudentRepo
-from app.models.test_run import TestRun, status_type
+from app.models.test_run import TestRun, status_type, TestRunResult
 from app.models.unit import Unit, UnitWithCourseworks
 from app.models.unit_enrollment import UnitEnrollment
 from app.schemas.base_image import BaseImageList
@@ -66,7 +66,7 @@ from app.schemas.coursework import (
     CourseworkUpdate,
     CourseworkUpdateEngineData,
     CourseworkUpdateFormData,
-    StudentWithMaybeRepo, CourseworkTestRuns, TestRunBasicInfo,
+    StudentWithMaybeRepo, CourseworkTestRuns, TestRunBasicInfo, TestRunFullInfo,
 )
 from app.schemas.security import CurrentUser
 from app.schemas.test_run import StartTestRun
@@ -76,7 +76,7 @@ router = APIRouter(prefix="/coursework", tags=["coursework"])
 session_dependency = Annotated[Session, Depends(get_session)]
 token_dependency = Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]
 
-@router.get("/{id}/test_run/{tid}", status_code=status.HTTP_200_OK, response_model=TestRun)
+@router.get("/{id}/test_run/{tid}", status_code=status.HTTP_200_OK, response_model=TestRunFullInfo)
 async def get_test_run(
         id: UUID,
         tid: UUID,
@@ -110,7 +110,38 @@ async def get_test_run(
             detail="Access denied",
         )
 
-    return test_run
+    # Check whether this test run has a result saved, if it is 'succeeded'
+    # If so we generate an s3 pre-signed key and send it in the response
+    maybe_r = session.get(TestRunResult, test_run.id)
+    tester_exit_code = None
+    log_name=None
+    log_text=None
+    if maybe_r is not None:
+        # We have saved a result!
+        tester_exit_code = maybe_r.exit_code
+        if maybe_r.log_s3_uri is not None:
+            # We have s3 bucket upload, so let's get a presigned key to respond with
+            async with aioboto3.Session().client("s3") as s3:
+                # url = await s3.generate_presigned_url(
+                #     'get_object',
+                #     Params={
+                #         'Bucket': settings.aws_bucket,
+                #         'Key': maybe_r.log_s3_uri
+                #     },
+                #     ExpiresIn=3600
+                # )
+                data = (await s3.get_object(Bucket=settings.aws_bucket, Key=maybe_r.log_s3_uri))
+                body = data.get('Body')
+                read = await body.read()
+                log_name = maybe_r.log_s3_uri
+                log_text = read.decode("utf-8")
+    print(log_text)
+
+
+    return TestRunFullInfo(
+                id=test_run.id, coursework_id=test_run.coursework_id, ecs_task_arn=test_run.ecs_task_arn, gitlab_repo_id=test_run.gitlab_repo_id, git_url=test_run.git_url, task_def=test_run.task_def, tester_command=test_run.tester_command, status=test_run.status, completed_at=test_run.completed_at,
+        trigger=test_run.trigger, created_at=test_run.created_at, notifications_enabled=test_run.notifications_enabled, started_by=test_run.started_by, batch_id=test_run.batch_id, tester_exit_code=tester_exit_code, log_name=log_name,
+        log_text=log_text)
 
 @router.get("/{id}/test_runs", response_model=CourseworkTestRuns)
 async def get_test_runs(

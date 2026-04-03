@@ -31,16 +31,21 @@ async def process_message(msg, db: Session):
 
     run.completed_at = datetime.now(timezone.utc)
 
-    db_result = TestRunResult(
-        test_run_id=UUID(build_id),
-        exit_code=int(exit_code),
-        log_s3_uri=s3_key,
-        received_at=datetime.now(timezone.utc)
-    )
+    if not db.get(TestRunResult, UUID(build_id)):
+        # There is not already a result in the database, so we add it.
+
+        db_result = TestRunResult(
+            test_run_id=UUID(build_id),
+            exit_code=int(exit_code),
+            log_s3_uri=s3_key,
+            received_at=datetime.now(timezone.utc)
+        )
+        db.add(db_result)
+
+    db.add(run)
 
     logger.info(f"Processed {build_id} -> {exit_code}")
-    db.add(run)
-    db.add(db_result)
+
     db.commit()
 
 

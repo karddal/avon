@@ -6,10 +6,10 @@ import {
   Calendar,
   CheckCircle2,
   Clock,
-  Copy,
+  Copy, Download, File,
   GitBranch,
   Loader2,
-  RefreshCw,
+  RefreshCw, Scroll,
   ScrollText,
   Terminal,
   User,
@@ -27,6 +27,7 @@ import {
   type TestRunFullDetails,
 } from "@/lib/actions/test_run/cw-get-specific-test-run";
 import { cn } from "@/lib/utils";
+import {Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle} from "@/components/ui/empty";
 
 export default function TestRunComponent({
   test_run_id,
@@ -42,18 +43,12 @@ export default function TestRunComponent({
   const [isManualRefreshing, setIsManualRefreshing] = useState<boolean>(false);
   const [autoRefreshEnabled, setAutoRefreshEnabled] = useState<boolean>(true);
   const [lastRefreshedAt, setLastRefreshedAt] = useState<Date | null>(null);
+  const [logsBlob, setLogsBlob] = useState<Blob>();
   const [secondsUntilRefresh, setSecondsUntilRefresh] = useState<number | null>(
     null,
   );
   const [liveNow, setLiveNow] = useState<number>(Date.now());
-  const [logsLoading, setLogsLoading] = useState<boolean>(false);
-  const [logsContent, setLogsContent] = useState<string | null>(null);
   const refreshInFlight = useRef(false);
-
-  const fetchLogsStub = useCallback(async () => {
-    // TODO: replace with backend call that returns logs using pre-signed S3 URL.
-    return null as string | null;
-  }, []);
 
   const updateData = useCallback(
     async (mode: "initial" | "auto" | "manual") => {
@@ -72,6 +67,10 @@ export default function TestRunComponent({
           cw_id: coursework_id,
         });
         setData(updatedData);
+        if (updatedData.log_text) {
+          const blob = new Blob([updatedData.log_text], { type: 'text/plain' });
+          setLogsBlob(blob);
+        }
         setLastRefreshedAt(new Date());
       } catch (_error) {
         toast.error("Failed to refresh test run data");
@@ -548,39 +547,56 @@ export default function TestRunComponent({
               Logs will be fetched from S3 using a pre-signed URL when
               available.
             </p>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={logsLoading}
-              onClick={async () => {
-                setLogsLoading(true);
-                try {
-                  const content = await fetchLogsStub();
-                  setLogsContent(content);
-                } finally {
-                  setLogsLoading(false);
-                }
-              }}
-            >
-              {logsLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <RefreshCw className="h-4 w-4" />
-              )}
-              <span className="ml-2">Fetch logs</span>
-            </Button>
+            {/*<Button*/}
+            {/*  variant="outline"*/}
+            {/*  size="sm"*/}
+            {/*  disabled={logsLoading}*/}
+            {/*  onClick={async () => {*/}
+            {/*    setLogsLoading(true);*/}
+            {/*    try {*/}
+            {/*      const content = await fetchLogsStub();*/}
+            {/*      setLogsContent(content);*/}
+            {/*    } finally {*/}
+            {/*      setLogsLoading(false);*/}
+            {/*    }*/}
+            {/*  }}*/}
+            {/*>*/}
+            {/*  {logsLoading ? (*/}
+            {/*    <Loader2 className="h-4 w-4 animate-spin" />*/}
+            {/*  ) : (*/}
+            {/*    <RefreshCw className="h-4 w-4" />*/}
+            {/*  )}*/}
+            {/*  <span className="ml-2">Fetch logs</span>*/}
+            {/*</Button>*/}
           </div>
-          <div className="rounded-md border bg-muted/50 p-3">
-            {logsContent ? (
-              <pre className="max-h-96 overflow-auto whitespace-pre-wrap text-sm font-mono">
-                {logsContent}
+
+            {data.log_text ? (
+                <div className="rounded-md border bg-muted/50 text-mono p-3 flex flex-col gap-4 w-full">
+                  <div className={"flex flex-row gap-2 items-center"}>
+                    <File/>
+                    <pre className={"text-sm text-ellipsis"}>{data.log_name}</pre>
+                    {logsBlob && (
+                        <Button asChild className={"ml-auto cursor-default"} variant={"outline"} size={"icon-lg"}><a download={data.log_name ?? "logs.log"} href={window.URL.createObjectURL(logsBlob)}><Download/></a></Button>
+                    )}
+                  </div>
+              <pre className="max-h-[100lh] text-muted-foreground overflow-auto overflow-x-scroll max-w-full whitespace-pre-wrap text-sm font-mono">
+                {data.log_text}
               </pre>
+                </div>
+
             ) : (
-              <p className="text-sm text-muted-foreground">
-                No logs available yet.
-              </p>
+              <Empty className={"border border-dashed bg-muted/50"}>
+                <EmptyHeader>
+                  <EmptyMedia variant={"icon"}>
+                    <Scroll/>
+                  </EmptyMedia>
+                  <EmptyTitle>No logs.</EmptyTitle>
+                </EmptyHeader>
+                <EmptyContent>
+                  <EmptyDescription>No logs available yet.</EmptyDescription>
+                </EmptyContent>
+              </Empty>
             )}
-          </div>
         </CardContent>
       </Card>
     </div>
