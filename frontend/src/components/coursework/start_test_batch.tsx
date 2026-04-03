@@ -54,7 +54,7 @@ export default function StartTestBatchPopup({
   const image_name = available_images.find(
     (i) => i.id === cw_engine_data.base_image_id,
   );
-  const [notificationsEnabled, setNotificationsEnabled] = useState<boolean>(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState<boolean>(true);
   const [submitting, setSubmitting] = useState(false);
   if (!image_name) {
     // undefined image!!
@@ -64,6 +64,7 @@ export default function StartTestBatchPopup({
   const start_test_run = async () => {
     const repo_ids = Object.keys(rowSelection);
     setSubmitting(true);
+    console.log(notificationsEnabled);
     try {
       const d = await send_test_run_start_req(courseworkId, repo_ids, notificationsEnabled);
       toast.success(`${d.started} test runs started successfully; ${d.failed} runs failed to start.`);
