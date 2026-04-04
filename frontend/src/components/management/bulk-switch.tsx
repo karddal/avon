@@ -364,6 +364,7 @@ export default function BulkSwitch() {
           openState={showOmitUsers}
           setOpenState={setShowOmitUsers}
           refreshKey={refreshKey}
+          deleteUsers={false}
         />
       </div>
     </div>

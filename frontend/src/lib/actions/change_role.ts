@@ -18,6 +18,9 @@ export async function change_role(
   await getRequestJWT();
   try {
     const role = newRole as AppRole;
+    if (role === "admin") {
+      throw new Error("Cannot change role to admin");
+    }
     await auth.api.setRole({
       body: {
         userId: userId,

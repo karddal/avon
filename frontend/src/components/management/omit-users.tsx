@@ -16,6 +16,7 @@ interface OmittedMembersProps {
   openState: boolean;
   setOpenState: Dispatch<SetStateAction<boolean>>;
   refreshKey: number;
+  deleteUsers: boolean;
 }
 
 type UserInfo = {
@@ -31,6 +32,7 @@ export default function OmitMembers({
   openState,
   setOpenState,
   refreshKey,
+  deleteUsers,
 }: OmittedMembersProps) {
   const [users, setUsers] = useState<UserInfo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -74,10 +76,14 @@ export default function OmitMembers({
           <div className="flex-1 flex flex-col bg-background border rounded-lg shadow-sm overflow-hidden">
             <div className="p-6 border-b">
               <DialogTitle className="text-base font-semibold">
-                Omit users from deletion
+                {deleteUsers
+                  ? "Omit users from deletion"
+                  : "Omit users from transfer"}
               </DialogTitle>
               <p className="text-sm text-muted-foreground mt-1">
-                Select users to be omitted from deletion
+                {deleteUsers
+                  ? "Select users to be omitted from deletion"
+                  : "Select users to be omitted from transfer"}
               </p>
             </div>
             <div className="flex-1 overflow-y-auto p-4">

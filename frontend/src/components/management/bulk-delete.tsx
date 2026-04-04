@@ -200,6 +200,7 @@ export default function BulkDelete() {
         openState={showOmitUsers}
         setOpenState={setShowOmitUsers}
         refreshKey={refreshKey}
+        deleteUsers={true}
       />
     </div>
   );
