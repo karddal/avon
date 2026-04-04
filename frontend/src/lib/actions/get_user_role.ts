@@ -1,26 +1,33 @@
 "use server";
 
+import { headers } from "next/headers";
+import { auth } from "../auth";
 import { getRequestJWT } from "../auth-utils";
 
-export async function get_user_role(userId: string): Promise<string> {
-  const token = await getRequestJWT();
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/unit_enrollment/role/${userId}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        cache: "no-cache",
-      },
-    );
-    console.log("Response status:", response);
+interface AuthUser {
+  id: string;
+  name: string;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+  role?: string; // optional fotr casting, but should always be there in the db
+  banned?: boolean;
+  banReason?: string | null;
+  banExpires?: string | Date | null;
+}
 
-    const data = await response.json();
-    console.log("Response data:", data.role);
-    return data.role ?? null;
+// Escentially it returns the role, but the interface that it returns is to trestrivctive so, cast to new type / interface and access it then
+// But that means that this new interface can have role as null or undefined (in order to do the cast), so we need to handle it in return (should never happend tho cos role is always there in the db)
+export async function get_user_role(userId: string): Promise<string> {
+  await getRequestJWT();
+  try {
+    const response = await auth.api.getUser({
+      query: {
+        id: userId,
+      },
+      headers: await headers(),
+    });
+    const newUserInterface: AuthUser = response;
+    return newUserInterface.role ?? "user";
   } catch (error) {
     console.error("Error fetching user role:", error);
     return "error";
