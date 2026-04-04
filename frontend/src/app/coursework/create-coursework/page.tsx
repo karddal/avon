@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { getRequestJWT } from "@/lib/auth-utils";
-import { IntForm, type UnitOption } from "./form";
+import { IntForm} from "./form";
+import type {UnitOption} from "@/components/coursework/create/types";
 
 async function Actual() {
   const token = await getRequestJWT();

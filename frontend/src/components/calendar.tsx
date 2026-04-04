@@ -37,6 +37,9 @@ type calendarProps = {
 export function Calendar29({ props }: { props: calendarProps }) {
   const [openOne, setOpenOne] = React.useState(false);
   const [value, setValue] = React.useState("");
+
+    const currentYear = new Date().getFullYear()
+
   return (
     <div className="flex flex-col gap-3">
       <Label htmlFor="date" className="px-1">
@@ -52,6 +55,7 @@ export function Calendar29({ props }: { props: calendarProps }) {
                   variant="outline"
                   id="date-picker"
                   className="w-50 justify-between font-normal"
+                  type="button"
                 >
                   {props.date
                     ? props.date.toLocaleDateString("en-GB", {
@@ -71,18 +75,17 @@ export function Calendar29({ props }: { props: calendarProps }) {
                   mode="single"
                   selected={props.date}
                   captionLayout="dropdown"
-                  fromYear={props.date.getFullYear()}
-                  toYear={props.date.getFullYear() + 10}
+                  fromYear={currentYear - 10}
+                  toYear={currentYear + 20}
                   onSelect={(d) => {
                     if (d) {
-                      const day = d.getDate();
-                      const month = d.getMonth();
-                      const year = d.getFullYear();
-                      const currentDate = props.date;
-                      currentDate.setDate(day);
-                      currentDate.setMonth(month);
-                      currentDate.setFullYear(year);
-                      props.setDate(currentDate);
+                        const nextDate = new Date(props.date)
+                        nextDate.setFullYear(
+                            d.getFullYear(),
+                            d.getMonth(),
+                            d.getDate(),
+                        )
+                        props.setDate(nextDate)
                     }
                     setOpenOne(false);
                   }}
@@ -101,11 +104,11 @@ export function Calendar29({ props }: { props: calendarProps }) {
               })}
               onChange={(t) => {
                 const [hours, mins] = t.target.value.split(":").map(Number);
-                const oldDate = props.date;
-                oldDate.setHours(hours);
-                oldDate.setMinutes(mins);
-                oldDate.setSeconds(0);
-                props.setDate(oldDate);
+                  const nextDate = new Date(props.date)
+                  nextDate.setHours(hours)
+                  nextDate.setMinutes(mins)
+                  nextDate.setSeconds(0)
+                  props.setDate(nextDate)
               }}
               className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
             />
@@ -125,7 +128,7 @@ export function Calendar29({ props }: { props: calendarProps }) {
               setValue(e.target.value);
               const date = parseDate(e.target.value);
               if (date) {
-                props.setDate(date);
+                  props.setDate(new Date(date))
               }
             }}
           />
