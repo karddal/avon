@@ -87,7 +87,9 @@ CREATE TABLE coursework (
                             gitlab_id VARCHAR NOT NULL,
                             template_id INTEGER,
                             PRIMARY KEY (id),
-                            FOREIGN KEY(unit_id) REFERENCES unit (id) ON DELETE CASCADE
+                            CONSTRAINT unit_id
+                                FOREIGN KEY (unit_id) REFERENCES unit (id)
+                                ON DELETE CASCADE
 );
 
 CREATE INDEX ix_coursework_name ON coursework (name);
