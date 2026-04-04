@@ -129,9 +129,16 @@ document.addEventListener('DOMContentLoaded', function () {
             backgroundColor: '#d4edda'
         },
         {
-            title: 'Sprint 7',
+            title: 'Reading Week',
             start: '2026-02-23',
             end: '2026-03-02',
+            display: 'background',
+            backgroundColor: '#cce5ff'
+        },
+        {
+            title: 'Sprint 7',
+            start: '2026-03-02',
+            end: '2026-03-09',
             display: 'background',
             backgroundColor: '#cce5ff'
         },
@@ -161,36 +168,65 @@ document.addEventListener('DOMContentLoaded', function () {
             url: '/meetings/sprint2/23-01-2026-team.html'
         },
                         {
-            title: 'Initial Sprint 3',
+            title: 'Initial Meeting',
             start: '2026-01-26',
             url: '/meetings/sprint3/26-01-2026-team.html'
         },
                                 {
-            title: 'Midweek Sprint 3',
+            title: 'Mentor Meeting',
             start: '2026-01-28',
             url: '/meetings/sprint3/28-01-2026-team.html'
         },
                                 {
-            title: 'Final Sprint 3',
+            title: 'Sprint Review',
             start: '2026-01-30',
             url: '/meetings/sprint3/30-01-2026-team.html'
         },
         {
-            title: 'Initial Sprint 4',
+            title: 'Initial Meeting',
             start: '2026-02-02',
             url: '/meetings/sprint4/02-02-2026-team.html'
         },
         {
-            title: 'Midweek Sprint 4',
+            title: 'Mentor Meeting',
             start: '2026-02-04',
             url: '/meetings/sprint4/04-02-2026-team.html'
         },
         {
-            title: 'Final Sprint 4',
+            title: 'Sprint Review',
             start: '2026-02-06',
             url: '/meetings/sprint4/06-02-2026-team.html'
         },
-
+        {
+            title: 'Initial Meeting',
+            start: '2026-02-09',
+            url: '/meetings/sprint5/09-02-2026-team.html'
+        },
+        {
+            title: 'Mentor Meeting',
+            start: '2026-02-11',
+            url: '/meetings/sprint5/11-02-2026-team.html'
+        },
+        {
+            title: 'Sprint Review',
+            start: '2026-02-13',
+            url: '/meetings/sprint5/13-02-2026-team.html'
+        },
+        {
+            title: 'Initial Meeting',
+            start: '2026-03-02',
+            url: '/meetings/sprint7/02-03-2026-team.html'
+        },
+        {
+            title: 'Mentor Meeting',
+            start: '2026-03-04',
+            url: '/meetings/sprint7/04-03-2026-team.html'
+        },
+        {
+            title: 'Sprint Review',
+            start: '2026-03-06',
+            url: '/meetings/sprint7/06-03-2026-team.html'
+        },
     ]
   });
 

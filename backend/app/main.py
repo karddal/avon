@@ -17,6 +17,7 @@ from app.routers import programme
 from app.routers import unit_enrollment
 from app.core.settings import settings
 from app.core.testing import ensure_test_fixture_key_configured
+from app.routers import seeding
 
 if os.getenv("ENV") == "dev":
     env_file = ".env.dev"
@@ -46,6 +47,7 @@ app.include_router(programme.router)
 app.include_router(structure.router)
 app.include_router(project.router)
 app.include_router(notification.router)
+app.include_router(seeding.router)
 Coursework.model_rebuild()
 UnitWithCourseworks.model_rebuild()
 

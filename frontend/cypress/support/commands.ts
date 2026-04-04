@@ -97,6 +97,14 @@ Cypress.Commands.add(
   },
 );
 
+Cypress.Commands.add("resetDb", () => {
+  return cy
+    .request("POST", "http://localhost:8000/seeding/reset-app-data")
+    .its("body.status")
+    .should("eq", "ok")
+    .then(() => undefined);
+});
+
 Cypress.Commands.add("getByCy", (value: string) => {
   return cy.get(`[data-cy="${value}"]`);
 });
