@@ -1,25 +1,32 @@
 # AI Usage Policy
+
 # AI in 2025-ContinuousAssessment
 
 AI tools have been used in the following ways
- - Understanding best practices for architecting systems
- - Used to help with debugging and writing some of the frontend and backend
- - Help with complex SQL queries and how to use FastAPI/SQLModel etc idiomatically, e.g. how to model the domain
- - Template / template script for agendas
- - Used to debug code
+
+- Understanding best practices for architecting systems
+- Used to help with debugging and writing some of the frontend and backend
+- Help with complex SQL queries and how to use FastAPI/SQLModel etc idiomatically, e.g. how to model the domain
+- Template / template script for agendas
+- Used to debug code
 
 AI tools used
- - ChatGPT
- - Claude
- - Gemini
- - Perplexity
+
+- ChatGPT
+- Claude
+- Gemini
+- Perplexity
 
 ## Everyone
+
 - Used when setting up AWS, how to do it, creating Dockerfiles
 
 ## Specifics per person
+
 ### Mihaly
+
 **Tools used**
+
 - ChatGPT
 - Claude
 - Gemini
@@ -35,13 +42,14 @@ Engine prototyping - For the initial prototype test runner (not merged), used to
 
 Debugging and setting up deployment - Very helpful when setting up deployment to AWS to explain things like how to setup the connections. A specific example was when I was trying to debug why sql queries weren't working with a cryptic error. With the error message and the code, it identified that in Postges you can't use ? for placeholders, you have to use $1. This is something that I didn't know about and wouldn't have found. It also suggested an improved way of sharing Postgres pools using a global variable.
 
-Used also when debugging and fixing the seed script - example prompt: ```What does this error mean? detail: [ { type: 'model_attributes_type', loc: [Array], msg: 'Input should be a valid dictionary or object to extract fields from', input: '{"name":"Year 1 Computer Science 2025-2026","start_date":"2025-09-10","end_date":"2026-05-30"}' } ] Here is the api spec example { "name": "string", "start_date": "2026-02-08", "end_date": "2026-02-08" }``` 
+Used also when debugging and fixing the seed script - example prompt: `What does this error mean? detail: [ { type: 'model_attributes_type', loc: [Array], msg: 'Input should be a valid dictionary or object to extract fields from', input: '{"name":"Year 1 Computer Science 2025-2026","start_date":"2025-09-10","end_date":"2026-05-30"}' } ] Here is the api spec example { "name": "string", "start_date": "2026-02-08", "end_date": "2026-02-08" }`
 
-```How can I clean out a full subgroup in Gitlab without deleting it using the API? So all subgroups and projects in it should be deleted.```
+`How can I clean out a full subgroup in Gitlab without deleting it using the API? So all subgroups and projects in it should be deleted.`
 
 ### Josh
 
 **Tools used**
+
 - ChatGPT
 - Claude
 - Gemini
@@ -54,13 +62,14 @@ Frontend - TailwindCSS issues and more complex Typescript functions or methods w
 
 Backend - I have used AI in the backend to produce repeatable pieces of code, saving me time rewriting similar schemas or methods with slightly different variable names and inputs. I also used it to learn more about the frameworks we were using, such as Spring Boot (before switching), and now FastAPI. FastAPI is simple enough, but some features have multiple ways of being implemented, and sometimes the docs aren't helpful. Since my focus on this project has been mainly on the frontend, my AI use in the backend has been lower than the rest of the project.
 
-Added: Have now used Claude to tell me a better way to refactor the Dockerfile creator, and Claude then helped me rewrite some of the code to use this pattern (see `frontend/src/lib/docker`). An example of a prompt I used was: `Is there a better way to find out if the tool/language is a script or package, and can you architect it please.`
+Added: Have now used Claude to tell me a better way to refactor the Dockerfile creator, and Claude then helped me rewrite some of the code to use this pattern (see `frontend/src/lib/docker`). An example of a prompt I used was: `Is there a better way to find out if the tool/language is a script or package, and can you architect it please.` Also, I have used it for help with the drag and drop style dashboard page - GPT 5.4 was really helpful in coding with me to create a good base/structure of code that allows users to add modules to their dashboard - allowing me to create dashboard modules and have a working prototype that I can style correctly.
 
 Overall, the use of AI for me has been majority frontend, and has been mostly for time-saving reasons, allowing me to focus more on the actual features that require human insight and reasoning, such as the UI flow and accessibility, as well as the actual codebase looking professional and easy to extend.
 
 ### Rishi
 
 **Tools used**
+
 - ChatGPT
 - Claude
 - Perplexity
@@ -76,6 +85,7 @@ Overall, I tried my best to limit the use of AI as I wanted to write code myself
 ### Jack
 
 **Tools used**
+
 - ChatGPT
 - Claude
 - Gemini
@@ -87,13 +97,14 @@ Frontend - The main area I have used generative AI is when making small adjustme
 
 Backend - When I need to write repetitive functions that do similar tasks with small differences, such as in model or schema testing I will often use AI to give me a base function in which I can copy and then adjust. Additionally, I will use it to make repetitive changes to a file, for example if I need to change the name of a variable in all functions within a file.
 
-Setup - Certain libraries and tools I'm not familiar with, in these cases I have mainly using their respective docs; however when there is a gap in the areas the docs cover, or I am running into an obscure error I will consult AI and google to learn about this gap that isn't covered and/or fix the error. 
+Setup - Certain libraries and tools I'm not familiar with, in these cases I have mainly using their respective docs; however when there is a gap in the areas the docs cover, or I am running into an obscure error I will consult AI and google to learn about this gap that isn't covered and/or fix the error.
 
 Overall, I mainly use AI as a tool for faster, more specific searches for my scenario as opposed to google. I also use it as a tool to do repetitive tasks that would take me an unnecessarily long time to complete.
 
 ### Yuxuan
 
 **Tools used**
+
 - ChatGPT
 - Claude
 - Gemini
