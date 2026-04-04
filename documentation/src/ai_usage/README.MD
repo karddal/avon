@@ -69,6 +69,8 @@ I found that it was useful in that it taught me about the pattern and gave me a 
 
 I also used GH Copilot for autocompletion sometimes to save time.
 
+`How can I clean out a full subgroup in Gitlab without deleting it using the API? So all subgroups and projects in it should be deleted.`
+
 ### Josh
 
 **Tools used**
@@ -85,7 +87,7 @@ Frontend - TailwindCSS issues and more complex Typescript functions or methods w
 
 Backend - I have used AI in the backend to produce repeatable pieces of code, saving me time rewriting similar schemas or methods with slightly different variable names and inputs. I also used it to learn more about the frameworks we were using, such as Spring Boot (before switching), and now FastAPI. FastAPI is simple enough, but some features have multiple ways of being implemented, and sometimes the docs aren't helpful. Since my focus on this project has been mainly on the frontend, my AI use in the backend has been lower than the rest of the project.
 
-Added: Have now used Claude to tell me a better way to refactor the Dockerfile creator, and Claude then helped me rewrite some of the code to use this pattern (see `frontend/src/lib/docker`). An example of a prompt I used was: `Is there a better way to find out if the tool/language is a script or package, and can you architect it please.`
+Added: Have now used Claude to tell me a better way to refactor the Dockerfile creator, and Claude then helped me rewrite some of the code to use this pattern (see `frontend/src/lib/docker`). An example of a prompt I used was: `Is there a better way to find out if the tool/language is a script or package, and can you architect it please.` Also, I have used it for help with the drag and drop style dashboard page - GPT 5.4 was really helpful in coding with me to create a good base/structure of code that allows users to add modules to their dashboard - allowing me to create dashboard modules and have a working prototype that I can style correctly.
 
 Overall, the use of AI for me has been majority frontend, and has been mostly for time-saving reasons, allowing me to focus more on the actual features that require human insight and reasoning, such as the UI flow and accessibility, as well as the actual codebase looking professional and easy to extend.
 
