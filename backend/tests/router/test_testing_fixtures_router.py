@@ -16,7 +16,7 @@ from app.routers.testing_fixtures import router
 
 @pytest.fixture
 def testing_fixture_client(monkeypatch):
-    monkeypatch.setattr(settings, "testing_mode", True)
+    monkeypatch.setattr(settings, "enable_test_fixtures", True)
     monkeypatch.setattr(settings, "test_fixture_key", "fixture-key")
 
     engine = create_engine(
@@ -42,13 +42,16 @@ def testing_fixture_client(monkeypatch):
     SQLModel.metadata.drop_all(engine)
 
 
-def test_testing_fixtures_not_mounted_when_testing_mode_disabled(client):
+def test_testing_fixtures_not_mounted_when_testing_mode_disabled(client, monkeypatch):
+    monkeypatch.setattr(settings, "enable_test_fixtures", False)
+
     response = client.post("/testing/fixtures/reset-domain")
+
     assert response.status_code == 404
 
 
 def test_ensure_test_fixture_key_configured_requires_key(monkeypatch):
-    monkeypatch.setattr(settings, "testing_mode", True)
+    monkeypatch.setattr(settings, "enable_test_fixtures", True)
     monkeypatch.setattr(settings, "test_fixture_key", None)
 
     with pytest.raises(RuntimeError, match="TEST_FIXTURE_KEY"):

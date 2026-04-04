@@ -8,6 +8,10 @@ os.environ["JWKS_URL"] = "http://testserver/jwks"
 os.environ["ACCESS_TOKEN_EXPIRY_MINUTES"] = "60"
 os.environ["CORS_ORIGIN"] = "http://testserver"
 os.environ["IGNORE_AUTH"] = "True"
+os.environ["TEST_FIXTURE_KEY"] = "test"
+os.environ["ENABLE_TEST_FIXTURES"] = "True"
+os.environ["ALLOW_HISTORICAL_SEED_DATA"] = "False"
+
 
 from app.core.security import get_bearer
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer

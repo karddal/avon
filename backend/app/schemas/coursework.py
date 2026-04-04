@@ -1,10 +1,10 @@
 from typing import Annotated, Literal
-import os
 import re
 from uuid import UUID
 import datetime
 
 from pydantic import AfterValidator, BaseModel, ConfigDict
+from app.core.settings import settings
 
 
 def is_valid_name(name: str) -> str:
@@ -22,12 +22,15 @@ def is_valid_description(description: str) -> str:
 
 
 def is_valid_due_date(date: datetime.datetime) -> datetime.datetime:
-    if os.getenv("TESTING_MODE") == "True":
+    if settings.allow_historical_seed_data:
         return date
-    if date.tzinfo is None:
-        date = date.replace(tzinfo=datetime.timezone.utc)
 
-    now = datetime.datetime.now(datetime.timezone.utc)
+    if date.tzinfo is None:
+        now = datetime.datetime.now()
+    else:
+        now = datetime.datetime.now(datetime.timezone.utc)
+        date = date.astimezone(datetime.timezone.utc)
+
     one_year_onwards = now + datetime.timedelta(days=365)
 
     if date <= now:
@@ -77,7 +80,7 @@ class CourseworkCreate(BaseModel):
     description: Description
     unit_id: UUID
     due_date: DueDate
-    colour: str
+    colour: Colour
 
 class CourseworkTemplateFile(BaseModel):
     id: str
@@ -91,7 +94,7 @@ class CourseworkUpdate(BaseModel):
     description: Description | None = None
     unit_id: UUID | None = None
     due_date: DueDate | None = None
-    colour: str | None = None
+    colour: Colour | None = None
 
 
 class CourseworkDelete(BaseModel):

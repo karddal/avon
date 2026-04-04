@@ -53,7 +53,7 @@ UnitWithCourseworks.model_rebuild()
 
 app.include_router(unit_enrollment.router)
 
-if settings.testing_mode:
+if settings.enable_test_fixtures:
     from app.routers import testing_fixtures
 
     ensure_test_fixture_key_configured()
