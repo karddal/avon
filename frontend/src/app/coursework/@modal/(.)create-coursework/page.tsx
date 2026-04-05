@@ -1,8 +1,8 @@
 import { Suspense } from "react";
-import {IntForm} from "@/app/coursework/create-coursework/form";
+import { IntForm } from "@/app/coursework/create-coursework/form";
+import type { UnitOption } from "@/components/coursework/create/types";
 import ModalShell from "@/components/coursework/modal-shell";
 import { getRequestJWT } from "@/lib/auth-utils";
-import {UnitOption} from "@/components/coursework/create/types";
 
 async function Actual() {
   const token = await getRequestJWT();
