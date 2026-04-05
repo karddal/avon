@@ -1,10 +1,10 @@
 "use client";
 
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { X } from "lucide-react";
 import { useRef } from "react";
 import { CourseworkCreateCloseContext } from "@/components/coursework/coursework-create-close";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import {X} from "lucide-react";
 
 export default function ModalShell({
   children,
@@ -44,23 +44,23 @@ export default function ModalShell({
             <DialogTitle>Create coursework</DialogTitle>
           </VisuallyHidden>
 
-            <button
-                type="button"
-                aria-label="Close"
-                className="absolute top-4 right-4 z-50 inline-flex h-8 w-8 items-center justify-center rounded-md border border-input bg-background/90 text-muted-foreground transition hover:text-foreground"
-                onMouseDown={(e) => {
-                    e.preventDefault();
-                }}
-                onClick={() => {
-                    leavePage();
-                }}
-            >
-                <X className="h-4 w-4" />
-            </button>
+          <button
+            type="button"
+            aria-label="Close"
+            className="absolute top-4 right-4 z-50 inline-flex h-8 w-8 items-center justify-center rounded-md border border-input bg-background/90 text-muted-foreground transition hover:text-foreground"
+            onMouseDown={(e) => {
+              e.preventDefault();
+            }}
+            onClick={() => {
+              leavePage();
+            }}
+          >
+            <X className="h-4 w-4" />
+          </button>
 
-            <div className="max-h-[90vh] overflow-x-hidden overflow-y-auto overscroll-contain">
-                {children}
-            </div>
+          <div className="max-h-[90vh] overflow-x-hidden overflow-y-auto overscroll-contain">
+            {children}
+          </div>
         </DialogContent>
       </Dialog>
     </CourseworkCreateCloseContext.Provider>

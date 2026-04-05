@@ -1,8 +1,8 @@
 "use client";
 
-import type {FormProps} from "@/components/coursework/create/types";
-import {CourseworkCreateForm} from "@/components/coursework/create/coursework-create-form";
+import { CourseworkCreateForm } from "@/components/coursework/create/coursework-create-form";
+import type { FormProps } from "@/components/coursework/create/types";
 
 export const IntForm = ({ units }: FormProps) => {
-    return <CourseworkCreateForm units={units} />
-}
+  return <CourseworkCreateForm units={units} />;
+};

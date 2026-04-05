@@ -38,7 +38,7 @@ export function Calendar29({ props }: { props: calendarProps }) {
   const [openOne, setOpenOne] = React.useState(false);
   const [value, setValue] = React.useState("");
 
-    const currentYear = new Date().getFullYear()
+  const currentYear = new Date().getFullYear();
 
   return (
     <div className="flex flex-col gap-3">
@@ -79,13 +79,13 @@ export function Calendar29({ props }: { props: calendarProps }) {
                   toYear={currentYear + 20}
                   onSelect={(d) => {
                     if (d) {
-                        const nextDate = new Date(props.date)
-                        nextDate.setFullYear(
-                            d.getFullYear(),
-                            d.getMonth(),
-                            d.getDate(),
-                        )
-                        props.setDate(nextDate)
+                      const nextDate = new Date(props.date);
+                      nextDate.setFullYear(
+                        d.getFullYear(),
+                        d.getMonth(),
+                        d.getDate(),
+                      );
+                      props.setDate(nextDate);
                     }
                     setOpenOne(false);
                   }}
@@ -104,11 +104,11 @@ export function Calendar29({ props }: { props: calendarProps }) {
               })}
               onChange={(t) => {
                 const [hours, mins] = t.target.value.split(":").map(Number);
-                  const nextDate = new Date(props.date)
-                  nextDate.setHours(hours)
-                  nextDate.setMinutes(mins)
-                  nextDate.setSeconds(0)
-                  props.setDate(nextDate)
+                const nextDate = new Date(props.date);
+                nextDate.setHours(hours);
+                nextDate.setMinutes(mins);
+                nextDate.setSeconds(0);
+                props.setDate(nextDate);
               }}
               className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
             />
@@ -128,7 +128,7 @@ export function Calendar29({ props }: { props: calendarProps }) {
               setValue(e.target.value);
               const date = parseDate(e.target.value);
               if (date) {
-                  props.setDate(new Date(date))
+                props.setDate(new Date(date));
               }
             }}
           />
