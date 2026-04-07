@@ -9,7 +9,7 @@ You may see several pages in the table of contents, to help you get your bearing
   : contains information about how the Avon project is laid out, the different modules, and how they communicate.
 
 [Project structure](project)
-  : contains a description of the repo layout, and where to find everything
+  : contains a description of the repo layout, and where to find everything.
 
 [Future plans](future)
-  : lays out the state of the project, and contains some suggestions on where the project can go next
+  : lays out the state of the project, and contains some suggestions on where the project can go next.
