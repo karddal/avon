@@ -12,7 +12,7 @@ export type Trigger = "initial" | "retry" | "manual_rerun";
 type TestRunFullServerDetails = {
   id: string;
   coursework_id: string;
-  ecs_task_arn: string;
+  ecs_task_arn: string | null;
   gitlab_repo_id: string;
   git_url: string;
   task_def: string;
@@ -36,7 +36,7 @@ type ServerFailedResponse = {
 export type TestRunFullDetails = {
   id: string;
   coursework_id: string;
-  ecs_task_arn: string;
+  ecs_task_arn: string | null;
   gitlab_repo_id: string;
   git_url: string;
   task_def: string;

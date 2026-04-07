@@ -2,9 +2,9 @@ import { format, formatDistanceToNow } from "date-fns";
 import {
   AlertCircle,
   Bell,
-  BellOff,
+  BellOff, Cable,
   Calendar,
-  CheckCircle2,
+  CheckCircle2, CircleQuestionMark,
   Clock,
   Copy,
   Download,
@@ -38,6 +38,7 @@ import {
   type TestRunFullDetails,
 } from "@/lib/actions/test_run/cw-get-specific-test-run";
 import { cn } from "@/lib/utils";
+import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
 
 export default function TestRunComponent({
   test_run_id,
@@ -396,15 +397,11 @@ export default function TestRunComponent({
 
         <div className="rounded-md border bg-accent/40 p-3">
           <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-            {data.notifications_enabled ? (
-              <Bell className="h-3 w-3" />
-            ) : (
-              <BellOff className="h-3 w-3" />
-            )}
-            <span>Notifications</span>
+            <Cable className="h-3 w-3" />
+            <span>Tester Exit Code</span>
           </div>
-          <div className="text-sm font-semibold">
-            {data.notifications_enabled ? "Enabled" : "Disabled"}
+          <div className="text-sm font-semibold font-mono">
+            {data.tester_exit_code !== null ? data.tester_exit_code : "No exit code available yet."}
           </div>
         </div>
 
@@ -426,7 +423,7 @@ export default function TestRunComponent({
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <GitBranch className="h-4 w-4" />
-            Repository Information
+            Key Information
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -464,6 +461,20 @@ export default function TestRunComponent({
 
           <div className="flex items-center justify-between gap-2 rounded-md border bg-muted/50 p-3">
             <div className="flex-1 min-w-0">
+              <div className="text-xs text-muted-foreground mb-1">Test Run ID</div>
+              <div className="text-sm font-mono truncate">{data.id}</div>
+            </div>
+            <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => copyToClipboard(data.id, "Run ID")}
+            >
+              <Copy className="h-3 w-3" />
+            </Button>
+          </div>
+
+          <div className="flex items-center justify-between gap-2 rounded-md border bg-muted/50 p-3">
+            <div className="flex-1 min-w-0">
               <div className="text-xs text-muted-foreground mb-1">Batch ID</div>
               <div className="text-sm font-mono truncate">{data.batch_id}</div>
             </div>
@@ -487,32 +498,71 @@ export default function TestRunComponent({
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="flex items-start justify-between gap-2 rounded-md border bg-muted/50 p-3">
+          <div className="flex items-center justify-between gap-2 rounded-md border bg-muted/50 p-3">
             <div className="flex-1 min-w-0">
               <div className="text-xs text-muted-foreground mb-1">
                 ECS Task ARN
               </div>
               <div className="text-sm font-mono break-all">
-                {data.ecs_task_arn}
+                {data.ecs_task_arn ? data.ecs_task_arn : "No ARN found."}
               </div>
             </div>
+            <HoverCard openDelay={10} closeDelay={100}>
+              <HoverCardTrigger asChild>
+                <CircleQuestionMark
+                    className={"text-muted-foreground"}
+                />
+              </HoverCardTrigger>
+              <HoverCardContent
+                  side={"right"}
+                  className={"flex w-64 flex-col gap-0.5 text-sm"}
+              >
+                <div className={"font-medium"}>
+                  What is this?
+                </div>
+                <div>
+                  This is the ECS task ARN of the container used for this testing run. You may be asked
+                  to provide it if you contact support.
+                </div>
+              </HoverCardContent>
+            </HoverCard>
             <Button
               variant="ghost"
               size="sm"
+              disabled={data.ecs_task_arn == null}
               className="flex-shrink-0"
-              onClick={() => copyToClipboard(data.ecs_task_arn, "ECS Task ARN")}
+              onClick={() => copyToClipboard(data.ecs_task_arn ?? "", "ECS Task ARN")}
             >
               <Copy className="h-3 w-3" />
             </Button>
           </div>
 
-          <div className="flex items-start justify-between gap-2 rounded-md border bg-muted/50 p-3">
+          <div className="flex items-center justify-between gap-2 rounded-md border bg-muted/50 p-3">
             <div className="flex-1 min-w-0">
               <div className="text-xs text-muted-foreground mb-1">
                 Task Definition
               </div>
               <div className="text-sm font-mono break-all">{data.task_def}</div>
             </div>
+            <HoverCard openDelay={10} closeDelay={100}>
+              <HoverCardTrigger asChild>
+                <CircleQuestionMark
+                    className={"text-muted-foreground"}
+                />
+              </HoverCardTrigger>
+              <HoverCardContent
+                  side={"right"}
+                  className={"flex w-64 flex-col gap-0.5 text-sm"}
+              >
+                <div className={"font-medium"}>
+                  What is this?
+                </div>
+                <div>
+                  This is the name of the AWS task definition used to run the test run.
+                  You may be asked to provide it if you contact support.
+                </div>
+              </HoverCardContent>
+            </HoverCard>
             <Button
               variant="ghost"
               size="sm"
@@ -523,7 +573,7 @@ export default function TestRunComponent({
             </Button>
           </div>
 
-          <div className="flex items-start justify-between gap-2 rounded-md border bg-muted/50 p-3">
+          <div className="flex items-center justify-between gap-2 rounded-md border bg-muted/50 p-3">
             <div className="flex-1 min-w-0">
               <div className="text-xs text-muted-foreground mb-1">
                 Tester Command
@@ -532,6 +582,25 @@ export default function TestRunComponent({
                 {data.tester_command}
               </div>
             </div>
+            <HoverCard openDelay={10} closeDelay={100}>
+              <HoverCardTrigger asChild>
+                <CircleQuestionMark
+                    className={"text-muted-foreground"}
+                />
+              </HoverCardTrigger>
+              <HoverCardContent
+                  side={"right"}
+                  className={"flex w-64 flex-col gap-0.5 text-sm"}
+              >
+                <div className={"font-medium"}>
+                  What is this?
+                </div>
+                <div>
+                  This command was executed in the root folder (contains .git/ folder) of the cloned student repo. It was specified
+                  in the Engine Configuration.
+                </div>
+              </HoverCardContent>
+            </HoverCard>
             <Button
               variant="ghost"
               size="sm"
@@ -554,8 +623,7 @@ export default function TestRunComponent({
         <CardContent className="space-y-3">
           <div className="flex items-center justify-between gap-2">
             <p className="text-sm text-muted-foreground">
-              Logs will be fetched from S3 using a pre-signed URL when
-              available.
+              This is a record of everything output by the command you specified.
             </p>
             {/*<Button*/}
             {/*  variant="outline"*/}
@@ -584,7 +652,7 @@ export default function TestRunComponent({
             <div className="rounded-md border bg-muted/50 text-mono p-3 flex flex-col gap-4 w-full">
               <div className={"flex flex-row gap-2 items-center"}>
                 <File />
-                <pre className={"text-sm text-ellipsis"}>{data.log_name}</pre>
+                <span className={"text-sm text-ellipsis"}>{data.log_name}</span>
                 {logsBlob && (
                   <Button
                     asChild
