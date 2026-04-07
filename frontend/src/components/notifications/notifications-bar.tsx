@@ -20,7 +20,7 @@ export default function NotificationBar() {
           <NotificationsBellIcon />
         </Suspense>
       </DialogTrigger>
-      <DialogContent className={""}>
+      <DialogContent className={"min-w-screen md:min-w-[70%]"}>
         <DialogHeader>
           <DialogTitle className={"flex flex-row items-center gap-2"}>
             <Mailbox />
