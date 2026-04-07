@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Editor from "@monaco-editor/react";
+import { useTheme } from "next-themes"
 import {
   type Dispatch,
   type SetStateAction,
@@ -80,6 +81,8 @@ export default function EditUnit({
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [alertText, setAlertText] = useState<string>("");
   const [confirmDiscardOpen, setConfirmDiscardOpen] = useState(false);
+  const { resolvedTheme } = useTheme()
+  const isDark = resolvedTheme === "dark"
 
   const router = useRouter();
   const formSchema = z.object({
@@ -271,6 +274,7 @@ export default function EditUnit({
                           defaultLanguage="markdown"
                           value={field.value}
                           onChange={(v) => field.onChange(v ?? "")}
+                          theme={isDark ? "vs-dark" : "vs-light"}
                           options={{
                             minimap: { enabled: false },
                             wordWrap: "on",
@@ -278,6 +282,10 @@ export default function EditUnit({
                             folding: false,
                             scrollBeyondLastLine: false,
                             fontSize: 14,
+                            quickSuggestions: false,
+                            suggestOnTriggerCharacters: false,
+                            wordBasedSuggestions: "off",
+                            parameterHints: { enabled: false },
                           }}
                         />
                       </div>
