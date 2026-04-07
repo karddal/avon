@@ -81,7 +81,7 @@ function TestRunActions({
           </DialogTrigger>
         </DropdownMenuContent>
       </DropdownMenu>
-      <DialogContent className="max-w-full! lg:max-w-[75%]! w-full max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogContent className="max-w-full! lg:max-w-[75%]! w-full max-h-[90vh] xs:max-h-screen overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>Test run</DialogTitle>
         </DialogHeader>

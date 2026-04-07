@@ -193,7 +193,7 @@ class TestRunBasicInfo(BaseModel):
 class TestRunFullInfo(BaseModel):
         id: UUID
         coursework_id: UUID
-        ecs_task_arn: str
+        ecs_task_arn: str | None
         gitlab_repo_id: str
         git_url: str
         task_def: str

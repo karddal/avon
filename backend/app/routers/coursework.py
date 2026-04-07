@@ -137,7 +137,7 @@ async def get_test_run(
                 log_text = read.decode("utf-8")
     print(log_text)
 
-
+    print(tester_exit_code)
     return TestRunFullInfo(
                 id=test_run.id, coursework_id=test_run.coursework_id, ecs_task_arn=test_run.ecs_task_arn, gitlab_repo_id=test_run.gitlab_repo_id, git_url=test_run.git_url, task_def=test_run.task_def, tester_command=test_run.tester_command, status=test_run.status, completed_at=test_run.completed_at,
         trigger=test_run.trigger, created_at=test_run.created_at, notifications_enabled=test_run.notifications_enabled, started_by=test_run.started_by, batch_id=test_run.batch_id, tester_exit_code=tester_exit_code, log_name=log_name,
@@ -248,20 +248,21 @@ async def start_test_batch(
                         }]
                     }
                 )
-
+                arn = None
                 if len(t["failures"]) > 0:
                     logger.error(f"Failed to start aws task for {repo} on coursework {coursework}: {t["failures"]}")
                     s: status_type = "failed"
                     fails += 1
                 else:
                     s: status_type = "running"
+                    arn = t["tasks"][0]["taskArn"]
                     successful_starts += 1
                     logger.debug(f"Started test run for {repo} on coursework {coursework}")
 
                 db_test_run = TestRun(
                     id=test_run_id,
                     coursework_id=coursework.id,
-                    ecs_task_arn="stub",
+                    ecs_task_arn=arn,
                     gitlab_repo_id=repo,
                     git_url=repo_url,
                     task_def=coursework.base_image.task_definition,
