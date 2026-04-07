@@ -1,10 +1,10 @@
 import { format, formatDistanceToNow } from "date-fns";
 import {
   AlertCircle,
-  Bell,
-  BellOff, Cable,
+  Cable,
   Calendar,
-  CheckCircle2, CircleQuestionMark,
+  CheckCircle2,
+  CircleQuestionMark,
   Clock,
   Copy,
   Download,
@@ -32,13 +32,17 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Spinner } from "@/components/ui/spinner";
 import {
   get_test_run_for_cw,
   type TestRunFullDetails,
 } from "@/lib/actions/test_run/cw-get-specific-test-run";
 import { cn } from "@/lib/utils";
-import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
 
 export default function TestRunComponent({
   test_run_id,
@@ -401,7 +405,9 @@ export default function TestRunComponent({
             <span>Tester Exit Code</span>
           </div>
           <div className="text-sm font-semibold font-mono">
-            {data.tester_exit_code !== null ? data.tester_exit_code : "No exit code available yet."}
+            {data.tester_exit_code !== null
+              ? data.tester_exit_code
+              : "No exit code available yet."}
           </div>
         </div>
 
@@ -461,13 +467,15 @@ export default function TestRunComponent({
 
           <div className="flex items-center justify-between gap-2 rounded-md border bg-muted/50 p-3">
             <div className="flex-1 min-w-0">
-              <div className="text-xs text-muted-foreground mb-1">Test Run ID</div>
+              <div className="text-xs text-muted-foreground mb-1">
+                Test Run ID
+              </div>
               <div className="text-sm font-mono truncate">{data.id}</div>
             </div>
             <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => copyToClipboard(data.id, "Run ID")}
+              variant="ghost"
+              size="sm"
+              onClick={() => copyToClipboard(data.id, "Run ID")}
             >
               <Copy className="h-3 w-3" />
             </Button>
@@ -509,20 +517,17 @@ export default function TestRunComponent({
             </div>
             <HoverCard openDelay={10} closeDelay={100}>
               <HoverCardTrigger asChild>
-                <CircleQuestionMark
-                    className={"text-muted-foreground"}
-                />
+                <CircleQuestionMark className={"text-muted-foreground"} />
               </HoverCardTrigger>
               <HoverCardContent
-                  side={"right"}
-                  className={"flex w-64 flex-col gap-0.5 text-sm"}
+                side={"right"}
+                className={"flex w-64 flex-col gap-0.5 text-sm"}
               >
-                <div className={"font-medium"}>
-                  What is this?
-                </div>
+                <div className={"font-medium"}>What is this?</div>
                 <div>
-                  This is the ECS task ARN of the container used for this testing run. You may be asked
-                  to provide it if you contact support.
+                  This is the ECS task ARN of the container used for this
+                  testing run. You may be asked to provide it if you contact
+                  support.
                 </div>
               </HoverCardContent>
             </HoverCard>
@@ -531,7 +536,9 @@ export default function TestRunComponent({
               size="sm"
               disabled={data.ecs_task_arn == null}
               className="flex-shrink-0"
-              onClick={() => copyToClipboard(data.ecs_task_arn ?? "", "ECS Task ARN")}
+              onClick={() =>
+                copyToClipboard(data.ecs_task_arn ?? "", "ECS Task ARN")
+              }
             >
               <Copy className="h-3 w-3" />
             </Button>
@@ -546,20 +553,17 @@ export default function TestRunComponent({
             </div>
             <HoverCard openDelay={10} closeDelay={100}>
               <HoverCardTrigger asChild>
-                <CircleQuestionMark
-                    className={"text-muted-foreground"}
-                />
+                <CircleQuestionMark className={"text-muted-foreground"} />
               </HoverCardTrigger>
               <HoverCardContent
-                  side={"right"}
-                  className={"flex w-64 flex-col gap-0.5 text-sm"}
+                side={"right"}
+                className={"flex w-64 flex-col gap-0.5 text-sm"}
               >
-                <div className={"font-medium"}>
-                  What is this?
-                </div>
+                <div className={"font-medium"}>What is this?</div>
                 <div>
-                  This is the name of the AWS task definition used to run the test run.
-                  You may be asked to provide it if you contact support.
+                  This is the name of the AWS task definition used to run the
+                  test run. You may be asked to provide it if you contact
+                  support.
                 </div>
               </HoverCardContent>
             </HoverCard>
@@ -584,20 +588,17 @@ export default function TestRunComponent({
             </div>
             <HoverCard openDelay={10} closeDelay={100}>
               <HoverCardTrigger asChild>
-                <CircleQuestionMark
-                    className={"text-muted-foreground"}
-                />
+                <CircleQuestionMark className={"text-muted-foreground"} />
               </HoverCardTrigger>
               <HoverCardContent
-                  side={"right"}
-                  className={"flex w-64 flex-col gap-0.5 text-sm"}
+                side={"right"}
+                className={"flex w-64 flex-col gap-0.5 text-sm"}
               >
-                <div className={"font-medium"}>
-                  What is this?
-                </div>
+                <div className={"font-medium"}>What is this?</div>
                 <div>
-                  This command was executed in the root folder (contains .git/ folder) of the cloned student repo. It was specified
-                  in the Engine Configuration.
+                  This command was executed in the root folder (contains .git/
+                  folder) of the cloned student repo. It was specified in the
+                  Engine Configuration.
                 </div>
               </HoverCardContent>
             </HoverCard>
@@ -623,7 +624,8 @@ export default function TestRunComponent({
         <CardContent className="space-y-3">
           <div className="flex items-center justify-between gap-2">
             <p className="text-sm text-muted-foreground">
-              This is a record of everything output by the command you specified.
+              This is a record of everything output by the command you
+              specified.
             </p>
             {/*<Button*/}
             {/*  variant="outline"*/}
