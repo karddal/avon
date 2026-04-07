@@ -28,18 +28,18 @@ export default async function UnitDescription({
   const unit: UnitData = await response.json();
 
   return (
-  <div className="flex flex-col overflow-y-auto wrap-break-word h-32 border bg-accent p-2">
-    {unit.description ? (
-      <div className="prose prose-sm max-w-none dark:prose-invert">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-          {unit.description}
-        </ReactMarkdown>
-      </div>
-    ) : (
-      <span className="text-muted-foreground italic">
-        No description available.
-      </span>
-    )}
-  </div>
-);
+    <div className="flex flex-col overflow-y-auto wrap-break-word h-32 border bg-accent p-2">
+      {unit.description ? (
+        <div className="prose prose-sm max-w-none dark:prose-invert">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {unit.description}
+          </ReactMarkdown>
+        </div>
+      ) : (
+        <span className="text-muted-foreground italic">
+          No description available.
+        </span>
+      )}
+    </div>
+  );
 }
