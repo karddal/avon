@@ -1,7 +1,5 @@
-from typing import Annotated
 from uuid import UUID
 
-from fastapi import Depends
 from sqlalchemy.orm import Session
 
 from app.models.notification import Notification
