@@ -7,24 +7,37 @@ import type { UnitModuleKey } from "@/components/modules/unit-module-registry";
 import UnitLayoutEditor from "@/components/modules/unit-layout-editor";
 import UnitRenderer from "@/components/modules/unit-renderer";
 
-
+type Lecturer = {
+  id: string;
+  name: string;
+  image: string;
+};
 
 type UnitClientProps = {
   initialLayout: GridItem[];
   availableModules: UnitModuleKey[];
   saveLayout: (layout: GridItem[]) => Promise<void>;
-  slug: string;
-  token: string;
+  unit: UnitData;
   role: string;
+  lecturers: Lecturer[];
+};
+
+type UnitData = {
+  id: string;
+  name: string;
+  description?: string;
+  colour: string;
+  unit_code: string;
+  programme_id: string;
 };
 
 export default function UnitClient({
   initialLayout,
   availableModules,
   saveLayout,
-  slug,
-  token,
+  unit,
   role,
+  lecturers,
 }: UnitClientProps) {
   const [layout, setLayout] = useState<GridItem[]>(
     initialLayout.length > 0 ? initialLayout : defaultUnitLayout,
@@ -56,7 +69,7 @@ export default function UnitClient({
         onChange={setLayout}
       />
 
-      <UnitRenderer layout={layout} slug={slug} token={token} role={role} />
+      <UnitRenderer layout={layout} unit={unit} role={role} lecturers={lecturers} />
     </div>
   );
 }

@@ -1,29 +1,24 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Suspense } from "react";
-import UnitDescription from "@/app/units/[slug]/description";
+import { DropdownCard } from "../dropdown-card";
+import Lecturers from "../units/lecturers";
 
-export default function UnitMembersModule({ slug, token }: { slug: string; token: string }) {
+type Lecturer = {
+  id: string;
+  name: string;
+  image: string;
+};
+
+export default function UnitMembersModule({ lecturers }: { lecturers: Lecturer[] }) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>
-          <div className="text-2xl">Description</div>
-          <div className="font-light">Information about the unit.</div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Suspense
-            fallback={
-            <div className="space-y-2">
-                <Skeleton className="h-2 w-full" />
-                <Skeleton className="h-20 w-full rounded-lg" />
-            </div>
-            }
-        >
-          <UnitDescription slug={slug} token={token} />
-        </Suspense>
-      </CardContent>
-    </Card>
+    <DropdownCard
+        openByDefault={true}
+        title="Unit staff"
+        desc="Lecturers and teachers appear here"
+        className={""}
+    >
+        <Lecturers lecturers={lecturers}></Lecturers>
+    </DropdownCard>
   );
 }

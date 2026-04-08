@@ -3,7 +3,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Suspense } from "react";
 import UnitDescription from "@/app/units/[slug]/description";
 
-export default function UnitDescriptionModule({ slug, token }: { slug: string; token: string }) {
+type UnitData = {
+  id: string;
+  name: string;
+  description?: string;
+  colour: string;
+  unit_code: string;
+  programme_id: string;
+};
+
+export default function UnitDescriptionModule({ unit }: { unit: UnitData }) {
   return (
     <Card>
       <CardHeader>
@@ -21,7 +30,7 @@ export default function UnitDescriptionModule({ slug, token }: { slug: string; t
             </div>
             }
         >
-          <UnitDescription slug={slug} token={token} />
+          <UnitDescription unit={unit}/>
         </Suspense>
       </CardContent>
     </Card>

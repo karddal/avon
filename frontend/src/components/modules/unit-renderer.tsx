@@ -5,11 +5,26 @@ import { unitModuleRegistry } from "@/components/modules/unit-module-registry";
 import type { GridItem } from "@/components/modules/unit-types";
 import { cn } from "@/lib/utils";
 
+type Lecturer = {
+  id: string;
+  name: string;
+  image: string;
+};
+
 type UnitRendererProps = {
   layout: GridItem[];
-  slug: string;
-  token: string;
+  unit: UnitDataProps;
   role: string;
+  lecturers: Lecturer[];
+};
+
+type UnitDataProps = {
+  id: string;
+  name: string;
+  description?: string;
+  colour: string;
+  unit_code: string;
+  programme_id: string;
 };
 
 const GRID_ROWS = 3;
@@ -111,7 +126,7 @@ function getResponsiveMdLayout(layout: GridItem[]) {
   });
 }
 
-export default function UnitRenderer({ layout, slug, token, role }: UnitRendererProps) {
+export default function UnitRenderer({ layout, unit, role, lecturers }: UnitRendererProps) {
   const [isDesktopLayout, setIsDesktopLayout] = useState(false);
 
   useEffect(() => {
@@ -183,7 +198,7 @@ export default function UnitRenderer({ layout, slug, token, role }: UnitRenderer
               }
             >
               <div className="h-full min-h-0 overflow-visible lg:overflow-auto">
-                <Component slug={slug} token={token} role={role} />
+                <Component unit={unit} lecturers={lecturers} role={role} />
               </div>
             </div>
           );

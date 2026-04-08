@@ -7,11 +7,16 @@ import Link from "next/link";
 import UnitsCourseworkList from "@/components/units/units-coursework-list";
 import Loading from "@/app/coursework/loading";
 
+type UnitData = {
+  id: string;
+  name: string;
+  description?: string;
+  colour: string;
+  unit_code: string;
+  programme_id: string;
+};
 
-
-
-
-export default function UnitCourseworksModule({ role, slug }: { role: string; slug: string }) {
+export default function UnitCourseworksModule({ role, unit }: { role: string; unit: UnitData }) {
   return (
     <Card>
         <CardHeader>
@@ -36,7 +41,7 @@ export default function UnitCourseworksModule({ role, slug }: { role: string; sl
                 </TabsList>
                 {(role === "lecturer" || role === "admin") && (
                 <Button asChild variant={"outline"} size={"sm"}>
-                    <Link href={`/units/${slug}/create-coursework`}>
+                    <Link href={`/units/${unit.id}/create-coursework`}>
                     <ClipboardPlus />
                     Assign coursework
                     </Link>
@@ -46,7 +51,7 @@ export default function UnitCourseworksModule({ role, slug }: { role: string; sl
             <TabsContent value={"ongoing"}>
                 <Suspense fallback={<Loading />}>
                 <UnitsCourseworkList
-                    unit_id={slug}
+                    unit_id={unit.id}
                     finished={false}
                 ></UnitsCourseworkList>
                 </Suspense>
@@ -54,7 +59,7 @@ export default function UnitCourseworksModule({ role, slug }: { role: string; sl
             <TabsContent className={"w-full"} value={"finished"}>
                 <Suspense fallback={<Loading />}>
                 <UnitsCourseworkList
-                    unit_id={slug}
+                    unit_id={unit.id}
                     finished={true}
                 ></UnitsCourseworkList>
                 </Suspense>
