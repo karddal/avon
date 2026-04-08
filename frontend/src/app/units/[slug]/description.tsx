@@ -8,13 +8,12 @@ type UnitData = {
 };
 
 export default function UnitDescription({
-  unit
+  unit,
 }: {
   unit: UnitData;
 }) {
-
   return (
-    <div className="flex flex-col overflow-y-auto break-words h-32 border bg-accent p-2">
+    <div className="flex-1 min-h-0 overflow-y-auto break-words border bg-accent p-2">
       {unit.description ? (
         unit.description
       ) : (

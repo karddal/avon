@@ -24,7 +24,7 @@ function isProductionDatabase() {
 async function ensureUnitLayoutColumnExists(): Promise<void> {
   if (isProductionDatabase()) {
     await pool.query(
-      'ALTER TABLE "user" ADD COLUMN IF NOT EXISTS dashboard_layout text',
+      'ALTER TABLE "user" ADD COLUMN IF NOT EXISTS unit_layout text',
     );
     return;
   }
@@ -36,11 +36,11 @@ async function ensureUnitLayoutColumnExists(): Promise<void> {
     name: string;
   }>;
   const hasUnitLayoutColumn = columns.some(
-    (column) => column.name === "dashboard_layout",
+    (column) => column.name === "unit_layout",
   );
 
   if (!hasUnitLayoutColumn) {
-    db.exec("ALTER TABLE user ADD COLUMN dashboard_layout TEXT");
+    db.exec("ALTER TABLE user ADD COLUMN unit_layout TEXT");
   }
 }
 
@@ -49,25 +49,25 @@ async function getRawUnitLayout(userId: string): Promise<string | null> {
 
   if (isProductionDatabase()) {
     const result = await pool.query(
-      'SELECT dashboard_layout FROM "user" WHERE id = $1',
+      'SELECT unit_layout FROM "user" WHERE id = $1',
       [userId],
     );
 
     const row = result.rows[0] as
-      | { dashboard_layout: string | null }
+      | { unit_layout: string | null }
       | undefined;
-    return row?.dashboard_layout ?? null;
+    return row?.unit_layout ?? null;
   }
 
   const db = new DatabaseSync(dbPath);
   db.createSession();
 
-  const query = db.prepare("SELECT dashboard_layout FROM user WHERE id = ?");
+  const query = db.prepare("SELECT unit_layout FROM user WHERE id = ?");
   const result = query.get(userId) as
-    | { dashboard_layout: string | null }
+    | { unit_layout: string | null }
     | undefined;
 
-  return result?.dashboard_layout ?? null;
+  return result?.unit_layout ?? null;
 }
 
 export async function getUnitLayoutForCurrentUser(): Promise<GridItem[]> {
@@ -89,7 +89,7 @@ export async function saveUnitLayoutForCurrentUser(
   const parsedLayout = parseUnitLayout(JSON.stringify(layout));
 
   if (!parsedLayout) {
-    throw new Error("Invalid dashboard layout");
+    throw new Error("Invalid unit layout");
   }
 
   const serializedLayout = JSON.stringify(parsedLayout);
@@ -99,7 +99,7 @@ export async function saveUnitLayoutForCurrentUser(
 
   if (isProductionDatabase()) {
     await pool.query(
-      'UPDATE "user" SET dashboard_layout = $1, "updatedAt" = $2 WHERE id = $3',
+      'UPDATE "user" SET unit_layout = $1, "updatedAt" = $2 WHERE id = $3',
       [serializedLayout, updatedAt, session.user.id],
     );
     return;
@@ -109,7 +109,7 @@ export async function saveUnitLayoutForCurrentUser(
   db.createSession();
 
   const query = db.prepare(
-    "UPDATE user SET dashboard_layout = ?, updatedAt = ? WHERE id = ?",
+    "UPDATE user SET unit_layout = ?, updatedAt = ? WHERE id = ?",
   );
   query.run(serializedLayout, updatedAt, session.user.id);
 }

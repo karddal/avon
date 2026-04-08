@@ -1,4 +1,3 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Suspense } from "react";
 import UnitDescription from "@/app/units/[slug]/description";
@@ -14,25 +13,26 @@ type UnitData = {
 
 export default function UnitDescriptionModule({ unit }: { unit: UnitData }) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>
-          <div className="text-2xl">Description</div>
+    <div className="flex h-full min-h-0 flex-col">
+      <div className="flex flex-col space-y-1.5 p-6">
+        <div>
+          <div className="text-2xl font-semibold">Description</div>
           <div className="font-light">Information about the unit.</div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+        </div>
+      </div>
+
+      <div className="flex flex-1 min-h-0 flex-col p-6 pt-0 pb-6">
         <Suspense
-            fallback={
+          fallback={
             <div className="space-y-2">
-                <Skeleton className="h-2 w-full" />
-                <Skeleton className="h-20 w-full rounded-lg" />
+              <Skeleton className="h-2 w-full" />
+              <Skeleton className="h-20 w-full rounded-lg" />
             </div>
-            }
+          }
         >
-          <UnitDescription unit={unit}/>
+          <UnitDescription unit={unit} />
         </Suspense>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
