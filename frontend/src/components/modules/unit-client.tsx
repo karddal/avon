@@ -1,25 +1,33 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import DashboardLayoutEditor from "@/components/modules/dashboard-layout-editor";
-import DashboardRenderer from "@/components/modules/dashboard-renderer";
-import type { GridItem } from "@/components/modules/dashboard-types";
-import { defaultDashboardLayout } from "@/lib/dashboard-layout";
+import type { GridItem } from "@/components/modules/unit-types";
+import { defaultUnitLayout } from "@/lib/unit-layout";
 import type { UnitModuleKey } from "@/components/modules/unit-module-registry";
+import UnitLayoutEditor from "@/components/modules/unit-layout-editor";
+import UnitRenderer from "@/components/modules/unit-renderer";
+
+
 
 type UnitClientProps = {
   initialLayout: GridItem[];
   availableModules: UnitModuleKey[];
   saveLayout: (layout: GridItem[]) => Promise<void>;
+  slug: string;
+  token: string;
+  role: string;
 };
 
 export default function UnitClient({
   initialLayout,
   availableModules,
   saveLayout,
+  slug,
+  token,
+  role,
 }: UnitClientProps) {
   const [layout, setLayout] = useState<GridItem[]>(
-    initialLayout.length > 0 ? initialLayout : defaultDashboardLayout,
+    initialLayout.length > 0 ? initialLayout : defaultUnitLayout,
   );
   const hasMounted = useRef(false);
 
@@ -48,7 +56,7 @@ export default function UnitClient({
         onChange={setLayout}
       />
 
-      <UnitRenderer layout={layout} />
+      <UnitRenderer layout={layout} slug={slug} token={token} role={role} />
     </div>
   );
 }
