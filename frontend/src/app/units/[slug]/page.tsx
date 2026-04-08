@@ -164,7 +164,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
       </div>
       <div className="flex min-h-0 mt-4 md:mt-0 mb-0 flex-1 flex-col space-y-4 md:space-y-6">
         <UnitClient
-          initialLayout={defaultUnitLayout}
+          initialLayout={savedLayout}
           availableModules={availableUnitModules}
           saveLayout={saveUnitLayoutForCurrentUser}
           unit={data}

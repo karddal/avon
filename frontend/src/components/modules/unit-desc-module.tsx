@@ -13,7 +13,7 @@ type UnitData = {
 
 export default function UnitDescriptionModule({ unit }: { unit: UnitData }) {
   return (
-    <div className="flex h-full min-h-0 flex-col">
+    <div className="flex h-[18rem] min-h-0 flex-col lg:h-full">
       <div className="flex flex-col space-y-1.5 p-6">
         <div>
           <div className="text-2xl font-semibold">Description</div>
@@ -21,7 +21,7 @@ export default function UnitDescriptionModule({ unit }: { unit: UnitData }) {
         </div>
       </div>
 
-      <div className="flex flex-1 min-h-0 flex-col p-6 pt-0 pb-6">
+      <div className="min-h-0 flex-1 overflow-hidden p-6 pt-0 pb-6">
         <Suspense
           fallback={
             <div className="space-y-2">

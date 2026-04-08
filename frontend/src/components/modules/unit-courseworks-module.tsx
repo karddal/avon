@@ -5,40 +5,15 @@ import { ClipboardPlus } from "lucide-react";
 import Link from "next/link";
 import UnitsCourseworkList from "@/components/units/units-coursework-list";
 import Loading from "@/app/coursework/loading";
-
-type UnitData = {
-  id: string;
-  name: string;
-  description?: string;
-  colour: string;
-  unit_code: string;
-  programme_id: string;
-};
-
-type courseworkData = {
-  id: string;
-  name: string;
-  description: string;
-  colour: string;
-  creation_date: string;
-  due_date: string;
-};
-
-type courseworkResponse = {
-  courseworks: courseworkData[];
-};
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function UnitCourseworksModule({
   role,
   unit,
   courseworks,
-}: {
-  role: string;
-  unit: UnitData;
-  courseworks: courseworkResponse;
-}) {
+}: any) {
   return (
-    <div>
+    <div className="flex h-[18rem] min-h-0 flex-col lg:h-full">
       <div className="flex flex-col space-y-1.5 p-6">
         <div>
           <div className="text-2xl font-semibold">Coursework</div>
@@ -48,9 +23,9 @@ export default function UnitCourseworksModule({
         </div>
       </div>
 
-      <div className="w-full flex flex-col p-6 pt-0">
-        <Tabs defaultValue="ongoing">
-          <div className="flex flex-row flex-wrap justify-between items-center">
+      <div className="min-h-0 flex-1 overflow-hidden p-6 pt-0 pb-6">
+        <Tabs defaultValue="ongoing" className="flex h-full min-h-0 flex-col">
+          <div className="mb-3 flex shrink-0 flex-row justify-between items-center">
             <TabsList>
               <TabsTrigger value="ongoing">Ongoing</TabsTrigger>
               <TabsTrigger value="finished">Finished</TabsTrigger>
@@ -66,24 +41,28 @@ export default function UnitCourseworksModule({
             )}
           </div>
 
-          <TabsContent value="ongoing">
-            <Suspense fallback={<Loading />}>
-              <UnitsCourseworkList
-                courseworks={courseworks}
-                finished={false}
-                role={role}
-              />
-            </Suspense>
+          <TabsContent value="ongoing" className="mt-0 min-h-0 flex-1">
+            <ScrollArea className="h-full pr-2">
+              <Suspense fallback={<Loading />}>
+                <UnitsCourseworkList
+                  courseworks={courseworks}
+                  finished={false}
+                  role={role}
+                />
+              </Suspense>
+            </ScrollArea>
           </TabsContent>
 
-          <TabsContent className="w-full" value="finished">
-            <Suspense fallback={<Loading />}>
-              <UnitsCourseworkList
-                courseworks={courseworks}
-                finished={true}
-                role={role}
-              />
-            </Suspense>
+          <TabsContent value="finished" className="mt-0 min-h-0 flex-1">
+            <ScrollArea className="h-full pr-2">
+              <Suspense fallback={<Loading />}>
+                <UnitsCourseworkList
+                  courseworks={courseworks}
+                  finished={true}
+                  role={role}
+                />
+              </Suspense>
+            </ScrollArea>
           </TabsContent>
         </Tabs>
       </div>

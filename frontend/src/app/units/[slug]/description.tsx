@@ -1,3 +1,5 @@
+import { ScrollArea } from "@/components/ui/scroll-area";
+
 type UnitData = {
   id: string;
   name: string;
@@ -13,14 +15,14 @@ export default function UnitDescription({
   unit: UnitData;
 }) {
   return (
-    <div className="flex-1 min-h-0 overflow-y-auto break-words border bg-accent p-2">
+    <ScrollArea className="h-full border bg-accent p-2">
       {unit.description ? (
-        unit.description
+        <div className="break-words">{unit.description}</div>
       ) : (
         <span className="text-muted-foreground italic">
           No description available.
         </span>
       )}
-    </div>
+    </ScrollArea>
   );
 }
