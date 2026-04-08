@@ -16,6 +16,7 @@ type UnitRendererProps = {
   unit: UnitDataProps;
   role: string;
   lecturers: Lecturer[];
+  courseworks: courseworkResponse;
 };
 
 type UnitDataProps = {
@@ -25,6 +26,19 @@ type UnitDataProps = {
   colour: string;
   unit_code: string;
   programme_id: string;
+};
+
+type courseworkData = {
+  id: string;
+  name: string;
+  description: string;
+  colour: string;
+  creation_date: string;
+  due_date: string;
+};
+
+type courseworkResponse = {
+  courseworks: courseworkData[];
 };
 
 const GRID_ROWS = 3;
@@ -126,7 +140,7 @@ function getResponsiveMdLayout(layout: GridItem[]) {
   });
 }
 
-export default function UnitRenderer({ layout, unit, role, lecturers }: UnitRendererProps) {
+export default function UnitRenderer({ layout, unit, role, lecturers, courseworks }: UnitRendererProps) {
   const [isDesktopLayout, setIsDesktopLayout] = useState(false);
 
   useEffect(() => {
@@ -198,7 +212,7 @@ export default function UnitRenderer({ layout, unit, role, lecturers }: UnitRend
               }
             >
               <div className="h-full min-h-0 overflow-visible lg:overflow-auto">
-                <Component unit={unit} lecturers={lecturers} role={role} />
+                <Component unit={unit} lecturers={lecturers} role={role} courseworks={courseworks} />
               </div>
             </div>
           );

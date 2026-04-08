@@ -15,8 +15,20 @@ type UnitData = {
   unit_code: string;
   programme_id: string;
 };
+type courseworkData = {
+  id: string;
+  name: string;
+  description: string;
+  colour: string;
+  creation_date: string;
+  due_date: string;
+};
 
-export default function UnitCourseworksModule({ role, unit }: { role: string; unit: UnitData }) {
+type courseworkResponse = {
+  courseworks: courseworkData[];
+};
+
+export default function UnitCourseworksModule({ role, unit, courseworks }: { role: string; unit: UnitData; courseworks: courseworkResponse }) {
   return (
     <Card>
         <CardHeader>
@@ -51,16 +63,18 @@ export default function UnitCourseworksModule({ role, unit }: { role: string; un
             <TabsContent value={"ongoing"}>
                 <Suspense fallback={<Loading />}>
                 <UnitsCourseworkList
-                    unit_id={unit.id}
+                    courseworks={courseworks}
                     finished={false}
+                    role={role}
                 ></UnitsCourseworkList>
                 </Suspense>
             </TabsContent>
             <TabsContent className={"w-full"} value={"finished"}>
                 <Suspense fallback={<Loading />}>
                 <UnitsCourseworkList
-                    unit_id={unit.id}
+                    courseworks={courseworks}
                     finished={true}
+                    role={role}
                 ></UnitsCourseworkList>
                 </Suspense>
             </TabsContent>

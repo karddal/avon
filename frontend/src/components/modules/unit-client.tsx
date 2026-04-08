@@ -20,6 +20,7 @@ type UnitClientProps = {
   unit: UnitData;
   role: string;
   lecturers: Lecturer[];
+  courseworks: courseworkResponse;
 };
 
 type UnitData = {
@@ -31,6 +32,19 @@ type UnitData = {
   programme_id: string;
 };
 
+type courseworkData = {
+  id: string;
+  name: string;
+  description: string;
+  colour: string;
+  creation_date: string;
+  due_date: string;
+};
+
+type courseworkResponse = {
+  courseworks: courseworkData[];
+};
+
 export default function UnitClient({
   initialLayout,
   availableModules,
@@ -38,6 +52,7 @@ export default function UnitClient({
   unit,
   role,
   lecturers,
+  courseworks,
 }: UnitClientProps) {
   const [layout, setLayout] = useState<GridItem[]>(
     initialLayout.length > 0 ? initialLayout : defaultUnitLayout,
@@ -69,7 +84,7 @@ export default function UnitClient({
         onChange={setLayout}
       />
 
-      <UnitRenderer layout={layout} unit={unit} role={role} lecturers={lecturers} />
+      <UnitRenderer layout={layout} unit={unit} role={role} lecturers={lecturers} courseworks={courseworks} />
     </div>
   );
 }

@@ -52,6 +52,19 @@ type UnitUpdateData = {
   programme_id: string;
 };
 
+type courseworkData = {
+  id: string;
+  name: string;
+  description: string;
+  colour: string;
+  creation_date: string;
+  due_date: string;
+};
+
+type courseworkResponse = {
+  courseworks: courseworkData[];
+};
+
 async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
   const p = await params;
   const slug = String(p.slug);
@@ -108,6 +121,20 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
       });
     }
 
+  const courseworkResponseRaw = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/units/${data.id}/courseworks`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      cache: "no-cache",
+    },
+  );
+
+  const courseworkResponse: courseworkResponse = await courseworkResponseRaw.json();
+
   return (
     <>
       <OpenEdit data={data} />
@@ -143,6 +170,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
           unit={data}
           role={userRole}
           lecturers={results}
+          courseworks={courseworkResponse}
         />
       </div>
       
