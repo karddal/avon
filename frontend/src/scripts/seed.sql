@@ -54,6 +54,7 @@ CREATE TABLE unit (
                       colour VARCHAR NOT NULL,
                       programme_id UUID NOT NULL,
                       gitlab_id VARCHAR NOT NULL,
+                      unlocked BOOLEAN NOT NULL,
                       PRIMARY KEY (id),
                       FOREIGN KEY(programme_id) REFERENCES programme (id) ON DELETE CASCADE
 );

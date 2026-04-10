@@ -28,6 +28,16 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        required: false,
+        defaultValue: "user",
+        input: false, // stops users setting it during signup
+      },
+    },
+  },
   plugins: [
     nextCookies(),
     adminPlugin({

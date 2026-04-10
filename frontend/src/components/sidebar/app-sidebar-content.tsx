@@ -1,5 +1,6 @@
 import {
   BookCheck,
+  BookUser,
   Calendar,
   ChartLine,
   Layers,
@@ -77,6 +78,12 @@ const adminItems = [
     title: "Programmes",
     url: "/programmes",
     icon: Layers,
+    bottom: false,
+  },
+  {
+    title: "Management",
+    url: "/management",
+    icon: BookUser,
     bottom: false,
   },
   {
@@ -231,7 +238,7 @@ export default async function AppSidebarContent() {
                     </SidebarMenuItem>
                   </DialogTrigger>
                 </SidebarMenuButton>
-                <DialogContent>
+                <DialogContent className="max-w-full! lg:max-w-[80%]! xl:max-w-[70%]! w-full p-4 overflow-y-auto max-h-[90vh]">
                   <DialogHeader>
                     <DialogTitle>Settings</DialogTitle>
                   </DialogHeader>

@@ -23,6 +23,7 @@ export async function createUnitWithStudentsAndLecturers(
     colour: unitData.colour,
     unit_code: unitData.unit_code,
     programme_id: programmeId,
+    unlocked: true,
   });
 
   const unit = db
