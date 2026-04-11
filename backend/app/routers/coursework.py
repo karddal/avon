@@ -66,7 +66,10 @@ from app.schemas.coursework import (
     CourseworkUpdate,
     CourseworkUpdateEngineData,
     CourseworkUpdateFormData,
-    StudentWithMaybeRepo, CourseworkTestRuns, TestRunBasicInfo, TestRunFullInfo,
+    StudentWithMaybeRepo,
+    CourseworkTestRuns,
+    TestRunBasicInfo,
+    TestRunFullInfo,
 )
 from app.schemas.security import CurrentUser
 from app.schemas.test_run import StartTestRun
@@ -76,12 +79,14 @@ router = APIRouter(prefix="/coursework", tags=["coursework"])
 session_dependency = Annotated[Session, Depends(get_session)]
 token_dependency = Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]
 
-@router.get("/{id}/test_run/{tid}", status_code=status.HTTP_200_OK, response_model=TestRunFullInfo)
+
+@router.get(
+    "/{id}/test_run/{tid}",
+    status_code=status.HTTP_200_OK,
+    response_model=TestRunFullInfo,
+)
 async def get_test_run(
-        id: UUID,
-        tid: UUID,
-        session: session_dependency,
-        token: token_dependency
+    id: UUID, tid: UUID, session: session_dependency, token: token_dependency
 ):
     coursework = session.get(Coursework, id)
     if coursework is None:
@@ -114,8 +119,8 @@ async def get_test_run(
     # If so we generate an s3 pre-signed key and send it in the response
     maybe_r = session.get(TestRunResult, test_run.id)
     tester_exit_code = None
-    log_name=None
-    log_text=None
+    log_name = None
+    log_text = None
     if maybe_r is not None:
         # We have saved a result!
         tester_exit_code = maybe_r.exit_code
@@ -130,8 +135,10 @@ async def get_test_run(
                 #     },
                 #     ExpiresIn=3600
                 # )
-                data = (await s3.get_object(Bucket=settings.aws_bucket, Key=maybe_r.log_s3_uri))
-                body = data.get('Body')
+                data = await s3.get_object(
+                    Bucket=settings.aws_bucket, Key=maybe_r.log_s3_uri
+                )
+                body = data.get("Body")
                 read = await body.read()
                 log_name = maybe_r.log_s3_uri
                 log_text = read.decode("utf-8")
@@ -139,14 +146,28 @@ async def get_test_run(
 
     print(tester_exit_code)
     return TestRunFullInfo(
-                id=test_run.id, coursework_id=test_run.coursework_id, ecs_task_arn=test_run.ecs_task_arn, gitlab_repo_id=test_run.gitlab_repo_id, git_url=test_run.git_url, task_def=test_run.task_def, tester_command=test_run.tester_command, status=test_run.status, completed_at=test_run.completed_at,
-        trigger=test_run.trigger, created_at=test_run.created_at, notifications_enabled=test_run.notifications_enabled, started_by=test_run.started_by, batch_id=test_run.batch_id, tester_exit_code=tester_exit_code, log_name=log_name,
-        log_text=log_text)
+        id=test_run.id,
+        coursework_id=test_run.coursework_id,
+        ecs_task_arn=test_run.ecs_task_arn,
+        gitlab_repo_id=test_run.gitlab_repo_id,
+        git_url=test_run.git_url,
+        task_def=test_run.task_def,
+        tester_command=test_run.tester_command,
+        status=test_run.status,
+        completed_at=test_run.completed_at,
+        trigger=test_run.trigger,
+        created_at=test_run.created_at,
+        notifications_enabled=test_run.notifications_enabled,
+        started_by=test_run.started_by,
+        batch_id=test_run.batch_id,
+        tester_exit_code=tester_exit_code,
+        log_name=log_name,
+        log_text=log_text,
+    )
+
 
 @router.get("/{id}/test_runs", response_model=CourseworkTestRuns)
-async def get_test_runs(
-        id: UUID, session: session_dependency, token: token_dependency
-):
+async def get_test_runs(id: UUID, session: session_dependency, token: token_dependency):
     coursework = session.get(Coursework, id)
     if coursework is None:
         raise HTTPException(
@@ -160,7 +181,14 @@ async def get_test_runs(
     )
     result = []
     for tr in coursework.test_runs:
-        students: Sequence[StudentRepo] = session.exec(select(StudentRepo).options(load_only(StudentRepo.student_id)).where((StudentRepo.cw_id == id) & (StudentRepo.gl_repo_id == tr.gitlab_repo_id))).all()
+        students: Sequence[StudentRepo] = session.exec(
+            select(StudentRepo)
+            .options(load_only(StudentRepo.student_id))
+            .where(
+                (StudentRepo.cw_id == id)
+                & (StudentRepo.gl_repo_id == tr.gitlab_repo_id)
+            )
+        ).all()
         student_ids: list[str] = list(map(lambda s: s.student_id, students))
         result.append(
             TestRunBasicInfo(
@@ -178,9 +206,13 @@ async def get_test_runs(
         test_runs=result,
     )
 
+
 @router.post("/{id}/start_test_batch", status_code=status.HTTP_201_CREATED)
 async def start_test_batch(
-        id: UUID, request: StartTestRun, session: session_dependency, token: token_dependency
+    id: UUID,
+    request: StartTestRun,
+    session: session_dependency,
+    token: token_dependency,
 ):
     coursework = session.get(Coursework, id)
     if coursework is None:
@@ -198,7 +230,8 @@ async def start_test_batch(
 
     if coursework.base_image_id is None or coursework.tester_command is None:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="CW testing is not configured"
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="CW testing is not configured",
         )
 
     # Just a stub for now
@@ -224,40 +257,58 @@ async def start_test_batch(
                 repo_url = gl.projects.get(repo).http_url_to_repo
 
                 t: RunTaskResponseTypeDef = await ecs.run_task(
-                taskDefinition=coursework.base_image.task_definition,
+                    taskDefinition=coursework.base_image.task_definition,
                     launchType="FARGATE",
                     cluster=settings.aws_ecs_cluster,
                     networkConfiguration={
-                        'awsvpcConfiguration': {
-                            'subnets': ['subnet-09059c64b92caed30', 'subnet-030101770693225a8'],
-                            'securityGroups': ['sg-0024f04dd642850d4'],
-                            'assignPublicIp': 'ENABLED',
+                        "awsvpcConfiguration": {
+                            "subnets": [
+                                "subnet-09059c64b92caed30",
+                                "subnet-030101770693225a8",
+                            ],
+                            "securityGroups": ["sg-0024f04dd642850d4"],
+                            "assignPublicIp": "ENABLED",
                         }
                     },
                     overrides={
-                        "containerOverrides": [{
-                            "name": "runner",
-                            "environment": [
-                                {"name": "STUDENT_REPO", "value": repo_url},
-                                {"name": "RUN_COMMAND", "value": coursework.tester_command},
-                                {"name": "BUILD_ID", "value": str(test_run_id)},
-                                {"name": "RESULT_QUEUE_URL", "value": settings.aws_results_queue_url},
-                                {"name": "LOG_BUCKET", "value": settings.aws_bucket},
-                                {"name": "RUN_TIMEOUT", "value": "300"}
-                            ]
-                        }]
-                    }
+                        "containerOverrides": [
+                            {
+                                "name": "runner",
+                                "environment": [
+                                    {"name": "STUDENT_REPO", "value": repo_url},
+                                    {
+                                        "name": "RUN_COMMAND",
+                                        "value": coursework.tester_command,
+                                    },
+                                    {"name": "BUILD_ID", "value": str(test_run_id)},
+                                    {
+                                        "name": "RESULT_QUEUE_URL",
+                                        "value": settings.aws_results_queue_url,
+                                    },
+                                    {
+                                        "name": "LOG_BUCKET",
+                                        "value": settings.aws_bucket,
+                                    },
+                                    {"name": "RUN_TIMEOUT", "value": "300"},
+                                ],
+                            }
+                        ]
+                    },
                 )
                 arn = None
                 if len(t["failures"]) > 0:
-                    logger.error(f"Failed to start aws task for {repo} on coursework {coursework}: {t["failures"]}")
+                    logger.error(
+                        f"Failed to start aws task for {repo} on coursework {coursework}: {t['failures']}"
+                    )
                     s: status_type = "failed"
                     fails += 1
                 else:
                     s: status_type = "running"
                     arn = t["tasks"][0]["taskArn"]
                     successful_starts += 1
-                    logger.debug(f"Started test run for {repo} on coursework {coursework}")
+                    logger.debug(
+                        f"Started test run for {repo} on coursework {coursework}"
+                    )
 
                 db_test_run = TestRun(
                     id=test_run_id,
@@ -272,18 +323,20 @@ async def start_test_batch(
                     trigger="initial",
                     started_by=user.user_id,
                     batch_id=batch_id,
-                    notifications_enabled=request.notifications_enabled
+                    notifications_enabled=request.notifications_enabled,
                 )
 
                 session.add(db_test_run)
                 session.commit()
             except Exception as e:
-                logger.error(f"Failed to start test run for {repo} on coursework {coursework.id}: {e}")
+                logger.error(
+                    f"Failed to start test run for {repo} on coursework {coursework.id}: {e}"
+                )
                 session.rollback()
                 fails += 1
 
-
         return {"started": successful_starts, "failed": fails}
+
 
 @router.get("/{id}/student_repos", response_model=CourseworkStudentRepos)
 async def get_student_repos(
