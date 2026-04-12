@@ -272,8 +272,8 @@ export const IntForm = ({
                         onClick={() => {
                           form
                             .trigger(["name", "description", "due_date"])
-                            .then((_result) => {
-                              if (form.formState.isValid) {
+                            .then((isValid) => {
+                              if (isValid) {
                                 nextStep(step, setStep);
                               }
                             });
@@ -428,8 +428,8 @@ export const IntForm = ({
                         <Button
                           type={"button"}
                           onClick={() => {
-                            form.trigger(["color"]).then((_result) => {
-                              if (form.formState.isValid) {
+                            form.trigger(["color"]).then((isValid) => {
+                              if (isValid) {
                                 nextStep(step, setStep);
                               }
                             });

@@ -332,8 +332,8 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                               "unitCode",
                               "programme",
                             ])
-                            .then((_result) => {
-                              if (form.formState.isValid) {
+                            .then((isValid) => {
+                              if (isValid) {
                                 next();
                               }
                             });
@@ -483,8 +483,8 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                           type={"button"}
                           variant={"outline"}
                           onClick={() => {
-                            form.trigger(["color"]).then((_result) => {
-                              if (form.formState.isValid) {
+                            form.trigger(["color"]).then((isValid) => {
+                              if (isValid) {
                                 next();
                               }
                             });
@@ -498,8 +498,8 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                           type={"button"}
                           variant={"outline"}
                           onClick={() => {
-                            form.trigger([]).then((_result) => {
-                              if (form.formState.isValid) {
+                            form.trigger([]).then((isValid) => {
+                              if (isValid) {
                                 back();
                               }
                             });
@@ -587,8 +587,8 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                         type={"button"}
                         variant={"outline"}
                         onClick={() => {
-                          form.trigger([]).then((_result) => {
-                            if (form.formState.isValid) {
+                          form.trigger([]).then((isValid) => {
+                            if (isValid) {
                               back();
                             }
                           });
