@@ -85,8 +85,9 @@ export const IntForm = ({
   const _router = useRouter();
   const s = slug;
   const formSchema = z.object({
-    name: z.string()
-      .regex(/^[A-Za-z0-9](?:[A-Za-z0-9]|[ \-\(][A-Za-z0-9])*(?:\))?$/, {
+    name: z
+      .string()
+      .regex(/^[A-Za-z0-9](?:[A-Za-z0-9]|[ \-(][A-Za-z0-9])*(?:\))?$/, {
         message: "Only alphanumeric characters and hyphens are allowed",
       })
       .min(2, {

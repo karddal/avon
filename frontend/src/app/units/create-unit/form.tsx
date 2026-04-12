@@ -88,7 +88,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
   const formSchema = z.object({
     name: z
       .string()
-      .regex(/^[A-Za-z0-9](?:[A-Za-z0-9]|[ \-\(][A-Za-z0-9])*(?:\))?$/, {
+      .regex(/^[A-Za-z0-9](?:[A-Za-z0-9]|[ \-(][A-Za-z0-9])*(?:\))?$/, {
         message: "Only alphanumeric characters and hyphens are allowed",
       })
       .min(2, {

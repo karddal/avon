@@ -15,6 +15,7 @@ const Calendar29 = dynamic(
   { ssr: false },
 );
 
+import { isValid } from "date-fns";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
@@ -41,7 +42,6 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Spinner } from "@/components/ui/spinner";
 import { create_programme } from "@/lib/actions/create_programme";
-import { isValid } from "date-fns";
 
 function nextStep(step: number, setStep: Dispatch<SetStateAction<number>>) {
   if (step <= 0) {
@@ -66,7 +66,7 @@ export const ProgForm = () => {
     .object({
       name: z
         .string()
-        .regex(/^[A-Za-z0-9](?:[A-Za-z0-9]|[ \-\(][A-Za-z0-9])*(?:\))?$/, {
+        .regex(/^[A-Za-z0-9](?:[A-Za-z0-9]|[ \-(][A-Za-z0-9])*(?:\))?$/, {
           message: "Only alphanumeric characters and hyphens are allowed",
         })
         .min(1, { message: "Name must be at least 1 character." })
@@ -349,6 +349,6 @@ export const ProgForm = () => {
           </CardContent>
         </Card>
       </div>
-    </div >
+    </div>
   );
 };
