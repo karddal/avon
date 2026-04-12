@@ -89,7 +89,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
     name: z
       .string()
       .regex(/^[A-Za-z0-9](?:[A-Za-z0-9]|[ \-\(][A-Za-z0-9])*(?:\))?$/, {
-        message: "Only alphanumeric characters are allowed",
+        message: "Only alphanumeric characters and hyphens are allowed",
       })
       .min(2, {
         error: "Name must be at least 2 characters.",

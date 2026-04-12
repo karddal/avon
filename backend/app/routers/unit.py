@@ -168,6 +168,7 @@ async def get_unit_with_dates(unit_id: UUID, session: session_dependency):
         programme_id=unit.programme_id,
         start_date=start,
         end_date=end,
+        unlocked=unit.unlocked
     )
 
 @router.get("/{unit_id}/lecturers", response_model=UnitLecturers, status_code=status.HTTP_200_OK)
