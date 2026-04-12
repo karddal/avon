@@ -9,6 +9,8 @@ from app.models.coursework import Coursework
 from app.models.unit_enrollment import UnitEnrollment
 from app.schemas.project import ProjectCreate, ProjectFork, ProjectRead, ProjectSkeleton, ProjectsInCoursework, TemplateCreate
 
+import asyncio
+
 router = APIRouter(prefix="/projects", tags=["projects"])
 session_dependency = Annotated[Session, Depends(get_session)]
 
@@ -53,15 +55,23 @@ async def create_fork(project: ProjectFork, session: session_dependency):
     statement = select(UnitEnrollment.user_id).where((UnitEnrollment.unit_id == unit_id) & (UnitEnrollment.type == "student"))
     students_enrolled = session.exec(statement).all()
 
-    for student in students_enrolled:
-        try:
-            # Call helper function to create project
-            await gl_create_fork(name, user_id=student, group_id=gitlab_id, template_id=project.template_id)
-        except Exception:
-            raise HTTPException(
+    sem = asyncio.Semaphore(4)
+
+    async def create(student):
+        async with sem:
+            try:
+                return await gl_create_fork(name, user_id=student, group_id=gitlab_id, template_id=project.template_id)
+            except Exception:
+               raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
                 detail="Project for the student: " + student + " could not be created."
-            )
+                )
+
+    tasks = [create(student) for student in students_enrolled]
+    await asyncio.gather(*tasks, return_exceptions=True)
+
+    # exception handling
+
     # Get the number of students enrolled onto a unit, by the courseworkid courseworkid -> unit -> unit_enrollement
     # Make an API call to gitlab to create a project using a helper function for those many students
     return {"unit id": students_enrolled} 

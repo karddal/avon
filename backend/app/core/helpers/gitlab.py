@@ -382,7 +382,7 @@ async def gl_create_skeleton_code(group_id, coursework_name):
     
     return response
 
-
+# Use this for creating projects
 async def gl_create_fork(name, user_id, group_id, template_id):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
@@ -418,6 +418,8 @@ async def gl_create_fork(name, user_id, group_id, template_id):
     
     return data 
 
+
+# Do not use this for creating projects
 async def gl_create_project(name, user_id, group_id, template_group_id, template_id):
     print(template_group_id, template_id)
     if not TOKEN or not BASE_URL:
