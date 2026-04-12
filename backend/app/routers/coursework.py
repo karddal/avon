@@ -39,6 +39,7 @@ from app.core.scopes.scopes import (
 from app.core.security import get_bearer, get_current_user_with_role
 from app.core.settings import settings
 from app.db.session import get_session
+from app.models import student_repo
 from app.models.base_image import BaseImage
 from app.models.coursework import Coursework
 from app.models.student_repo import StudentRepo
@@ -47,6 +48,7 @@ from app.models.unit import Unit, UnitWithCourseworks
 from app.models.unit_enrollment import UnitEnrollment
 from app.schemas.base_image import BaseImageList
 from app.schemas.coursework import (
+    CourseworkChangeStudentsRepo,
     CourseworkCreate,
     CourseworkDelete,
     CourseworkEngineData,
@@ -357,6 +359,52 @@ async def get_student_repos(
     repos = map(lambda sr: sr, coursework.student_repos)
 
     return CourseworkStudentRepos(repos=list(repos))
+
+
+@router.put("/{id}/change_repo_of/{sid}", response_model=StudentRepo)
+async def change_repo_of(
+    id: UUID,
+    sid: str,
+    information: CourseworkChangeStudentsRepo,
+    session: session_dependency,
+    token: token_dependency,
+):
+    coursework = session.get(Coursework, id)
+    if coursework is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Coursework not found",
+        )
+
+    await require_scopes(
+        ResourceInformation(type=Unit, id=coursework.unit_id),
+        Scopes.UNIT_COURSEWORK_GITLAB,
+        token=token,
+        session=session,
+    )
+
+    gitlab = get_gitlab()
+
+    student_repo_in_db = session.exec(
+        select(StudentRepo).where(
+            (StudentRepo.student_id == sid) & (StudentRepo.cw_id == id)
+        )
+    ).first()
+    if not student_repo_in_db:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Student repo not found",
+        )
+
+    repo_url = gitlab.projects.get(student_repo_in_db.gl_repo_id).http_url_to_repo
+
+    student_repo_in_db.gl_repo_id = information.new_repo_id
+    student_repo_in_db.repo_url = repo_url
+
+    session.commit()
+    session.refresh(student_repo_in_db)
+
+    return student_repo_in_db
 
 
 @router.delete("/{id}/del_repo/{rid}")

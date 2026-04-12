@@ -7,6 +7,7 @@ import {
   DeleteIcon,
   MoreHorizontal,
   Trash2Icon,
+  UserPlus,
 } from "lucide-react";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import { toast } from "sonner";
@@ -24,6 +25,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -55,7 +64,9 @@ export const columns: (
   setRefreshKey: Dispatch<SetStateAction<number>>,
 ) => {
   const [alertOpen, setAlertOpen] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
+  const [dialog, setDialog] = useState("none");
   return [
     {
       id: "select",
@@ -161,38 +172,100 @@ export const columns: (
               refresh();
             }
           };
-          if (s)
+
+          if (s) {
+            const handlePopup = () => {
+              switch (dialog) {
+                case "delete":
+                  return (
+                    <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
+                      <AlertDialogContent size="default">
+                        <AlertDialogHeader>
+                          <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
+                            <Trash2Icon />
+                          </AlertDialogMedia>
+                          <AlertDialogTitle>Delete user repo?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will permanently delete this repository. This
+                            action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel variant="outline">
+                            Cancel
+                          </AlertDialogCancel>
+                          <AlertDialogAction
+                            variant="destructive"
+                            disabled={showSpinner}
+                            onClick={(e) => {
+                              deleteAction();
+                              e.preventDefault();
+                            }}
+                          >
+                            {showSpinner && <Spinner />}
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  );
+                case "add":
+                  return (
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Add student</DialogTitle>
+                        <DialogDescription>
+                          Add a student to this repo.
+                        </DialogDescription>
+                      </DialogHeader>
+                    </DialogContent>
+                  );
+              }
+            };
             return (
-              <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost">
-                      <span className="sr-only">Open menu</span>
-                      <MoreHorizontal />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-40">
-                    <DropdownMenuGroup>
-                      <DropdownMenuLabel>Repo actions</DropdownMenuLabel>
-                      <DropdownMenuItem
-                        onClick={() => {
-                          if (u) {
-                            navigator.clipboard.writeText(
-                              u.substring(0, u.indexOf(".git")),
-                            );
-                            toast.success("Repo URL copied to clipboard.");
-                          } else {
-                            toast.error("No repo URL");
-                          }
-                        }}
-                      >
-                        <ClipboardCopy />
-                        Copy student repo URL
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <AlertDialogTrigger asChild>
+              <>
+                <Dialog open={open} onOpenChange={setOpen}>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost">
+                        <span className="sr-only">Open menu</span>
+                        <MoreHorizontal />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-40">
+                      <DropdownMenuGroup>
+                        <DropdownMenuLabel>Repo actions</DropdownMenuLabel>
+                        <DropdownMenuItem
+                          onClick={() => {
+                            if (u) {
+                              navigator.clipboard.writeText(
+                                u.substring(0, u.indexOf(".git")),
+                              );
+                              toast.success("Repo URL copied to clipboard.");
+                            } else {
+                              toast.error("No repo URL");
+                            }
+                          }}
+                        >
+                          <ClipboardCopy />
+                          Copy student repo URL
+                        </DropdownMenuItem>
+                        <DialogTrigger asChild>
+                          <DropdownMenuItem
+                            onClick={(event) => {
+                              setDialog("add");
+                              event.preventDefault();
+                              setOpen(true);
+                            }}
+                          >
+                            <UserPlus />
+                            Add student to repo
+                          </DropdownMenuItem>
+                        </DialogTrigger>
+                        <DropdownMenuSeparator />
                         <DropdownMenuItem
                           onClick={(e) => {
+                            setDialog("delete");
                             setAlertOpen(true);
                             e.preventDefault();
                           }}
@@ -200,40 +273,14 @@ export const columns: (
                         >
                           <DeleteIcon /> Delete repo
                         </DropdownMenuItem>
-                      </AlertDialogTrigger>
-                    </DropdownMenuGroup>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                <AlertDialogContent size="default">
-                  <AlertDialogHeader>
-                    <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
-                      <Trash2Icon />
-                    </AlertDialogMedia>
-                    <AlertDialogTitle>Delete user repo?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This will permanently delete this repository. This action
-                      cannot be undone.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel variant="outline">
-                      Cancel
-                    </AlertDialogCancel>
-                    <AlertDialogAction
-                      variant="destructive"
-                      disabled={showSpinner}
-                      onClick={(e) => {
-                        deleteAction();
-                        e.preventDefault();
-                      }}
-                    >
-                      {showSpinner && <Spinner />}
-                      Delete
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            ); // repo options here!!!
+                      </DropdownMenuGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  {handlePopup()}
+                </Dialog>
+              </>
+            );
+          } // repo options here!!!
         }
         return (
           // Student options here!!
