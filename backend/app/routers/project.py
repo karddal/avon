@@ -38,34 +38,11 @@ async def create_templates(template: TemplateCreate, session: session_dependency
 
     return {"success": "i think"}
 
-@router.post("/create", status_code=status.HTTP_201_CREATED)
-async def create_projects(project: ProjectCreate, session: session_dependency):
-    # Figure out how many projects you need to make
-    # Get the unit the coursework is in
-    statement = select(Coursework.unit_id, Coursework.name, Coursework.gitlab_id).where(Coursework.id == project.coursework_id)
-    cw_object = session.exec(statement).first()
-    unit_id, name, gitlab_id = cw_object
-
-    # Get the student enrollment
-    statement = select(UnitEnrollment.user_id).where((UnitEnrollment.unit_id == unit_id) & (UnitEnrollment.type == "student"))
-    students_enrolled = session.exec(statement).all()
-
-    for student in students_enrolled:
-        try:
-            await gl_create_project(name, student, gitlab_id, project.template_group_id, project.template_id)
-        except Exception:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
-                detail="Project for the student: " + student + " could not be created."
-            )
-    # Get the number of students enrolled onto a unit, by the courseworkid courseworkid -> unit -> unit_enrollement
-    # Make an API call to gitlab to create a project using a helper function for those many students
-    return {"unit id": students_enrolled}
-
 @router.post("/skeleton-code", status_code=status.HTTP_201_CREATED)
 async def create_skeleton_code(details: ProjectSkeleton):
     return await gl_create_skeleton_code(details.group_id, details.coursework_name)
 
+# Creating the fork creates the project. Use this.
 @router.post("/create-fork", status_code=status.HTTP_201_CREATED)
 async def create_fork(project: ProjectFork, session: session_dependency):
     statement = select(Coursework.unit_id, Coursework.name, Coursework.gitlab_id).where(Coursework.id == project.coursework_id)
@@ -108,3 +85,28 @@ async def get_projects(group_id: int):
 async def delete_projects(group_id: int):
     response = await gl_delete_projects(group_id)
     return response
+
+# Do not use this route, use fork instead
+@router.post("/create", status_code=status.HTTP_201_CREATED)
+async def create_projects(project: ProjectCreate, session: session_dependency):
+    # Figure out how many projects you need to make
+    # Get the unit the coursework is in
+    statement = select(Coursework.unit_id, Coursework.name, Coursework.gitlab_id).where(Coursework.id == project.coursework_id)
+    cw_object = session.exec(statement).first()
+    unit_id, name, gitlab_id = cw_object
+
+    # Get the student enrollment
+    statement = select(UnitEnrollment.user_id).where((UnitEnrollment.unit_id == unit_id) & (UnitEnrollment.type == "student"))
+    students_enrolled = session.exec(statement).all()
+
+    for student in students_enrolled:
+        try:
+            await gl_create_project(name, student, gitlab_id, project.template_group_id, project.template_id)
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+                detail="Project for the student: " + student + " could not be created."
+            )
+    # Get the number of students enrolled onto a unit, by the courseworkid courseworkid -> unit -> unit_enrollement
+    # Make an API call to gitlab to create a project using a helper function for those many students
+    return {"unit id": students_enrolled}
