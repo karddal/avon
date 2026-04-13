@@ -15,7 +15,7 @@ class Settings(BaseSettings):
         default=False,
         validation_alias=AliasChoices("ALLOW_HISTORICAL_SEED_DATA", "TESTING_MODE"),
     )
-    test_fixture_key: str | None
+    test_fixture_key: str | None = None
     model_config = SettingsConfigDict(
         env_file=".env"
     )  # Keep on getting warnings in tests to do this, it's the updated version of the code below
