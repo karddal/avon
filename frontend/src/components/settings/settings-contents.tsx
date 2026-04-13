@@ -1,4 +1,4 @@
-import { KeyRound, Palette, SquareUser } from "lucide-react";
+import { Palette, SquareUser } from "lucide-react";
 import AccountSettings from "@/components/settings/account-settings";
 import {
   Tabs,
@@ -15,24 +15,19 @@ export default function SettingsContents() {
           <SquareUser />
           Account
         </TabsTrigger>
-        <TabsTrigger value="password">
-          <KeyRound />
-          Security
-        </TabsTrigger>
+        {/*Not sure what more settings tabs / pages we need*/}
         <TabsTrigger value="notifications">
           <Palette />
           Theme
         </TabsTrigger>
       </TabsList>
-      <div
-        className={
-          "no-scrollbar -mx-4 max-h-[50vh] w-full overflow-y-auto px-4"
-        }
-      >
-        <TabsContent value={"account"}>
-          <AccountSettings />
+      <div className="w-full p-6 overflow-hidden">
+        <TabsContent
+          className="w-full p-0 border-none bg-transparent shadow-none overflow-hidden"
+          value={"account"}
+        >
+          <AccountSettings user={null} isAdmin={false} settingsPage={true} />
         </TabsContent>
-        <TabsContent value={"password"}></TabsContent>
         <TabsContent value={"notifications"}></TabsContent>
       </div>
     </Tabs>

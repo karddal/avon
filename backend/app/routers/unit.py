@@ -29,7 +29,8 @@ from app.schemas.unit import (
     UnitLecturers,
     UnitReadWithDates,
     UnitEventRead,
-    UnitStudents
+    UnitStudents,
+    UnitUsers
 )
 
 router = APIRouter(prefix="/units", tags=["units"])
@@ -89,6 +90,8 @@ async def create_unit(unit: UnitCreateOwner, session: session_dependency, token:
         programme_id=unit.programme_id,
         gitlab_id=gl_data["gitlabGroupId"],
     )
+    if unit.unlocked:
+        db_unit.unlocked = unit.unlocked
     # Add validation for the start and end dates below
 
     statement = select(Unit.id).where(
@@ -253,6 +256,16 @@ async def get_unit_students(unit_id: UUID, session: session_dependency, token: t
         students=studs,
     )
 
+@router.get("/{unit_id}/users", response_model=UnitUsers, status_code=status.HTTP_200_OK)
+async def get_unit_users(unit_id: UUID, session: session_dependency):
+    users = session.exec(
+        select(UnitEnrollment.user_id).join(Unit).where(Unit.id == unit_id).where(UnitEnrollment.type != "admin")
+    ).all()
+    if not users:
+        raise HTTPException(status_code=404, detail="No users found.")
+    return UnitUsers(
+        users=users,
+    )
 
 @router.put("/{unit_id}", response_model=UnitUpdate, status_code=status.HTTP_200_OK)
 async def update_unit(unit_id: UUID, unit: UnitUpdate, session: session_dependency, token: token_dependency):
@@ -366,3 +379,41 @@ async def get_unit_scopes(id: UUID, session: session_dependency, token: token_de
     )
 
     return {"scopes": [scope.value for scope in user.scopes]}
+
+@router.put("/{unit_id}/unlock")
+async def unlockUnit(unit_id:UUID, token: token_dependency, session: session_dependency):
+    await require_scopes(
+        ResourceInformation(type=Unit, id=unit_id),
+        Scopes.UNIT_MANAGE,
+        token=token,
+        session=session,
+    )
+    db_unit = session.get(Unit, unit_id)
+    if not db_unit:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Unit not found")
+
+    db_unit.unlocked = True
+
+    session.commit()
+    session.refresh(db_unit)
+
+    return {"success" : True}
+
+@router.put("/{unit_id}/lock")
+async def lockUnit(unit_id:UUID, token: token_dependency, session: session_dependency):
+    await require_scopes(
+        ResourceInformation(type=Unit, id=unit_id),
+        Scopes.UNIT_MANAGE,
+        token=token,
+        session=session,
+    )
+    db_unit = session.get(Unit, unit_id)
+    if not db_unit:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Unit not found")
+
+    db_unit.unlocked = False
+
+    session.commit()
+    session.refresh(db_unit)
+
+    return {"success" : True}
