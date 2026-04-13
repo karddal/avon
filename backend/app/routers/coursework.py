@@ -245,7 +245,6 @@ async def start_test_batch(
         fails = 0
         gl = get_gitlab()
         batch_id = uuid.uuid4()
-        test_run_id = uuid.uuid4()
 
         if not settings.aws_results_queue_url:
             logger.error("AWS results queue url not configured!!")
@@ -256,6 +255,7 @@ async def start_test_batch(
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         for repo in request.repo_ids:
+            test_run_id = uuid.uuid4()
             # Try and get the repo url from gitlab, if not present, bail out now
             try:
                 repo_url = gl.projects.get(repo).http_url_to_repo
