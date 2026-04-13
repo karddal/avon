@@ -9,12 +9,9 @@ from sqlmodel import Session, select
 from app.db.session import get_session
 from app.models.unit_enrollment import UnitEnrollment
 from app.schemas.unit_enrollment import TransferOwnerResponse, UnitEnrollmentOwner, UnitEnrollmentRead, UnitEnrollmentCreate, UnitEnrollmentBatchCreate, UnitEnrollmentDelete
-from fastapi import APIRouter, Depends
 from sqlalchemy import delete
-from sqlmodel import Session, select
 
-from app.schemas.unit_enrollment import UnitEnrollmentRead, UnitEnrollmentCreate, UnitEnrollmentBatchCreate, UnitEnrollmentBatchDelete, UnitEnrollmentDelete, UnitEnrollmentBatchTransfer
-from fastapi import HTTPException
+from app.schemas.unit_enrollment import UnitEnrollmentBatchDelete, UnitEnrollmentBatchTransfer
 
 from app.models.unit import Unit
 
