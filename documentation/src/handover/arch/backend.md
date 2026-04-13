@@ -15,3 +15,16 @@ UnitEnrollment
 
 Coursework
   : A Unit can optionally have many Courseworks.
+
+Other models that are used are:
+
+BaseImage
+  : The base image that the tests are on with docker
+TestRun
+  : Each test run including details of the repo, the timestamps etc
+TestRunResult
+  : The result of a test run including an exit code and link to the logs
+Notification
+  : A notification sent from one user to another user
+StudentRepo
+  : The repository information for a student
