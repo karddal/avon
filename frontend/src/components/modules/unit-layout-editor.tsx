@@ -333,12 +333,17 @@ export default function UnitLayoutEditor({
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline" className="h-9 w-full rounded-none text-sm">
-          <Edit className="mr-2 h-4 w-4" />
-          Edit Layout
-        </Button>
-      </DialogTrigger>
+      <div className="flex w-full justify-end">
+        <DialogTrigger asChild>
+          <Button
+            variant="outline"
+            className="h-9 rounded-xl border px-4 text-sm shadow-sm"
+          >
+            <Edit className="mr-2 h-4 w-4" />
+            Edit Layout
+          </Button>
+        </DialogTrigger>
+      </div>
 
       <DialogContent className="max-w-full! w-full max-h-full! overflow-y-auto border-none bg-transparent p-0 shadow-none lg:max-h-[82vh]! lg:max-w-[86%]! xl:max-w-[80%]!">
         <div className="flex w-full flex-col-reverse items-stretch justify-center gap-4 lg:flex-row">

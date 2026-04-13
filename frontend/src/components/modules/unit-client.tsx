@@ -77,7 +77,7 @@ export default function UnitClient({
   }, [layout, saveLayout]);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-4 md:gap-6">
+    <div className="flex min-h-0 flex-1 flex-col">
       <UnitLayoutEditor
         availableModules={availableModules}
         layout={layout}
