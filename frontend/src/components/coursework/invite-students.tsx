@@ -192,17 +192,6 @@ export default function InviteStudents({
 		});
 	}, [students, searchQuery]);
 
-	const selectableStudentIds = useMemo(() => {
-		return filteredStudents
-			.filter(
-				(student) =>
-					Boolean(student.email) &&
-					Boolean(student.repo_id) &&
-					statusByStudentId[student.id] === "not_invited",
-			)
-			.map((student) => student.id);
-	}, [filteredStudents, statusByStudentId]);
-
 	const inviteAllStudentIds = useMemo(() => {
 		return students
 			.filter(
@@ -326,8 +315,7 @@ export default function InviteStudents({
 								>
 									<div className="font-medium">Select students</div>
 									<div className="text-sm text-muted-foreground mt-1">
-										Choose specific students whose repos should receive an
-										invitation.
+										Choose specific students to invite.
 									</div>
 								</button>
 
@@ -364,48 +352,41 @@ export default function InviteStudents({
 								<span>{filteredStudents.length} shown</span>
 							</div>
 
-							{searchQuery.length > 0 ? (
-								<div className="flex max-h-72 flex-col gap-2 overflow-y-auto rounded-md border bg-accent p-2">
-									{loading ? (
-										<div className="flex items-center justify-center py-8">
-											<Spinner className="mr-2 h-4 w-4" />
-										</div>
-									) : filteredStudents.length > 0 ? (
-										filteredStudents.map((student) => {
-											const email = student.email;
-											const hasRepo = Boolean(student.repo_id);
-											const status =
-												statusByStudentId[student.id] ?? "not_invited";
-											const badge = statusBadge(status);
-											const Icon = badge.icon;
-											const isSelected = selectedStudentIds.includes(
-												student.id,
-											);
-											const isDeleting = deletingStudentIds.includes(
-												student.id,
-											);
-											const canSelect =
-												Boolean(email) && hasRepo && status === "not_invited";
+							<div className="flex max-h-72 flex-col gap-2 overflow-y-auto rounded-md border bg-accent p-2">
+								{loading ? (
+									<div className="flex items-center justify-center py-8">
+										<Spinner className="mr-2 h-4 w-4" />
+									</div>
+								) : filteredStudents.length > 0 ? (
+									filteredStudents.map((student) => {
+										const email = student.email;
+										const hasRepo = Boolean(student.repo_id);
+										const status =
+											statusByStudentId[student.id] ?? "not_invited";
+										const badge = statusBadge(status);
+										const Icon = badge.icon;
+										const isSelected = selectedStudentIds.includes(student.id);
+										const isDeleting = deletingStudentIds.includes(student.id);
+										const canSelect =
+											Boolean(email) && hasRepo && status === "not_invited";
 
-											return (
-												<div className="group relative w-full" key={student.id}>
-													<UserCard
-														id={student.id}
-														name={student.displayName}
-														image={student.src}
-														email={student.email}
-														user_role={false}
-													/>
-													<div className="mt-2 flex flex-wrap items-center gap-2 px-1">
-														<Badge className={badge.className}>
-															<Icon />
-															{badge.label}
-														</Badge>
-														{!hasRepo && (
-															<Badge variant="outline">
-																No repo provisioned
-															</Badge>
-														)}
+										return (
+											<div className="group relative w-full" key={student.id}>
+												<UserCard
+													id={student.id}
+													name={student.displayName}
+													image={student.src}
+													email={student.email}
+													user_role={false}
+												/>
+												<div className="mt-2 flex flex-wrap items-center gap-2 px-1">
+													<Badge className={badge.className}>
+														<Icon />
+														{badge.label}
+													</Badge>
+													{!hasRepo && (
+														<Badge variant="outline">No repo provisioned</Badge>
+													)}
 													{status === "invited" && (
 														<Button
 															type="button"
@@ -423,65 +404,61 @@ export default function InviteStudents({
 															Delete invite
 														</Button>
 													)}
-													</div>
-													{mode === "selected" && (
-														<div className="absolute top-2 right-2 w-8 h-8">
-															<Checkbox
-																disabled={
-																	!canSelect || submitLoading || isDeleting
-																}
-																checked={isSelected}
-																onCheckedChange={(checked) => {
-																	if (!canSelect) {
-																		return;
-																	}
-
-																	if (!checked) {
-																		setSelectedStudentIds((current) =>
-																			current.filter(
-																				(selectedStudentId) =>
-																					selectedStudentId !== student.id,
-																			),
-																		);
-																		return;
-																	}
-
-																	setSelectedStudentIds((current) => [
-																		...current,
-																		student.id,
-																	]);
-																}}
-																className="peer w-full h-full z-10 bg-card/80 shadow rounded-none border data-[state=checked]:bg-primary"
-															/>
-															<div
-																className="
-																absolute inset-0 flex items-center justify-center
-																pointer-events-none
-																transition-all
-																duration-400
-																ease-in-out
-																peer-data-[state=checked]:opacity-0
-																peer-data-[state=checked]:scale-0
-																peer-data-[state=checked]:rotate-90
-															"
-															>
-																<Plus
-																	size={20}
-																	className="text-muted-foreground"
-																/>
-															</div>
-														</div>
-													)}
 												</div>
-											);
-										})
-									) : (
-										<div className="text-center py-10 text-muted-foreground text-sm">
-											No students found.
-										</div>
-									)}
-								</div>
-							) : null}
+												{mode === "selected" && (
+													<div className="absolute top-2 right-2 w-8 h-8">
+														<Checkbox
+															disabled={!canSelect || submitLoading || isDeleting}
+															checked={isSelected}
+															onCheckedChange={(checked) => {
+																if (!canSelect) {
+																	return;
+																}
+
+																if (!checked) {
+																	setSelectedStudentIds((current) =>
+																		current.filter(
+																			(selectedStudentId) =>
+																				selectedStudentId !== student.id,
+																		),
+																	);
+																	return;
+																}
+
+																setSelectedStudentIds((current) => [
+																	...current,
+																	student.id,
+																]);
+															}}
+															className="peer w-full h-full z-10 bg-card/80 shadow rounded-none border data-[state=checked]:bg-primary"
+														/>
+														<div
+															className="
+															absolute inset-0 flex items-center justify-center
+															pointer-events-none
+															transition-all
+															duration-400
+															ease-in-out
+															peer-data-[state=checked]:opacity-0
+															peer-data-[state=checked]:scale-0
+															peer-data-[state=checked]:rotate-90
+														"
+														>
+															<Plus size={20} className="text-muted-foreground" />
+														</div>
+													</div>
+												)}
+											</div>
+										);
+									})
+								) : (
+									<div className="text-center py-10 text-muted-foreground text-sm">
+										{searchQuery.trim().length > 0
+											? "No students found for that search."
+											: "No students found on this unit."}
+									</div>
+								)}
+							</div>
 
 							<Button
 								className="w-full"
