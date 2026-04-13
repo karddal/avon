@@ -81,5 +81,5 @@ sync:
 serve-doc:
     mdbook serve --open
 
-seeding-db:
-    uv run python -m app.cli.manage seeding
+seed-db:
+    uv run python -m app.cli.manage seed
