@@ -15,6 +15,6 @@ export async function set_as_read(notification_id: string) {
       cache: "no-cache",
     },
   );
-  console.log(await response.json());
+  // console.log(await response.json());
   return response.ok;
 }

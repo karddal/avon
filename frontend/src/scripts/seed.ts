@@ -3,7 +3,7 @@ import { DatabaseSync } from "node:sqlite";
 import { api_seed } from "@/scripts/seed_api";
 
 async function seed() {
-  console.log(process.env);
+  // console.log(process.env);
   const db = new DatabaseSync("../sqlite.db");
   db.createSession();
 

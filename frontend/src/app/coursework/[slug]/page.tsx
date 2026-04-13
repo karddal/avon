@@ -18,7 +18,7 @@ async function CourseworkPageContent({
 }) {
   const p = await params;
   const slug = p.slug;
-  console.log("CW", slug);
+  // console.log("CW", slug);
   const _s = await requireSession();
   const token = await getRequestJWT();
   // Hardcoded the template id here, when merged, I should be able to get the template id from jack's code

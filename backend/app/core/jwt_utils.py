@@ -44,5 +44,5 @@ def verify_token_and_get_user(token_str: str) -> CurrentUser:
         logger.warning("JWT missing user_id fingerprint=%s payload_keys=%s", fingerprint, list(payload.keys()))
         raise jwt.PyJWTError("missing user_id")
 
-    logger.info("JWT verify success fingerprint=%s user_id=%s role=%s", fingerprint, user_id, role)
+    # logger.info("JWT verify success fingerprint=%s user_id=%s role=%s", fingerprint, user_id, role)
     return CurrentUser(user_id=user_id, role=role)

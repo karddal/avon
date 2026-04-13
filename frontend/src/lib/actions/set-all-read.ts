@@ -15,6 +15,6 @@ export async function set_all_read() {
       cache: "no-cache",
     },
   );
-  console.log(await response.json());
+  // console.log(await response.json());
   return response.ok;
 }

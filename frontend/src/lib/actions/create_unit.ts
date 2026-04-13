@@ -13,7 +13,7 @@ type createUnitReq = {
 
 export async function create_unit(req: createUnitReq) {
   "use server";
-  console.log(req);
+  // console.log(req);
   const token = await getRequestJWT();
   const r = await fetch(
     `

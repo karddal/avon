@@ -58,7 +58,7 @@ export async function JumpWrapper() {
     },
   );
   const courseworkData: Coursework[] = await courseworks_data.json();
-  console.log(courseworkData);
+  // console.log(courseworkData);
 
   return (
     <JumpUnits units={unitData.units} coursework={courseworkData}></JumpUnits>
