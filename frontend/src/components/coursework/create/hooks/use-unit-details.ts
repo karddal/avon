@@ -22,12 +22,9 @@ export function useUnitDetails(unitId?: string) {
         setError(null);
         setData(null);
 
-        const response = await fetch(
-          `/api/units/${unitId}/with-dates`,
-          {
-            cache: "no-cache",
-          },
-        );
+        const response = await fetch(`/api/units/${unitId}/with-dates`, {
+          cache: "no-cache",
+        });
 
         if (!response.ok) {
           throw new Error("Failed to load unit dates.");
