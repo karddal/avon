@@ -1,9 +1,6 @@
 describe("Coursework listing page - admin tests", () => {
-  before(() => {
-    cy.resetDb();
-  });
-
   beforeEach(() => {
+    cy.resetDb();
     cy.clearAuthSession();
     cy.login("admin@bris.ac.uk", "changeme", false);
   });

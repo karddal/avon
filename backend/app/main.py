@@ -1,11 +1,11 @@
-import logging
+import json
 import os
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.db.session import create_db_and_tables, lifespan
+from app.db.session import lifespan
 from app.models.coursework import Coursework
 from app.models.unit import UnitWithCourseworks
 from app.routers import coursework, structure
@@ -23,13 +23,26 @@ if os.getenv("ENV") == "dev":
     env_file = ".env.dev"
     load_dotenv(dotenv_path=env_file)
 
-logging.basicConfig(
-    level=os.getenv("LOG_LEVEL", "INFO").upper(),
-)
+
+def _get_cors_origins() -> list[str]:
+    raw_origins = os.getenv("CORS_ORIGIN")
+    if not raw_origins:
+        return []
+
+    try:
+        parsed = json.loads(raw_origins)
+    except json.JSONDecodeError:
+        return [raw_origins]
+
+    if isinstance(parsed, list):
+        return [str(origin) for origin in parsed]
+
+    return [str(parsed)]
+
 
 app = FastAPI(lifespan=lifespan)
 
-origins = os.getenv("CORS_ORIGIN")
+origins = _get_cors_origins()
 
 app.add_middleware(
     CORSMiddleware,
@@ -58,8 +71,6 @@ if settings.enable_test_fixtures:
 
     ensure_test_fixture_key_configured()
     app.include_router(testing_fixtures.router)
-
-create_db_and_tables()
 
 
 def main():

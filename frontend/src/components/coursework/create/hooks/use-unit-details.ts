@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import type { UnitData } from "@/components/coursework/create/types";
-import { getRequestJWT } from "@/lib/auth-utils";
 
 export function useUnitDetails(unitId?: string) {
   const [data, setData] = useState<UnitData | null>(null);
@@ -23,15 +22,9 @@ export function useUnitDetails(unitId?: string) {
         setError(null);
         setData(null);
 
-        const token = await getRequestJWT();
-
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/units/${unitId}/with_dates`,
+          `/api/units/${unitId}/with-dates`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
             cache: "no-cache",
           },
         );
