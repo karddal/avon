@@ -48,7 +48,12 @@ export default function ListOmittedusers({
         {filteredUsers.length > 0 ? (
           filteredUsers.map((user) => (
             <div className="group relative w-full" key={user.id}>
-              <UserCard id={user.id} name={user.displayName} image={user.src} />
+              <UserCard
+                id={user.id}
+                name={user.displayName}
+                image={user.src}
+                user_role={false}
+              />
               <div className="absolute top-2 right-2 w-8 h-8">
                 <button
                   type="button"
