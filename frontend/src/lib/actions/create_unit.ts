@@ -1,16 +1,20 @@
 "use server";
 
+import { getRequestJWT } from "@/lib/auth-utils";
+
 type createUnitReq = {
   name: string;
   description: string;
   unit_code: string;
   colour: string;
   programme_id: string;
+  owner: string;
 };
 
 export async function create_unit(req: createUnitReq) {
   "use server";
   console.log(req);
+  const token = await getRequestJWT();
   const r = await fetch(
     `
         ${process.env.NEXT_PUBLIC_API_URL}/units/create`,
@@ -18,6 +22,7 @@ export async function create_unit(req: createUnitReq) {
       method: "POST",
       credentials: "include",
       headers: {
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(req),

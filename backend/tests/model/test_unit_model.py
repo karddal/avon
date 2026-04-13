@@ -8,6 +8,7 @@ from app.models.programme import Programme
 from app.models.unit import Unit
 from tests.helpers.factories import create_programme
 
+
 # Ensure that the unit autopopulates id, creation_date
 def test_unit_autopopulate_works(session):
     # create a test programme for our purposes
@@ -19,7 +20,7 @@ def test_unit_autopopulate_works(session):
         unit_code="ABCDEF",
         colour="ffffff",
         programme_id=pid.id,
-        gitlab_id="12345"
+        gitlab_id="12345",
     )
     session.add(my_unit)
     session.commit()
@@ -31,6 +32,7 @@ def test_unit_autopopulate_works(session):
     assert my_unit.creation_date is not None
     assert my_unit.id is not None
 
+
 # ensure that saving a unit works and we can get back the stuff later
 def test_unit_saving(session):
     pid = create_programme(session)
@@ -40,7 +42,7 @@ def test_unit_saving(session):
         unit_code="ABCDEF",
         colour="ffffff",
         programme_id=pid.id,
-        gitlab_id="12345"
+        gitlab_id="12345",
     )
     session.add(my_unit)
     session.commit()

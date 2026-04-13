@@ -5,12 +5,15 @@ from datetime import datetime, timedelta, date
 
 from app.models.programme import Programme
 
+
 # Testing that the model auto Populates the id field
 def test_programme_auto_fields(session):
     start = date.today()
     end = start + timedelta(days=365)
 
-    programme = Programme(name="Year 2026/2027", start_date=start, end_date=end, gitlab_id="12345")
+    programme = Programme(
+        name="Year 2026/2027", start_date=start, end_date=end, gitlab_id="12345"
+    )
 
     session.add(programme)
     session.commit()
@@ -18,13 +21,20 @@ def test_programme_auto_fields(session):
 
     assert isinstance(programme.id, UUID)
 
+
 # Ensuring the data is availlable still
 def test_programme_persists_properly(session):
     start = date.today()
     end = start + timedelta(days=365)
     programme_id = uuid4()
 
-    programme = Programme(id=programme_id, name="Year 2026/2027", start_date=start, end_date=end, gitlab_id="12345")
+    programme = Programme(
+        id=programme_id,
+        name="Year 2026/2027",
+        start_date=start,
+        end_date=end,
+        gitlab_id="12345",
+    )
 
     session.add(programme)
     session.commit()
@@ -36,13 +46,20 @@ def test_programme_persists_properly(session):
     assert retrieved.start_date == start
     assert retrieved.end_date == end
 
+
 # Testing that we can successfully query by programme_id
 def test_programme_query_by_programme_id(session):
     start = date.today()
     end = start + timedelta(days=365)
     programme_id = uuid4()
 
-    programme = Programme(id=programme_id, name="Year 2026/2027", start_date=start, end_date=end, gitlab_id="12345")
+    programme = Programme(
+        id=programme_id,
+        name="Year 2026/2027",
+        start_date=start,
+        end_date=end,
+        gitlab_id="12345",
+    )
 
     session.add(programme)
     session.commit()
@@ -52,13 +69,20 @@ def test_programme_query_by_programme_id(session):
     assert result is not None
     assert result.id == programme_id
 
+
 # Testing we can update the model correctly
 def test_programme_update(session):
     start = date.today()
     end = start + timedelta(days=365)
     programme_id = uuid4()
 
-    programme = Programme(id=programme_id, name="Year 2026/2027", start_date=start, end_date=end, gitlab_id="12345")
+    programme = Programme(
+        id=programme_id,
+        name="Year 2026/2027",
+        start_date=start,
+        end_date=end,
+        gitlab_id="12345",
+    )
 
     session.add(programme)
     session.commit()
@@ -77,7 +101,13 @@ def test_programme_delete(session):
     end = start + timedelta(days=365)
     programme_id = uuid4()
 
-    programme = Programme(id=programme_id, name="Year 2026/2027", start_date=start, end_date=end, gitlab_id="12345")
+    programme = Programme(
+        id=programme_id,
+        name="Year 2026/2027",
+        start_date=start,
+        end_date=end,
+        gitlab_id="12345",
+    )
 
     session.add(programme)
     session.commit()
@@ -95,7 +125,13 @@ def test_programme_field_types(session):
     end = start + timedelta(days=365)
     programme_id = uuid4()
 
-    programme = Programme(id=programme_id, name="Year 2026/2027", start_date=start, end_date=end, gitlab_id="12345")
+    programme = Programme(
+        id=programme_id,
+        name="Year 2026/2027",
+        start_date=start,
+        end_date=end,
+        gitlab_id="12345",
+    )
 
     session.add(programme)
     session.commit()
