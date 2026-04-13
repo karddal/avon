@@ -1,9 +1,11 @@
 import os
+from ipaddress import ip_address
 from pathlib import Path
 
 from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException, Request, status
 
+from app.core.settings import settings
 from app.services.db_reset import reset_app_data, reset_database
 
 BACKEND_DIR = Path(__file__).resolve().parents[2]
@@ -16,7 +18,7 @@ router = APIRouter(prefix="/seeding", tags=["seeding"])
 
 
 def reset_route_enabled() -> bool:
-    return os.getenv("ENV") == "dev"
+    return os.getenv("ENV") == "dev" or settings.enable_test_fixtures
 
 
 def request_is_local(request: Request) -> bool:
@@ -24,7 +26,20 @@ def request_is_local(request: Request) -> bool:
     if client is None:
         return False
 
-    return client.host in {"127.0.0.1", "::1"}
+    host = client.host
+
+    if host == "localhost":
+        return True
+
+    if host.startswith("::ffff:"):
+        host = host.removeprefix("::ffff:")
+
+    host = host.split("%", 1)[0]
+
+    try:
+        return ip_address(host).is_loopback
+    except ValueError:
+        return False
 
 
 @router.post("/reset-db", include_in_schema=False)
