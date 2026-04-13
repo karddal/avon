@@ -1,10 +1,10 @@
 from typing import Annotated, Literal
-import os
-
-import datetime
-from pydantic import BaseModel, AfterValidator, ConfigDict
-from uuid import UUID
 import re
+from uuid import UUID
+import datetime
+
+from pydantic import AfterValidator, BaseModel, ConfigDict
+from app.core.settings import settings
 
 
 def is_valid_name(name: str) -> str:
@@ -22,12 +22,15 @@ def is_valid_description(description: str) -> str:
 
 
 def is_valid_due_date(date: datetime.datetime) -> datetime.datetime:
-    if os.getenv("TESTING_MODE") == "True":
+    if settings.allow_historical_seed_data:
         return date
+
     if date.tzinfo is None:
-        date = date.replace(tzinfo=datetime.timezone.utc)
-        
-    now = datetime.datetime.now(datetime.timezone.utc)
+        now = datetime.datetime.now()
+    else:
+        now = datetime.datetime.now(datetime.timezone.utc)
+        date = date.astimezone(datetime.timezone.utc)
+
     one_year_onwards = now + datetime.timedelta(days=365)
 
     if date <= now:
@@ -37,18 +40,21 @@ def is_valid_due_date(date: datetime.datetime) -> datetime.datetime:
     else:
         return date
 
+
 def is_valid_colour(c: str) -> str:
-    match = re.search(r'^(?:[0-9a-fA-F]{3}){1,2}$', c)
+    match = re.search(r"^(?:[0-9a-fA-F]{3}){1,2}$", c)
     if match:
         return c
     else:
         raise ValueError("Invalid colour")
+
 
 # Type aliases
 Name = Annotated[str, AfterValidator(is_valid_name)]
 Description = Annotated[str, AfterValidator(is_valid_description)]
 DueDate = Annotated[datetime.datetime, AfterValidator(is_valid_due_date)]  # Fixed
 Colour = Annotated[str, AfterValidator(is_valid_colour)]
+
 
 class CourseworkRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -60,6 +66,7 @@ class CourseworkRead(BaseModel):
     creation_date: datetime.datetime
     colour: str
 
+
 class CourseworkUpdateFormData(CourseworkRead):
     unit_name: str
     unit_code: str
@@ -67,12 +74,13 @@ class CourseworkUpdateFormData(CourseworkRead):
     templateId: int | None = None
     max_end_date: datetime.date
 
+
 class CourseworkCreate(BaseModel):
     name: Name
     description: Description
     unit_id: UUID
     due_date: DueDate
-    colour: str
+    colour: Colour
 
 class CourseworkTemplateFile(BaseModel):
     id: str
@@ -86,11 +94,23 @@ class CourseworkUpdate(BaseModel):
     description: Description | None = None
     unit_id: UUID | None = None
     due_date: DueDate | None = None
-    colour: str | None = None
+    colour: Colour | None = None
+
 
 class CourseworkDelete(BaseModel):
     id: UUID
     deletion_successful: bool
+
+
+class CourseworkStudent(BaseModel):
+    id: str
+    individual_due_date: datetime.datetime
+    gl_repo_id: str
+
+
+class CourseworkStudents(BaseModel):
+    id: UUID
+    students: list[CourseworkStudent]
 
 class CourseworkTemplateExists(BaseModel):
     exists: bool

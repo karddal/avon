@@ -3,12 +3,16 @@ from typing import Annotated
 from uuid import UUID
 
 from app.core.helpers.gitlab import gl_create_unit, gl_delete_unit, gl_update_unit
+from app.core.scopes.scopes import FERoles, ResourceInformation, Scopes, authenticate_user, require_role, require_scopes
+from app.routers.unit_enrollment import create_owner_enrollment
 from fastapi import APIRouter, Depends, HTTPException, status, Response
+from fastapi.security import HTTPAuthorizationCredentials
+from sqlalchemy import or_
 from sqlmodel import Session, select
 from sqlalchemy.orm.strategy_options import selectinload
 from app.core.settings import settings
 
-from app.core.security import get_current_user_with_role
+from app.core.security import get_bearer, get_current_user_with_role
 from app.db.session import get_session
 from app.models.programme import Programme
 from app.models.unit import Unit
@@ -19,6 +23,7 @@ from app.schemas.unit import (
     UnitAll,
     UnitAllByGroup,
     UnitCreate,
+    UnitCreateOwner,
     UnitRead,
     UnitUpdate,
     UnitLecturers,
@@ -30,6 +35,8 @@ from app.schemas.unit import (
 
 router = APIRouter(prefix="/units", tags=["units"])
 session_dependency = Annotated[Session, Depends(get_session)]
+token_dependency = Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]
+
 
 today = date.today()
 
@@ -38,7 +45,9 @@ today = date.today()
     response_model=UnitCreate,
     status_code=status.HTTP_201_CREATED,
 )
-async def create_unit(unit: UnitCreate, session: session_dependency):
+async def create_unit(unit: UnitCreateOwner, session: session_dependency, token: token_dependency):
+    await require_role(FERoles.ADMIN, token=token, session=session)
+
     if unit.programme_id:
         programme = session.exec(
             select(Programme).where(Programme.id == unit.programme_id)
@@ -46,6 +55,21 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
 
         if not programme:
             raise HTTPException(status_code=400, detail="Programme id is invalid.")
+    
+    if not unit.owner:
+        raise HTTPException(status_code=400, detail="Owner is required.")
+    
+    statement = select(Unit.id).where(
+        Unit.name == unit.name, 
+        Unit.unit_code == unit.unit_code, 
+        Unit.programme_id == unit.programme_id
+    )
+    existing_units = session.exec(statement).all()
+    if len(existing_units) > 0:
+        raise HTTPException(
+            status_code=400, 
+            detail="Unit already exists with same name or unit code"
+        )
     
     try:
         if settings.testing_mode:
@@ -55,8 +79,8 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Database failed. GitLab group rolled back."
-    )
+            detail="GitLab group creation failed."
+        )
 
     db_unit = Unit(
         name=unit.name,
@@ -64,37 +88,53 @@ async def create_unit(unit: UnitCreate, session: session_dependency):
         unit_code=unit.unit_code,
         colour=unit.colour,
         programme_id=unit.programme_id,
-        gitlab_id=gl_data["gitlabGroupId"]
+        gitlab_id=gl_data["gitlabGroupId"],
     )
     if unit.unlocked:
         db_unit.unlocked = unit.unlocked
     # Add validation for the start and end dates below
 
-    statement = select(Unit.id).where(Unit.name==unit.name, Unit.unit_code==unit.unit_code, Unit.programme_id == unit.programme_id)
+    statement = select(Unit.id).where(
+        Unit.name == unit.name,
+        Unit.unit_code == unit.unit_code,
+        Unit.programme_id == unit.programme_id,
+    )
     existing_units = session.exec(statement).all()
     if len(existing_units) > 0:
-        raise HTTPException(status_code=400, detail="Unit already exists with same name or unit code")
+        raise HTTPException(
+            status_code=400, detail="Unit already exists with same name or unit code"
+        )
 
     session.add(db_unit)
+    session.flush()
+    
+    create_owner_enrollment(db_unit.id, unit.owner, session) # add the owner here.
+    
     session.commit()
     session.refresh(db_unit)
+    
     return db_unit
 
+
 @router.get("/units-by-programme", response_model=UnitAllByGroup)
-async def get_units_by_programme(session: session_dependency):
+async def get_units_by_programme(session: session_dependency, token: token_dependency):
+    await require_role(FERoles.ADMIN, session=session, token=token)
     results = session.exec(
         select(Programme).options(selectinload(Programme.units))
     ).all()
     return UnitAllByGroup(programmes=results)
 
+
 @router.get("/active", response_model=UnitAll)
-async def active_units(session: session_dependency):
+async def active_units(session: session_dependency, token: token_dependency):
+    await require_role(FERoles.ADMIN, session=session, token=token)
     results = session.exec(select(Unit).join(UnitEnrollment)).unique()
     today = date.today()
-    filtered = filter(lambda unit: unit.programme.start_date <= today <= unit.programme.end_date, results)
-    return UnitAll(
-        units=filtered
+    filtered = filter(
+        lambda unit: unit.programme.start_date <= today <= unit.programme.end_date,
+        results,
     )
+    return UnitAll(units=filtered)
 
 
 @router.get("/units", response_model=list[UnitEventRead])
@@ -136,7 +176,9 @@ def list_units_for_events(
     ]
 
 @router.get("/{unit_id}", response_model=UnitRead, status_code=status.HTTP_200_OK)
-async def get_unit_details(unit_id: UUID, session: session_dependency):
+async def get_unit_details(unit_id: UUID, session: session_dependency, token: token_dependency):
+    await require_scopes(ResourceInformation(Unit, unit_id), Scopes.UNIT_READ, token=token, session=session)
+
     unit = session.get(Unit, unit_id)
 
     if unit is None:
@@ -148,8 +190,14 @@ async def get_unit_details(unit_id: UUID, session: session_dependency):
 
     return unit
 
-@router.get("/{unit_id}/with_dates", response_model=UnitReadWithDates, status_code=status.HTTP_200_OK)
-async def get_unit_with_dates(unit_id: UUID, session: session_dependency):
+
+@router.get(
+    "/{unit_id}/with_dates",
+    response_model=UnitReadWithDates,
+    status_code=status.HTTP_200_OK,
+)
+async def get_unit_with_dates(unit_id: UUID, session: session_dependency, token: token_dependency):
+    await require_scopes(ResourceInformation(Unit, unit_id), Scopes.UNIT_READ, token=token, session=session)
     unit = session.get(Unit, unit_id)
     start = unit.programme.start_date
     end = unit.programme.end_date
@@ -170,10 +218,18 @@ async def get_unit_with_dates(unit_id: UUID, session: session_dependency):
         end_date=end,
     )
 
-@router.get("/{unit_id}/lecturers", response_model=UnitLecturers, status_code=status.HTTP_200_OK)
-async def get_unit_lecturers(unit_id: UUID, session: session_dependency):
+
+@router.get(
+    "/{unit_id}/lecturers", response_model=UnitLecturers, status_code=status.HTTP_200_OK
+)
+async def get_unit_lecturers(unit_id: UUID, session: session_dependency, token: token_dependency):
+    await require_scopes(ResourceInformation(Unit, unit_id), Scopes.UNIT_READ, token=token, session=session)
+
     lects = session.exec(
-        select(UnitEnrollment.user_id).join(Unit).where(Unit.id == unit_id).where(UnitEnrollment.type == "lecturer")
+    select(UnitEnrollment.user_id)
+    .join(Unit)
+    .where(Unit.id == unit_id)
+    .where(or_(UnitEnrollment.type == "lecturer", UnitEnrollment.type == "owner"))
     ).all()
     if not lects:
         raise HTTPException(status_code=404, detail="No lecturers found.")
@@ -181,10 +237,18 @@ async def get_unit_lecturers(unit_id: UUID, session: session_dependency):
         lecturers=lects,
     )
 
-@router.get("/{unit_id}/students", response_model=UnitStudents, status_code=status.HTTP_200_OK)
-async def get_unit_students(unit_id: UUID, session: session_dependency):
+
+@router.get(
+    "/{unit_id}/students", response_model=UnitStudents, status_code=status.HTTP_200_OK
+)
+async def get_unit_students(unit_id: UUID, session: session_dependency, token: token_dependency):
+    await require_scopes(ResourceInformation(Unit, unit_id), Scopes.UNIT_MANAGE, token=token, session=session)
+
     studs = session.exec(
-        select(UnitEnrollment.user_id).join(Unit).where(Unit.id == unit_id).where(UnitEnrollment.type == "student")
+        select(UnitEnrollment.user_id)
+        .join(Unit)
+        .where(Unit.id == unit_id)
+        .where(UnitEnrollment.type == "student")
     ).all()
     if not studs:
         raise HTTPException(status_code=404, detail="No students found.")
@@ -204,7 +268,15 @@ async def get_unit_users(unit_id: UUID, session: session_dependency):
     )
 
 @router.put("/{unit_id}", response_model=UnitUpdate, status_code=status.HTTP_200_OK)
-async def update_unit(unit_id: UUID, unit: UnitUpdate, session: session_dependency):
+async def update_unit(unit_id: UUID, unit: UnitUpdate, session: session_dependency, token: token_dependency):
+
+    await require_scopes(
+        ResourceInformation(type=Unit, id=unit_id),
+        Scopes.UNIT_MANAGE,
+        token=token,
+        session=session,
+    )
+
     if not unit.name:
         raise HTTPException(status_code=400, detail="Name of unit is required.")
 
@@ -240,7 +312,15 @@ async def update_unit(unit_id: UUID, unit: UnitUpdate, session: session_dependen
 
 
 @router.delete("/{unit_id}")
-async def delete_unit(unit_id: UUID, session: session_dependency):
+async def delete_unit(unit_id: UUID, session: session_dependency, token: token_dependency):
+
+    await require_scopes(
+        ResourceInformation(type=Unit, id=unit_id),
+        Scopes.UNIT_DELETE,
+        token=token,
+        session=session,
+    )
+    
     unit = session.get(Unit, unit_id)
 
     if unit is None:
@@ -263,34 +343,51 @@ async def delete_unit(unit_id: UUID, session: session_dependency):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@router.get("/u/{user_id}", response_model=UnitAll)
-async def get_user_units(user_id: str, session: session_dependency):
-    response = session.exec(
-        select(Unit).join(UnitEnrollment).where(UnitEnrollment.user_id == user_id)
-    ).all()
-
-    return {"units": response}
-
-
 @router.get("/{unit_id}/courseworks", response_model=CourseworkAll)
-async def get_courseworks(unit_id: UUID, session: session_dependency):
+async def get_courseworks(unit_id: UUID, session: session_dependency, token: token_dependency):
+    await require_scopes(ResourceInformation(Unit, unit_id), Scopes.UNIT_READ, token=token, session=session)
+
     unit = session.get(Unit, unit_id)
     if not unit:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail = "Unit not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Unit not found"
         )
     courseworks = unit.courseworks
     return CourseworkAll(courseworks=courseworks)
 
 
 @router.get("/", response_model=UnitAll)
-async def get_units(session: session_dependency):
+async def get_units(session: session_dependency, token: token_dependency):
+    await require_role(FERoles.ADMIN, session=session, token=token)
     statement = select(Unit)
     units = session.exec(statement).all()
-    return {"units":units}
+    return {"units": units}
+
+@router.get('/{id}/scopes')
+async def get_unit_scopes(id: UUID, session: session_dependency, token: token_dependency):
+    unit = session.get(Unit, id)
+
+    if unit is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail='Unit not found'
+        )
+
+    user = await authenticate_user(
+        resource=ResourceInformation(type=Unit, id=id),
+        token=token,
+        session=session,
+    )
+
+    return {"scopes": [scope.value for scope in user.scopes]}
 
 @router.put("/{unit_id}/unlock")
-async def unlockUnit(unit_id:UUID, session: session_dependency):
+async def unlockUnit(unit_id:UUID, token: token_dependency, session: session_dependency):
+    await require_scopes(
+        ResourceInformation(type=Unit, id=unit_id),
+        Scopes.UNIT_MANAGE,
+        token=token,
+        session=session,
+    )
     db_unit = session.get(Unit, unit_id)
     if not db_unit:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Unit not found")
@@ -303,7 +400,13 @@ async def unlockUnit(unit_id:UUID, session: session_dependency):
     return {"success" : True}
 
 @router.put("/{unit_id}/lock")
-async def lockUnit(unit_id:UUID, session: session_dependency):
+async def lockUnit(unit_id:UUID, token: token_dependency, session: session_dependency):
+    await require_scopes(
+        ResourceInformation(type=Unit, id=unit_id),
+        Scopes.UNIT_MANAGE,
+        token=token,
+        session=session,
+    )
     db_unit = session.get(Unit, unit_id)
     if not db_unit:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Unit not found")

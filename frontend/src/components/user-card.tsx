@@ -1,3 +1,4 @@
+import { Crown } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -6,7 +7,7 @@ type UserCardProps = {
   name: string;
   image: string | null | undefined;
   email?: string | undefined;
-  role?: string | undefined;
+  user_role: boolean;
 };
 
 export function getInitials(name: string) {
@@ -27,24 +28,34 @@ export default function UserCard(props: UserCardProps) {
       className="hover:shadow-md transition-shadow p-0 overflow-hidden flex-1"
     >
       <CardContent className="flex w-full gap-4 p-0 items-start flex-row justify-between">
-        <div className="flex flex-row gap-2 items-center">
-          <Avatar className="h-12 w-12 border rounded-none shrink-0">
-            <AvatarImage
-              src={props.image ? props.image : " "}
-              alt={props.name}
-            />
-            <AvatarFallback className="bg-primary/10 text-primary font-semibold rounded-none">
-              {getInitials(props.name)}
-            </AvatarFallback>
-          </Avatar>
+        <div className="flex flex-row gap-2 items-center justify-between w-full mr-4">
+          <div className="flex flex-row items-center gap-2">
+            <Avatar className="h-12 w-12 border rounded-none shrink-0">
+              <AvatarImage
+                src={props.image ? props.image : " "}
+                alt={props.name}
+              />
+              <AvatarFallback className="bg-primary/10 text-primary font-semibold rounded-none">
+                {getInitials(props.name)}
+              </AvatarFallback>
+            </Avatar>
 
-          <div className="flex flex-col">
-            <span className="font-medium text-sm md:text-base">
-              {props.name}
-            </span>
-            <span className="font-mono text-accent-foreground/60 text-xs flex flex-row gap-2">
-              {props.role} {props.email}
-            </span>
+            {props.user_role ? (
+              <Crown
+                className="fill-black dark:fill-white scale-[0.8]"
+                strokeWidth={1.5}
+              />
+            ) : (
+              <></>
+            )}
+            <div className="flex flex-col">
+              <span className="font-medium text-sm md:text-base">
+                {props.name}
+              </span>
+              <span className="font-mono text-accent-foreground/60 text-xs flex flex-row gap-2">
+                {props.email}
+              </span>
+            </div>
           </div>
         </div>
       </CardContent>
