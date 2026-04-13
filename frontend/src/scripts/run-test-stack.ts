@@ -242,3 +242,131 @@ async function waitForHttpReady(
 
   throw new Error(`Timed out waiting for ${label} at ${url}`);
 }
+
+class ProcessSupervisor {
+  private readonly processes: ManagedProcess[] = [];
+  private shuttingDown = false;
+
+  constructor(private readonly config: RuntimeConfig["platform"]) {}
+
+  start(
+    name: string,
+    command: string,
+    args: string[],
+    cwd: string,
+    env: NodeJS.ProcessEnv,
+  ): ManagedProcess {
+    const managed = createManagedProcess(
+      name,
+      command,
+      args,
+      cwd,
+      env,
+      this.config.isWindows,
+    );
+
+    this.processes.push(managed);
+
+    return managed;
+  }
+
+  failOnUnexpectedExit(processToWatch: ManagedProcess): Promise<never> {
+    return processToWatch.exitPromise.then(
+      () => {
+        if (this.shuttingDown) {
+          return never();
+        }
+
+        throw new Error(
+          `${processToWatch.name} exited unexpectedly (${getExitReason(processToWatch)})`,
+        );
+      },
+      (error) => {
+        if (this.shuttingDown) {
+          return never();
+        }
+
+        throw error;
+      },
+    );
+  }
+
+  readonly cleanupSync = (): void => {
+    for (const processToStop of [...this.processes].reverse()) {
+      this.terminate(processToStop, "SIGKILL");
+    }
+  };
+
+  async cleanup(exitCode: number): Promise<never> {
+    if (this.shuttingDown) {
+      process.exit(exitCode);
+    }
+
+    this.shuttingDown = true;
+
+    for (const processToStop of [...this.processes].reverse()) {
+      await this.stop(processToStop);
+    }
+
+    process.exit(exitCode);
+  }
+
+  private terminate(
+    processToStop: ManagedProcess,
+    signal: NodeJS.Signals,
+  ): void {
+    if (processToStop.exited || !processToStop.child.pid) {
+      return;
+    }
+
+    if (this.config.isWindows) {
+      spawnSync(
+        "taskkill",
+        ["/PID", String(processToStop.child.pid), "/T", "/F"],
+        {
+          stdio: "ignore",
+        },
+      );
+      return;
+    }
+
+    try {
+      process.kill(-processToStop.child.pid, signal);
+    } catch {
+      try {
+        processToStop.child.kill(signal);
+      } catch {
+        // The child can already be gone while we are shutting down.
+      }
+    }
+  }
+
+  private async stop(processToStop: ManagedProcess): Promise<void> {
+    if (processToStop.exited) {
+      return;
+    }
+
+    this.terminate(processToStop, "SIGTERM");
+
+    if (this.config.isWindows) {
+      await Promise.race([
+        processToStop.exitPromise,
+        sleep(WINDOWS_KILL_WAIT_MS),
+      ]);
+      return;
+    }
+
+    await Promise.race([
+      processToStop.exitPromise,
+      sleep(this.config.shutdownTimeoutMs),
+    ]);
+
+    if (!processToStop.exited) {
+      this.terminate(processToStop, "SIGKILL");
+      await Promise.race([
+        processToStop.exitPromise,
+        sleep(WINDOWS_KILL_WAIT_MS),
+      ]);
+    }
+  }
+}
