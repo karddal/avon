@@ -1,5 +1,6 @@
 import {
   BookCheck,
+  BookUser,
   Calendar,
   ChartLine,
   Layers,
@@ -58,6 +59,12 @@ const adminItems = [
     title: "Programmes",
     url: "/programmes",
     icon: Layers,
+    bottom: false,
+  },
+  {
+    title: "Management",
+    url: "/management",
+    icon: BookUser,
     bottom: false,
   },
   {
