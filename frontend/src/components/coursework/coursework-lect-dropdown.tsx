@@ -32,39 +32,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import type { CourseworkUpdateData } from "@/lib/actions/get_coursework_update_data";
 import CreateTemplate from "./create-templates";
 import ProvisionCoursework from "./provision-coursework";
 
-type CourseworkUpdateData = {
-  id: string;
-  name: string;
-  description?: string;
-  unit_id: string;
-  due_date: string;
-  creation_date: string;
-  colour: string;
-  unit_name: string;
-  unit_code: string;
-  max_end_date: Date;
-  gitlabId: string;
-};
-
-type GitlabData = {
-  name: string;
-  coursework_id: string;
-  template_id: string;
-};
-
 export default function CourseworkLectDropdown({
   slug,
-  _me,
+  scopes,
   coursework_update_data,
-  gitlab_data,
 }: {
   slug: string;
-  _me: string;
-  coursework_update_data: CourseworkUpdateData;
-  gitlab_data: GitlabData;
+  scopes: Set<string>;
+  coursework_update_data?: CourseworkUpdateData;
 }) {
   const [showDelete, setShowDelete] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
@@ -75,6 +54,21 @@ export default function CourseworkLectDropdown({
     router.refresh();
   }, [router]);
   const [showProvision, setShowProvision] = useState(false);
+
+  const hasManageScope = scopes.has("unit:coursework_manage");
+  const hasGitlabScope = scopes.has("unit:coursework_gitlab");
+  const hasEngineScope = scopes.has("unit:coursework_engine");
+  const hasDeleteScope = scopes.has("unit:coursework_delete");
+  const canEdit = hasManageScope && coursework_update_data;
+  const canManageTemplates = hasGitlabScope && coursework_update_data;
+  const canProvision =
+    hasGitlabScope && coursework_update_data?.templateId != null;
+  const hasEntries =
+    hasEngineScope || hasManageScope || hasGitlabScope || hasDeleteScope;
+
+  if (!hasEntries) {
+    return null;
+  }
 
   return (
     <div className="aspect-square">
@@ -89,84 +83,115 @@ export default function CourseworkLectDropdown({
           <DropdownMenuLabel>Coursework Options</DropdownMenuLabel>
           <DropdownMenuSeparator />
 
-          <DropdownMenuItem
-            disabled={false}
-            onSelect={() => setShowTemplate(true)}
-          >
-            <BookDashed className="mr-2 h-4 w-4" />
-            Templates
-          </DropdownMenuItem>
+          {hasEngineScope && (
+            <>
+              <DropdownMenuItem key={"Engine"} disabled={true}>
+                <ServerCog className="mr-2 h-4 w-4" />
+                Engine
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                key={"Dockerfiles"}
+                onSelect={() => setShowDocker(true)}
+              >
+                <Container className="mr-2 h-4 w-4" />
+                Create Dockerfile
+              </DropdownMenuItem>
+            </>
+          )}
 
-          <DropdownMenuItem disabled={true}>
-            <ServerCog className="mr-2 h-4 w-4" />
-            Engine
-          </DropdownMenuItem>
+          {hasManageScope && (
+            <>
+              {hasEngineScope && <DropdownMenuSeparator />}
+              <DropdownMenuItem key={"Results"} disabled={true}>
+                <BookCheck className="mr-2 h-4 w-4" />
+                Results
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                key={"Edit"}
+                data-cy="coursework-edit-menu-item"
+                onSelect={() => setShowEdit(true)}
+                disabled={!canEdit}
+              >
+                <SquarePen className="mr-2 h-4 w-4" />
+                Edit coursework
+              </DropdownMenuItem>
+            </>
+          )}
 
-          <DropdownMenuItem
-            disabled={false}
-            onSelect={() => setShowDocker(true)}
-          >
-            <Container className="mr-2 h-4 w-4" />
-            Create Dockerfile
-          </DropdownMenuItem>
-
-          <DropdownMenuItem
-            disabled={false}
-            onSelect={() => setShowProvision(true)}
-          >
-            <LayersPlus className="mr-2 h-4 w-4" />
-            Provision Coursework
-          </DropdownMenuItem>
-
-          <DropdownMenuItem disabled={true}>
-            <BookCheck className="mr-2 h-4 w-4" />
-            Results
-          </DropdownMenuItem>
-
-          <DropdownMenuItem
-            data-cy="coursework-edit-menu-item"
-            onSelect={() => setShowEdit(true)}
-          >
-            <SquarePen className="mr-2 h-4 w-4" />
-            Edit coursework
-          </DropdownMenuItem>
-
-          <DropdownMenuSeparator />
-
-          <DropdownMenuItem
-            onSelect={() => setShowDelete(true)}
-            className="text-destructive focus:text-destructive"
-          >
-            <SquareX className="text-destructive mr-2 h-4 w-4" /> Delete
-            coursework
-          </DropdownMenuItem>
+          {hasGitlabScope && (
+            <>
+              {(hasEngineScope || hasManageScope) && <DropdownMenuSeparator />}
+              <DropdownMenuItem
+                key={"Templates"}
+                onSelect={() => setShowTemplate(true)}
+                disabled={!canManageTemplates}
+              >
+                <BookDashed className="mr-2 h-4 w-4" />
+                Templates
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                key={"Provision-Coursework"}
+                onSelect={() => setShowProvision(true)}
+                disabled={!canProvision}
+              >
+                <LayersPlus className="mr-2 h-4 w-4" />
+                Provision Coursework
+              </DropdownMenuItem>
+            </>
+          )}
+          {hasDeleteScope && (
+            <>
+              {(hasEngineScope || hasManageScope || hasGitlabScope) && (
+                <DropdownMenuSeparator />
+              )}
+              <DropdownMenuItem
+                key={"Delete"}
+                onSelect={() => setShowDelete(true)}
+                className="text-destructive focus:text-destructive"
+              >
+                <SquareX className="text-destructive mr-2 h-4 w-4" /> Delete
+                coursework
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
-
-      <CreateTemplate
-        open_state={showTemplates}
-        set_open_state={setShowTemplate}
-        courseworkGitlabId={coursework_update_data.gitlabId}
-        courseworkId={coursework_update_data.id}
-        refresh={refresh}
-      />
-      <ProvisionCoursework
-        open_state={showProvision}
-        set_open_state={setShowProvision}
-        gitlab_data={gitlab_data}
-      ></ProvisionCoursework>
 
       <CreateDockerfile
         open_state={showDocker}
         set_open_state={setShowDocker}
-        refresh={() => refresh()}
-      ></CreateDockerfile>
-
-      <EditCoursework
-        coursework_update_data={coursework_update_data}
-        open_state={showEdit}
-        set_open_state={setShowEdit}
+        refresh={refresh}
       />
+
+      {coursework_update_data && (
+        <EditCoursework
+          coursework_update_data={coursework_update_data}
+          open_state={showEdit}
+          set_open_state={setShowEdit}
+        />
+      )}
+
+      {coursework_update_data && (
+        <CreateTemplate
+          open_state={showTemplates}
+          set_open_state={setShowTemplate}
+          courseworkGitlabId={coursework_update_data.gitlabId}
+          courseworkId={coursework_update_data.id}
+          refresh={refresh}
+        />
+      )}
+
+      {coursework_update_data && (
+        <ProvisionCoursework
+          open_state={showProvision}
+          set_open_state={setShowProvision}
+          gitlab_data={{
+            name: coursework_update_data.name,
+            coursework_id: coursework_update_data.id,
+            template_id: String(coursework_update_data.templateId),
+          }}
+        />
+      )}
 
       <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
         <AlertDialogContent>

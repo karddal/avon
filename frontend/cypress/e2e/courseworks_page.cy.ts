@@ -1,6 +1,6 @@
 describe("Coursework listing page", () => {
   before(() => {
-    cy.exec("npm run db:seed");
+    cy.resetDb();
   });
 
   beforeEach(() => {

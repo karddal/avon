@@ -1,6 +1,9 @@
 describe("Coursework page", () => {
+  before(() => {
+    cy.resetDb();
+  });
+
   beforeEach(() => {
-    cy.exec("npm run db:seed");
     cy.clearAuthSession();
     // cy.visit("/login");
     // cy.get("#email").type("admin@bris.ac.uk");

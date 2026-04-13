@@ -1,5 +1,7 @@
 "use server";
 
+import { fixtureRequest } from "@/scripts/util/fixture-api";
+
 type CreateCourseworkRequest = {
   name: string;
   description: string;
@@ -8,27 +10,18 @@ type CreateCourseworkRequest = {
   colour: string;
 };
 
+export type CreatedCoursework = {
+  id: string;
+  name: string;
+  description: string;
+  unit_id: string;
+  due_date: string;
+  creation_date: string;
+  colour: string;
+};
+
 export async function create_coursework(req: CreateCourseworkRequest) {
-  "use server";
-  const data = await fetch(`http://localhost:8000/coursework/create`, {
-    method: "POST",
-    cache: "no-cache",
+  return fixtureRequest<CreatedCoursework>("/testing/fixtures/courseworks", {
     body: JSON.stringify(req),
-    headers: {
-      "Content-Type": "application/json",
-    },
   });
-  if (!data.ok) {
-    const json = await data.json();
-    return {
-      success: false,
-      data: json,
-    };
-  } else {
-    const json = await data.json();
-    return {
-      success: true,
-      data: json,
-    };
-  }
 }

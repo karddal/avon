@@ -106,6 +106,7 @@ export default function UserSelectionOmittion({
                   id={user.id}
                   name={user.displayName}
                   image={user.src}
+                  user_role={false}
                 />
                 <div className="absolute top-2 right-2 w-8 h-8">
                   <Checkbox

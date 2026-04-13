@@ -3,41 +3,13 @@ import CourseworkLectDropdown from "@/components/coursework/coursework-lect-drop
 import SetupProgress from "@/components/coursework/setup-progress";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { get_coursework_scopes } from "@/lib/actions/get_coursework_scopes";
+import { get_cw_update_data } from "@/lib/actions/get_coursework_update_data";
 import { getRequestJWT, requireSession } from "@/lib/auth-utils";
 import Loading from "../loading";
 import CourseworkDescription from "./description";
 import CourseworkInformation from "./information";
 import CourseworkName from "./name";
-
-type CourseworkUpdateReqResponse = {
-  id: string;
-  name: string;
-  description?: string;
-  unit_id: string;
-  due_date: string;
-  creation_date: string;
-  colour: string;
-  unit_name: string;
-  unit_code: string;
-  gitlabId: string;
-  templateId: string;
-  max_end_date: string;
-};
-
-type CourseworkUpdateData = {
-  id: string;
-  name: string;
-  description?: string;
-  unit_id: string;
-  due_date: string;
-  creation_date: string;
-  colour: string;
-  unit_name: string;
-  unit_code: string;
-  gitlabId: string;
-  templateId: string;
-  max_end_date: Date;
-};
 
 async function CourseworkPageContent({
   params,
@@ -47,41 +19,15 @@ async function CourseworkPageContent({
   const p = await params;
   const slug = p.slug;
   console.log("CW", slug);
-  const s = await requireSession();
+  const _s = await requireSession();
   const token = await getRequestJWT();
-  const me = s.user.role;
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/coursework/${slug}/update_form_data`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      cache: "no-cache",
-    },
-  );
-  const c: CourseworkUpdateReqResponse = await response.json();
-  const end = new Date(c.max_end_date);
-  const data: CourseworkUpdateData = {
-    id: c.id,
-    name: c.name,
-    description: c.description,
-    unit_id: c.unit_id,
-    due_date: c.due_date,
-    creation_date: c.creation_date,
-    colour: c.colour,
-    unit_name: c.unit_name,
-    unit_code: c.unit_code,
-    gitlabId: c.gitlabId,
-    templateId: c.templateId,
-    max_end_date: end,
-  };
   // Hardcoded the template id here, when merged, I should be able to get the template id from jack's code
-  const gitlab_data = {
-    name: c.name,
-    coursework_id: c.id,
-    template_id: String(data.templateId),
-  };
+
+  const scopes: Set<string> = await get_coursework_scopes(slug);
+  const canLoadCourseworkTools = scopes.has("unit:coursework_manage");
+  const data = canLoadCourseworkTools
+    ? await get_cw_update_data(slug)
+    : undefined;
 
   return (
     <>
@@ -101,14 +47,11 @@ async function CourseworkPageContent({
               }
             >
               <CourseworkName slug={slug} token={token} />
-              {(me === "lecturer" || me === "admin") && (
-                <CourseworkLectDropdown
-                  _me={me}
-                  slug={slug}
-                  coursework_update_data={data}
-                  gitlab_data={gitlab_data}
-                ></CourseworkLectDropdown>
-              )}
+              <CourseworkLectDropdown
+                slug={slug}
+                scopes={scopes}
+                coursework_update_data={data}
+              ></CourseworkLectDropdown>
             </div>
           </Suspense>
         </div>
@@ -142,11 +85,9 @@ async function CourseworkPageContent({
         TODO: In the future, this should check the backend to ensure that they are a lecturer on this specific unit. For now this is okay for the demo, but this
         needs to be fixed because a lect could be a student on a nother unit.
           */}
-        {(me === "admin" || me === "lecturer") && (
+        {scopes.has("unit:coursework_gitlab") && (
           <div className="flex flex-col col-span-3 min-h-0">
-            <Suspense>
-              <SetupProgress cw_id={data.id} />
-            </Suspense>
+            <Suspense>{data && <SetupProgress cw_id={data.id} />}</Suspense>
           </div>
         )}
       </section>

@@ -46,6 +46,7 @@ def test_me_active_units(session, client, auth_override_with_role):
     data = response.json()
     assert data["units"][0]["name"] == unit.name
 
+
 def test_me_units_by_programme(session, client):
     unit = create_unit(session)
 
@@ -59,7 +60,8 @@ def test_me_units_by_programme(session, client):
     programme = session.get(Programme, unit.programme_id)
 
     data = response.json()
-    assert data["programmes"][0]["name"]  == programme.name
+    assert data["programmes"][0]["name"] == programme.name
+
 
 def test_me_courseworks(session, client):
     unit = create_unit(session)

@@ -6,10 +6,11 @@ from tests.helpers.factories import create_unit
 
 from app.models.unit_enrollment import UnitEnrollment
 
+
 def test_unit_enrollment_default_type(session: Session):
     unit_id = create_unit(session).id
 
-    enrollment = UnitEnrollment(unit_id = unit_id, user_id = test_user)
+    enrollment = UnitEnrollment(unit_id=unit_id, user_id=test_user)
     session.add(enrollment)
     session.commit()
     session.refresh(enrollment)
@@ -18,14 +19,15 @@ def test_unit_enrollment_default_type(session: Session):
     assert enrollment.user_id == test_user
     assert enrollment.type == "student"
 
+
 def test_unit_enrollment_get_by_composite_primary_key(session: Session):
     unit_id = create_unit(session).id
 
-    enrollment = UnitEnrollment(unit_id = unit_id, user_id = test_user, type = "lecturer")
+    enrollment = UnitEnrollment(unit_id=unit_id, user_id=test_user, type="lecturer")
     session.add(enrollment)
     session.commit()
 
-    #refresh database
+    # refresh database
     session.expunge(enrollment)
 
     session_enrollment = session.get(UnitEnrollment, (unit_id, test_user))
