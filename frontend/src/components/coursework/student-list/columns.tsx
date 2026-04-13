@@ -21,7 +21,6 @@ import {
   AlertDialogHeader,
   AlertDialogMedia,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -44,6 +43,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Spinner } from "@/components/ui/spinner";
 import { coursework_delete_repo } from "@/lib/actions/coursework/coursework_delete_repo";
+import StudList from "./stud-list";
 
 export type StudentNameAndPotentiallyRepo = {
   id: string;
@@ -217,6 +217,9 @@ export const columns: (
                         <DialogDescription>
                           Add a student to this repo.
                         </DialogDescription>
+                        <div className="-mx-4 no-scrollbar max-h-[50vh] overflow-y-auto px-4">
+                          <StudList cw_id={cw_id} repo_id={s} />
+                        </div>
                       </DialogHeader>
                     </DialogContent>
                   );

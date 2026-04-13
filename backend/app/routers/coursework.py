@@ -13,6 +13,7 @@ from sqlalchemy import and_, exists
 # Adding this back in
 from sqlalchemy.orm import selectinload, load_only
 from sqlmodel import Session, select
+from starlette.status import HTTP_404_NOT_FOUND
 from types_aiobotocore_ecs.type_defs import RunTaskResponseTypeDef
 
 # GitLab helpers
@@ -75,6 +76,7 @@ from app.schemas.coursework import (
 )
 from app.schemas.security import CurrentUser
 from app.schemas.test_run import StartTestRun
+from app.schemas.unit import UnitStudents
 
 logger = logging.getLogger("coursework")
 router = APIRouter(prefix="/coursework", tags=["coursework"])
@@ -359,6 +361,41 @@ async def get_student_repos(
     repos = map(lambda sr: sr, coursework.student_repos)
 
     return CourseworkStudentRepos(repos=list(repos))
+
+
+@router.get(
+    "/{id}/addable_students_for_repo/{rid}",
+    response_model=UnitStudents,
+    status_code=status.HTTP_200_OK,
+)
+async def get_students(
+    id: UUID, rid: str, session: session_dependency, token: token_dependency
+):
+    cw = session.get(Coursework, id)
+    if cw is None:
+        raise HTTPException(
+            status_code=HTTP_404_NOT_FOUND, detail="Coursework not found"
+        )
+
+    await require_scopes(
+        ResourceInformation(Unit, cw.unit_id),
+        Scopes.UNIT_MANAGE,
+        token=token,
+        session=session,
+    )
+
+    studs = session.exec(
+        select(StudentRepo.student_id).where(
+            (StudentRepo.cw_id == id) & (StudentRepo.gl_repo_id != rid)
+        )
+    ).all()
+    if not studs:
+        raise HTTPException(status_code=404, detail="No students found.")
+    print(studs)
+    print("**************************************************")
+    return UnitStudents(
+        students=studs,
+    )
 
 
 @router.put("/{id}/change_repo_of/{sid}", response_model=StudentRepo)
