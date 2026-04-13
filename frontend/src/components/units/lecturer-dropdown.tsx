@@ -88,6 +88,7 @@ export default function LecturerDropdown({
   const hasReadScope = scopes.has("unit:read");
   const hasEnrollScope = scopes.has("unit:enroll");
   const hasManageScope = scopes.has("unit:manage");
+  const hasLockingScope = scopes.has("unit:locking")
   const hasNotificationScope = scopes.has("unit:send_notification");
   const hasDeleteScope = scopes.has("unit:delete");
   const hasEntries =
@@ -95,6 +96,7 @@ export default function LecturerDropdown({
     hasEnrollScope ||
     hasManageScope ||
     hasNotificationScope ||
+    hasLockingScope ||
     hasDeleteScope;
 
   if (!hasEntries) {
@@ -137,7 +139,7 @@ export default function LecturerDropdown({
               hasEnrollScope ||
               hasManageScope ||
               hasNotificationScope) && <DropdownMenuSeparator />}
-          {hasManageScope && (
+          {hasLockingScope && (
             <DropdownMenuItem
               onSelect={() =>
                 unit_update_data.unlocked
@@ -231,7 +233,7 @@ export default function LecturerDropdown({
         </AlertDialog>
       )}
 
-      {hasManageScope && (
+      {hasLockingScope && (
         <AlertDialog open={showUnlock} onOpenChange={setShowUnlock}>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -258,7 +260,7 @@ export default function LecturerDropdown({
           </AlertDialogContent>
         </AlertDialog>
       )}
-      {hasManageScope && (
+      {hasLockingScope && (
         <AlertDialog open={showLock} onOpenChange={setShowLock}>
           <AlertDialogContent>
             <AlertDialogHeader>

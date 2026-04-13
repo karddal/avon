@@ -385,7 +385,7 @@ async def get_unit_scopes(id: UUID, session: session_dependency, token: token_de
 async def unlockUnit(unit_id:UUID, token: token_dependency, session: session_dependency):
     await require_scopes(
         ResourceInformation(type=Unit, id=unit_id),
-        Scopes.UNIT_MANAGE,
+        Scopes.UNIT_LOCKING,
         token=token,
         session=session,
     )
@@ -404,7 +404,7 @@ async def unlockUnit(unit_id:UUID, token: token_dependency, session: session_dep
 async def lockUnit(unit_id:UUID, token: token_dependency, session: session_dependency):
     await require_scopes(
         ResourceInformation(type=Unit, id=unit_id),
-        Scopes.UNIT_MANAGE,
+        Scopes.UNIT_LOCKING,
         token=token,
         session=session,
     )
