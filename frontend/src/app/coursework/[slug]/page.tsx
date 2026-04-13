@@ -11,8 +11,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { get_base_images_cw_specific } from "@/lib/actions/coursework/get_base_images_cw_specific";
 import { get_coursework_scopes } from "@/lib/actions/coursework/get_coursework_scopes";
-import { get_cw_update_data } from "@/lib/actions/coursework/get_coursework_update_data";
 import { get_cw_engine_data } from "@/lib/actions/coursework/get_cw_engine_data";
+import { get_all_students_with_maybe_repos } from "@/lib/actions/coursework/get_all_students_on_unit_with_repos";
+import { get_cw_update_data } from "@/lib/actions/coursework/get_coursework_update_data";
 import { get_student_repos } from "@/lib/actions/coursework/get_student_repos";
 import { getRequestJWT } from "@/lib/auth-utils";
 import Loading from "../loading";
@@ -28,25 +29,28 @@ async function CourseworkPageContent({
   const p = await params;
   const slug = p.slug;
   const token = await getRequestJWT();
-  // Hardcoded the template id here, when merged, I should be able to get the template id from jack's code
-
   const scopes: Set<string> = await get_coursework_scopes(slug);
   const canViewSetupProgress =
     scopes.has("unit:coursework_manage") ||
     scopes.has("unit:coursework_gitlab") ||
     scopes.has("unit:coursework_engine") ||
     scopes.has("unit:coursework_delete");
+  const canManageGitlab = scopes.has("unit:coursework_gitlab");
   const canViewStudentRepos = scopes.has("unit:coursework_engine");
   const canLoadCourseworkTools = scopes.has("unit:coursework_manage");
-  const data = canLoadCourseworkTools
-    ? await get_cw_update_data(slug)
-    : undefined;
+  const data = canLoadCourseworkTools ? await get_cw_update_data(slug) : undefined;
 
   const canGetAvailImages = scopes.has("unit:coursework_engine");
 
   const student_repos_data = canViewStudentRepos
     ? await get_student_repos({ coursework_id: slug })
     : undefined;
+  const studentsWithMaybeRepos = canManageGitlab
+    ? await get_all_students_with_maybe_repos({ coursework_id: slug })
+    : undefined;
+  const hasProvisioned = Boolean(
+    studentsWithMaybeRepos?.some((student) => student.repo_id != null),
+  );
 
   const images = canGetAvailImages
     ? await get_base_images_cw_specific({ coursework_id: slug })
@@ -57,7 +61,6 @@ async function CourseworkPageContent({
 
   return (
     <>
-      {/* Header */}
       <div className="flex flex-col col-span-3">
         <div className="font-semibold text-5xl text-shadow-2xs mt-2">
           <Suspense
@@ -79,7 +82,8 @@ async function CourseworkPageContent({
                 coursework_update_data={data}
                 avail_images_data={images?.images}
                 cw_engine_data={cw_engine_data}
-              ></CourseworkLectDropdown>
+                hasProvisionedInitially={hasProvisioned}
+              />
             </div>
           </Suspense>
         </div>
