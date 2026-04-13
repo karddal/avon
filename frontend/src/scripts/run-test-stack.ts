@@ -370,3 +370,95 @@ class ProcessSupervisor {
     }
   }
 }
+
+function registerLifecycleHandlers(supervisor: ProcessSupervisor): void {
+  process.on("SIGINT", () => {
+    void supervisor.cleanup(EXIT_CODE_SIGINT);
+  });
+
+  process.on("SIGTERM", () => {
+    void supervisor.cleanup(EXIT_CODE_SIGTERM);
+  });
+
+  process.on("uncaughtException", (error) => {
+    console.error(error);
+    void supervisor.cleanup(EXIT_CODE_ERROR);
+  });
+
+  process.on("unhandledRejection", (error) => {
+    console.error(error);
+    void supervisor.cleanup(EXIT_CODE_ERROR);
+  });
+
+  process.on("exit", supervisor.cleanupSync);
+}
+
+const runtime = buildRuntimeConfig();
+const supervisor = new ProcessSupervisor(runtime.platform);
+
+async function main(): Promise<void> {
+  ensureFileExists(runtime.paths.backendPython, "Backend virtualenv Python");
+  ensureFileExists(runtime.paths.frontendServer, "Built frontend server");
+  ensureFileExists(runtime.paths.cypressBin, "Cypress CLI");
+
+  registerLifecycleHandlers(supervisor);
+
+  const backend = supervisor.start(
+    "backend",
+    runtime.paths.backendPython,
+    [
+      "-m",
+      "uvicorn",
+      "app.main:app",
+      "--host",
+      runtime.network.backendHost,
+      "--port",
+      runtime.network.backendPort,
+    ],
+    runtime.paths.backendDir,
+    runtime.env.backend,
+  );
+
+  await waitForHttpReady(
+    runtime.network.backendHealthUrl,
+    "backend",
+    backend,
+    runtime.platform,
+  );
+
+  const frontend = supervisor.start(
+    "frontend",
+    process.execPath,
+    [runtime.paths.frontendServer],
+    runtime.paths.frontendDir,
+    runtime.env.frontend,
+  );
+
+  await waitForHttpReady(
+    runtime.network.frontendUrl,
+    "frontend",
+    frontend,
+    runtime.platform,
+  );
+
+  const cypress = supervisor.start(
+    "cypress",
+    process.execPath,
+    [runtime.paths.cypressBin, "run"],
+    runtime.paths.frontendDir,
+    runtime.env.runner,
+  );
+
+  const cypressExitCode = await Promise.race([
+    waitForExitCode(cypress),
+    supervisor.failOnUnexpectedExit(backend),
+    supervisor.failOnUnexpectedExit(frontend),
+  ]);
+
+  await supervisor.cleanup(cypressExitCode);
+}
+
+void main().catch(async (error) => {
+  console.error(error);
+  await supervisor.cleanup(EXIT_CODE_ERROR);
+});
