@@ -21,7 +21,7 @@
   - [Backend](handover/arch/backend.md)
   - [GitLab](handover/arch/gitlab.md)
   - [Test running system](handover/arch/tests.md)
-  - [AWS]()
+  - [AWS](handover/arch/aws.md)
 - [Project structure](handover/project/README.md)
 - [Future work](handover/future/README.md)
 
