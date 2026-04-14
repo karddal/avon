@@ -143,6 +143,7 @@ To obtain these credentials, follow these steps:
 
 > For number 5, the DB_URL should look like this: `postgresql://username:password@host:5432/database_name`
 > The default username is `postgres`.
+> 
 > The host is the url of the RDS instance, will look similar to this: `avon-database.???.eu-north-1.rds.amazonaws.com`
 
 ## AWS Secrets Manager
