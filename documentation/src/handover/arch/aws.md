@@ -182,6 +182,8 @@ AWS [IAM](https://docs.aws.amazon.com/whitepapers/latest/introduction-aws-securi
 
 The user(s) of AWS will have a specific user account, with permission policies that allow them to do certain things in relation to the AWS system.
 
+To run Avon locally, you will need to run commands like `aws login` and `aws configure`. `aws configure` requires an [Access Key](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html) from your AWS IAM User account.
+
 ### Roles
 
 Roles allow short-term identities to be created that have specific permissions. Avon uses the role system (`AVON_WORKER_ROLE`) to allow the testing functionality to work correctly, having the permissions to access S3 and SQS.
