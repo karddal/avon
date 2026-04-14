@@ -9,14 +9,12 @@ type Props = {
   open_state: boolean;
   set_open_state: Dispatch<SetStateAction<boolean>>;
   courseworkId: string;
-  refresh: () => void;
 };
 
 export default function TestBatchesDialog({
   open_state,
   set_open_state,
   courseworkId,
-  refresh,
 }: Props) {
   return (
     <Dialog open={open_state} onOpenChange={set_open_state}>
@@ -29,10 +27,7 @@ export default function TestBatchesDialog({
             </p>
             <CardTitle>Test batches</CardTitle>
             <Suspense>
-              <TestBatchesTable
-                coursework_id={courseworkId}
-                refreshTable={refresh}
-              ></TestBatchesTable>
+              <TestBatchesTable coursework_id={courseworkId}></TestBatchesTable>
             </Suspense>
           </div>
         </div>

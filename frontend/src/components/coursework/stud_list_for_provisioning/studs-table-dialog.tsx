@@ -93,8 +93,6 @@ export default function StudsListDialogForProvision({
                       coursework_id={courseworkId}
                       setRowSelection={setRowSelection}
                       rowSelection={rowSelection}
-                      refreshTable={refreshTable}
-                      setRefreshTable={setRefreshTable}
                     />
                   </Suspense>
                 </div>

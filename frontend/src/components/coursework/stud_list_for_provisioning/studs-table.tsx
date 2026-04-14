@@ -1,3 +1,4 @@
+import type { RowSelectionState } from "@tanstack/react-table";
 import {
   flexRender,
   getExpandedRowModel,
@@ -40,14 +41,10 @@ export function StudentsTableWithMaybeRepos({
   coursework_id,
   rowSelection,
   setRowSelection,
-  refreshTable,
-  setRefreshTable,
 }: {
   coursework_id: string;
-  rowSelection: {};
-  setRowSelection: Dispatch<SetStateAction<{}>>;
-  refreshTable: number;
-  setRefreshTable: Dispatch<SetStateAction<number>>;
+  rowSelection: RowSelectionState;
+  setRowSelection: Dispatch<SetStateAction<RowSelectionState>>;
 }) {
   const [data, setData] = useState<StudentNameAndPotentiallyRepo[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -90,7 +87,6 @@ export function StudentsTableWithMaybeRepos({
       });
       const filteredData = updatedData.filter((s) => s.repo_url == null);
       setData(filteredData);
-      console.log(updatedData);
     };
     updateData().then(() => {
       setLoading(false);

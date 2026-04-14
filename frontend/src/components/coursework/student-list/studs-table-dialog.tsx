@@ -9,6 +9,7 @@ type Props = {
   open_state: boolean;
   set_open_state: Dispatch<SetStateAction<boolean>>;
   courseworkId: string;
+  due_date: string;
   refresh: () => void;
 };
 
@@ -16,6 +17,7 @@ export default function StudsListDialog({
   open_state,
   set_open_state,
   courseworkId,
+  due_date,
   refresh,
 }: Props) {
   return (
@@ -36,6 +38,7 @@ export default function StudsListDialog({
                   <StudentsTableWithMaybeRepos
                     refresh={refresh}
                     coursework_id={courseworkId}
+                    due_date={due_date}
                   />
                 </Suspense>
               </div>

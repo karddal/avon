@@ -1,79 +1,109 @@
-import { ArrowRight, CheckCircle, Circle, CircleDashed } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cw_setup_progress } from "@/lib/actions/coursework/coursework-setup-progress";
+import SetupProgressCarousel, {
+  type SetupProgressArea,
+} from "@/components/coursework/setup-progress-carousel";
+import { fetch_test_runs } from "@/lib/actions/coursework/coursework-fetch-test-runs";
+import { get_all_students_with_maybe_repos } from "@/lib/actions/coursework/get_all_students_on_unit_with_repos";
+import { get_cw_update_data } from "@/lib/actions/coursework/get_coursework_update_data";
+import { get_cw_engine_data } from "@/lib/actions/coursework/get_cw_engine_data";
 
-interface setupProgress {
+interface SetupProgressProps {
   cw_id: string;
 }
 
-export default async function SetupProgress({ cw_id }: setupProgress) {
-  const steps = await cw_setup_progress(cw_id);
+function getDefaultAreaIndex(areas: SetupProgressArea[]) {
+  const actionableIndex = areas.findIndex((area) => area.status === "action");
+  if (actionableIndex !== -1) {
+    return actionableIndex;
+  }
+
+  const readyIndex = areas.findIndex((area) => area.status === "ready");
+  if (readyIndex !== -1) {
+    return readyIndex;
+  }
+
+  return Math.max(areas.length - 1, 0);
+}
+
+export default async function SetupProgress({ cw_id }: SetupProgressProps) {
+  const [coursework, engineData, studentsWithRepos, testRuns] =
+    await Promise.all([
+      get_cw_update_data(cw_id),
+      get_cw_engine_data({ coursework_id: cw_id }),
+      get_all_students_with_maybe_repos({ coursework_id: cw_id }),
+      fetch_test_runs(cw_id).catch(() => []),
+    ]);
+
+  const templateConfigured = Boolean(coursework.templateId);
+  const reposProvisioned = studentsWithRepos.some((student) => student.repo_id);
+  const engineConfigured = Boolean(
+    engineData.base_image_id && engineData.tester_command,
+  );
+  const hasTestRuns = testRuns.length > 0;
+
+  const areas: SetupProgressArea[] = [
+    {
+      title: "Template Repository",
+      status: templateConfigured ? "complete" : "action",
+      description: templateConfigured
+        ? "The coursework has a repo template configured and can provision student repositories."
+        : "Choose or create the template repository before provisioning student repos.",
+      detail: "Needed for provisioning student repositories.",
+    },
+    {
+      title: "Student Repositories",
+      status: reposProvisioned
+        ? "complete"
+        : templateConfigured
+          ? "action"
+          : "blocked",
+      description: reposProvisioned
+        ? "Student repositories have been provisioned for this coursework."
+        : templateConfigured
+          ? "The coursework is ready to provision student repositories."
+          : "Provisioning stays blocked until a template repository is configured.",
+      detail: templateConfigured
+        ? "Depends on: template repository."
+        : "Blocked by: missing template repository.",
+    },
+    {
+      title: "Testing Engine",
+      status: engineConfigured ? "complete" : "action",
+      description: engineConfigured
+        ? "A base image and tester command are configured for automated testing."
+        : "Configure the Avon engine if you want to run automated test batches.",
+      detail: "Independent from GitLab setup, but required for test batches.",
+    },
+    {
+      title: "Test Batches",
+      status: hasTestRuns
+        ? "complete"
+        : reposProvisioned && engineConfigured
+          ? "ready"
+          : "blocked",
+      description: hasTestRuns
+        ? "At least one test batch has been started for this coursework."
+        : reposProvisioned && engineConfigured
+          ? "The coursework is ready to run its first test batch."
+          : "Test batches need both provisioned repos and a configured engine.",
+      detail:
+        "Depends on: student repositories plus testing engine. Not required to manage repos.",
+    },
+    {
+      title: "Manage Student Repositories",
+      status: reposProvisioned ? "ready" : "blocked",
+      description: reposProvisioned
+        ? "You can manage teams, invitations, and repository membership now."
+        : "Repo management becomes available after repositories have been provisioned.",
+      detail: reposProvisioned
+        ? "Useful for team changes and invite management."
+        : "Blocked by: no student repositories yet.",
+    },
+  ];
+
   return (
-    // Need to use reusable components for the buttons and sections, just place with names or smth
-    // Add links to each one and actually do backend for it as well
-    <Card className="h-full">
-      <CardHeader className="flex flex-col ">
-        <CardTitle>
-          <div className="text-2xl flex flex-row items-center gap-2">
-            <CircleDashed />
-            Setup Progress
-          </div>
-          <div className="font-light">
-            View the progress in setting up the coursework.
-          </div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex flex-col items-center justify-center">
-          {steps.map((step, index) => (
-            <div key={step.title} className="flex flex-col items-center w-full">
-              {step.completed && (
-                <div
-                  className="flex w-full items-center justify-between rounded-xl 
-            border border-green-500/30 bg-green-500/5 
-            p-4 shadow-sm transition-all 
-            hover:shadow-md hover:-translate-y-0.5"
-                >
-                  <h3 className="text-sm font-semibold uppercase tracking-wide">
-                    {step.title}
-                  </h3>
-
-                  <div
-                    className="flex h-8 w-8 items-center justify-center 
-                  rounded-full bg-green-500/10 ml-3"
-                  >
-                    <CheckCircle className="h-5 w-5 text-green-600" />
-                  </div>
-                </div>
-              )}
-              {!step.completed && (
-                <div
-                  className="flex w-full items-center justify-between rounded-xl 
-            border border-border bg-card 
-            p-4 shadow-sm transition-all 
-            hover:shadow-md hover:-translate-y-0.5"
-                >
-                  <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                    {step.title}
-                  </h3>
-
-                  <div
-                    className="flex h-8 w-8 items-center justify-center 
-                  rounded-full bg-muted ml-3"
-                  >
-                    <Circle className="h-4 w-4 text-muted-foreground" />
-                  </div>
-                </div>
-              )}
-              {steps.length - 1 > index && (
-                <div className="flex items-center px-3 py-3 md:py-0">
-                  <ArrowRight className="h-4 w-4 text-muted-foreground/40 rotate-90" />
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+    <SetupProgressCarousel
+      areas={areas}
+      defaultIndex={getDefaultAreaIndex(areas)}
+    />
   );
 }

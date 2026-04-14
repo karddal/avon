@@ -161,7 +161,7 @@ export const columns: (coursework_id: string) => ColumnDef<TestRun>[] = (
         );
       },
       aggregationFn: "min",
-      cell: ({ row }) => {
+      cell: () => {
         return <></>;
       },
       sortingFn: "datetime",

@@ -1,3 +1,4 @@
+import type { RowSelectionState } from "@tanstack/react-table";
 import { flexRender, useReactTable } from "@tanstack/react-table";
 import {
   type ColumnFiltersState,
@@ -37,8 +38,8 @@ export function StudentReposTable({
   setRowSelection,
 }: {
   coursework_id: string;
-  rowSelection: {};
-  setRowSelection: Dispatch<SetStateAction<{}>>;
+  rowSelection: RowSelectionState;
+  setRowSelection: Dispatch<SetStateAction<RowSelectionState>>;
 }) {
   const [data, setData] = useState<StudentNameAndRepo[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
