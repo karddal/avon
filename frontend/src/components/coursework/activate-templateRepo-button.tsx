@@ -4,7 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { activate_template_request } from "@/lib/actions/activate_template_project";
+import { activate_template_request } from "@/lib/actions/coursework/activate_template_project";
 
 interface ActivateTemplateRepo {
   courseworkGitlabId: string;

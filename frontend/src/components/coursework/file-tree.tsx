@@ -7,7 +7,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface RepoTree {
   fileTree: GitLabTreeItem[];
@@ -102,8 +101,8 @@ export default function RepoTree({ fileTree }: RepoTree) {
     <div>
       <div className="mb-2 text-sm font-medium">Repository</div>
 
-      <ScrollArea className="rounded-md border p-2">
-        <div className="space-y-1">
+      <div className="max-h-72 overflow-auto rounded-md border">
+        <div className="min-w-max space-y-1 p-2">
           {nestedTree.map((node) => (
             <TreeNode key={node.path} node={node} />
           ))}
@@ -113,7 +112,7 @@ export default function RepoTree({ fileTree }: RepoTree) {
             </div>
           )}
         </div>
-      </ScrollArea>
+      </div>
     </div>
   );
 }

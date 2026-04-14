@@ -4,6 +4,7 @@ type Lecturer = {
   id: string;
   name: string;
   image: string;
+  role: boolean;
 };
 
 export default function Lecturers({ lecturers }: { lecturers: Lecturer[] }) {
@@ -15,6 +16,7 @@ export default function Lecturers({ lecturers }: { lecturers: Lecturer[] }) {
           name={lecturer.name}
           id={lecturer.id}
           image={lecturer.image}
+          user_role={lecturer.role}
         ></UserCard>
       ))}
     </div>

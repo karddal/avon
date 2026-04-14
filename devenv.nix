@@ -1,6 +1,7 @@
 { pkgs, lib, config, inputs, ... }:
 
 {
+  process.manager.implementation = "process-compose";
   # https://devenv.sh/basics/
   env.GREET = "devenv";
 
@@ -27,9 +28,8 @@
     package = pkgs.python312;
     directory = "./backend";
     uv.enable = true;
+    venv.enable = true;
   };
-
-
 
   # https://devenv.sh/processes/
   # processes.dev.exec = "${lib.getExe pkgs.watchexec} -n -- ls -la";

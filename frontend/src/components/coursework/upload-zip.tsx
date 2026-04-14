@@ -15,8 +15,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { overwrite_zip } from "@/lib/actions/overwrite_zip";
-import { upload_zip } from "@/lib/actions/upload_zip";
+import { overwrite_zip } from "@/lib/actions/coursework/overwrite_zip";
+import { upload_zip } from "@/lib/actions/coursework/upload_zip";
 
 interface UploadZip {
   courseworkGitlabId: string;

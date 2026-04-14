@@ -1,6 +1,8 @@
 
 import uuid
+
 from pydantic import BaseModel
+
 
 class TemplateCreate(BaseModel):
     coursework_id: uuid.UUID
@@ -14,7 +16,10 @@ class ProjectCreate(BaseModel):
 class ProjectFork(BaseModel):
     name: str
     coursework_id: uuid.UUID
-    template_id: str    
+    template_id: str
+
+class CreateProjectForkForSpecificStudent(ProjectFork):
+    student_ids: list[str]
 
 class ProjectSkeleton(BaseModel):
     group_id: int
@@ -22,7 +27,7 @@ class ProjectSkeleton(BaseModel):
 
 class ProjectRead(BaseModel):
     id: int
-    name: str 
+    name: str
     path: str
     web_url: str
 

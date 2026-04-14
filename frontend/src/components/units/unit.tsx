@@ -1,8 +1,7 @@
 "use client";
 
-import { Ellipsis, SquarePen, SquareX } from "lucide-react";
+import { Ellipsis, SquareX } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
   AlertDialog,
@@ -45,7 +44,6 @@ export default function Unit({
     backgroundColor: `#${props.colour}`,
   };
   const [showDelete, setShowDelete] = useState(false);
-  const router = useRouter();
 
   return (
     <div className="relative group">
@@ -93,17 +91,6 @@ export default function Unit({
               <DropdownMenuLabel>Unit Options</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onSelect={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  router.push(`/units/${props.id}?edit=1`);
-                }}
-              >
-                <SquarePen className="mr-2 h-4 w-4" /> Edit Unit
-              </DropdownMenuItem>
-
-              <DropdownMenuItem
-                data-cy="unit-delete-menu-item"
                 onSelect={(e) => {
                   e.preventDefault();
                   setShowDelete(true);

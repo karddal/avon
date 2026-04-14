@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import type { Notification2 } from "@/components/notifications/notifications-content";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { set_as_read } from "@/lib/actions/set_as_read";
+import { set_as_read } from "@/lib/actions/notification/set_as_read";
 import {
   Item,
   ItemActions,
@@ -41,12 +41,14 @@ export default function NotificationMessage({ data }: { data: Notification2 }) {
   const router = useRouter();
   return (
     <Item className={"mb-2"} variant={"outline"}>
-      <ItemContent>
+      <ItemContent className={"max-h-[50lh] overflow-y-scroll"}>
         <ItemTitle>
           {!data.viewed && <Dot className={"text-red-500"} />}
           {data.title}
         </ItemTitle>
-        <p className="overflow-y-scroll w-full break-all">{data.body}</p>
+        <p className="whitespace-pre-wrap overflow-y-scroll h-full w-full hyphens-auto">
+          {data.body}
+        </p>
         <ItemFooter>
           <span className={"font-light"}>
             Received {new Date(data.created_at).toLocaleString()}

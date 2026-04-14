@@ -4,18 +4,18 @@ import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
 import UnitDescription from "@/app/units/[slug]/description";
 import UnitName from "@/app/units/[slug]/name";
-import { DropdownCard } from "@/components/dropdown-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LecturerDropdown from "@/components/units/lecturer-dropdown";
 import Lecturers from "@/components/units/lecturers";
-import OpenEdit from "@/components/units/open-edit";
 import UnitsCourseworkList from "@/components/units/units-coursework-list";
+import { get_unit_scopes } from "@/lib/actions/unit/get_unit_scopes";
 import { getRequestJWT, requireSession } from "@/lib/auth-utils";
-import { get_user_image_from_id } from "@/lib/actions/get_image";
-import { get_username_from_id } from "@/lib/actions/get_username";
+import { get_username_from_id } from "@/lib/actions/auth/get_username";
+import { get_user_image_from_id } from "@/lib/actions/coursework/get_image";
+import { get_owner_of_unit } from "@/lib/actions/unit/get_owner_of_unit";
 import {
   getUnitLayoutForCurrentUser,
   saveUnitLayoutForCurrentUser,
@@ -31,6 +31,7 @@ type Lecturer = {
   id: string;
   name: string;
   image: string;
+  role: boolean;
 };
 
 type UnitDataResponse = {
@@ -71,6 +72,8 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
   console.log("UNIT", slug);
   const s = await requireSession();
   const token = await getRequestJWT();
+  const scopes: Set<string> = await get_unit_scopes(slug);
+
   let userRole = s.user.role;
   const me = s.user.id;
   if (!userRole) {
@@ -110,7 +113,8 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
 
   const lecturerResponse: Response = await lecturersResponse.json();
   const lecturers = lecturerResponse.lecturers;
-  
+  const owner = await get_owner_of_unit(data.id);
+
     const results: Lecturer[] = [];
     for (const lecturer of lecturers) {
       console.log(lecturer);
@@ -118,6 +122,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
         id: lecturer,
         name: await get_username_from_id(lecturer),
         image: await get_user_image_from_id(lecturer),
+        role: lecturer === owner,
       });
     }
 
@@ -137,7 +142,6 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
 
   return (
     <>
-      <OpenEdit data={data} />
       {/* Header */}
       <div className="flex flex-col col-span-3 min-h-0">
         <div className="font-semibold text-5xl text-shadow-2xs">
@@ -155,6 +159,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
                   unit_update_data={data}
                   me={me}
                   slug={slug}
+                  scopes={scopes}
                 ></LecturerDropdown>
               )}
             </div>

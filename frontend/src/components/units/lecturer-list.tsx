@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, TextSearch, X } from "lucide-react";
+import { Crown, Menu, TextSearch, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
@@ -11,35 +11,69 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import DeleteDialog from "@/components/units/delete-lecturer-dialog";
+import TransferDialog from "@/components/units/transfer-dialog";
 import UserCard from "@/components/user-card";
-import { get_user_image_from_id } from "@/lib/actions/get_image";
-import { get_lecturers } from "@/lib/actions/get_lecturers";
-import { get_username_from_id } from "@/lib/actions/get_username";
-import { remove_user_enrollment } from "@/lib/actions/remove_user_enrollment";
+import { get_username_from_id } from "@/lib/actions/auth/get_username";
+import { get_user_image_from_id } from "@/lib/actions/coursework/get_image";
+import { get_lecturers } from "@/lib/actions/unit/get_lecturers";
+import { get_owner_of_unit } from "@/lib/actions/unit/get_owner_of_unit";
+import { remove_user_enrollment } from "@/lib/actions/unit/remove_user_enrollment";
+import { transfer_ownership } from "@/lib/actions/unit/transfer_ownership";
 import { requireSession } from "@/lib/auth-utils";
 
 type lecturerInfo = {
   id: string;
   displayName: string;
   src?: string;
+  role: boolean;
 };
 
 export default function lecturerList({
+  canManageEnrollment,
   unit_id,
   me,
 }: {
+  canManageEnrollment: boolean;
   unit_id: string;
   me: string;
 }) {
   const [lecturers, setlecturers] = useState<lecturerInfo[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
-  const [role, setRole] = useState<string | null | undefined>();
+  const [_role, setRole] = useState<string | null | undefined>();
+  const [userIsOwner, setUserIsOwner] = useState<boolean>(false);
+  const [showTransfer, setShowTransfer] = useState<boolean>(false);
+  const [showDelete, setShowDelete] = useState<boolean>(false);
+  const [ownerID, setOwnerID] = useState<string>("");
+  const [deleteID, setDeleteID] = useState<string>("");
 
-  async function handleDelete(id: string) {
+  async function handleDelete() {
+    const id = deleteID;
     const result = await remove_user_enrollment(unit_id, id);
     if (result) {
       toast.success("Lecturer unenrolled successfully");
+    } else {
+      throw new Error();
+    }
+    loadlecturers();
+  }
+
+  async function handleDeleteDialog(lecturer: string) {
+    setShowDelete(true);
+    setDeleteID(lecturer);
+  }
+
+  async function handleTransferDialog(new_owner_id: string) {
+    setShowTransfer(true);
+    setOwnerID(new_owner_id);
+  }
+
+  async function handleTransfer() {
+    const new_owner_id = ownerID;
+    const result = await transfer_ownership(unit_id, new_owner_id);
+    if (result) {
+      toast.success("Ownership transferred successfully.");
     } else {
       throw new Error();
     }
@@ -53,6 +87,8 @@ export default function lecturerList({
     try {
       const data = await get_lecturers(unit_id);
       const lecturerIds = data.lecturers;
+      const owner = await get_owner_of_unit(unit_id);
+      setUserIsOwner(owner === me);
 
       const enrichedlecturers = await Promise.all(
         lecturerIds.map(async (id: string) => {
@@ -63,6 +99,7 @@ export default function lecturerList({
             id: id,
             displayName: name || "Unknown lecturer",
             src: imageSrc,
+            role: owner === id,
           };
         }),
       );
@@ -71,7 +108,7 @@ export default function lecturerList({
     } finally {
       setLoading(false);
     }
-  }, [unit_id]);
+  }, [unit_id, me]);
 
   useEffect(() => {
     loadlecturers();
@@ -107,6 +144,18 @@ export default function lecturerList({
         />
       </div>
 
+      <TransferDialog
+        open_state={showTransfer}
+        set_open_state={setShowTransfer}
+        callback={handleTransfer}
+      />
+
+      <DeleteDialog
+        open_state={showDelete}
+        set_open_state={setShowDelete}
+        callback={handleDelete}
+      />
+
       <div className="flex flex-col gap-2 overflow-y-scroll max-h-48 bg-accent p-2">
         {filteredlecturers.length > 0 ? (
           filteredlecturers.map((lecturer) => (
@@ -115,6 +164,7 @@ export default function lecturerList({
                 id={lecturer.id}
                 name={lecturer.displayName}
                 image={lecturer.src}
+                user_role={lecturer.role}
               />
 
               <div className="absolute top-2 right-2 w-8 h-8">
@@ -128,19 +178,24 @@ export default function lecturerList({
                       View Lecturer
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={() => handleDelete(lecturer.id)}
-                      className="text-destructive hover:text-destructive"
-                      disabled={
-                        role !== "admin" ||
-                        lecturer.id === me ||
-                        lecturers.length <= 1
-                      }
+                      onClick={() => handleTransferDialog(lecturer.id)}
+                      disabled={!userIsOwner}
                     >
-                      <X className="text-destructive hover:text-destructive"></X>
-                      <p className="text-destructive hover:text-destructive">
-                        Remove Lecturer
-                      </p>
+                      <Crown className="text-foreground"></Crown>
+                      Transfer Ownership
                     </DropdownMenuItem>
+                    {canManageEnrollment && (
+                      <DropdownMenuItem
+                        onClick={() => handleDeleteDialog(lecturer.id)}
+                        className="text-destructive hover:text-destructive"
+                        disabled={lecturer.id === me || lecturer.role}
+                      >
+                        <X className="text-destructive hover:text-destructive"></X>
+                        <p className="text-destructive hover:text-destructive">
+                          Remove Lecturer
+                        </p>
+                      </DropdownMenuItem>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>

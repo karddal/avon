@@ -1,5 +1,5 @@
-import { CalendarDays, Clock } from "lucide-react";
-import { DropdownCard } from "@/components/dropdown-card";
+import { BellElectric, CalendarDays, Clock } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 type courseworkData = {
   id: string;
@@ -42,7 +42,7 @@ export default async function CourseworkInformation({
     `${process.env.NEXT_PUBLIC_API_URL}/coursework/${slug}`,
     {
       headers: {
-        Cookie: `access_token=${token}`,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     },
@@ -55,41 +55,49 @@ export default async function CourseworkInformation({
   const end = parseDateTime(coursework.due_date);
 
   return (
-    <DropdownCard
-      title={"Information"}
-      desc={"Deadlines and scheduling details."}
-      openByDefault={true}
-      className="h-full"
-    >
-      <div className="flex flex-row items-center justify-evenly gap-8 py-4">
-        <div className="flex flex-col gap-2">
-          <span className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-            <Clock className="w-3 h-3" /> Set Date
-          </span>
-          <div className="flex flex-col">
-            <h2 className="text-4xl font-mono font-black tracking-tighter tabular-nums">
-              {start.time}
-            </h2>
-            <p className="text-sm font-medium text-muted-foreground mt-1">
-              {start.day}
-            </p>
+    <Card className="h-full">
+      <CardHeader className="flex flex-col">
+        <CardTitle>
+          <div className="text-2xl flex flex-row items-center gap-2">
+            <BellElectric />
+            Information
           </div>
-        </div>
+          <div className="font-light">
+            Information about the coursework is shown below.
+          </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-row items-center justify-evenly gap-8 py-4">
+          <div className="flex flex-col gap-2">
+            <span className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+              <Clock className="w-3 h-3" /> Set Date
+            </span>
+            <div className="flex flex-col">
+              <h2 className="text-4xl font-mono font-black tracking-tighter tabular-nums">
+                {start.time}
+              </h2>
+              <p className="text-sm font-medium text-muted-foreground mt-1">
+                {start.day}
+              </p>
+            </div>
+          </div>
 
-        <div className="flex flex-col gap-2">
-          <span className="text-sm font-bold uppercase tracking-widest text-destructive flex items-center gap-2">
-            <CalendarDays className="w-3 h-3" /> Due Date
-          </span>
-          <div className="flex flex-col">
-            <h2 className="text-4xl font-mono font-black tracking-tighter tabular-nums text-destructive">
-              {end.time}
-            </h2>
-            <p className="text-sm font-medium text-muted-foreground mt-1">
-              {end.day}
-            </p>
+          <div className="flex flex-col gap-2">
+            <span className="text-sm font-bold uppercase tracking-widest text-destructive flex items-center gap-2">
+              <CalendarDays className="w-3 h-3" /> Due Date
+            </span>
+            <div className="flex flex-col">
+              <h2 className="text-4xl font-mono font-black tracking-tighter tabular-nums text-destructive">
+                {end.time}
+              </h2>
+              <p className="text-sm font-medium text-muted-foreground mt-1">
+                {end.day}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-    </DropdownCard>
+      </CardContent>
+    </Card>
   );
 }

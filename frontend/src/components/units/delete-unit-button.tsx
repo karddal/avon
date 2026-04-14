@@ -6,13 +6,17 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { delete_unit } from "@/lib/actions/delete_unit";
+import { delete_unit } from "@/lib/actions/unit/delete_unit";
 
 interface DeleteUnitButtonProps {
   unitId: string;
+  className?: string;
 }
 
-export default function DeleteUnitButton({ unitId }: DeleteUnitButtonProps) {
+export default function DeleteUnitButton({
+  unitId,
+  className,
+}: DeleteUnitButtonProps) {
   const [status, setStatus] = useState<number>(0);
   const router = useRouter();
 
@@ -37,9 +41,9 @@ export default function DeleteUnitButton({ unitId }: DeleteUnitButtonProps) {
   };
 
   return (
-    <div className="h-full">
+    <div className={className}>
       {status === 1 && (
-        <Button size="lg" variant="destructive" disabled className="w-full">
+        <Button variant="destructive" disabled className="h-10 w-full">
           <Spinner className="mr-2 h-4 w-4" />
           Deleting...
         </Button>
@@ -48,8 +52,7 @@ export default function DeleteUnitButton({ unitId }: DeleteUnitButtonProps) {
       {status === 0 && (
         <Button
           variant="destructive"
-          size="lg"
-          className="w-full"
+          className="h-10 w-full"
           onClick={handleDelete}
         >
           Delete
@@ -61,7 +64,7 @@ export default function DeleteUnitButton({ unitId }: DeleteUnitButtonProps) {
           variant="outline"
           size="lg"
           disabled
-          className="w-full border-destructive text-destructive"
+          className="h-10 w-full border-destructive text-destructive"
         >
           <XIcon className="mr-2 h-4 w-4" />
           Failed

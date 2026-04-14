@@ -21,7 +21,7 @@ import {
   type StructurePreviewResponse,
   sendStructure,
   type UnitPreview,
-} from "@/lib/actions/structure";
+} from "@/lib/actions/coursework/structure";
 import { cn } from "@/lib/utils";
 
 export default function CreateStructurePage() {

@@ -12,13 +12,14 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  DropDrawer,
+  DropDrawerContent,
+  DropDrawerGroup,
+  DropDrawerItem,
+  DropDrawerLabel,
+  DropDrawerSeparator,
+  DropDrawerTrigger,
+} from "@/components/ui/dropdrawer";
 import DeleteUnitButton from "@/components/units/delete-unit-button";
 import EditUnit from "@/components/units/edit-unit";
 import ListMembers from "@/components/units/list-members";
@@ -37,86 +38,152 @@ export default function LecturerDropdown({
   slug,
   me,
   unit_update_data,
+  scopes,
 }: {
   slug: string;
   me: string;
   unit_update_data: UnitUpdateData;
+  scopes: Set<string>;
 }) {
   const [showMembers, setShowMembers] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showSendNotif, setShowSendNotif] = useState(false);
 
+  const hasReadScope = scopes.has("unit:read");
+  const hasEnrollScope = scopes.has("unit:enroll");
+  const hasManageScope = scopes.has("unit:manage");
+  const hasNotificationScope = scopes.has("unit:send_notification");
+  const hasDeleteScope = scopes.has("unit:delete");
+  const hasEntries =
+    hasReadScope ||
+    hasEnrollScope ||
+    hasManageScope ||
+    hasNotificationScope ||
+    hasDeleteScope;
+
+  if (!hasEntries) {
+    return null;
+  }
+
   return (
     <div className="aspect-square">
-      <DropdownMenu>
-        <DropdownMenuTrigger
+      <DropDrawer>
+        <DropDrawerTrigger
           id="unit-dropdown"
           className="border hover:bg-accent hover:transition p-2"
         >
           <Menu size={32} />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="flex flex-col">
-          <DropdownMenuLabel>Unit Options</DropdownMenuLabel>
-          <DropdownMenuSeparator />
+        </DropDrawerTrigger>
+        <DropDrawerContent align="end">
+          <DropDrawerLabel>Unit Options</DropDrawerLabel>
+          {hasReadScope && (
+            <DropDrawerGroup>
+              <DropDrawerLabel>Members</DropDrawerLabel>
+              <DropDrawerItem
+                onSelect={() => setShowMembers(true)}
+                icon={<Users />}
+              >
+                View members
+              </DropDrawerItem>
+            </DropDrawerGroup>
+          )}
 
-          <DropdownMenuItem onSelect={() => setShowMembers(true)}>
-            <Users className="mr-2 h-4 w-4" /> Members
-          </DropdownMenuItem>
+          {hasManageScope && (
+            <>
+              {hasReadScope && <DropDrawerSeparator />}
+              <DropDrawerGroup>
+                <DropDrawerLabel>Manage</DropDrawerLabel>
+                <DropDrawerItem
+                  onSelect={() => setShowEdit(true)}
+                  icon={<SquarePen />}
+                >
+                  Edit unit
+                </DropDrawerItem>
+              </DropDrawerGroup>
+            </>
+          )}
 
-          <DropdownMenuItem onSelect={() => setShowEdit(true)}>
-            <SquarePen className="mr-2 h-4 w-4" /> Edit Unit
-          </DropdownMenuItem>
+          {hasNotificationScope && (
+            <>
+              {(hasReadScope || hasManageScope) && <DropDrawerSeparator />}
+              <DropDrawerGroup>
+                <DropDrawerLabel>Notifications</DropDrawerLabel>
+                <DropDrawerItem
+                  onSelect={() => setShowSendNotif(true)}
+                  icon={<Siren />}
+                >
+                  Send notification
+                </DropDrawerItem>
+              </DropDrawerGroup>
+            </>
+          )}
 
-          <DropdownMenuItem onSelect={() => setShowSendNotif(true)}>
-            <Siren className="mr-2 h-4 w-4" /> Send Notification
-          </DropdownMenuItem>
+          {hasDeleteScope && (
+            <>
+              {(hasReadScope || hasManageScope || hasNotificationScope) && (
+                <DropDrawerSeparator />
+              )}
+              <DropDrawerGroup>
+                <DropDrawerLabel>Destructive options</DropDrawerLabel>
+                <DropDrawerItem
+                  onSelect={() => setShowDelete(true)}
+                  className="text-destructive focus:text-destructive"
+                  icon={<SquareX className="text-destructive" />}
+                >
+                  Delete unit
+                </DropDrawerItem>
+              </DropDrawerGroup>
+            </>
+          )}
+        </DropDrawerContent>
+      </DropDrawer>
 
-          <DropdownMenuSeparator />
+      {hasReadScope && (
+        <ListMembers
+          canManageEnrollment={hasEnrollScope}
+          openState={showMembers}
+          setOpenState={setShowMembers}
+          unit_id={slug}
+          me={me}
+        />
+      )}
 
-          <DropdownMenuItem
-            onSelect={() => setShowDelete(true)}
-            className="text-destructive focus:text-destructive"
-          >
-            <SquareX className="text-destructive mr-2 h-4 w-4" /> Delete Unit
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      {hasManageScope && (
+        <EditUnit
+          unit_update_data={unit_update_data}
+          open_state={showEdit}
+          set_open_state={setShowEdit}
+        />
+      )}
 
-      <ListMembers
-        openState={showMembers}
-        setOpenState={setShowMembers}
-        unit_id={slug}
-        me={me}
-      />
+      {hasNotificationScope && (
+        <SendNotification
+          unit_id={slug}
+          openState={showSendNotif}
+          setOpenState={setShowSendNotif}
+        />
+      )}
 
-      <EditUnit
-        unit_update_data={unit_update_data}
-        open_state={showEdit}
-        set_open_state={setShowEdit}
-      />
-
-      <SendNotification
-        unit_id={slug}
-        openState={showSendNotif}
-        setOpenState={setShowSendNotif}
-      ></SendNotification>
-
-      <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              unit and all of its data.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
-            <DeleteUnitButton unitId={slug} />
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {hasDeleteScope && (
+        <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
+          <AlertDialogContent className="flex flex-col gap-4">
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the
+                unit and all of its data.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="h-10 w-full sm:w-auto">
+                Cancel
+              </AlertDialogCancel>
+              <DeleteUnitButton className="w-full sm:w-auto" unitId={slug} />
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
     </div>
   );
 }

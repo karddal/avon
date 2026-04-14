@@ -2,6 +2,7 @@ import {
   BookCheck,
   Calendar,
   ChartLine,
+  Container,
   Layers,
   LayoutDashboard,
   NotepadText,
@@ -83,6 +84,12 @@ const adminItems = [
     title: "Calendar",
     url: "/calendar",
     icon: Calendar,
+    bottom: false,
+  },
+  {
+    title: "Base Images",
+    url: "/base_image",
+    icon: Container,
     bottom: false,
   },
 ];

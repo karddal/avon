@@ -7,9 +7,16 @@ class Settings(BaseSettings):
     jwks_url: str
     ignore_auth: bool = False
     testing_mode: bool = False
-    model_config = SettingsConfigDict(env_file=".env") # Keep on getting warnings in tests to do this, it's the updated version of the code below
+    test_fixture_key: str | None = None
+    aws_ecs_cluster: str
+    aws_results_queue_url: str
+    aws_bucket: str
+    model_config = SettingsConfigDict(
+        env_file=".env"
+    )  # Keep on getting warnings in tests to do this, it's the updated version of the code below
     # class Config:           Old code that won't work in Pydantic v3 apparently
     #     env_file = ".env"
     # Please Ensure to test This in the PR, need to make sure it works
+
 
 settings = Settings()
