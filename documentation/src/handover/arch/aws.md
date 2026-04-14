@@ -2,6 +2,10 @@
 
 AWS is the main backbone of the Avon Platform. To understand how Avon works, you must understand the structure of the AWS setup. 
 
+The region where Avon is hosted is `eu-north-1` or Stockholm.
+The ECS cluster is called `wubble` (currently).
+The AWS Application is called `Avon-Production`.
+
 A [CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html) stack will be provided, but it is recommended to learn the structure of the project incase you need to debug/change key functionality of Avon.
 
 Contents:
@@ -83,6 +87,8 @@ The highest level of the ECS configuration is the ECS Cluster. This is where the
 
 Services are created via [Task Definitions](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definitions.html). These are blueprints for services that you run on ECS, and is how Avon deploys to ECS via Github CD workflows in [.github/workflows](../../../../.github/workflows/).
 
+Avon's task definitions are stored in [.aws/](../../../../.aws/).
+
 ### ECR
 
 AWS ECR (Elastic Container Registry) is where all the related [Docker](https://docker.com) images are uploaded to, and pulled from by the Task Definitions. 
@@ -136,6 +142,8 @@ To obtain these credentials, follow these steps:
 5. Replace the DB_URL in [AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html) to ensure that it matches.
 
 > For number 5, the DB_URL should look like this: `postgresql://username:password@host:5432/database_name`
+> The default username is `postgres`.
+> The host is the url of the RDS instance, will look similar to this: `avon-database.???.eu-north-1.rds.amazonaws.com`
 
 ## AWS Secrets Manager
 
@@ -229,4 +237,3 @@ This is the main structure of the application (ignoring the testing functionalit
 
 Avon's testing engine is the main functionality that makes Avon stand out when compared to other competitors. It allows lecturers to run tests on their student's code.
 
-  
