@@ -141,6 +141,7 @@ To obtain these credentials, follow these steps:
 4. Create a new Master Password (or use [AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html)).
 5. Replace the DB_URL in [AWS Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html) to ensure that it matches.
 
+> [!TIP]
 > For number 5, the DB_URL should look like this: `postgresql://username:password@host:5432/database_name`
 > The default username is `postgres`.
 > 
@@ -167,7 +168,6 @@ Avon uses S3 to store images, test logs, and other assets needed for Avon to fun
 List of active buckets:
 - `avon-cdn-bucket` - hosts images such as the logo, background(s) and other svg assets.
 - `avon-testing-bucket` - logs relating to tests ran on Avon.
-- `avon-coursework-testing-courseworkartifactsbucket-*` - build contexts for coursework testing/image running.
 
 ## Cloudfront
 
