@@ -110,7 +110,7 @@ export default function LecturerDropdown({
     <div className="aspect-square">
       <DropDrawer>
         <DropDrawerTrigger
-            data-cy="unit-dropdown"
+          data-cy="unit-dropdown"
           id="unit-dropdown"
           className="border hover:bg-accent hover:transition p-2"
         >
