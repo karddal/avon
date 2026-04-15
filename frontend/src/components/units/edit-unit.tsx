@@ -83,17 +83,26 @@ export default function EditUnit({
 
   const router = useRouter();
   const formSchema = z.object({
-    name: z.string().min(2, {
-      message: "Name must be at least 2 characters.",
-    }),
-    description: z.string().min(2, {
-      message: "Description must be at least 2 characters.",
-    }),
-    color: z.string(),
+    name: z
+      .string()
+      .regex(/^[A-Za-z0-9](?:[A-Za-z0-9]|[ \-(][A-Za-z0-9])*(?:\))?$/, {
+        message: "Only alphanumeric characters and hyphens are allowed",
+      })
+      .min(2, {
+        error: "Name must be at least 2 characters.",
+      })
+      .max(72, "Name is at most 72 characters"),
+    description: z
+      .string()
+      .min(2, {
+        message: "Description must be at least 2 characters.",
+      })
+      .max(2000, { error: "Description is at most 2000 characters" }),
+    programme_id: z.string().nonempty({ error: "Programme cannot be empty" }),
     unit_code: z
       .string()
-      .min(9, { message: "Unit Code must be at least 9 characters." }),
-    programme_id: z.string(),
+      .length(9, { error: "Unit code must be 9 characters long" }),
+    color: z.string().max(7, { error: "Invalid colour format" }),
   });
 
   const editDefaultValues = useMemo(
