@@ -246,3 +246,6 @@ This is the main structure of the application (ignoring the testing functionalit
 
 Avon's testing engine is the main functionality that makes Avon stand out when compared to other competitors. It allows lecturers to run tests on their student's code.
 
+Testing runs using Amazon ECS. An ECS task is run by the backend according to a pre-defined BaseImage set up by an administrator. This BaseImage will define the task definition to use. A lecturer can choose the tester command to run.
+
+Administrators set up task definitions on AWS to use a specific Docker image that contains the dependencies for the specific use case. For example, for Python, these could be `uv`, `poetry`, `pip`, etc. This Docker image will run a Python script that clones the repo, runs the tester command, then uploads the results to SQS. Logs are collected as the command runs and these are uploaded to S3. The backend has a worker running that consumes this queue, downloading results and persisting them to the database. 
