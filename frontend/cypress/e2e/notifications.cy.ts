@@ -36,7 +36,10 @@ describe("Notifications", () => {
     cy.contains('[role="tab"]', "Imperative and Functional Programming").should(
       "exist",
     );
-    cy.contains('[role="tab"]', "Imperative and Functional Programming").click();
+    cy.contains(
+      '[role="tab"]',
+      "Imperative and Functional Programming",
+    ).click();
     cy.contains("Test notification").should("exist");
   });
 
@@ -46,7 +49,10 @@ describe("Notifications", () => {
     cy.contains('[role="tab"]', "Imperative and Functional Programming").should(
       "exist",
     );
-    cy.contains('[role="tab"]', "Imperative and Functional Programming").click();
+    cy.contains(
+      '[role="tab"]',
+      "Imperative and Functional Programming",
+    ).click();
     cy.contains("Test notification").should("exist");
     cy.get('[data-cy="notification-mark-read"]').click();
     cy.get('[data-cy="notification-mark-read"]').should("not.exist");
