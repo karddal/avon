@@ -1,13 +1,11 @@
 import datetime
-import os
 import re
 from typing import Annotated, Literal
 from uuid import UUID
-import datetime
-import re
+
+from pydantic import AfterValidator, BaseModel, ConfigDict
 
 from app.core.settings import settings
-
 from app.models.student_repo import StudentRepo
 from app.models.test_run import status_type, trigger_type
 
@@ -32,18 +30,17 @@ def is_valid_due_date(date: datetime.datetime) -> datetime.datetime:
 
     if date.tzinfo is None:
         now = datetime.datetime.now()
-else:
+    else:
         now = datetime.datetime.now(datetime.timezone.utc)
         date = date.astimezone(datetime.timezone.utc)
-    one_year_onwards = now + datetime.timedelta(days=365)
+        one_year_onwards = now + datetime.timedelta(days=365)
 
-    if date <= now:
-        raise ValueError("Due date must be greater than now")
-    elif date > one_year_onwards:
-        raise ValueError("Due date must be within one year from now")
-    else:
-        return date
-
+        if date <= now:
+            raise ValueError("Due date must be greater than now")
+        elif date > one_year_onwards:
+            raise ValueError("Due date must be within one year from now")
+        else:
+            return date
 
 def is_valid_colour(c: str) -> str:
     match = re.search(r"^(?:[0-9a-fA-F]{3}){1,2}$", c)
