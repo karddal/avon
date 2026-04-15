@@ -23,7 +23,7 @@ describe("Notifications", () => {
       'a[href^="/units/"]',
       "Imperative and Functional Programming",
     ).click({ force: true });
-    cy.get("div.aspect-square button").click();
+    cy.get('[data-cy="unit-dropdown"]').click();
     cy.get('[data-cy="unit-send-notification"]').click();
     cy.wait(500);
     cy.get("#notification-form-title").type("Test notification");
