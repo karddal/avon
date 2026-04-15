@@ -56,7 +56,7 @@ async def process_message(msg, db: Session):
             db.exec(
                 select(TestRun).where(
                     (TestRun.batch_id == run.batch_id)
-                    & (TestRun.status == "running" or TestRun.status == "pending")
+                    & ((TestRun.status == "running") | (TestRun.status == "pending"))
                 )
             ).all()
         )
