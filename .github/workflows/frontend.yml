@@ -68,5 +68,5 @@ jobs:
           TEST_FIXTURE_KEY: sep-test-fixture-key
         with:
           working-directory: ./frontend
-          env: APP_ENV=test,NODE_ENV=test,TEST_FIXTURE_KEY=sep-test-fixture-key
+          env: APP_ENV=test,TEST_FIXTURE_KEY=sep-test-fixture-key
           command: npm run test
