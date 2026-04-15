@@ -7,15 +7,33 @@ import type { CourseworkModuleKey } from "@/components/modules/coursework_layout
 import CourseworkLayoutEditor from "@/components/modules/coursework_layout/coursework-layout-editor";
 import CourseworkRenderer from "@/components/modules/coursework_layout/coursework-renderer";
 import type { StudentNameAndRepo } from "@/lib/actions/coursework/get_student_repos";
+import type { CourseworkStudentRepo } from "@/lib/actions/coursework/get_my_coursework_repo";
+
+type CourseworkSummary = {
+  id: string;
+  name: string;
+  description: string;
+  creation_date: string;
+  due_date: string;
+};
+
+type SetupProgressItem = {
+  title: string;
+  completed: boolean;
+};
 
 
 type CourseworkClientProps = {
   initialLayout: GridItem[];
   availableModules: CourseworkModuleKey[];
-  saveLayout: (layout: GridItem[]) => Promise<void>;
-  slug: string;
-  token: string;
+  saveLayout: (layout: GridItem[], slug: string) => Promise<void>;
+  coursework: CourseworkSummary;
+  canViewSetupProgress: boolean;
+  canViewStudentRepos: boolean;
   repos: StudentNameAndRepo[];
+  setupProgress: SetupProgressItem[];
+  studentRepo: CourseworkStudentRepo | null;
+  canEditLayout: boolean;
 };
 
 
@@ -23,9 +41,13 @@ export default function CourseworkClient({
   initialLayout,
   availableModules,
   saveLayout,
-  slug,
-  token,
+  coursework,
+  canViewSetupProgress,
+  canViewStudentRepos,
   repos,
+  setupProgress,
+  studentRepo,
+  canEditLayout,
 }: CourseworkClientProps) {
   const [layout, setLayout] = useState<GridItem[]>(
     initialLayout.length > 0 ? initialLayout : defaultCourseworkLayout,
@@ -39,7 +61,7 @@ export default function CourseworkClient({
     }
 
     const timeoutId = window.setTimeout(() => {
-      void saveLayout(layout).catch((error) => {
+      void saveLayout(layout, coursework.id).catch((error) => {
         console.error("Failed to save dashboard layout", error);
       });
     }, 400);
@@ -51,13 +73,23 @@ export default function CourseworkClient({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <CourseworkLayoutEditor
-        availableModules={availableModules}
-        layout={layout}
-        onChange={setLayout}
-      />
+      {canEditLayout && (
+        <CourseworkLayoutEditor
+          availableModules={availableModules}
+          layout={layout}
+          onChange={setLayout}
+        />
+      )}
 
-      <CourseworkRenderer layout={layout} slug={slug} token={token} repos={repos} />
+      <CourseworkRenderer
+        layout={layout}
+        coursework={coursework}
+        canViewSetupProgress={canViewSetupProgress}
+        canViewStudentRepos={canViewStudentRepos}
+        repos={repos}
+        setupProgress={setupProgress}
+        studentRepo={studentRepo}
+      />
     </div>
   );
 }

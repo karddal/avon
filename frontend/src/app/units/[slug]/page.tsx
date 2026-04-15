@@ -17,8 +17,8 @@ import { get_username_from_id } from "@/lib/actions/auth/get_username";
 import { get_user_image_from_id } from "@/lib/actions/coursework/get_image";
 import { get_owner_of_unit } from "@/lib/actions/unit/get_owner_of_unit";
 import {
-  getUnitLayoutForCurrentUser,
-  saveUnitLayoutForCurrentUser,
+  getUnitLayoutForCurrentUnit,
+  saveUnitLayoutForCurrentUnit,
 } from "@/lib/actions/unit-layout";
 import UnitClient from "@/components/modules/unit-client";
 import { availableUnitModules, defaultUnitLayout } from "@/lib/unit-layout";
@@ -79,7 +79,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
   if (!userRole) {
     userRole = "user";
   }
-  const savedLayout = await getUnitLayoutForCurrentUser();
+  
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/units/${slug}/`,
     {
@@ -137,7 +137,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
       cache: "no-cache",
     },
   );
-
+  const savedLayout = await getUnitLayoutForCurrentUnit(data.id);
   const courseworkResponse: courseworkResponse = await courseworkResponseRaw.json();
 
   return (
@@ -171,7 +171,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
         <UnitClient
           initialLayout={savedLayout}
           availableModules={availableUnitModules}
-          saveLayout={saveUnitLayoutForCurrentUser}
+          saveLayout={saveUnitLayoutForCurrentUnit}
           unit={data}
           role={userRole}
           lecturers={results}

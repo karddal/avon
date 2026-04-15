@@ -3,8 +3,7 @@
 import path from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import type { GridItem } from "@/components/modules/unit-types";
-import { pool } from "@/lib/actions/db_pool";
-import { requireSession } from "@/lib/auth-utils";
+import { pool } from "@/lib/actions/auth/db_pool";
 import {
   defaultUnitLayout,
   parseUnitLayout,
@@ -21,10 +20,14 @@ function isProductionDatabase() {
   );
 }
 
+function normalizeSqliteUuid(id: string): string {
+  return id.replace(/-/g, "");
+}
+
 async function ensureUnitLayoutColumnExists(): Promise<void> {
   if (isProductionDatabase()) {
     await pool.query(
-      'ALTER TABLE "user" ADD COLUMN IF NOT EXISTS unit_layout text',
+      'ALTER TABLE "unit" ADD COLUMN IF NOT EXISTS unit_layout text',
     );
     return;
   }
@@ -32,7 +35,7 @@ async function ensureUnitLayoutColumnExists(): Promise<void> {
   const db = new DatabaseSync(dbPath);
   db.createSession();
 
-  const columns = db.prepare("PRAGMA table_info(user)").all() as Array<{
+  const columns = db.prepare("PRAGMA table_info(unit)").all() as Array<{
     name: string;
   }>;
   const hasUnitLayoutColumn = columns.some(
@@ -40,17 +43,17 @@ async function ensureUnitLayoutColumnExists(): Promise<void> {
   );
 
   if (!hasUnitLayoutColumn) {
-    db.exec("ALTER TABLE user ADD COLUMN unit_layout TEXT");
+    db.exec("ALTER TABLE unit ADD COLUMN unit_layout TEXT");
   }
 }
 
-async function getRawUnitLayout(userId: string): Promise<string | null> {
+async function getRawUnitLayout(unitId: string): Promise<string | null> {
   await ensureUnitLayoutColumnExists();
 
   if (isProductionDatabase()) {
     const result = await pool.query(
-      'SELECT unit_layout FROM "user" WHERE id = $1',
-      [userId],
+      'SELECT unit_layout FROM "unit" WHERE id = $1',
+      [unitId],
     );
 
     const row = result.rows[0] as
@@ -62,19 +65,18 @@ async function getRawUnitLayout(userId: string): Promise<string | null> {
   const db = new DatabaseSync(dbPath);
   db.createSession();
 
-  const query = db.prepare("SELECT unit_layout FROM user WHERE id = ?");
-  const result = query.get(userId) as
+  const sqliteUnitId = normalizeSqliteUuid(unitId);
+  const query = db.prepare("SELECT unit_layout FROM unit WHERE id = ?");
+  const result = query.get(sqliteUnitId) as
     | { unit_layout: string | null }
     | undefined;
 
   return result?.unit_layout ?? null;
 }
 
-export async function getUnitLayoutForCurrentUser(): Promise<GridItem[]> {
-  const session = await requireSession();
-
+export async function getUnitLayoutForCurrentUnit(unitId: string): Promise<GridItem[]> {
   try {
-    const rawLayout = await getRawUnitLayout(session.user.id);
+    const rawLayout = await getRawUnitLayout(unitId);
     return parseUnitLayout(rawLayout) ?? defaultUnitLayout;
   } catch (error) {
     console.error("Failed to load unit layout from database", error);
@@ -82,10 +84,10 @@ export async function getUnitLayoutForCurrentUser(): Promise<GridItem[]> {
   }
 }
 
-export async function saveUnitLayoutForCurrentUser(
+export async function saveUnitLayoutForCurrentUnit(
   layout: GridItem[],
+  unitId: string
 ): Promise<void> {
-  const session = await requireSession();
   const parsedLayout = parseUnitLayout(JSON.stringify(layout));
 
   if (!parsedLayout) {
@@ -93,14 +95,13 @@ export async function saveUnitLayoutForCurrentUser(
   }
 
   const serializedLayout = JSON.stringify(parsedLayout);
-  const updatedAt = new Date().toISOString();
 
   await ensureUnitLayoutColumnExists();
 
   if (isProductionDatabase()) {
     await pool.query(
-      'UPDATE "user" SET unit_layout = $1, "updatedAt" = $2 WHERE id = $3',
-      [serializedLayout, updatedAt, session.user.id],
+      'UPDATE "unit" SET unit_layout = $1 WHERE id = $2',
+      [serializedLayout, unitId],
     );
     return;
   }
@@ -108,8 +109,9 @@ export async function saveUnitLayoutForCurrentUser(
   const db = new DatabaseSync(dbPath);
   db.createSession();
 
+  const sqliteUnitId = normalizeSqliteUuid(unitId);
   const query = db.prepare(
-    "UPDATE user SET unit_layout = ?, updatedAt = ? WHERE id = ?",
+    "UPDATE unit SET unit_layout = ? WHERE id = ?",
   );
-  query.run(serializedLayout, updatedAt, session.user.id);
+  query.run(serializedLayout, sqliteUnitId);
 }

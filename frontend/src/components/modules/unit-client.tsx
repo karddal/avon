@@ -16,7 +16,7 @@ type Lecturer = {
 type UnitClientProps = {
   initialLayout: GridItem[];
   availableModules: UnitModuleKey[];
-  saveLayout: (layout: GridItem[]) => Promise<void>;
+  saveLayout: (layout: GridItem[], unitId: string) => Promise<void>;
   unit: UnitData;
   role: string;
   lecturers: Lecturer[];
@@ -66,7 +66,7 @@ export default function UnitClient({
     }
 
     const timeoutId = window.setTimeout(() => {
-      void saveLayout(layout).catch((error) => {
+      void saveLayout(layout, unit.id).catch((error) => {
         console.error("Failed to save dashboard layout", error);
       });
     }, 400);

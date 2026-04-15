@@ -39,7 +39,7 @@ type UnitLayoutEditorProps = {
   onChange: Dispatch<SetStateAction<GridItem[]>>;
 };
 
-const GRID_COLUMNS = 3;
+const GRID_COLUMNS = 10;
 const GRID_ROWS = 3;
 
 type GridRect = {

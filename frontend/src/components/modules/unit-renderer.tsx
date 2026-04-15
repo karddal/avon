@@ -171,7 +171,7 @@ export default function UnitRenderer({ layout, unit, role, lecturers, coursework
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div
-        className="grid w-full grid-cols-1 auto-rows-[minmax(140px,auto)] gap-3 sm:gap-4 sm:p-4 md:grid-flow-dense md:grid-cols-2 lg:h-full lg:flex-1 lg:grid-cols-3 lg:auto-rows-auto"
+        className="grid w-full grid-cols-1 auto-rows-[minmax(140px,auto)] gap-3 sm:gap-4 sm:p-4 md:grid-flow-dense md:grid-cols-2 lg:h-full lg:flex-1 lg:grid-cols-10 lg:auto-rows-auto"
         style={
           isDesktopLayout
             ? {

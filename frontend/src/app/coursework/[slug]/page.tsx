@@ -1,24 +1,31 @@
-import { Info } from "lucide-react";
 import { Suspense } from "react";
 import { CourseworkDeadlineBannerFromSlug } from "@/components/coursework/coursework-banner";
 import CourseworkLectDropdown from "@/components/coursework/coursework-lect-dropdown";
-import CourseworkRepoOverview from "@/components/coursework/coursework-repo-overview";
-import CourseworkStudentPanel from "@/components/coursework/coursework-student-panel";
-import SetupProgress from "@/components/coursework/setup-progress";
-import StudentRepoActivity from "@/components/coursework/student-repo-activity";
-import StudentRepoOverview from "@/components/coursework/student-repo-overview";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { get_base_images_cw_specific } from "@/lib/actions/coursework/get_base_images_cw_specific";
 import { get_coursework_scopes } from "@/lib/actions/coursework/get_coursework_scopes";
 import { get_cw_update_data } from "@/lib/actions/coursework/get_coursework_update_data";
 import { get_cw_engine_data } from "@/lib/actions/coursework/get_cw_engine_data";
+import { get_my_coursework_repo } from "@/lib/actions/coursework/get_my_coursework_repo";
 import { get_student_repos } from "@/lib/actions/coursework/get_student_repos";
+import { cw_setup_progress } from "@/lib/actions/coursework/coursework-setup-progress";
 import { getRequestJWT } from "@/lib/auth-utils";
 import Loading from "../loading";
-import CourseworkDescription from "./description";
-import CourseworkInformation from "./information";
 import CourseworkName from "./name";
+import CourseworkClient from "@/components/modules/coursework_layout/coursework-client";
+import { availableCourseworkModules } from "@/lib/coursework-layout";
+import {
+  getCourseworkLayoutForCurrentCoursework,
+  saveCourseworkLayoutForCurrentCoursework,
+} from "@/lib/actions/coursework-layout";
+
+type CourseworkSummary = {
+  id: string;
+  name: string;
+  description: string;
+  creation_date: string;
+  due_date: string;
+};
 
 async function CourseworkPageContent({
   params,
@@ -54,6 +61,28 @@ async function CourseworkPageContent({
   const cw_engine_data = canGetAvailImages
     ? await get_cw_engine_data({ coursework_id: slug })
     : undefined;
+  const savedLayout = await getCourseworkLayoutForCurrentCoursework(slug);
+  const setupProgress = canViewSetupProgress ? await cw_setup_progress(slug) : [];
+  const studentRepo = !canViewSetupProgress
+    ? await get_my_coursework_repo(slug)
+    : null;
+
+  const courseworkResponse = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/coursework/${slug}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      cache: "no-cache",
+    },
+  );
+
+  if (!courseworkResponse.ok) {
+    throw new Error("Failed to fetch coursework");
+  }
+
+  const coursework = (await courseworkResponse.json()) as CourseworkSummary;
 
   return (
     <>
@@ -93,76 +122,19 @@ async function CourseworkPageContent({
           />
         </Suspense>
       )}
-      <section className="mb-8 grid min-h-0 grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-        <div className="flex h-full flex-col gap-4 md:col-span-2 xl:col-span-2 xl:h-64">
-          <Card id="coursework-description" className="h-full min-h-0">
-            <CardHeader>
-              <CardTitle>
-                <div className="text-2xl flex flex-row gap-2 items-center">
-                  <Info />
-                  Description
-                </div>
-                <div className="font-light">
-                  Information about the coursework.
-                </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="min-h-0 flex-1">
-              <Suspense>
-                <CourseworkDescription slug={slug} token={token} />
-              </Suspense>
-            </CardContent>
-          </Card>
-        </div>
-        <div
-          id="coursework-information"
-          className="h-full md:col-span-2 xl:col-span-1 xl:h-64"
-        >
-          <Suspense>
-            <CourseworkInformation slug={slug} token={token} />
-          </Suspense>
-        </div>
-        <div
-          id="coursework-repos"
-          className="h-full md:col-span-2 xl:col-span-2"
-        >
-          {canViewSetupProgress ? (
-            canViewStudentRepos && student_repos_data ? (
-              <CourseworkRepoOverview
-                slug={slug}
-                repos={student_repos_data?.repos}
-              />
-            ) : (
-              <></>
-            )
-          ) : (
-            <Suspense>
-              <StudentRepoOverview slug={slug} />
-            </Suspense>
-          )}
-        </div>
-        <div
-          id="coursework-activity"
-          className="h-full md:col-span-2 xl:col-span-1"
-        >
-          {canViewSetupProgress ? (
-            <Suspense>
-              <SetupProgress slug={slug}></SetupProgress>
-            </Suspense>
-          ) : (
-            <Suspense>
-              <StudentRepoActivity slug={slug} />
-            </Suspense>
-          )}
-        </div>
-        {!canViewSetupProgress && (
-          <div
-            id="coursework-students"
-            className="mb-8 h-full pb-4 md:col-span-2 md:mb-10 xl:col-span-3 xl:mb-16"
-          >
-            <CourseworkStudentPanel />
-          </div>
-        )}
+      <section className="col-span-3 mb-8 min-h-0 w-full">
+        <CourseworkClient
+          initialLayout={savedLayout}
+          availableModules={availableCourseworkModules}
+          saveLayout={saveCourseworkLayoutForCurrentCoursework}
+          coursework={coursework}
+          canViewSetupProgress={canViewSetupProgress}
+          canViewStudentRepos={canViewStudentRepos}
+          repos={student_repos_data?.repos || []}
+          setupProgress={setupProgress}
+          studentRepo={studentRepo}
+          canEditLayout={canViewSetupProgress}
+        />
       </section>
     </>
   );

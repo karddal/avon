@@ -3,7 +3,7 @@
 import path from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import type { GridItem } from "@/components/modules/dashboard-types";
-import { pool } from "@/lib/actions/db_pool";
+import { pool } from "@/lib/actions/auth/db_pool";
 import { requireSession } from "@/lib/auth-utils";
 import {
   defaultDashboardLayout,
