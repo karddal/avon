@@ -30,3 +30,8 @@ async def require_test_fixture_access(
     if settings.testing_mode and not settings.test_fixture_key:
         raise RuntimeError("TEST_FIXTURE_KEY must be set when TESTING_MODE=True")
 
+    if test_fixture_key != settings.test_fixture_key:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid test fixture key",
+        )

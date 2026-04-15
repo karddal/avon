@@ -185,25 +185,27 @@ def test_due_date_utc_set_over_a_year_from_now_raises_error():
 
 def test_valid_due_date_raises_no_error():
     validDate = datetime.now() + timedelta(days=34)
-    CourseworkCreate(
+    coursework = CourseworkCreate(
         name="Haskell 2",
         description="Coursework Description",
         unit_id=uuid4(),
         due_date=validDate,
         colour="abcdef",
     )
+    assert coursework.due_date == validDate
 
 
 def test_valid_due_date_utc_raises_no_error():
     validDate = datetime.now() + timedelta(days=34)
     validDate = validDate.replace(tzinfo=timezone.utc)
-    CourseworkCreate(
+    coursework = CourseworkCreate(
         name="Haskell 2",
         description="Coursework Description",
         unit_id=uuid4(),
         due_date=validDate,
         colour="abcdef",
     )
+    assert coursework.due_date == validDate
 
 
 # -------------- colour --------------

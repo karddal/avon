@@ -33,14 +33,15 @@ def is_valid_due_date(date: datetime.datetime) -> datetime.datetime:
     else:
         now = datetime.datetime.now(datetime.timezone.utc)
         date = date.astimezone(datetime.timezone.utc)
-        one_year_onwards = now + datetime.timedelta(days=365)
 
-        if date <= now:
-            raise ValueError("Due date must be greater than now")
-        elif date > one_year_onwards:
-            raise ValueError("Due date must be within one year from now")
-        else:
-            return date
+    one_year_onwards = now + datetime.timedelta(days=365)
+
+    if date <= now:
+        raise ValueError("Due date must be greater than now")
+    if date > one_year_onwards:
+        raise ValueError("Due date must be within one year from now")
+
+    return date
 
 def is_valid_colour(c: str) -> str:
     match = re.search(r"^(?:[0-9a-fA-F]{3}){1,2}$", c)
@@ -231,4 +232,3 @@ class TestRunFullInfo(BaseModel):
 
 class CourseworkTestRuns(BaseModel):
     test_runs: list[TestRunBasicInfo]
-
