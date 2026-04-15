@@ -15,9 +15,7 @@ class Settings(BaseSettings):
         default=False,
         validation_alias=AliasChoices("ALLOW_HISTORICAL_SEED_DATA", "TESTING_MODE"),
     )
-    testing_mode: bool = False
     model_config = SettingsConfigDict(env_file=".env") # Keep on getting warnings in tests to do this, it's the updated version of the code below
-    testing_mode: bool = False
     test_fixture_key: str | None = None
     aws_ecs_cluster: str
     aws_results_queue_url: str
@@ -32,7 +30,5 @@ class Settings(BaseSettings):
     @property
     def testing_mode(self) -> bool:
         return self.enable_test_fixtures
-
-settings = Settings()
 
 settings = Settings()

@@ -21,7 +21,6 @@ export async function create_unit(req: createUnitReq) {
     {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },

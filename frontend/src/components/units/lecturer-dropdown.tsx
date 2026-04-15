@@ -23,6 +23,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import {
   DropDrawer,
   DropDrawerContent,
   DropDrawerGroup,
@@ -85,22 +89,6 @@ export default function LecturerDropdown({
       toast.error("Locking Unit Failed");
     }
   };
-
-  const hasReadScope = scopes.has("unit:read");
-  const hasEnrollScope = scopes.has("unit:enroll");
-  const hasManageScope = scopes.has("unit:manage");
-  const hasNotificationScope = scopes.has("unit:send_notification");
-  const hasDeleteScope = scopes.has("unit:delete");
-  const hasEntries =
-    hasReadScope ||
-    hasEnrollScope ||
-    hasManageScope ||
-    hasNotificationScope ||
-    hasDeleteScope;
-
-  if (!hasEntries) {
-    return null;
-  }
 
   const hasReadScope = scopes.has("unit:read");
   const hasEnrollScope = scopes.has("unit:enroll");

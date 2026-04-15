@@ -26,15 +26,6 @@ from app.routers import (
     unit,
     unit_enrollment,
 )
-from app.routers import coursework, structure
-from app.routers import project
-from app.routers import notification
-from app.routers import unit
-from app.routers import check, me
-from app.routers import programme
-from app.routers import unit_enrollment
-from app.core.settings import settings
-from app.core.testing import ensure_test_fixture_key_configured
 from app.routers import seeding
 from dotenv import load_dotenv
 import os

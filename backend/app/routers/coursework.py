@@ -40,7 +40,6 @@ from app.core.scopes.scopes import (
 from app.core.security import get_bearer, get_current_user_with_role
 from app.core.settings import settings
 from app.db.session import get_session
-from app.models import student_repo
 from app.models.base_image import BaseImage
 from app.models.coursework import Coursework
 from app.models.student_repo import StudentRepo
