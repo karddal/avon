@@ -136,6 +136,7 @@ export default function LecturerDropdown({
                 <DropDrawerLabel>Manage</DropDrawerLabel>
                 <DropDrawerItem
                   onSelect={() => setShowEdit(true)}
+                  data-cy="unit-edit"
                   icon={<SquarePen />}
                 >
                   Edit unit
@@ -151,6 +152,7 @@ export default function LecturerDropdown({
                 <DropDrawerLabel>Notifications</DropDrawerLabel>
                 <DropDrawerItem
                   onSelect={() => setShowSendNotif(true)}
+                  data-cy="unit-send-notification"
                   icon={<Siren />}
                 >
                   Send notification
@@ -216,6 +218,7 @@ export default function LecturerDropdown({
                 <DropDrawerLabel>Destructive options</DropDrawerLabel>
                 <DropDrawerItem
                   onSelect={() => setShowDelete(true)}
+                  data-cy="unit-delete"
                   className="text-destructive focus:text-destructive"
                   icon={<SquareX className="text-destructive" />}
                 >

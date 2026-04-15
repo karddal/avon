@@ -1,5 +1,6 @@
 import { BellElectric, CalendarDays, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatIsoShortDate, formatIsoTime } from "@/lib/date-format";
 
 type courseworkData = {
   id: string;
@@ -17,17 +18,8 @@ type courseworkData = {
 
 // Helper to separate Time and Date for the "Ticker" look
 function parseDateTime(dateStr: string) {
-  const date = new Date(dateStr);
-  const time = date.toLocaleTimeString("en-GB", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
-  const day = date.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "2-digit",
-  });
+  const time = formatIsoTime(dateStr);
+  const day = formatIsoShortDate(dateStr);
   return { time, day };
 }
 

@@ -1,10 +1,8 @@
 import logging
-import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.core.env import load_backend_env
 from app.core.settings import settings
 from app.core.testing import ensure_test_fixture_key_configured
 from app.db.session import create_db_and_tables, lifespan
@@ -25,19 +23,15 @@ from app.routers import (
 )
 from app.routers import seeding
 
-load_backend_env()
-
 logging.basicConfig(
-    level=os.getenv("LOG_LEVEL", "INFO").upper(),
+    level=settings.log_level.upper(),
 )
 
 app = FastAPI(lifespan=lifespan)
 
-origins = os.getenv("CORS_ORIGIN")
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=settings.cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

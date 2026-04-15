@@ -1,18 +1,16 @@
 "use server";
 
-import path from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { pool } from "@/lib/actions/auth/db_pool";
+import {
+  getSqliteDbPath,
+  shouldUseExternalDatabase,
+} from "@/lib/server-runtime";
 
-var dbPath = "../sqlite.db";
-if (process.env.CI_MODE === "True") {
-  dbPath = path.resolve(process.cwd(), "../../..", "sqlite.db");
-}
+const dbPath = getSqliteDbPath();
 
 export async function get_user_image_from_id(user_id: string): Promise<string> {
-  const isProd =
-    process.env.NODE_ENV === "production" &&
-    process.env.TESTING_MODE !== "True";
+  const isProd = shouldUseExternalDatabase();
 
   if (isProd) {
     const db = pool;

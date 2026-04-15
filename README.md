@@ -329,7 +329,7 @@ in `.env.development`:
 
 ```
 NEXT_PUBLIC_API_URL=http://localhost:8000       # the url of the backend api
-ENV=development                                 # environment type
+APP_ENV=development                             # app environment
 BETTER_AUTH_SECRET={RANDOM SECRET}              # better auth secret to use
 BETTER_AUTH_URL=https://localhost:3000          # better auth url to bind to
 ```

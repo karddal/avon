@@ -62,11 +62,11 @@ test:
 
 [windows]
 run-be env = "dev":
-    $env:ENV="{{env}}"; uv run fastapi dev
+    $env:APP_ENV="{{env}}"; uv run fastapi dev
 
 [unix]
 run-be env = "dev":
-    ENV={{env}} uv run fastapi dev
+    APP_ENV={{env}} uv run fastapi dev
 
 sync-fe:
     npm i

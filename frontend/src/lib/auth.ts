@@ -1,20 +1,16 @@
-import path from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
 import { admin as adminPlugin, jwt } from "better-auth/plugins";
 import { Pool } from "pg";
 import { ac, admin, lecturer, user } from "@/lib/permissions";
+import {
+  getSqliteDbPath,
+  shouldUseExternalDatabase,
+} from "@/lib/server-runtime";
 
-var dbPath = "../sqlite.db";
-if (process.env.CI_MODE === "True") {
-  dbPath = path.resolve(process.cwd(), "../../..", "sqlite.db");
-}
-
-console.log(dbPath);
-
-const useSqlite =
-  process.env.NODE_ENV !== "production" || process.env.TESTING_MODE === "True";
+const dbPath = getSqliteDbPath();
+const useSqlite = !shouldUseExternalDatabase();
 
 export const auth = betterAuth({
   database: useSqlite

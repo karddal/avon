@@ -9,12 +9,11 @@ from urllib.parse import quote, urlparse
 import httpx
 from fastapi import HTTPException, UploadFile
 
-from app.core.env import load_backend_env
+from app.core.settings import settings
 
-load_backend_env()
-TOKEN = os.getenv("GITLAB_API_TOKEN")
-BASE_URL = os.getenv("GITLAB_BASE_URL")
-ROOT_ID = os.getenv("GITLAB_ROOT_ID")
+TOKEN = settings.gitlab_api_token
+BASE_URL = settings.gitlab_base_url
+ROOT_ID = settings.gitlab_root_id
 
 # Programme CRUD
 

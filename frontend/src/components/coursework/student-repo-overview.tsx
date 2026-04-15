@@ -19,19 +19,14 @@ import {
 } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
 import { get_my_coursework_repo } from "@/lib/actions/coursework/get_my_coursework_repo";
+import { formatIsoDateTime } from "@/lib/date-format";
 
 function formatCommitDate(date: string | null) {
   if (!date) {
     return "No activity yet";
   }
 
-  return new Date(date).toLocaleString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
+  return formatIsoDateTime(date);
 }
 
 async function StudentRepoOverviewContent({

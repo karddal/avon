@@ -1,47 +1,85 @@
-from app.core.env import load_backend_env
-from pydantic import AliasChoices, Field, model_validator
-from pydantic_settings import BaseSettings
+import json
+from typing import Annotated
+
+from app.core.env import AppEnv, load_backend_env, normalize_app_env
+from pydantic import AliasChoices, Field, field_validator, model_validator
+from pydantic_settings import BaseSettings, NoDecode
 
 load_backend_env()
 
 class Settings(BaseSettings):
+    app_env: AppEnv = Field(
+        default="production",
+        validation_alias=AliasChoices("APP_ENV", "ENV"),
+    )
+    database_url: str | None = Field(default=None, validation_alias="DATABASE_URL")
+    cors_origins: Annotated[list[str], NoDecode] = Field(
+        default_factory=list,
+        validation_alias=AliasChoices("CORS_ORIGINS", "CORS_ORIGIN"),
+    )
     jwt_audience: str
     jwt_issuer: str
     jwks_url: str
+    log_level: str = "INFO"
     ignore_auth: bool = False
-    enable_test_fixtures: bool = Field(
-        default=False,
-        validation_alias=AliasChoices("ENABLE_TEST_FIXTURES", "TESTING_MODE"),
-    )
-    allow_historical_seed_data: bool = Field(
-        default=False,
-        validation_alias=AliasChoices("ALLOW_HISTORICAL_SEED_DATA", "TESTING_MODE"),
-    )
+    enable_test_fixtures: bool = False
+    allow_historical_seed_data: bool = False
+    run_background_worker: bool = True
     test_fixture_key: str | None = None
+    gitlab_api_token: str | None = None
+    gitlab_base_url: str | None = None
+    gitlab_root_id: str | None = None
     aws_ecs_cluster: str | None = None
     aws_results_queue_url: str | None = None
     aws_bucket: str | None = None
+
+    @field_validator("app_env", mode="before")
+    @classmethod
+    def validate_app_env(cls, value: str | None) -> AppEnv:
+        return normalize_app_env(value)
+
+    @field_validator("cors_origins", mode="before")
+    @classmethod
+    def parse_cors_origins(cls, value: object) -> list[str]:
+        if value is None:
+            return []
+        if isinstance(value, list):
+            return [str(origin) for origin in value]
+        if isinstance(value, str):
+            stripped = value.strip()
+            if not stripped:
+                return []
+            if stripped.startswith("["):
+                parsed = json.loads(stripped)
+                if not isinstance(parsed, list):
+                    raise ValueError("CORS_ORIGINS must decode to a list")
+                return [str(origin) for origin in parsed]
+
+            return [origin.strip() for origin in stripped.split(",") if origin.strip()]
+
+        raise ValueError("CORS_ORIGINS must be a string or list")
 
     @model_validator(mode="after")
     def validate_runtime_config(self) -> "Settings":
         if self.testing_mode:
             return self
 
-        missing = [
-            name
-            for name in ("aws_ecs_cluster", "aws_results_queue_url", "aws_bucket")
-            if not getattr(self, name)
-        ]
-        if missing:
-            missing_str = ", ".join(missing)
+        if self.app_env == "development" and not self.aws_results_queue_url:
+            self.run_background_worker = False
+            return self
+
+        if not self.run_background_worker:
+            return self
+
+        if not self.aws_results_queue_url:
             raise ValueError(
-                f"Missing required AWS configuration outside testing mode: {missing_str}"
+                "AWS_RESULTS_QUEUE_URL is required when RUN_BACKGROUND_WORKER=true"
             )
 
         return self
 
     @property
     def testing_mode(self) -> bool:
-        return self.enable_test_fixtures
+        return self.app_env == "test"
 
 settings = Settings()

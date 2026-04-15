@@ -2,21 +2,19 @@
 
 // TODO: Probably WONT WORK ON PROD bc of SQLDB being directly checked
 
-import path from "node:path";
 import { DatabaseSync, type SQLOutputValue } from "node:sqlite";
+import {
+  getSqliteDbPath,
+  shouldUseExternalDatabase,
+} from "@/lib/server-runtime";
 import { pool } from "./db_pool";
 
-var dbPath = "../sqlite.db";
-if (process.env.CI_MODE === "True") {
-  dbPath = path.resolve(process.cwd(), "../../..", "sqlite.db");
-}
+const dbPath = getSqliteDbPath();
 
 export async function get_batch_user_info(user_ids: string[]) {
   if (user_ids.length === 0) return [];
 
-  const isProd =
-    process.env.NODE_ENV === "production" &&
-    process.env.TESTING_MODE !== "True";
+  const isProd = shouldUseExternalDatabase();
   if (isProd) {
     const pgPool = pool;
     const query = `

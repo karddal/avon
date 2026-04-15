@@ -1,8 +1,6 @@
-import os
-
 from fastapi import APIRouter, HTTPException, Request, status
 
-from app.core.env import load_backend_env
+from app.core.env import is_development_app_env, is_test_app_env, load_backend_env
 from app.services.db_reset import reset_app_data, reset_database
 
 load_backend_env()
@@ -11,7 +9,7 @@ router = APIRouter(prefix="/seeding", tags=["seeding"])
 
 
 def reset_route_enabled() -> bool:
-    return os.getenv("ENV") == "dev"
+    return is_development_app_env() or is_test_app_env()
 
 
 def request_is_local(request: Request) -> bool:

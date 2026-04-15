@@ -27,8 +27,6 @@ async def require_test_fixture_access(
         raise RuntimeError(
             "TEST_FIXTURE_KEY must be set when ENABLE_TEST_FIXTURES=True"
         )
-    if settings.testing_mode and not settings.test_fixture_key:
-        raise RuntimeError("TEST_FIXTURE_KEY must be set when TESTING_MODE=True")
 
     if test_fixture_key != settings.test_fixture_key:
         raise HTTPException(

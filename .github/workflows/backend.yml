@@ -17,6 +17,8 @@ jobs:
   buildandtest:
    needs: ruff
    runs-on: ubuntu-latest
+   env:
+     APP_ENV: test
    defaults:
      run:
        working-directory: ./backend

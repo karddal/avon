@@ -1,20 +1,18 @@
 "use server";
 
-import path from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { pool } from "@/lib/actions/auth/db_pool";
+import {
+  getSqliteDbPath,
+  shouldUseExternalDatabase,
+} from "@/lib/server-runtime";
 
-var dbPath = "../sqlite.db";
-if (process.env.CI_MODE === "True") {
-  dbPath = path.resolve(process.cwd(), "../../..", "sqlite.db");
-}
+const dbPath = getSqliteDbPath();
 
 export async function delete_user(
   user_id: string,
 ): Promise<{ success: boolean; msg: string }> {
-  const isProd =
-    process.env.NODE_ENV === "production" &&
-    process.env.TESTING_MODE !== "True";
+  const isProd = shouldUseExternalDatabase();
   try {
     if (isProd) {
       await pool.query('DELETE FROM "unitenrollment" WHERE user_id = $1', [

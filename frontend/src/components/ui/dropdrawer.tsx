@@ -450,7 +450,8 @@ function DropDrawerItem({
     const content = (
       <div
         ref={itemRef}
-        data-slot="drop-drawer-item"
+        data-slot="dropdown-menu-item"
+        data-drop-drawer-item=""
         data-variant={variant}
         data-inset={inset}
         data-disabled={disabled}
@@ -488,7 +489,8 @@ function DropDrawerItem({
 
   return (
     <DropdownMenuItem
-      data-slot="drop-drawer-item"
+      data-slot="dropdown-menu-item"
+      data-drop-drawer-item=""
       data-variant={variant}
       data-inset={inset}
       className={className}
