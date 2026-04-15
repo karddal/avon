@@ -81,5 +81,18 @@ sync:
 serve-doc:
     mdbook serve --open
 
-seeding-db:
-    uv run python -m app.cli.manage seeding
+[windows]
+seed-db env = "dev":
+    $env:APP_ENV="{{env}}"; uv run python -m app.cli.manage seeding
+
+[unix]
+seed-db env = "dev":
+    APP_ENV={{env}} uv run python -m app.cli.manage seeding
+
+[windows]
+seeding-db env = "dev":
+    $env:APP_ENV="{{env}}"; uv run python -m app.cli.manage seeding
+
+[unix]
+seeding-db env = "dev":
+    APP_ENV={{env}} uv run python -m app.cli.manage seeding

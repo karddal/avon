@@ -1,8 +1,8 @@
 import os
 from functools import lru_cache
 from pathlib import Path
-from typing import cast
 from typing import Literal
+from typing import cast
 
 from dotenv import load_dotenv
 
@@ -36,8 +36,19 @@ def normalize_app_env(value: str | None) -> AppEnv:
     return cast(AppEnv, normalized)
 
 
+def _get_explicit_app_env() -> str | None:
+    return os.getenv("APP_ENV") or os.getenv("ENV")
+
+
 def get_app_env() -> AppEnv:
-    return normalize_app_env(os.getenv("APP_ENV") or os.getenv("ENV"))
+    explicit_app_env = _get_explicit_app_env()
+    if explicit_app_env is not None:
+        return normalize_app_env(explicit_app_env)
+
+    if DEV_ENV_FILE.exists():
+        return "development"
+
+    return "production"
 
 
 def is_test_app_env() -> bool:

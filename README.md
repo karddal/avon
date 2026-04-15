@@ -338,6 +338,7 @@ BETTER_AUTH_URL=https://localhost:3000          # better auth url to bind to
 in `.env.dev`
 
 ```
+APP_ENV=dev                                     # app environment for local backend commands
 DATABASE_URL="sqlite:///../sqlite.db"           # the location of the database to access (for local dev, share with frontend)
 CORS_ORIGIN=["http://localhost:3000"]           # the cors origins to allow
 JWKS_URL="http://localhost:3000/api/auth/jwks"  # jwk url that can be fetched from (get from frontend)
