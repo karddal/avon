@@ -23,6 +23,7 @@ class Unit(SQLModel, table=True):
     colour: Colour
     programme_id: uuid.UUID = Field(foreign_key="programme.id", ondelete="CASCADE")
     gitlab_id: str = Field(nullable=False)
+    unlocked: bool = Field(default=False, nullable=False)
     programme: "Programme" = Relationship(back_populates="units")
     unit_layout: str | None = Field(nullable=True)
     enrollments: List["UnitEnrollment"] = Relationship(

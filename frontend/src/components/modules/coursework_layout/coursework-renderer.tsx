@@ -490,14 +490,26 @@ export default function CourseworkRenderer({
     ) : (
       <div className="p-4 text-sm text-muted-foreground">Repository overview is available to staff only.</div>
     ),
-    student_repo_overview: <StudentRepoOverviewModule studentRepo={studentRepo} />,
+    student_repo_overview: canViewSetupProgress ? (
+      <div className="p-4 text-sm text-muted-foreground">Student repository overview is available to students only.</div>
+    ) : (
+      <StudentRepoOverviewModule studentRepo={studentRepo} />
+    ),
     setup_progress: canViewSetupProgress ? (
       <SetupProgressModule steps={setupProgress} />
     ) : (
       <div className="p-4 text-sm text-muted-foreground">Setup progress is available to staff only.</div>
     ),
-    student_repo_activity: <StudentRepoActivityModule studentRepo={studentRepo} />,
-    student_panel: <StudentPanelModule />,
+    student_repo_activity: canViewSetupProgress ? (
+      <div className="p-4 text-sm text-muted-foreground">Student repository activity is available to students only.</div>
+    ) : (
+      <StudentRepoActivityModule studentRepo={studentRepo} />
+    ),
+    student_panel: canViewSetupProgress ? (
+      <div className="p-4 text-sm text-muted-foreground">Student panel is available to students only.</div>
+    ) : (
+      <StudentPanelModule />
+    ),
   };
 
   return (

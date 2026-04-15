@@ -136,6 +136,8 @@ Backend - When I need to write repetitive functions that do similar tasks with s
 
 Setup - Certain libraries and tools I'm not familiar with, in these cases I have mainly using their respective docs; however when there is a gap in the areas the docs cover, or I am running into an obscure error I will consult AI and google to learn about this gap that isn't covered and/or fix the error.
 
+Added: Have now used Claude for help with the drag and drop style courseowkr page - it was really helpful to refactor the async components to use the props fed in instaed of calling teh api themselves. It has also helped me do teh editor that allows teh lecturer / admin to edit both student and lecturer views as it came up with a good prototype that I could easily adapt.
+
 Overall, I mainly use AI as a tool for faster, more specific searches for my scenario as opposed to google. I also use it as a tool to do repetitive tasks that would take me an unnecessarily long time to complete.
 
 ### Yuxuan

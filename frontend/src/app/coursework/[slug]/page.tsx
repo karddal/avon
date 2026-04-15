@@ -13,11 +13,15 @@ import { getRequestJWT } from "@/lib/auth-utils";
 import Loading from "../loading";
 import CourseworkName from "./name";
 import CourseworkClient from "@/components/modules/coursework_layout/coursework-client";
-import { availableCourseworkModules } from "@/lib/coursework-layout";
 import {
-  getCourseworkLayoutForCurrentCoursework,
-  saveCourseworkLayoutForCurrentCoursework,
-} from "@/lib/actions/coursework-layout";
+  availableCourseworkModulesStaff,
+  availableCourseworkModulesStudent,
+  defaultCourseworkLayoutStaff,
+} from "@/lib/coursework-layout";
+import {
+  getCourseworkLayoutForTarget,
+  saveCourseworkLayoutForTarget,
+} from "../../../lib/actions/coursework-layout";
 
 type CourseworkSummary = {
   id: string;
@@ -61,7 +65,10 @@ async function CourseworkPageContent({
   const cw_engine_data = canGetAvailImages
     ? await get_cw_engine_data({ coursework_id: slug })
     : undefined;
-  const savedLayout = await getCourseworkLayoutForCurrentCoursework(slug);
+  const studentLayout = await getCourseworkLayoutForTarget(slug, "student");
+  const staffLayout = canViewSetupProgress
+    ? await getCourseworkLayoutForTarget(slug, "staff")
+    : defaultCourseworkLayoutStaff;
   const setupProgress = canViewSetupProgress ? await cw_setup_progress(slug) : [];
   const studentRepo = !canViewSetupProgress
     ? await get_my_coursework_repo(slug)
@@ -124,9 +131,11 @@ async function CourseworkPageContent({
       )}
       <section className="col-span-3 mb-8 min-h-0 w-full">
         <CourseworkClient
-          initialLayout={savedLayout}
-          availableModules={availableCourseworkModules}
-          saveLayout={saveCourseworkLayoutForCurrentCoursework}
+          initialStudentLayout={studentLayout}
+          initialStaffLayout={staffLayout}
+          availableStudentModules={availableCourseworkModulesStudent}
+          availableStaffModules={availableCourseworkModulesStaff}
+          saveLayout={saveCourseworkLayoutForTarget}
           coursework={coursework}
           canViewSetupProgress={canViewSetupProgress}
           canViewStudentRepos={canViewStudentRepos}

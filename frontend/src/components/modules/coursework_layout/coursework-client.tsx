@@ -2,7 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { GridItem } from "@/components/modules/coursework_layout/coursework-types";
-import { defaultCourseworkLayout } from "@/lib/coursework-layout";
+import {
+  type CourseworkLayoutTarget,
+  defaultCourseworkLayoutStaff,
+  defaultCourseworkLayoutStudent,
+} from "@/lib/coursework-layout";
 import type { CourseworkModuleKey } from "@/components/modules/coursework_layout/coursework-module-registry";
 import CourseworkLayoutEditor from "@/components/modules/coursework_layout/coursework-layout-editor";
 import CourseworkRenderer from "@/components/modules/coursework_layout/coursework-renderer";
@@ -24,9 +28,15 @@ type SetupProgressItem = {
 
 
 type CourseworkClientProps = {
-  initialLayout: GridItem[];
-  availableModules: CourseworkModuleKey[];
-  saveLayout: (layout: GridItem[], slug: string) => Promise<void>;
+  initialStudentLayout: GridItem[];
+  initialStaffLayout: GridItem[];
+  availableStudentModules: CourseworkModuleKey[];
+  availableStaffModules: CourseworkModuleKey[];
+  saveLayout: (
+    layout: GridItem[],
+    slug: string,
+    target: CourseworkLayoutTarget,
+  ) => Promise<void>;
   coursework: CourseworkSummary;
   canViewSetupProgress: boolean;
   canViewStudentRepos: boolean;
@@ -38,8 +48,10 @@ type CourseworkClientProps = {
 
 
 export default function CourseworkClient({
-  initialLayout,
-  availableModules,
+  initialStudentLayout,
+  initialStaffLayout,
+  availableStudentModules,
+  availableStaffModules,
   saveLayout,
   coursework,
   canViewSetupProgress,
@@ -49,19 +61,41 @@ export default function CourseworkClient({
   studentRepo,
   canEditLayout,
 }: CourseworkClientProps) {
-  const [layout, setLayout] = useState<GridItem[]>(
-    initialLayout.length > 0 ? initialLayout : defaultCourseworkLayout,
+  const [studentLayout, setStudentLayout] = useState<GridItem[]>(
+    initialStudentLayout.length > 0
+      ? initialStudentLayout
+      : defaultCourseworkLayoutStudent,
+  );
+  const [staffLayout, setStaffLayout] = useState<GridItem[]>(
+    initialStaffLayout.length > 0
+      ? initialStaffLayout
+      : defaultCourseworkLayoutStaff,
+  );
+  const [activeTarget, setActiveTarget] = useState<CourseworkLayoutTarget>(
+    canEditLayout ? "staff" : "student",
   );
   const hasMounted = useRef(false);
 
+  const activeLayout =
+    activeTarget === "staff" ? staffLayout : studentLayout;
+  const activeAvailableModules =
+    activeTarget === "staff" ? availableStaffModules : availableStudentModules;
+
   useEffect(() => {
+    if (!canEditLayout) {
+      return;
+    }
+
     if (!hasMounted.current) {
       hasMounted.current = true;
       return;
     }
 
+    const layoutToSave =
+      activeTarget === "staff" ? staffLayout : studentLayout;
+
     const timeoutId = window.setTimeout(() => {
-      void saveLayout(layout, coursework.id).catch((error) => {
+      void saveLayout(layoutToSave, coursework.id, activeTarget).catch((error) => {
         console.error("Failed to save dashboard layout", error);
       });
     }, 400);
@@ -69,20 +103,39 @@ export default function CourseworkClient({
     return () => {
       window.clearTimeout(timeoutId);
     };
-  }, [layout, saveLayout]);
+  }, [
+    activeTarget,
+    canEditLayout,
+    coursework.id,
+    saveLayout,
+    staffLayout,
+    studentLayout,
+  ]);
+
+  function setActiveLayout(nextLayout: GridItem[] | ((prev: GridItem[]) => GridItem[])) {
+    if (activeTarget === "staff") {
+      setStaffLayout(nextLayout);
+      return;
+    }
+
+    setStudentLayout(nextLayout);
+  }
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       {canEditLayout && (
         <CourseworkLayoutEditor
-          availableModules={availableModules}
-          layout={layout}
-          onChange={setLayout}
+          availableModules={activeAvailableModules}
+          layout={activeLayout}
+          onChange={setActiveLayout}
+          activeTarget={activeTarget}
+          onTargetChange={setActiveTarget}
+          canEditStaffView={canEditLayout}
         />
       )}
 
       <CourseworkRenderer
-        layout={layout}
+        layout={canEditLayout ? staffLayout : studentLayout}
         coursework={coursework}
         canViewSetupProgress={canViewSetupProgress}
         canViewStudentRepos={canViewStudentRepos}
