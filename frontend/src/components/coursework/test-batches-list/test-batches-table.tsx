@@ -33,13 +33,7 @@ import {
 import { cn } from "@/lib/utils";
 import { columns } from "./columns";
 
-export function TestBatchesTable({
-  coursework_id,
-  refreshTable,
-}: {
-  coursework_id: string;
-  refreshTable: () => void;
-}) {
+export function TestBatchesTable({ coursework_id }: { coursework_id: string }) {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(

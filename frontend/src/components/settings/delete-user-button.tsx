@@ -6,7 +6,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { delete_user } from "@/lib/actions/delete_user";
+import { delete_user } from "@/lib/actions/auth/delete_user";
 
 interface DeleteUserProps {
   user_id: string;

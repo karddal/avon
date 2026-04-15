@@ -4,6 +4,9 @@ from functools import lru_cache
 import aioboto3
 import gitlab
 
+from app.core.env import load_backend_env
+
+load_backend_env()
 TOKEN = os.getenv("GITLAB_API_TOKEN")
 BASE_URL = os.getenv("GITLAB_BASE_URL")
 ROOT_ID = os.getenv("GITLAB_ROOT_ID")

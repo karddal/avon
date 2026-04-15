@@ -1,16 +1,11 @@
 import os
-from pathlib import Path
 
-from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException, Request, status
 
+from app.core.env import load_backend_env
 from app.services.db_reset import reset_app_data, reset_database
 
-BACKEND_DIR = Path(__file__).resolve().parents[2]
-DEV_ENV_FILE = BACKEND_DIR / ".env.dev"
-
-if os.getenv("ENV") == "dev":
-    load_dotenv(DEV_ENV_FILE, override=False)
+load_backend_env()
 
 router = APIRouter(prefix="/seeding", tags=["seeding"])
 

@@ -5,6 +5,7 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  type RowSelectionState,
   type SortingState,
   type VisibilityState,
 } from "@tanstack/table-core";
@@ -37,8 +38,8 @@ export function StudentReposTable({
   setRowSelection,
 }: {
   coursework_id: string;
-  rowSelection: {};
-  setRowSelection: Dispatch<SetStateAction<{}>>;
+  rowSelection: RowSelectionState;
+  setRowSelection: Dispatch<SetStateAction<RowSelectionState>>;
 }) {
   const [data, setData] = useState<StudentNameAndRepo[]>([]);
   const [loading, setLoading] = useState<boolean>(true);

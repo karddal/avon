@@ -39,13 +39,7 @@ function _getInitials(name: string) {
   return (first + last).toUpperCase();
 }
 
-export default function StudList({
-  cw_id,
-  repo_id,
-}: {
-  cw_id: string;
-  repo_id: string;
-}) {
+export default function StudList({ cw_id }: { cw_id: string }) {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<SearchResponse>({

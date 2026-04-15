@@ -1,6 +1,8 @@
-from pydantic import AliasChoices, Field
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from app.core.env import load_backend_env
+from pydantic import AliasChoices, Field, model_validator
+from pydantic_settings import BaseSettings
 
+load_backend_env()
 
 class Settings(BaseSettings):
     jwt_audience: str
@@ -15,17 +17,28 @@ class Settings(BaseSettings):
         default=False,
         validation_alias=AliasChoices("ALLOW_HISTORICAL_SEED_DATA", "TESTING_MODE"),
     )
-    model_config = SettingsConfigDict(env_file=".env") # Keep on getting warnings in tests to do this, it's the updated version of the code below
     test_fixture_key: str | None = None
-    aws_ecs_cluster: str
-    aws_results_queue_url: str
-    aws_bucket: str
-    model_config = SettingsConfigDict(
-        env_file=".env"
-    )  # Keep on getting warnings in tests to do this, it's the updated version of the code below
-    # class Config:           Old code that won't work in Pydantic v3 apparently
-    #     env_file = ".env"
-    # Please Ensure to test This in the PR, need to make sure it works
+    aws_ecs_cluster: str | None = None
+    aws_results_queue_url: str | None = None
+    aws_bucket: str | None = None
+
+    @model_validator(mode="after")
+    def validate_runtime_config(self) -> "Settings":
+        if self.testing_mode:
+            return self
+
+        missing = [
+            name
+            for name in ("aws_ecs_cluster", "aws_results_queue_url", "aws_bucket")
+            if not getattr(self, name)
+        ]
+        if missing:
+            missing_str = ", ".join(missing)
+            raise ValueError(
+                f"Missing required AWS configuration outside testing mode: {missing_str}"
+            )
+
+        return self
 
     @property
     def testing_mode(self) -> bool:

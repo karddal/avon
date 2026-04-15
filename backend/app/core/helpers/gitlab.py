@@ -7,10 +7,11 @@ from pathlib import PurePosixPath  #Just easier path hadnling
 from urllib.parse import quote, urlparse
 
 import httpx
-from dotenv import load_dotenv
 from fastapi import HTTPException, UploadFile
 
-load_dotenv()
+from app.core.env import load_backend_env
+
+load_backend_env()
 TOKEN = os.getenv("GITLAB_API_TOKEN")
 BASE_URL = os.getenv("GITLAB_BASE_URL")
 ROOT_ID = os.getenv("GITLAB_ROOT_ID")

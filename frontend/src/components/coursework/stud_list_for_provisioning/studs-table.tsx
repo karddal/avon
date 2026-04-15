@@ -10,6 +10,7 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  type RowSelectionState,
   type SortingState,
   type VisibilityState,
 } from "@tanstack/table-core";
@@ -41,13 +42,11 @@ export function StudentsTableWithMaybeRepos({
   rowSelection,
   setRowSelection,
   refreshTable,
-  setRefreshTable,
 }: {
   coursework_id: string;
-  rowSelection: {};
-  setRowSelection: Dispatch<SetStateAction<{}>>;
+  rowSelection: RowSelectionState;
+  setRowSelection: Dispatch<SetStateAction<RowSelectionState>>;
   refreshTable: number;
-  setRefreshTable: Dispatch<SetStateAction<number>>;
 }) {
   const [data, setData] = useState<StudentNameAndPotentiallyRepo[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -82,6 +81,8 @@ export function StudentsTableWithMaybeRepos({
   });
 
   useEffect(() => {
+    // Parent bumps this counter after provisioning to force a refetch.
+    void refreshTable;
     setLoading(true);
     const updateData = async () => {
       // TODO: GET DATA HERE
@@ -95,7 +96,7 @@ export function StudentsTableWithMaybeRepos({
     updateData().then(() => {
       setLoading(false);
     });
-  }, [coursework_id]);
+  }, [coursework_id, refreshTable]);
 
   if (loading) {
     return (

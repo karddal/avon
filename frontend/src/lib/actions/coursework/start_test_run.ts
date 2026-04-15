@@ -1,11 +1,6 @@
 "use server";
 import { getRequestJWT } from "@/lib/auth-utils";
 
-type StartTestRunRequest = {
-  repo_ids: string[];
-  notifications_enabled: boolean;
-};
-
 type SuccessResponse = {
   started: number;
   failed: number;

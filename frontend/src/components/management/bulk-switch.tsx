@@ -27,7 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getProgrammes } from "@/lib/actions/get_all_programmes";
+import { getProgrammes } from "@/lib/actions/programme/get_all_programmes";
 import { Button } from "../ui/button";
 import BulkTransferButton from "./bulk-transfer-button";
 import OmitMembers from "./omit-users";

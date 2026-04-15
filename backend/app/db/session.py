@@ -3,17 +3,14 @@ import os
 from contextlib import asynccontextmanager
 from typing import Annotated
 
-from dotenv import load_dotenv
 from fastapi import Depends, FastAPI
 from sqlmodel import Session, SQLModel, create_engine
 from sqlalchemy.pool import NullPool
 
-from app.core import settings
+from app.core.env import load_backend_env
 from app.sqs_worker import sqs_worker
 
-if os.getenv("ENV") == "dev":
-    env_file = ".env.dev"
-    load_dotenv(dotenv_path=env_file)
+load_backend_env()
 
 db_url = os.getenv("DATABASE_URL")
 if not db_url:
@@ -51,11 +48,17 @@ SessionDep = Annotated[Session, Depends(get_session)]
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    from app.core.settings import settings
+
     create_db_and_tables()
     app.state.task_group = asyncio.TaskGroup()
     await app.state.task_group.__aenter__()
 
-    worker_engine = create_engine(db_url, **engine_kwargs)
-    worker_session = Session(worker_engine)
-    app.state.task_group.create_task(sqs_worker(worker_session, settings.settings.aws_results_queue_url))
+    if not settings.testing_mode:
+        worker_engine = create_engine(db_url, **engine_kwargs)
+        worker_session = Session(worker_engine)
+        app.state.task_group.create_task(
+            sqs_worker(worker_session, settings.aws_results_queue_url)
+        )
+
     yield

@@ -111,7 +111,7 @@ export const columns: (
       id: "repo_url",
       accessorKey: "repo_url",
       enableHiding: true,
-      header: ({ column }) => {
+      header: () => {
         return <div>Repo name</div>;
       },
       cell: ({ row }) => {
@@ -131,7 +131,7 @@ export const columns: (
       id: "repo_id",
       accessorKey: "repo_id",
       enableHiding: true,
-      header: ({ column }) => {
+      header: () => {
         return <div>Repo ID</div>;
       },
       cell: ({ row }) => {
@@ -218,7 +218,7 @@ export const columns: (
                           Add a student to this repo.
                         </DialogDescription>
                         <div className="-mx-4 no-scrollbar max-h-[50vh] overflow-y-auto px-4">
-                          <StudList cw_id={cw_id} repo_id={s} />
+                          <StudList cw_id={cw_id} />
                         </div>
                       </DialogHeader>
                     </DialogContent>

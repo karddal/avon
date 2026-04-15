@@ -3,11 +3,6 @@
 
 import { getRequestJWT } from "@/lib/auth-utils";
 
-type ServerResponse = {
-  created: string[];
-  failed: string[];
-};
-
 type ProjectCreateForSpecificStudRequest = {
   name: string;
   coursework_id: string;

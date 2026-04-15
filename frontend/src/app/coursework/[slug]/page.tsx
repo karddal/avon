@@ -128,10 +128,7 @@ async function CourseworkPageContent({
         >
           {canViewSetupProgress ? (
             canViewStudentRepos && student_repos_data ? (
-              <CourseworkRepoOverview
-                courseworkId={slug}
-                repos={student_repos_data?.repos}
-              />
+              <CourseworkRepoOverview repos={student_repos_data?.repos} />
             ) : (
               <></>
             )

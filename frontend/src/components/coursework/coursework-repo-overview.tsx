@@ -21,10 +21,8 @@ import {
 import type { StudentNameAndRepo } from "@/lib/actions/coursework/get_student_repos";
 
 export default function CourseworkRepoOverview({
-  courseworkId,
   repos,
 }: {
-  courseworkId: string;
   repos: StudentNameAndRepo[];
 }) {
   const sorted = repos.sort((a, b) => a.student.localeCompare(b.student));

@@ -258,7 +258,6 @@ export default function CourseworkLectDropdown({
             open_state={showTestBatches}
             set_open_state={setShowTestBatches}
             courseworkId={slug}
-            refresh={refresh}
           />
         </>
       )}

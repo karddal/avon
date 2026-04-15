@@ -1,10 +1,10 @@
 import logging
 import os
 
-from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.core.env import load_backend_env
 from app.core.settings import settings
 from app.core.testing import ensure_test_fixture_key_configured
 from app.db.session import create_db_and_tables, lifespan
@@ -25,9 +25,7 @@ from app.routers import (
 )
 from app.routers import seeding
 
-if os.getenv("ENV") == "dev":
-    env_file = ".env.dev"
-    load_dotenv(dotenv_path=env_file)
+load_backend_env()
 
 logging.basicConfig(
     level=os.getenv("LOG_LEVEL", "INFO").upper(),
