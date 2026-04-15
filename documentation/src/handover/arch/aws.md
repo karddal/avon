@@ -2,9 +2,12 @@
 
 AWS is the main backbone of the Avon Platform. To understand how Avon works, you must understand the structure of the AWS setup. 
 
-The region where Avon is hosted is `eu-north-1` or Stockholm.
-The ECS cluster is called `wubble` (currently).
-The AWS Application is called `Avon-Production`.
+> [!NOTE]
+>The region where Avon is hosted is `eu-north-1` or Stockholm.
+>
+>The ECS cluster is called `wubble` (currently).
+>
+>The AWS Application is called `Avon-Production`.
 
 A [CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html) stack will be provided, but it is recommended to learn the structure of the project incase you need to debug/change key functionality of Avon.
 
@@ -66,16 +69,18 @@ Route tables also allow connection to [S3](https://aws.amazon.com/s3/), a object
 [Security Groups](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html) control the traffic that is allowed to reach and leave the resources contained in it.
 
 List of Avon's security groups:
-- `avon-alb-public`
-- `avon-frontend-sg`
-- `avon-alb-internal`
-- `avon-backend-sg`
-- `avon-database-sg`
-- `avon-runners-sg`
+- `avon-alb-public` - Public ALB
+- `avon-frontend-sg` - Frontend service
+- `avon-alb-internal` - Internal ALB
+- `avon-backend-sg` - Backend service
+- `avon-database-sg` - RDS database
+- `avon-runners-sg` - Test Runner
 
 For example, the database should only accept traffic on port 5432 (PostgreSQL) from the backend service, and so the `avon-database-sg` will have an inbound rule to only accept on port 5432 from `avon-backend-sg`.
 
-For Avon, this allows Security Group chaining, which allows the traffic to enter through the Public ALB (Application Load Balancer), and follow a straight, protected, path through the system. More will be mentioned later about this in the TODO section.
+For Avon, this allows **Security Group chaining**, which allows the traffic to enter through the Public ALB (Application Load Balancer), and follow a straight, protected, path through the system. 
+
+More will be mentioned later about this in the TODO section.
 
 ## ECS
 
@@ -94,11 +99,11 @@ Avon's task definitions are stored in [.aws/](../../../../.aws/).
 AWS ECR (Elastic Container Registry) is where all the related [Docker](https://docker.com) images are uploaded to, and pulled from by the Task Definitions. 
 
 There are 3 main repositories inside Avon's ECR:
-- **avon/frontend**
+- **`avon/frontend`**
   - frontend docker images
-- **avon/backend**
+- **`avon/backend`**
   - backend docker images
-- **avon-runners/\***
+- **`avon-runners/*`**
   - runners for coursework tests 
   - **\*** is the name of the predetermined runner e.g. `python-runner` being the python based coursework runner
 
@@ -230,6 +235,7 @@ The backend will run the API request, requiring data from the database, meaning 
 
 The PostgreSQL RDS database is inside the `avon-database-sg` security group, meaning that it will accept traffic from the `avon-backend-sg` **only**.
 
+> [!WARNING]
 > RDS currently accepts traffic from anywhere on port 5432 for connections from SQL clients, if you don't want this, remove the inbound rule on `avon-database-sg` that allows all traffic.
 
 ### Summary
