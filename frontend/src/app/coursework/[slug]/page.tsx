@@ -129,7 +129,7 @@ async function CourseworkPageContent({
           {canViewSetupProgress ? (
             canViewStudentRepos && student_repos_data ? (
               <CourseworkRepoOverview
-                courseworkId={slug}
+                slug={slug}
                 repos={student_repos_data?.repos}
               />
             ) : (
@@ -137,7 +137,7 @@ async function CourseworkPageContent({
             )
           ) : (
             <Suspense>
-              <StudentRepoOverview courseworkId={slug} />
+              <StudentRepoOverview slug={slug} />
             </Suspense>
           )}
         </div>
@@ -147,11 +147,11 @@ async function CourseworkPageContent({
         >
           {canViewSetupProgress ? (
             <Suspense>
-              <SetupProgress cw_id={slug}></SetupProgress>
+              <SetupProgress slug={slug}></SetupProgress>
             </Suspense>
           ) : (
             <Suspense>
-              <StudentRepoActivity courseworkId={slug} />
+              <StudentRepoActivity slug={slug} />
             </Suspense>
           )}
         </div>

@@ -154,9 +154,9 @@ function StudentRepoActivityFallback() {
 }
 
 export default function StudentRepoActivity({
-  courseworkId,
+  slug,
 }: {
-  courseworkId: string;
+  slug: string;
 }) {
   return (
     <Card className="h-full">
@@ -174,7 +174,7 @@ export default function StudentRepoActivity({
       </CardHeader>
       <CardContent className="flex min-h-0 flex-1 flex-col space-y-4">
         <Suspense fallback={<StudentRepoActivityFallback />}>
-          <StudentRepoActivityContent courseworkId={courseworkId} />
+          <StudentRepoActivityContent courseworkId={slug} />
         </Suspense>
       </CardContent>
     </Card>

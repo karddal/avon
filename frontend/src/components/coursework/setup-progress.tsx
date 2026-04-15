@@ -3,11 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cw_setup_progress } from "@/lib/actions/coursework/coursework-setup-progress";
 
 interface setupProgress {
-  cw_id: string;
+  slug: string;
 }
 
-export default async function SetupProgress({ cw_id }: setupProgress) {
-  const steps = await cw_setup_progress(cw_id);
+export default async function SetupProgress({ slug }: setupProgress) {
+  const steps = await cw_setup_progress(slug);
   return (
     // Need to use reusable components for the buttons and sections, just place with names or smth
     // Add links to each one and actually do backend for it as well

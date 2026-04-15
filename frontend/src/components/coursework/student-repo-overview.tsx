@@ -155,9 +155,9 @@ function StudentRepoOverviewFallback() {
 }
 
 export default function StudentRepoOverview({
-  courseworkId,
+  slug,
 }: {
-  courseworkId: string;
+  slug: string;
 }) {
   return (
     <Card className="h-full">
@@ -174,7 +174,7 @@ export default function StudentRepoOverview({
       </CardHeader>
       <CardContent className="min-h-0 flex-1">
         <Suspense fallback={<StudentRepoOverviewFallback />}>
-          <StudentRepoOverviewContent courseworkId={courseworkId} />
+          <StudentRepoOverviewContent courseworkId={slug} />
         </Suspense>
       </CardContent>
     </Card>
