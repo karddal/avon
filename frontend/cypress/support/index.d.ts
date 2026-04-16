@@ -27,6 +27,7 @@ declare global {
 
     interface Chainable {
       login(email: string, password: string, student: boolean): Chainable<void>;
+      resetDb(): Chainable<void>;
       getByCy(value: string): Chainable<JQuery<HTMLElement>>;
       // testResetDomain(): Chainable<Response<any>>;
       // testCreateProgramme(

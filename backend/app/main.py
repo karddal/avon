@@ -1,18 +1,13 @@
 import logging
-import os
 
-from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-
-if os.getenv("ENV") == "dev":
-    env_file = ".env.dev"
-    load_dotenv(dotenv_path=env_file)
 from app.core.settings import settings
 from app.core.testing import ensure_test_fixture_key_configured
 from app.db.session import create_db_and_tables, lifespan
 from app.models.coursework import Coursework
+from app.models.student_repo import StudentRepo
 from app.models.unit import UnitWithCourseworks
 from app.routers import (
     base_image,
@@ -26,23 +21,21 @@ from app.routers import (
     unit,
     unit_enrollment,
 )
+from app.routers import seeding
 
 logging.basicConfig(
-    level=os.getenv("LOG_LEVEL", "INFO").upper(),
+    level=settings.log_level.upper(),
 )
 
 app = FastAPI(lifespan=lifespan)
 
-origins = os.getenv("CORS_ORIGIN")
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=settings.cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 app.include_router(unit.router)
 app.include_router(check.router)
 app.include_router(coursework.router)
@@ -51,13 +44,15 @@ app.include_router(programme.router)
 app.include_router(structure.router)
 app.include_router(project.router)
 app.include_router(notification.router)
+app.include_router(seeding.router)
 app.include_router(base_image.router)
+StudentRepo.model_rebuild()
 Coursework.model_rebuild()
 UnitWithCourseworks.model_rebuild()
 
 app.include_router(unit_enrollment.router)
 
-if settings.testing_mode:
+if settings.enable_test_fixtures:
     from app.routers import testing_fixtures
 
     ensure_test_fixture_key_configured()

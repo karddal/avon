@@ -13,6 +13,8 @@ export default function CourseworkRepoOverview({
   invitedStudentsCount: number;
   inviteableStudentsCount: number;
 }) {
+  const _sorted = [...repos].sort((a, b) => a.student.localeCompare(b.student));
+
   return (
     <Card className="h-full">
       <CardHeader>
@@ -27,27 +29,28 @@ export default function CourseworkRepoOverview({
         </CardTitle>
       </CardHeader>
       <CardContent className="flex min-h-0 flex-1 flex-col space-y-4">
-        <div className="flex w-full flex-col gap-3">
-          <div className="flex w-full gap-3">
-            <div className="w-full rounded-md border bg-accent/40 p-3">
-              <div className="mb-1 flex items-center gap-2 text-xs text-muted-foreground">
-                <FolderGit className="h-4 w-4" />
-                Provisioned Repos
-              </div>
-              <div className="text-2xl font-semibold">{repos.length}</div>
+        <div className="grid gap-3 md:grid-cols-2">
+          <div className="rounded-md border bg-accent/40 p-3">
+            <div className="mb-1 flex items-center gap-2 text-xs text-muted-foreground">
+              <FolderGit className="h-4 w-4" />
+              Provisioned Repos
             </div>
-            <div className="w-full rounded-md border bg-accent/40 p-3">
-              <div className="mb-1 flex items-center gap-2 text-xs text-muted-foreground">
-                <Users className="h-4 w-4" />
-                Invited Students
-              </div>
-              <div className="text-2xl font-semibold">
-                {invitedStudentsCount}/{inviteableStudentsCount}
-              </div>
+            <div className="text-2xl font-semibold">{repos.length}</div>
+          </div>
+          <div className="rounded-md border bg-accent/40 p-3">
+            <div className="mb-1 flex items-center gap-2 text-xs text-muted-foreground">
+              <Users className="h-4 w-4" />
+              Invited Students
+            </div>
+            <div className="text-2xl font-semibold">
+              {invitedStudentsCount}/{inviteableStudentsCount}
             </div>
           </div>
+        </div>
+
+        <div className="flex min-h-0 flex-1 flex-col space-y-2">
           <div
-            className={`w-full rounded-md border p-3 ${
+            className={`rounded-md border p-3 ${
               repos.length > 0
                 ? "border-emerald-300 bg-emerald-50 text-emerald-950 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-100"
                 : "border-red-300 bg-red-50 text-red-950 dark:border-red-800 dark:bg-red-950/40 dark:text-red-100"

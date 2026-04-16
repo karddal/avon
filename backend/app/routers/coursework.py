@@ -1074,7 +1074,6 @@ async def activate_template(
         token=token,
         session=session,
     )
-
     try:
         templateActivation = await gl_activate_template_project(gitLabId)
     except Exception:

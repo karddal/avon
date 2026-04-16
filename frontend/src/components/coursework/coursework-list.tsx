@@ -1,7 +1,7 @@
 import { BookDashed } from "lucide-react";
 import Coursework from "@/components/coursework/coursework";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getRequestJWT, requireSession } from "@/lib/auth-utils";
+import { get_active_coursework } from "@/lib/actions/get_active_coursework";
 import {
   Empty,
   EmptyDescription,
@@ -10,71 +10,13 @@ import {
   EmptyTitle,
 } from "../ui/empty";
 
-type CourseworkData = {
-  id: string;
-  name: string;
-  description: string;
-  due_date: string;
-  creation_date: string;
-  colour: string;
-};
-
-type unit = {
-  id: string;
-  unit_code: string;
-  name: string;
-  programme_start_date: string;
-  programme_end_date: string;
-  courseworks: CourseworkData[];
-};
-
 export default async function CourseworkList({
   finished,
 }: {
   finished: boolean;
 }) {
-  const token = await getRequestJWT();
-  const s = await requireSession();
-  const role = s.user.role;
-  const hasPermissions = role === "admin" || role === "lecturer";
-  const route = role === "admin" ? "coursework/all" : "me/courseworks";
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/${route}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    cache: "no-cache",
-  });
-  const courseworkListData: unit[] = await response.json();
-
-  const now = new Date();
-
-  const filteredUnitsList = [];
-  for (const unit of courseworkListData) {
-    const filteredCourseworks = unit.courseworks.filter((coursework) => {
-      const created = new Date(coursework.creation_date);
-      const due = new Date(coursework.due_date);
-
-      const isActive = now >= created && now <= due;
-
-      if (finished) {
-        return now > due;
-      }
-
-      return isActive;
-    });
-    if (filteredCourseworks.length > 0) {
-      filteredUnitsList.push({
-        id: unit.id,
-        unit_code: unit.unit_code,
-        courseworks: filteredCourseworks,
-        name: unit.name,
-        programme_start_date: unit.programme_start_date,
-        programme_end_date: unit.programme_end_date,
-      });
-    }
-  }
+  const { hasPermissions, units: filteredUnitsList } =
+    await get_active_coursework(finished);
 
   return (
     <>

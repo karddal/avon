@@ -159,8 +159,7 @@ def test_due_date_set_over_a_year_from_now_raises_error():
 
 
 def test_due_date_utc_set_before_now_raises_error():
-    one_minute_behind = datetime.now() - timedelta(minutes=1)
-    one_minute_behind = one_minute_behind.replace(tzinfo=timezone.utc)
+    one_minute_behind = datetime.now(timezone.utc) - timedelta(minutes=1)
     with pytest.raises(ValidationError):
         CourseworkCreate(
             name="Haskell 2",
@@ -186,25 +185,27 @@ def test_due_date_utc_set_over_a_year_from_now_raises_error():
 
 def test_valid_due_date_raises_no_error():
     validDate = datetime.now() + timedelta(days=34)
-    CourseworkCreate(
+    coursework = CourseworkCreate(
         name="Haskell 2",
         description="Coursework Description",
         unit_id=uuid4(),
         due_date=validDate,
         colour="abcdef",
     )
+    assert coursework.due_date == validDate
 
 
 def test_valid_due_date_utc_raises_no_error():
     validDate = datetime.now() + timedelta(days=34)
     validDate = validDate.replace(tzinfo=timezone.utc)
-    CourseworkCreate(
+    coursework = CourseworkCreate(
         name="Haskell 2",
         description="Coursework Description",
         unit_id=uuid4(),
         due_date=validDate,
         colour="abcdef",
     )
+    assert coursework.due_date == validDate
 
 
 # -------------- colour --------------

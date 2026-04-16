@@ -7,43 +7,17 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import Unit from "@/components/units/unit";
-import { getRequestJWT, requireSession } from "@/lib/auth-utils";
-
-export type UnitData = {
-  id: string;
-  name: string;
-  description?: string;
-  creation_date: string;
-  unit_code: string;
-  colour: string;
-  academic_year: string | number; // Flexible type for comparison
-};
+import {
+  type ActiveUnit,
+  get_active_units,
+} from "@/lib/actions/get_active_units";
 
 export default async function UnitListByYear({
   year,
 }: {
   year: string | number;
 }) {
-  const token = await getRequestJWT();
-  const s = await requireSession();
-  const role = s.user.role;
-  const hasPermissions = role === "admin";
-  const route = role === "admin" ? "units/active" : "me/units/active";
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/${route}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    cache: "no-store",
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch: ${response.statusText}`);
-  }
-
-  const unitData = await response.json();
-  const unitsArray = unitData.units;
+  const { hasPermissions, units: unitsArray } = await get_active_units();
 
   if (unitsArray.length === 0) {
     return (
@@ -63,7 +37,7 @@ export default async function UnitListByYear({
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-1 gap-4 overflow-y-scroll h-48">
-      {unitsArray.map((unit: UnitData) => (
+      {unitsArray.map((unit: ActiveUnit) => (
         <Unit hasPermissions={hasPermissions} key={unit.id} props={unit} />
       ))}
     </div>

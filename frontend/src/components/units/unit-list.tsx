@@ -1,8 +1,10 @@
 "use server";
 
+import { LockKeyhole } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Unit from "@/components/units/unit";
 import { getRequestJWT, requireSession } from "@/lib/auth-utils";
+import { Card } from "../ui/card";
 
 export type UnitData = {
   id: string;
@@ -11,6 +13,7 @@ export type UnitData = {
   creation_date: string;
   unit_code: string;
   colour: string;
+  unlocked: boolean;
 };
 
 type Programme = {
@@ -91,11 +94,39 @@ export default async function UnitList({ finished }: { finished: boolean }) {
           >
             {programme.units.map((unit) => (
               <div className={"mb-3"} key={unit.id}>
-                <Unit
-                  key={unit.id}
-                  props={unit}
-                  hasPermissions={hasPermissions}
-                />
+                {((unit.unlocked && role === "user") || role !== "user") && (
+                  <Unit
+                    key={unit.id}
+                    props={unit}
+                    hasPermissions={hasPermissions}
+                  />
+                )}
+                {!unit.unlocked && role === "user" && (
+                  <div>
+                    <div
+                      style={{ backgroundColor: `#${unit.colour}` }}
+                      className="h-2"
+                    ></div>
+                    <Card className="bg-muted flex flex-row p-2 items-center opacity-60 grayscale">
+                      <div className="flex flex-col w-full">
+                        <div className="flex flex-col text-ellipsis">
+                          <div className="flex flex-row align-center items-center ">
+                            <p className="text-foreground/80">
+                              Unit Code: {unit.unit_code}
+                            </p>
+                          </div>
+                          <div className="flex flex-row items-center justify-between w-full gap-x-10 lg:text-lg">
+                            <p className="text-xl">{unit.name}</p>
+                          </div>
+                        </div>
+                        <br />
+                        <div className="flex flex-row gap-4"></div>
+                      </div>
+                      <div className="w-10 h-10" />
+                      <LockKeyhole className="text-foreground/60 absolute right-3 bottom-3 h-5 w-5" />
+                    </Card>
+                  </div>
+                )}
               </div>
             ))}
           </TabsContent>

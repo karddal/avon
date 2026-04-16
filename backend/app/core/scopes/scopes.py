@@ -175,7 +175,7 @@ async def authenticate_user(
     if settings.ignore_auth:
         logger.debug("ignore auth mode set, so authenticating as admin")
         user = AuthenticatedUser(
-            user_id="aaaa", scopes=set([s for s in Scopes]), fe_role="testing"
+            user_id="aaaa", scopes=set([s for s in Scopes]), fe_role="admin"
         )
         logger.debug(user)
         return user
