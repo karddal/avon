@@ -244,7 +244,7 @@ export default function LecturerDropdown({
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
               <Button
                 size="lg"
                 className="bg-green-700 text-white hover:bg-green-800 focus:bg-green-700"
@@ -271,7 +271,7 @@ export default function LecturerDropdown({
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
               <Button
                 size="lg"
                 className="bg-red-600 text-white hover:bg-red-700 focus:bg-red-600"
