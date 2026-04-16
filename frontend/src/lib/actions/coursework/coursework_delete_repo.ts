@@ -1,4 +1,4 @@
-"use server"
+"use server";
 import { getRequestJWT } from "@/lib/auth-utils";
 
 type Params = {
