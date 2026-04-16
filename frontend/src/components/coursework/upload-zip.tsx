@@ -151,7 +151,7 @@ export default function ZipUploadPage({
       {uploadStatus === 0 && status !== "Uploading ZIP..." && (
         <Button
           size="lg"
-          className="w-full"
+          className="w-full bg-accent text-accent-foreground"
           onClick={handleUpload}
           disabled={!file || uploading}
         >
@@ -160,20 +160,20 @@ export default function ZipUploadPage({
       )}
 
       {uploadStatus === 1 && status !== "Uploading ZIP..." && (
-        <Button size="lg" disabled className="w-full">
+        <Button size="lg" disabled className="w-full bg-accent">
           <Spinner className="mr-2 h-4 w-4" />
         </Button>
       )}
 
       {status === "Uploading ZIP..." && uploadStatus !== 2 && (
-        <Button size="lg" disabled className="w-full">
+        <Button size="lg" disabled className="w-full bg-accent">
           <Spinner className="mr-2 h-4 w-4" />
           Uploading...
         </Button>
       )}
 
       {status === "Overwriting ZIP..." && uploadStatus === 2 && (
-        <Button size="lg" disabled className="w-full" variant="destructive">
+        <Button size="lg" disabled className="w-full bg-accent" variant="destructive">
           <Spinner className="mr-2 h-4 w-4" />
           Overwriting...
         </Button>

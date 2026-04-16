@@ -173,7 +173,7 @@ export const IntForm = ({
   const due_date = form.watch("due_date");
   return (
     <div className="flex flex-1 flex-row gap-4 px-4 sm:justify-center sm:align-center sm:items-center">
-      <div className="flex sm:flex-row w-full lg:w-[70%] gap-4 mb-2 h-fit mb-2">
+      <div className="flex sm:flex-row w-full lg:w-[70%] gap-4 h-fit mb-2">
         <Card className={"flex-1"}>
           <Progress value={step * 50} className={"rounded-none"}></Progress>
           <CardHeader>

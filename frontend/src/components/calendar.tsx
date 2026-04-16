@@ -55,10 +55,10 @@ export function Calendar29({ props }: { props: calendarProps }) {
                 >
                   {props.date
                     ? props.date.toLocaleDateString("en-GB", {
-                        day: "2-digit",
-                        month: "long",
-                        year: "numeric",
-                      })
+                      day: "2-digit",
+                      month: "long",
+                      year: "numeric",
+                    })
                     : "Select date"}
                   <ChevronDownIcon />
                 </Button>
@@ -72,7 +72,7 @@ export function Calendar29({ props }: { props: calendarProps }) {
                   selected={props.date}
                   captionLayout="dropdown"
                   fromYear={props.date.getFullYear()}
-                  toYear={props.date.getFullYear() + 10}
+                  toYear={props.date.getFullYear() + 2}
                   onSelect={(d) => {
                     if (d) {
                       const day = d.getDate();

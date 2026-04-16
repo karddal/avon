@@ -171,7 +171,7 @@ export default function CreateTemplate({
               </div>
               <div className="p-8 pt-0">
                 {activateStatus === 0 && (
-                  <div className="h-64 rounded-md bg-gray-100 flex items-center justify-center">
+                  <div className="h-64 bg-accent flex items-center justify-center">
                     <p className="text-sm text-gray-400">
                       Repository preview unavailable until activation
                     </p>
@@ -179,7 +179,7 @@ export default function CreateTemplate({
                 )}
 
                 {activateStatus === 1 && (
-                  <div className="h-64 rounded-md bg-gray-100 flex items-center justify-center">
+                  <div className="h-64 rounded-md bg-accent flex items-center justify-center">
                     <Spinner className="mr-2 h-4 w-4" />
                   </div>
                 )}
