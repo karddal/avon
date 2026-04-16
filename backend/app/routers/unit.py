@@ -373,7 +373,7 @@ async def delete_unit(
         token=token,
         session=session,
     )
-    
+
     unit = session.get(Unit, unit_id)
 
     if unit is None:

@@ -114,7 +114,6 @@ class UnitWithoutProgramme(BaseModel):
 
 
 
-
 class ProgrammeWithUnits(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: uuid.UUID
@@ -122,6 +121,7 @@ class ProgrammeWithUnits(BaseModel):
     start_date: date
     end_date: date
     units: List[UnitWithoutProgramme]
+
 
 class UnitAllByGroup(BaseModel):
     programmes: List[ProgrammeWithUnits]
