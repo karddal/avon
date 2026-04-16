@@ -186,8 +186,6 @@ async def get_unit_details(unit_id: UUID, session: session_dependency, token: to
             status_code=status.HTTP_404_NOT_FOUND, detail="Unit not found"
         )
 
-    print("[BACKEND] UNIT:", unit)
-
     return unit
 
 

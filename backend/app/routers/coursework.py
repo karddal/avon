@@ -267,8 +267,6 @@ async def delete_coursework(id: UUID, session: session_dependency, token: token_
 
     if coursework is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Coursework not found')
-    #print("\n\n\n\n\n\n\n")
-    #
     await require_scopes(
                     ResourceInformation(type=Unit, id=coursework.unit_id),
                     Scopes.UNIT_COURSEWORK_DELETE,
@@ -287,9 +285,7 @@ async def delete_coursework(id: UUID, session: session_dependency, token: token_
             detail="Database failed. GitLab group rolled back."
     )
 
-    #print("got here")
     courseworkDeleted = CourseworkDelete(id=id, deletion_successful=True)
-    #print(courseworkDeleted)
     return courseworkDeleted
 
 @router.put('/{id}', response_model=CourseworkRead)
