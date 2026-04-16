@@ -28,6 +28,7 @@ import {
   type SearchResponse,
   search_by_name,
 } from "@/lib/actions/search_by_name";
+import { fail } from "node:assert";
 
 function _getInitials(name: string) {
   if (!name || typeof name !== "string") return "?";
@@ -62,7 +63,7 @@ export default function AddMember({ unit_id }: { unit_id: string }) {
     if (response.success) {
       toast.success("Added student(s) to unit!");
     } else {
-      toast.error("Adding failed! ");
+      toast.error("Student(s) have already been added!");
     }
   }
 
@@ -75,7 +76,7 @@ export default function AddMember({ unit_id }: { unit_id: string }) {
       const disabledU = [...(disabledS?.students || [])];
 
       setDisabledUsers(disabledU);
-    } catch (_error) {}
+    } catch (_error) { }
   }, [unit_id]);
 
   useEffect(() => {
