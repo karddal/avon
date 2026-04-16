@@ -22,7 +22,6 @@ token_dependency = Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]
 
 
 
-
 @router.post("", response_model=UnitEnrollmentRead, status_code=201)
 def enroll_unit(payload: UnitEnrollmentCreate, session: session_dependency):
     unit = session.get(Unit, ident=payload.unit_id)
@@ -200,6 +199,7 @@ def enroll_unit_batch_lecturers(payload: UnitEnrollmentBatchCreate, session: ses
     session.commit()
 
     return {"message": f"{len(new_enrollments)} users enrolled successfully"}
+
 # owner
 
 ## Helper function for other areas. Just wanted to put it here for now.

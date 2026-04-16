@@ -3,14 +3,12 @@ from typing import Annotated, List, Literal
 from pydantic import BaseModel, AfterValidator, ConfigDict
 from uuid import UUID
 
-
 def is_valid_user_id(user_id: str) -> str:
     user_id = user_id.strip()
     if not user_id:
         raise ValueError("user_id can not be empty")
 
     return user_id
-
 
 def is_valid_enrollment_type(type: str) -> str:
     if type not in ("lecturer", "student", "owner"):

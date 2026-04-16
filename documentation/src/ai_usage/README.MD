@@ -140,7 +140,6 @@ Overall, the use of AI for me has been majority frontend, and has been mostly fo
 Blueprinting / Concepting - To figure out how to create a concurrent fault tolerant workflow and what I should look for
 Frontend - Primarily to fix styling issues in TailwindCSS. To understand concepts in frontend development such as SSR, the use of types and best practises to organise my code. Also used it to refactor code which was not efficient.
 Backend - To debug errors esspecially with regards to schemas. To figure out the best way to implement a certain feature and organise the project. Used it to generate fake users to test my database and other test cases.
-
 Git - Just to be sure I don't do anything stupid with my git branch, I often ask an LLM what the right course of action is. A notable use case is when I accidentally committed node_modules in the first commit of my branch. I didn't want to delete the file and make it look like I had 200,000 insertions and deletions. To resolve this, I used Claude to help me figure out how to cherry pick commits onto a new branch so I can keep the timestamps of the work I've done as well.
 
 Overall, I tried my best to limit the use of AI as I wanted to write code myself. AI was primarily used to help me understand the best practises to write code while also acting as a debugger.

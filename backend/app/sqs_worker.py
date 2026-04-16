@@ -12,6 +12,7 @@ from app.notifications.notification import write_notification
 
 logger = logging.getLogger(name="SQS Worker")
 
+
 async def process_message(msg, db: Session):
     body = json.loads(msg["Body"])
     build_id = body["build_id"]

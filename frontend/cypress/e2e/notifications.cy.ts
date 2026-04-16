@@ -54,15 +54,7 @@ describe("Notifications", () => {
       "Imperative and Functional Programming",
     ).click();
     cy.contains("Test notification").should("exist");
-<<<<<<< HEAD
-    cy.get('[data-slot="item-actions"] > .inline-flex').click();
-    cy.get("svg.lucide.lucide-loader-circle.size-4.animate-spin").should(
-      "not.be.visible",
-    );
-    // cy.get(".lucide-dot").should("not.exist");
-=======
     cy.get('[data-cy="notification-mark-read"]').click();
     cy.get('[data-cy="notification-mark-read"]').should("not.exist");
->>>>>>> dev
   });
 });

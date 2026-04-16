@@ -16,6 +16,7 @@
     "db:seed": "cd ../backend && cross-env APP_ENV=test uv run python -m app.cli.manage seeding"
   },
   "dependencies": {
+    "16": "^0.0.2",
     "@base-ui/react": "^1.3.0",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-alert-dialog": "^1.1.15",

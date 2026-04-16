@@ -61,15 +61,6 @@ describe("Unit page", () => {
   it("admin can delete unit", () => {
     cy.visit("/units");
     cy.contains('[role="tab"]', "Year 1 Computer Science 2025-2026").click();
-<<<<<<< HEAD
-    cy.get("p")
-      .should("contain", "Mathematics for Computer Science B")
-      .should("be.visible");
-    cy.get("#unit-dropdown-button").click();
-    cy.get(`[data-slot="dropdown-menu-item"]`).click();
-    cy.contains(`button`, "Delete").click();
-    cy.get('[data-content=""] > div').contains("Unit deleted successfully");
-=======
     cy.contains("p", "Mathematics for Computer Science B")
       .should("be.visible")
       .closest("a")
@@ -79,6 +70,5 @@ describe("Unit page", () => {
     cy.get('[data-cy="unit-list-delete"]').click();
     cy.get('[data-cy="confirm-delete-unit"]').click();
     cy.contains("Unit deleted successfully").should("be.visible");
->>>>>>> dev
   });
 });

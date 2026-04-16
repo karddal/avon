@@ -43,7 +43,6 @@ def is_valid_due_date(date: datetime.datetime) -> datetime.datetime:
 
     return date
 
-
 def is_valid_colour(c: str) -> str:
     match = re.search(r"^(?:[0-9a-fA-F]{3}){1,2}$", c)
     if match:
@@ -136,7 +135,6 @@ class CourseworkCreate(BaseModel):
     colour: Colour
 
 
-
 class CourseworkTemplateFile(BaseModel):
     id: str
     name: str
@@ -151,7 +149,6 @@ class CourseworkUpdate(BaseModel):
     unit_id: UUID | None = None
     due_date: DueDate | None = None
     colour: Colour | None = None
-
 
 
 
