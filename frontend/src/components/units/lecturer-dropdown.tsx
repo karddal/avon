@@ -12,6 +12,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -35,6 +36,11 @@ import EditUnit from "@/components/units/edit-unit";
 import ListMembers from "@/components/units/list-members";
 import SendNotification from "@/components/units/send-notification";
 import { lock_unit, unlock_unit } from "@/lib/actions/unlock_lock_unit";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 type UnitUpdateData = {
   id: string;
@@ -134,12 +140,12 @@ export default function LecturerDropdown({
             </DropdownMenuItem>
           )}
 
-          {hasDeleteScope &&
+          {
             (hasReadScope ||
               hasEnrollScope ||
               hasManageScope ||
               hasNotificationScope) && <DropdownMenuSeparator />}
-          {hasLockingScope && (
+          {
             <DropdownMenuItem
               onSelect={() =>
                 unit_update_data.unlocked
@@ -148,33 +154,72 @@ export default function LecturerDropdown({
               }
               className="group flex items-center cursor-pointer"
             >
-              {unit_update_data.unlocked ? (
-                <>
-                  <LockOpen className="mr-2 h-4 w-4 text-green-700 group-data-highlighted:hidden" />
-                  <Lock className="mr-2 hidden h-4 w-4 text-red-600 group-data-highlighted:block" />
+              {unit_update_data.unlocked ?
+                // This is to take an unlocked unit and lock it
+                (hasLockingScope ? (
+                  <>
+                    <LockOpen className="mr-2 h-4 w-4 text-green-700 group-data-highlighted:hidden" />
+                    <Lock className="mr-2 hidden h-4 w-4 text-red-600 group-data-highlighted:block" />
 
-                  <span className="text-green-700 group-data-highlighted:hidden">
-                    Unlocked
-                  </span>
-                  <span className="hidden text-red-600 group-data-highlighted:inline">
-                    Lock Unit
-                  </span>
-                </>
-              ) : (
-                <>
-                  <Lock className="mr-2 h-4 w-4 text-red-600 group-data-highlighted:hidden" />
-                  <LockOpen className="mr-2 hidden h-4 w-4 text-green-700 group-data-highlighted:block" />
+                    <span className="text-green-700 group-data-highlighted:hidden">
+                      Unlocked
+                    </span>
+                    <span className="hidden text-red-600 group-data-highlighted:inline">
+                      Lock Unit
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="flex flex-row">
+                          <Lock className="mr-4 h-4 w-4 text-green-700" />
+                          <span className="text-green-700">
+                            Unlock
+                          </span>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Only Unit Owner can lock units</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </>
+                )
+                ) :
+                // This is to take a locked unit and unlock it
+                (
+                  hasLockingScope ? (
+                    <>
+                      <Lock className="mr-2 h-4 w-4 text-red-600 group-data-highlighted:hidden" />
+                      <LockOpen className="mr-2 hidden h-4 w-4 text-green-700 group-data-highlighted:block" />
 
-                  <span className="text-red-600 group-data-highlighted:hidden">
-                    Locked
-                  </span>
-                  <span className="hidden text-green-700 group-data-highlighted:inline">
-                    Unlock Unit
-                  </span>
-                </>
-              )}
+                      <span className="text-red-600 group-data-highlighted:hidden">
+                        Locked
+                      </span>
+                      <span className="hidden text-green-700 group-data-highlighted:inline">
+                        Unlock Unit
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="flex flex-row">
+                            <Lock className="mr-4 h-4 w-4 text-red-600" />
+                            <span className="text-red-600">
+                              Locked
+                            </span>
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Only Unit Owner can unlock units</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </>
+                  )
+                )}
             </DropdownMenuItem>
-          )}
+          }
 
           <DropdownMenuSeparator />
 
@@ -189,104 +234,116 @@ export default function LecturerDropdown({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {hasReadScope && (
-        <ListMembers
-          canManageEnrollment={hasEnrollScope}
-          openState={showMembers}
-          setOpenState={setShowMembers}
-          unit_id={slug}
-          me={me}
-        />
-      )}
+      {
+        hasReadScope && (
+          <ListMembers
+            canManageEnrollment={hasEnrollScope}
+            openState={showMembers}
+            setOpenState={setShowMembers}
+            unit_id={slug}
+            me={me}
+          />
+        )
+      }
 
-      {hasManageScope && (
-        <EditUnit
-          unit_update_data={unit_update_data}
-          open_state={showEdit}
-          set_open_state={setShowEdit}
-        />
-      )}
+      {
+        hasManageScope && (
+          <EditUnit
+            unit_update_data={unit_update_data}
+            open_state={showEdit}
+            set_open_state={setShowEdit}
+          />
+        )
+      }
 
-      {hasNotificationScope && (
-        <SendNotification
-          unit_id={slug}
-          openState={showSendNotif}
-          setOpenState={setShowSendNotif}
-        />
-      )}
+      {
+        hasNotificationScope && (
+          <SendNotification
+            unit_id={slug}
+            openState={showSendNotif}
+            setOpenState={setShowSendNotif}
+          />
+        )
+      }
 
-      {hasDeleteScope && (
-        <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the
-                unit and all of its data.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
-              <DeleteUnitButton unitId={slug} />
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      )}
+      {
+        hasDeleteScope && (
+          <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete the
+                  unit and all of its data.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
+                <DeleteUnitButton unitId={slug} />
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )
+      }
 
-      {hasLockingScope && (
-        <AlertDialog open={showUnlock} onOpenChange={setShowUnlock}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This action will unlock the unit, allowing students to access
-                it.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <Button
-                size="lg"
-                className="bg-green-700 text-white hover:bg-green-800 focus:bg-green-700"
-                onClick={() => {
-                  unlockUnit();
-                  setShowUnlock(false);
-                }}
-              >
-                <LockOpen className="mr-2 h-4 w-4" />
-                Unlock
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      )}
-      {hasLockingScope && (
-        <AlertDialog open={showLock} onOpenChange={setShowLock}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This action will lock the unit, preventing students from
-                accessing it.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <Button
-                size="lg"
-                className="bg-red-600 text-white hover:bg-red-700 focus:bg-red-600"
-                onClick={() => {
-                  lockUnit();
-                  setShowLock(false);
-                }}
-              >
-                <Lock className="mr-2 h-4 w-4" />
-                Lock
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      )}
-    </div>
+      {
+        hasLockingScope && (
+          <AlertDialog open={showUnlock} onOpenChange={setShowUnlock}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action will unlock the unit, allowing students to access
+                  it.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <Button
+                  size="lg"
+                  className="bg-green-700 text-white hover:bg-green-800 focus:bg-green-700"
+                  onClick={() => {
+                    unlockUnit();
+                    setShowUnlock(false);
+                  }}
+                >
+                  <LockOpen className="mr-2 h-4 w-4" />
+                  Unlock
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )
+      }
+      {
+        hasLockingScope && (
+          <AlertDialog open={showLock} onOpenChange={setShowLock}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action will lock the unit, preventing students from
+                  accessing it.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <Button
+                  size="lg"
+                  className="bg-red-600 text-white hover:bg-red-700 focus:bg-red-600"
+                  onClick={() => {
+                    lockUnit();
+                    setShowLock(false);
+                  }}
+                >
+                  <Lock className="mr-2 h-4 w-4" />
+                  Lock
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )
+      }
+    </div >
   );
 }
