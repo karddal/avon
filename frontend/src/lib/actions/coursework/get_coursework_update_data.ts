@@ -1,4 +1,4 @@
-"use server"
+"use server";
 import { getRequestJWT } from "../../auth-utils";
 
 export type CourseworkUpdateReqResponse = {
