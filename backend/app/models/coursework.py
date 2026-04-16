@@ -2,10 +2,12 @@ import datetime
 import uuid
 from typing import TYPE_CHECKING
 from uuid import UUID
-
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
+    from app.models.base_image import BaseImage
+    from app.models.student_repo import StudentRepo
+    from app.models.test_run import TestRun
     from app.models.unit import Unit
 
 
@@ -23,4 +25,11 @@ class Coursework(SQLModel, table=True):
     )  # note: this uses the timezome of the device, not a standard timezone like UTC (which we can't use as this is primarily a uk used program)
     colour: str
     gitlab_id: str = Field(nullable=False)
-    template_id: int = Field(nullable=True)
+    template_id: int | None = Field(nullable=True)
+    base_image_id: UUID | None = Field(nullable=True, foreign_key="baseimage.id")
+    tester_command: str | None = Field(nullable=True)
+    student_repos: list["StudentRepo"] = Relationship(
+        back_populates="coursework", cascade_delete=True
+    )
+    base_image: "BaseImage" = Relationship(back_populates="courseworks")
+    test_runs: list["TestRun"] = Relationship(back_populates="coursework")

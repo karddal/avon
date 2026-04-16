@@ -17,7 +17,7 @@ the logged in state. The database is reset and seeded before every test, again s
 
 Fixture setup now uses the backend test-only fixture API under `/testing/fixtures/*`.
 
-This router is only mounted when `TESTING_MODE=True`, and every request must include the `X-Test-Fixture-Key` header. These routes are test infrastructure only. They are not part of the product API surface and should not be used by application code.
+This router is only mounted when `ENABLE_TEST_FIXTURES=True` in a test backend environment, and every request must include the `X-Test-Fixture-Key` header. These routes are test infrastructure only. They are not part of the product API surface and should not be used by application code.
 
 For Cypress, prefer the shared commands in `frontend/cypress/support/commands.ts`:
 - `cy.testResetDomain()`

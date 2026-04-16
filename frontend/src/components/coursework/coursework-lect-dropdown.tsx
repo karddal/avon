@@ -1,10 +1,11 @@
 "use client";
 
 import {
-  BookCheck,
   BookDashed,
+  BookPlus,
+  CircleDashed,
   Container,
-  LayersPlus,
+  Gitlab,
   Menu,
   ServerCog,
   SquarePen,
@@ -12,9 +13,12 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
-import CreateDockerfile from "@/components/coursework/create-dockerfile";
+import ConfigureCWTesting from "@/components/coursework/configure-c-w-testing";
 import DeleteCourseworkButton from "@/components/coursework/delete_coursework_button";
 import EditCoursework from "@/components/coursework/edit-coursework";
+import ReposListDialog from "@/components/coursework/repos-list-dialog";
+import StartTestBatchPopup from "@/components/coursework/start_test_batch";
+import TestBatchesDialog from "@/components/coursework/test-batches-list/test-batches-dialog";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -25,14 +29,20 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import type { CourseworkUpdateData } from "@/lib/actions/get_coursework_update_data";
+  DropDrawer,
+  DropDrawerContent,
+  DropDrawerGroup,
+  DropDrawerItem,
+  DropDrawerLabel,
+  DropDrawerSeparator,
+  DropDrawerTrigger,
+} from "@/components/ui/dropdrawer";
+import { Field, FieldContent, FieldLabel } from "@/components/ui/field";
+import { Progress } from "@/components/ui/progress";
+import type { BaseImage } from "@/lib/actions/coursework/get_base_images_cw_specific";
+import type { CourseworkUpdateData } from "@/lib/actions/coursework/get_coursework_update_data";
+import type { GetCWEngineDataResponse } from "@/lib/actions/coursework/get_cw_engine_data";
+import { Item, ItemContent, ItemMedia, ItemTitle } from "../ui/item";
 import CreateTemplate from "./create-templates";
 import ProvisionCoursework from "./provision-coursework";
 
@@ -40,15 +50,22 @@ export default function CourseworkLectDropdown({
   slug,
   scopes,
   coursework_update_data,
+  avail_images_data,
+  cw_engine_data,
 }: {
   slug: string;
   scopes: Set<string>;
   coursework_update_data?: CourseworkUpdateData;
+  cw_engine_data?: GetCWEngineDataResponse;
+  avail_images_data?: BaseImage[];
 }) {
   const [showDelete, setShowDelete] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
   const [showDocker, setShowDocker] = useState(false);
   const [showTemplates, setShowTemplate] = useState(false);
+  const [showStartTests, setShowStartTests] = useState<boolean>(false);
+  const [showTestBatches, setShowTestBatches] = useState<boolean>(false);
+  const [viewRepos, setViewRepos] = useState<boolean>(false);
   const router = useRouter();
   const refresh = useCallback(() => {
     router.refresh();
@@ -69,99 +86,190 @@ export default function CourseworkLectDropdown({
   if (!hasEntries) {
     return null;
   }
-
+  console.log(cw_engine_data?.base_image_id);
+  const engine_is_setup = !(
+    cw_engine_data?.base_image_id == null ||
+    cw_engine_data?.tester_command == null
+  );
   return (
     <div className="aspect-square">
-      <DropdownMenu>
-        <DropdownMenuTrigger
+      <DropDrawer>
+        <DropDrawerTrigger
           data-cy="coursework-lect-dropdown"
           className="border hover:bg-accent hover:transition p-2"
         >
           <Menu size={32} />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="flex flex-col">
-          <DropdownMenuLabel>Coursework Options</DropdownMenuLabel>
-          <DropdownMenuSeparator />
+        </DropDrawerTrigger>
+        <DropDrawerContent className="" align={"end"}>
+          <DropDrawerLabel>Coursework Options</DropDrawerLabel>
+          <DropDrawerSeparator />
 
           {hasEngineScope && (
-            <>
-              <DropdownMenuItem key={"Engine"} disabled={true}>
-                <ServerCog className="mr-2 h-4 w-4" />
-                Engine
-              </DropdownMenuItem>
-              <DropdownMenuItem
+            <DropDrawerGroup>
+              <DropDrawerLabel>Engine</DropDrawerLabel>
+              {!engine_is_setup && (
+                <>
+                  <Item variant={"outline"} className={"p-2 m-2"}>
+                    <ItemMedia variant={"icon"}>
+                      <Container />
+                    </ItemMedia>
+                    <ItemContent>
+                      <ItemTitle>Engine Setup</ItemTitle>
+                    </ItemContent>
+
+                    <Field className={"p-2"}>
+                      <FieldLabel htmlFor={"progress-engine"}>
+                        <span className={"font-normal"}>
+                          Configure the Avon Engine to enable test running.
+                        </span>
+                      </FieldLabel>
+                      <FieldContent>
+                        <Progress id="progress-engine" value={0}></Progress>
+                      </FieldContent>
+                    </Field>
+                  </Item>
+                  <DropDrawerItem
+                    key={"Engine"}
+                    disabled={true}
+                    icon={<ServerCog />}
+                  >
+                    Start test batch
+                  </DropDrawerItem>
+                  <DropDrawerItem
+                    key={"TestRuns"}
+                    disabled={true}
+                    icon={<CircleDashed />}
+                  >
+                    Test batches
+                  </DropDrawerItem>
+                </>
+              )}
+              {engine_is_setup && (
+                <>
+                  <DropDrawerItem
+                    key={"Engine"}
+                    icon={<ServerCog />}
+                    disabled={false}
+                    onSelect={() => setShowStartTests(true)}
+                  >
+                    Start test batch
+                  </DropDrawerItem>
+                  <DropDrawerItem
+                    key={"TestRuns"}
+                    disabled={false}
+                    icon={<CircleDashed />}
+                    onSelect={() => setShowTestBatches(true)}
+                  >
+                    Test batches
+                  </DropDrawerItem>
+                </>
+              )}
+              <DropDrawerItem
                 key={"Dockerfiles"}
+                icon={<Container />}
                 onSelect={() => setShowDocker(true)}
               >
-                <Container className="mr-2 h-4 w-4" />
-                Create Dockerfile
-              </DropdownMenuItem>
+                Configure engine
+              </DropDrawerItem>
+            </DropDrawerGroup>
+          )}
+
+          {hasGitlabScope && (
+            <>
+              {(hasEngineScope || hasManageScope) && <DropDrawerSeparator />}
+              <DropDrawerGroup>
+                <DropDrawerLabel>GitLab</DropDrawerLabel>
+                <DropDrawerItem
+                  key={"Templates"}
+                  onSelect={() => setShowTemplate(true)}
+                  disabled={!canManageTemplates}
+                  icon={<BookDashed />}
+                >
+                  Repo template configuration
+                </DropDrawerItem>
+                <DropDrawerItem
+                  key={"Provision-Coursework"}
+                  onSelect={() => setShowProvision(true)}
+                  disabled={!canProvision}
+                  icon={<BookPlus />}
+                >
+                  Provision student repos
+                </DropDrawerItem>
+                <DropDrawerItem
+                  key={"View-Repos"}
+                  icon={<Gitlab />}
+                  onSelect={() => setViewRepos(true)}
+                >
+                  Manage student repos
+                </DropDrawerItem>
+              </DropDrawerGroup>
             </>
           )}
 
           {hasManageScope && (
             <>
-              {hasEngineScope && <DropdownMenuSeparator />}
-              <DropdownMenuItem key={"Results"} disabled={true}>
-                <BookCheck className="mr-2 h-4 w-4" />
-                Results
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                key={"Edit"}
-                onSelect={() => setShowEdit(true)}
-                disabled={!canEdit}
-              >
-                <SquarePen className="mr-2 h-4 w-4" />
-                Edit coursework
-              </DropdownMenuItem>
-            </>
-          )}
-
-          {hasGitlabScope && (
-            <>
-              {(hasEngineScope || hasManageScope) && <DropdownMenuSeparator />}
-              <DropdownMenuItem
-                key={"Templates"}
-                onSelect={() => setShowTemplate(true)}
-                disabled={!canManageTemplates}
-              >
-                <BookDashed className="mr-2 h-4 w-4" />
-                Templates
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                key={"Provision-Coursework"}
-                onSelect={() => setShowProvision(true)}
-                disabled={!canProvision}
-              >
-                <LayersPlus className="mr-2 h-4 w-4" />
-                Provision Coursework
-              </DropdownMenuItem>
+              {hasEngineScope && <DropDrawerSeparator />}
+              <DropDrawerGroup>
+                <DropDrawerLabel>Manage</DropDrawerLabel>
+                <DropDrawerItem
+                  key={"Edit"}
+                  onSelect={() => setShowEdit(true)}
+                  disabled={!canEdit}
+                  icon={<SquarePen />}
+                >
+                  Edit coursework
+                </DropDrawerItem>
+              </DropDrawerGroup>
             </>
           )}
 
           {hasDeleteScope && (
             <>
               {(hasEngineScope || hasManageScope || hasGitlabScope) && (
-                <DropdownMenuSeparator />
+                <DropDrawerSeparator />
               )}
-              <DropdownMenuItem
-                key={"Delete"}
-                onSelect={() => setShowDelete(true)}
-                className="text-destructive focus:text-destructive"
-              >
-                <SquareX className="text-destructive mr-2 h-4 w-4" /> Delete
-                coursework
-              </DropdownMenuItem>
+              <DropDrawerGroup>
+                <DropDrawerLabel>Destructive options</DropDrawerLabel>
+                <DropDrawerItem
+                  key={"Delete"}
+                  onSelect={() => setShowDelete(true)}
+                  className="text-destructive focus:text-destructive"
+                  icon={<SquareX className={"text-destructive"} />}
+                >
+                  Delete coursework
+                </DropDrawerItem>
+              </DropDrawerGroup>
             </>
           )}
-        </DropdownMenuContent>
-      </DropdownMenu>
+        </DropDrawerContent>
+      </DropDrawer>
 
-      <CreateDockerfile
-        open_state={showDocker}
-        set_open_state={setShowDocker}
-        refresh={refresh}
-      />
+      {engine_is_setup && cw_engine_data && avail_images_data && (
+        <>
+          <StartTestBatchPopup
+            open_state={showStartTests}
+            set_open_state={setShowStartTests}
+            courseworkId={slug}
+            refresh={refresh}
+            cw_engine_data={cw_engine_data}
+            available_images={avail_images_data}
+          ></StartTestBatchPopup>
+          <TestBatchesDialog
+            open_state={showTestBatches}
+            set_open_state={setShowTestBatches}
+            courseworkId={slug}
+          />
+        </>
+      )}
+      {avail_images_data && cw_engine_data && (
+        <ConfigureCWTesting
+          open_state={showDocker}
+          set_open_state={setShowDocker}
+          refresh={refresh}
+          available_images={avail_images_data}
+          cw_engine_data={cw_engine_data}
+        />
+      )}
 
       {coursework_update_data && (
         <EditCoursework
@@ -181,6 +289,15 @@ export default function CourseworkLectDropdown({
         />
       )}
 
+      {hasGitlabScope && (
+        <ReposListDialog
+          open_state={viewRepos}
+          set_open_state={setViewRepos}
+          courseworkId={slug}
+          refresh={refresh}
+        ></ReposListDialog>
+      )}
+
       {coursework_update_data && (
         <ProvisionCoursework
           open_state={showProvision}
@@ -190,6 +307,7 @@ export default function CourseworkLectDropdown({
             coursework_id: coursework_update_data.id,
             template_id: String(coursework_update_data.templateId),
           }}
+          refresh={refresh}
         />
       )}
 
@@ -203,7 +321,7 @@ export default function CourseworkLectDropdown({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="sm:h-full">Cancel</AlertDialogCancel>
             <DeleteCourseworkButton courseworkId={slug} />
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -4,12 +4,15 @@ from pathlib import Path
 from typing import Sequence
 
 from sqlalchemy import Column, MetaData, String, Table, select as sa_select, text
-from sqlmodel import Session
+from sqlmodel import Session, SQLModel
 
+from app.models.base_image import BaseImage
 from app.db.session import engine
 from app.models.coursework import Coursework
 from app.models.notification import Notification  # Registers Unit.notifications.
 from app.models.programme import Programme
+from app.models.student_repo import StudentRepo
+from app.models.test_run import TestRun, TestRunResult
 from app.models.unit import Unit
 from app.models.unit_enrollment import UnitEnrollment
 
@@ -178,6 +181,10 @@ _verification_table = Table("verification", _auth_metadata)
 FULL_RESET_TABLES = (
     _account_table,
     _session_table,
+    TestRunResult.__table__,
+    TestRun.__table__,
+    StudentRepo.__table__,
+    BaseImage.__table__,
     Coursework.__table__,
     Notification.__table__,
     UnitEnrollment.__table__,
@@ -188,6 +195,10 @@ FULL_RESET_TABLES = (
     _user_table,
 )
 APP_RESET_TABLES = (
+    TestRunResult.__table__,
+    TestRun.__table__,
+    StudentRepo.__table__,
+    BaseImage.__table__,
     Notification.__table__,
     Coursework.__table__,
     UnitEnrollment.__table__,
@@ -331,6 +342,7 @@ def reset_database(
         engine.dispose()
         drop_tables()
         exec_sql_file(seed_sql_path)
+        SQLModel.metadata.create_all(engine)
 
         with Session(engine) as session:
             try:

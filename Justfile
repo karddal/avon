@@ -62,11 +62,11 @@ test:
 
 [windows]
 run-be env = "dev":
-    $env:ENV="{{env}}"; uv run fastapi dev
+    $env:APP_ENV="{{env}}"; uv run fastapi dev
 
 [unix]
 run-be env = "dev":
-    ENV={{env}} uv run fastapi dev
+    APP_ENV={{env}} uv run fastapi dev
 
 sync-fe:
     npm i
@@ -81,5 +81,18 @@ sync:
 serve-doc:
     mdbook serve --open
 
-seeding-db:
-    uv run python -m app.cli.manage seeding
+[windows]
+seed-db env = "dev":
+    $env:APP_ENV="{{env}}"; uv run python -m app.cli.manage seeding
+
+[unix]
+seed-db env = "dev":
+    APP_ENV={{env}} uv run python -m app.cli.manage seeding
+
+[windows]
+seeding-db env = "dev":
+    $env:APP_ENV="{{env}}"; uv run python -m app.cli.manage seeding
+
+[unix]
+seeding-db env = "dev":
+    APP_ENV={{env}} uv run python -m app.cli.manage seeding

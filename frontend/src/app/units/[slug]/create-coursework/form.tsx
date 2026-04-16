@@ -44,7 +44,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
-import { create_coursework } from "@/lib/actions/create_coursework";
+import { create_coursework } from "@/lib/actions/coursework/create_coursework";
 
 interface FormProps {
   slug: string;
