@@ -62,9 +62,7 @@ export default function NotificationMessage({ data }: { data: Notification2 }) {
         )}
         {!submittedState && !data.viewed && (
           <Button
-            onClick={() =>
-              setAsRead(router, data.id, setSubmittedState)
-            }
+            onClick={() => setAsRead(router, data.id, setSubmittedState)}
             data-cy="notification-mark-read"
             size={"icon-sm"}
             variant={"ghost"}

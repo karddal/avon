@@ -4,7 +4,7 @@ import type { UnitOption } from "@/components/coursework/create/types";
 import ModalShell from "@/components/coursework/modal-shell";
 import { getRequestJWT } from "@/lib/auth-utils";
 
-async function Actual() {
+async function CreateCourseworkModalContent() {
   const token = await getRequestJWT();
 
   const response = await fetch(
@@ -29,7 +29,7 @@ async function Actual() {
 export default async function CreateCourseworkFlow() {
   return (
     <Suspense>
-      <Actual />
+      <CreateCourseworkModalContent />
     </Suspense>
   );
 }
