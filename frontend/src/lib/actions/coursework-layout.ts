@@ -5,7 +5,6 @@ import { DatabaseSync } from "node:sqlite";
 import type { GridItem } from "@/components/modules/coursework_layout/coursework-types";
 import { pool } from "@/lib/actions/auth/db_pool";
 import {
-  defaultCourseworkLayout,
   parseCourseworkLayout,
 } from "@/lib/coursework-layout";
 
@@ -24,10 +23,17 @@ function normalizeSqliteUuid(id: string): string {
   return id.replace(/-/g, "");
 }
 
-async function ensureCourseworkLayoutColumnExists(): Promise<void> {
+function getLayoutColumn(layoutType: "staff" | "student"): "coursework_layout_staff" | "coursework_layout_student" {
+  return layoutType === "staff" ? "coursework_layout_staff" : "coursework_layout_student";
+}
+
+async function ensureCourseworkLayoutColumnsExist(): Promise<void> {
   if (isProductionDatabase()) {
     await pool.query(
-      'ALTER TABLE "coursework" ADD COLUMN IF NOT EXISTS coursework_layout text',
+      'ALTER TABLE "coursework" ADD COLUMN IF NOT EXISTS coursework_layout_staff text',
+    );
+    await pool.query(
+      'ALTER TABLE "coursework" ADD COLUMN IF NOT EXISTS coursework_layout_student text',
     );
     return;
   }
@@ -38,61 +44,69 @@ async function ensureCourseworkLayoutColumnExists(): Promise<void> {
   const columns = db.prepare("PRAGMA table_info(coursework)").all() as Array<{
     name: string;
   }>;
-  const hasCourseworkLayoutColumn = columns.some(
-    (column) => column.name === "coursework_layout",
+  const hasCourseworkLayoutStaffColumn = columns.some(
+    (column) => column.name === "coursework_layout_staff",
+  );
+  const hasCourseworkLayoutStudentColumn = columns.some(
+    (column) => column.name === "coursework_layout_student",
   );
 
-  if (!hasCourseworkLayoutColumn) {
-    db.exec("ALTER TABLE coursework ADD COLUMN coursework_layout TEXT");
+  if (!hasCourseworkLayoutStaffColumn) {
+    db.exec("ALTER TABLE coursework ADD COLUMN coursework_layout_staff TEXT");
+  }
+
+  if (!hasCourseworkLayoutStudentColumn) {
+    db.exec("ALTER TABLE coursework ADD COLUMN coursework_layout_student TEXT");
   }
 }
 
 async function getRawCourseworkLayout(courseworkId: string, layoutType: "staff" | "student" = "staff"): Promise<string | null> {
-  await ensureCourseworkLayoutColumnExists();
+  await ensureCourseworkLayoutColumnsExist();
+  const layoutColumn = getLayoutColumn(layoutType);
 
   if (isProductionDatabase()) {
+    if (layoutColumn === "coursework_layout_staff") {
+      const result = await pool.query(
+        'SELECT coursework_layout_staff FROM "coursework" WHERE id = $1',
+        [courseworkId],
+      );
+
+      const row = result.rows[0] as
+        | { coursework_layout_staff: string | null }
+        | undefined;
+      return row?.coursework_layout_staff ?? null;
+    }
+
     const result = await pool.query(
-      'SELECT coursework_layout FROM "coursework" WHERE id = $1',
+      'SELECT coursework_layout_student FROM "coursework" WHERE id = $1',
       [courseworkId],
     );
 
     const row = result.rows[0] as
-      | { coursework_layout: string | null }
+      | { coursework_layout_student: string | null }
       | undefined;
-    const rawLayout = row?.coursework_layout ?? null;
-    return extractLayoutByType(rawLayout, layoutType);
+    return row?.coursework_layout_student ?? null;
   }
 
   const db = new DatabaseSync(dbPath);
   db.createSession();
 
   const sqliteCourseworkId = normalizeSqliteUuid(courseworkId);
-  const query = db.prepare("SELECT coursework_layout FROM coursework WHERE id = ?");
+  if (layoutColumn === "coursework_layout_staff") {
+    const query = db.prepare("SELECT coursework_layout_staff FROM coursework WHERE id = ?");
+    const result = query.get(sqliteCourseworkId) as
+      | { coursework_layout_staff: string | null }
+      | undefined;
+
+    return result?.coursework_layout_staff ?? null;
+  }
+
+  const query = db.prepare("SELECT coursework_layout_student FROM coursework WHERE id = ?");
   const result = query.get(sqliteCourseworkId) as
-    | { coursework_layout: string | null }
+    | { coursework_layout_student: string | null }
     | undefined;
 
-  const rawLayout = result?.coursework_layout ?? null;
-  return extractLayoutByType(rawLayout, layoutType);
-}
-
-function extractLayoutByType(rawLayout: string | null, layoutType: "staff" | "student"): string | null {
-  if (!rawLayout) return null;
-
-  try {
-    const parsed = JSON.parse(rawLayout) as unknown;
-    
-    // If it's an object with staff/student keys, extract the appropriate one
-    if (parsed && typeof parsed === "object" && ("staff" in parsed || "student" in parsed)) {
-      const layouts = parsed as Record<string, unknown>;
-      return layouts[layoutType] ? JSON.stringify(layouts[layoutType]) : null;
-    }
-    
-    // Otherwise assume it's a legacy single layout (treat as staff)
-    return layoutType === "staff" ? rawLayout : null;
-  } catch {
-    return null;
-  }
+  return result?.coursework_layout_student ?? null;
 }
 
 export async function getCourseworkLayoutForCurrentCoursework(cw_id: string, layoutType: "staff" | "student" = "staff"): Promise<GridItem[]> {
@@ -120,45 +134,22 @@ export async function saveCourseworkLayoutForCurrentCoursework(
     throw new Error("Invalid coursework layout");
   }
 
-  // Get existing layout or create new structure
-  const existingRaw = await getRawCourseworkLayout(cw_id, "staff");
-  const existingLayoutStr = existingRaw ? existingRaw : JSON.stringify((await import("@/lib/coursework-layout")).defaultStaffCourseworkLayout);
-  
-  let existingLayout: GridItem[] = [];
-  try {
-    existingLayout = JSON.parse(existingLayoutStr) as GridItem[];
-  } catch {
-    existingLayout = (await import("@/lib/coursework-layout")).defaultStaffCourseworkLayout;
-  }
+  const serializedLayout = JSON.stringify(parsedLayout);
+  const layoutColumn = getLayoutColumn(layoutType);
 
-  // Get student layout
-  const studentRaw = await getRawCourseworkLayout(cw_id, "student");
-  const studentLayoutStr = studentRaw ? studentRaw : JSON.stringify((await import("@/lib/coursework-layout")).defaultStudentCourseworkLayout);
-  
-  let studentLayout: GridItem[] = [];
-  try {
-    studentLayout = JSON.parse(studentLayoutStr) as GridItem[];
-  } catch {
-    studentLayout = (await import("@/lib/coursework-layout")).defaultStudentCourseworkLayout;
-  }
-
-  // Update appropriate layout
-  if (layoutType === "staff") {
-    existingLayout = parsedLayout;
-  } else {
-    studentLayout = parsedLayout;
-  }
-
-  const serializedLayout = JSON.stringify({
-    staff: existingLayout,
-    student: studentLayout,
-  });
-
-  await ensureCourseworkLayoutColumnExists();
+  await ensureCourseworkLayoutColumnsExist();
 
   if (isProductionDatabase()) {
+    if (layoutColumn === "coursework_layout_staff") {
+      await pool.query(
+        'UPDATE "coursework" SET coursework_layout_staff = $1 WHERE id = $2',
+        [serializedLayout, cw_id],
+      );
+      return;
+    }
+
     await pool.query(
-      'UPDATE "coursework" SET coursework_layout = $1 WHERE id = $2',
+      'UPDATE "coursework" SET coursework_layout_student = $1 WHERE id = $2',
       [serializedLayout, cw_id],
     );
     return;
@@ -168,8 +159,8 @@ export async function saveCourseworkLayoutForCurrentCoursework(
   db.createSession();
 
   const sqliteCourseworkId = normalizeSqliteUuid(cw_id);
-  const query = db.prepare(
-    "UPDATE coursework SET coursework_layout = ? WHERE id = ?",
-  );
+  const query = layoutColumn === "coursework_layout_staff"
+    ? db.prepare("UPDATE coursework SET coursework_layout_staff = ? WHERE id = ?")
+    : db.prepare("UPDATE coursework SET coursework_layout_student = ? WHERE id = ?");
   query.run(serializedLayout, sqliteCourseworkId);
 }

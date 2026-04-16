@@ -81,6 +81,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
   if (!userRole) {
     userRole = "user";
   }
+  const canEditLayouts = userRole === "lecturer" || userRole === "admin";
   
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/units/${slug}/`,
@@ -177,6 +178,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
           saveLayout={saveUnitLayoutForCurrentUnit}
           unit={data}
           role={userRole}
+          canEditLayouts={canEditLayouts}
           lecturers={results}
           courseworks={courseworkResponse}
         />

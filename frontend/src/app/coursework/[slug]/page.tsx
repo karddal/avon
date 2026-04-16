@@ -75,11 +75,12 @@ async function CourseworkPageContent({
   // Hardcoded the template id here, when merged, I should be able to get the template id from jack's code
 
   const scopes: Set<string> = await get_coursework_scopes(slug);
-  const canViewSetupProgress =
+  const canEditLayouts =
     scopes.has("unit:coursework_manage") ||
     scopes.has("unit:coursework_gitlab") ||
-    scopes.has("unit:coursework_engine") ||
     scopes.has("unit:coursework_delete");
+  const canViewSetupProgress =
+    canEditLayouts || scopes.has("unit:coursework_engine");
   const canViewStudentRepos = scopes.has("unit:coursework_engine");
   const canLoadCourseworkTools = scopes.has("unit:coursework_manage");
   const data = canLoadCourseworkTools
@@ -98,10 +99,10 @@ async function CourseworkPageContent({
   const cw_engine_data = canGetAvailImages
     ? await get_cw_engine_data({ coursework_id: slug })
     : undefined;
-  const savedLayout = await getCourseworkLayoutForCurrentCoursework(slug, canViewSetupProgress ? "staff" : "student");
+  const savedLayout = await getCourseworkLayoutForCurrentCoursework(slug, canEditLayouts ? "staff" : "student");
   const staffLayout = await getCourseworkLayoutForCurrentCoursework(slug, "staff");
   const studentLayout = await getCourseworkLayoutForCurrentCoursework(slug, "student");
-  const availableModulesForUser = canViewSetupProgress ? staffAvailableModules : studentAvailableModules;
+  const availableModulesForUser = canEditLayouts ? staffAvailableModules : studentAvailableModules;
 
   // Fetch module-specific data
   const myRepo: StudentRepoData | null = await get_my_coursework_repo(slug).catch(() => null);
@@ -145,7 +146,7 @@ async function CourseworkPageContent({
           </Suspense>
         </div>
       </div>
-      {!canViewSetupProgress && (
+      {!canEditLayouts && (
         <CourseworkDeadlineBannerFromSlug
           slug={slug}
           courseworkData={courseworkData}
@@ -165,8 +166,8 @@ async function CourseworkPageContent({
           myRepo={myRepo}
           setupProgressData={setupProgressData}
           courseworkData={courseworkData}
-          layoutType={canViewSetupProgress ? "staff" : "student"}
-          canEditLayouts={canViewSetupProgress}
+          layoutType={canEditLayouts ? "staff" : "student"}
+          canEditLayouts={canEditLayouts}
         />
       </section>
     </>

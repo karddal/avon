@@ -28,6 +28,8 @@ class Coursework(SQLModel, table=True):
     template_id: int | None = Field(nullable=True)
     base_image_id: UUID | None = Field(nullable=True, foreign_key="baseimage.id")
     tester_command: str | None = Field(nullable=True)
+    coursework_layout_staff: str | None = Field(nullable=True)
+    coursework_layout_student: str | None = Field(nullable=True)
     student_repos: list["StudentRepo"] = Relationship(
         back_populates="coursework", cascade_delete=True
     )

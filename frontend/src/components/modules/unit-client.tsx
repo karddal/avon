@@ -19,6 +19,7 @@ type UnitClientProps = {
   saveLayout: (layout: GridItem[], unitId: string) => Promise<void>;
   unit: UnitData;
   role: string;
+  canEditLayouts: boolean;
   lecturers: Lecturer[];
   courseworks: courseworkResponse;
 };
@@ -51,6 +52,7 @@ export default function UnitClient({
   saveLayout,
   unit,
   role,
+  canEditLayouts,
   lecturers,
   courseworks,
 }: UnitClientProps) {
@@ -60,6 +62,10 @@ export default function UnitClient({
   const hasMounted = useRef(false);
 
   useEffect(() => {
+    if (!canEditLayouts) {
+      return;
+    }
+
     if (!hasMounted.current) {
       hasMounted.current = true;
       return;
@@ -74,15 +80,17 @@ export default function UnitClient({
     return () => {
       window.clearTimeout(timeoutId);
     };
-  }, [layout, saveLayout]);
+  }, [layout, saveLayout, canEditLayouts]);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <UnitLayoutEditor
-        availableModules={availableModules}
-        layout={layout}
-        onChange={setLayout}
-      />
+      {canEditLayouts ? (
+        <UnitLayoutEditor
+          availableModules={availableModules}
+          layout={layout}
+          onChange={setLayout}
+        />
+      ) : null}
 
       <UnitRenderer layout={layout} unit={unit} role={role} lecturers={lecturers} courseworks={courseworks} />
     </div>

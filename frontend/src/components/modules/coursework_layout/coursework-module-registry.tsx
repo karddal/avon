@@ -5,7 +5,6 @@ import CourseworkRepoOverview from "@/components/coursework/coursework-repo-over
 import SetupProgress from "@/components/coursework/setup-progress";
 import StudentRepoActivity from "@/components/coursework/student-repo-activity";
 import CourseworkStudentPanel from "@/components/coursework/coursework-student-panel";
-import { CourseworkDeadlineBannerFromSlug } from "@/components/coursework/coursework-banner";
 
 export const courseworkModuleRegistry = {
   description: {
@@ -19,14 +18,6 @@ export const courseworkModuleRegistry = {
   information: {
     title: "Information",
     component: CourseworkInformation,
-    minW: 1,
-    minH: 1,
-    maxW: 10,
-    maxH: 4,
-  },
-  deadline_banner: {
-    title: "Deadline Banner",
-    component: CourseworkDeadlineBannerFromSlug,
     minW: 1,
     minH: 1,
     maxW: 10,

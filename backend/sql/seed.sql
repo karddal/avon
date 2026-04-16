@@ -55,6 +55,7 @@ CREATE TABLE unit (
                       programme_id UUID NOT NULL,
                       gitlab_id VARCHAR NOT NULL,
                       unlocked BOOLEAN NOT NULL,
+                      unit_layout TEXT,
                       PRIMARY KEY (id),
                       FOREIGN KEY(programme_id) REFERENCES programme (id) ON DELETE CASCADE
 );
@@ -89,6 +90,8 @@ CREATE TABLE coursework (
                             template_id INTEGER,
                             base_image_id UUID,
                             tester_command VARCHAR,
+                            coursework_layout_student TEXT,
+                            coursework_layout_staff TEXT,
                             PRIMARY KEY (id),
                             CONSTRAINT unit_id
                                 FOREIGN KEY (unit_id) REFERENCES unit (id)
