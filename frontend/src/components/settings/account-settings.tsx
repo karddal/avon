@@ -69,9 +69,8 @@ export default function AccountSettings({
       ? "Admin"
       : role === "lecturer"
         ? "Lecturer"
-        : role === "user"
-          ? "Student"
-          : "Unknown";
+        : "Student"
+
   const ROLES = [
     { value: "lecturer", label: "Lecturer" },
     { value: "user", label: "Student" },
