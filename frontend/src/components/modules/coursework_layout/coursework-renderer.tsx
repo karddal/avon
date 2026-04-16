@@ -9,11 +9,11 @@ import type { StudentNameAndRepo } from "@/lib/actions/coursework/get_student_re
 
 type CourseworkCommit = {
   id: string;
-  web_url?: string;
+  web_url: string | null;
   title: string;
   short_id: string;
-  author_name?: string;
-  authored_date?: string;
+  author_name: string | null;
+  authored_date: string | null;
   additions: number;
   deletions: number;
 };

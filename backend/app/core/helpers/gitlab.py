@@ -5,13 +5,6 @@ import re
 import zipfile
 from pathlib import PurePosixPath  #Just easier path hadnling
 from urllib.parse import quote, urlparse
-<<<<<<< HEAD
-
-import httpx
-from dotenv import load_dotenv
-from fastapi import HTTPException, UploadFile
-=======
->>>>>>> dev
 
 import httpx
 from fastapi import HTTPException, UploadFile

@@ -106,22 +106,6 @@ export default function LecturerDropdown({
     return null;
   }
 
-  const hasReadScope = scopes.has("unit:read");
-  const hasEnrollScope = scopes.has("unit:enroll");
-  const hasManageScope = scopes.has("unit:manage");
-  const hasNotificationScope = scopes.has("unit:send_notification");
-  const hasDeleteScope = scopes.has("unit:delete");
-  const hasEntries =
-    hasReadScope ||
-    hasEnrollScope ||
-    hasManageScope ||
-    hasNotificationScope ||
-    hasDeleteScope;
-
-  if (!hasEntries) {
-    return null;
-  }
-
   return (
     <div className="aspect-square">
       <DropDrawer>

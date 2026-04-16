@@ -53,10 +53,7 @@ export default function DeleteUnitButton({
         <Button
           variant="destructive"
           className="h-10 w-full"
-<<<<<<< HEAD
-=======
           data-cy="confirm-delete-unit"
->>>>>>> dev
           onClick={handleDelete}
         >
           Delete
