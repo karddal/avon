@@ -1,24 +1,22 @@
 "use server";
 
-import path from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import type { GridItem } from "@/components/modules/dashboard-types";
-import { pool } from "@/lib/actions/db_pool";
+import { pool } from "@/lib/actions/auth/db_pool";
 import { requireSession } from "@/lib/auth-utils";
 import {
   defaultDashboardLayout,
   parseDashboardLayout,
 } from "@/lib/dashboard-layout";
+import {
+  getSqliteDbPath,
+  shouldUseExternalDatabase,
+} from "@/lib/server-runtime";
 
-var dbPath = "../sqlite.db";
-if (process.env.CI_MODE === "True") {
-  dbPath = path.resolve(process.cwd(), "../../..", "sqlite.db");
-}
+const dbPath = getSqliteDbPath();
 
 function isProductionDatabase() {
-  return (
-    process.env.NODE_ENV === "production" && process.env.TESTING_MODE !== "True"
-  );
+  return shouldUseExternalDatabase();
 }
 
 async function ensureDashboardLayoutColumnExists(): Promise<void> {

@@ -14,7 +14,7 @@ import {
   type CourseworkFormValues,
   createCourseworkSchema,
 } from "@/components/coursework/create/utils/coursework-form-schema";
-import { create_coursework } from "@/lib/actions/create_coursework";
+import { create_coursework } from "@/lib/actions/coursework/create_coursework";
 
 export function useCourseworkCreateForm({ units }: FormProps) {
   const [submitState, setSubmitState] = useState(false);

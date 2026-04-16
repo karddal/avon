@@ -37,7 +37,7 @@ export default async function CourseworkDescription({
   return (
     <div
       data-cy="coursework-description-content"
-      className="flex flex-col overflow-y-auto wrap-break-word h-32 border bg-accent p-2"
+      className="h-full overflow-y-auto whitespace-pre-wrap wrap-break-word rounded-md border bg-accent p-3"
     >
       {coursework.description ? (
         coursework.description

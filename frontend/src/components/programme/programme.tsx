@@ -20,6 +20,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { formatIsoDate } from "@/lib/date-format";
 import { Card } from "../ui/card";
 import EditProgramme from "./edit-programme";
 
@@ -39,7 +40,6 @@ export default function Coursework({
 }) {
   const [showDelete, setShowDelete] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
-  console.log(props);
   return (
     <div>
       <Card className="bg-muted h-full justify-between flex-1 flex flex-row p-2 hover:bg-foreground/10">
@@ -50,11 +50,11 @@ export default function Coursework({
           <div className="flex flex-row gap-2">
             <p className="text-sm lg:text-xl text-muted-foreground">
               <span className="text-sm">Start Date: </span>
-              {new Date(props.start_date).toLocaleDateString()}
+              {formatIsoDate(props.start_date)}
             </p>
             <p className="text-sm lg:text-xl text-muted-foreground">
               <span className="text-sm">End Date: </span>
-              {new Date(props.end_date).toLocaleDateString()}
+              {formatIsoDate(props.end_date)}
             </p>
           </div>
         </div>

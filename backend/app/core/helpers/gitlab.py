@@ -4,15 +4,16 @@ import os
 import re
 import zipfile
 from pathlib import PurePosixPath  #Just easier path hadnling
+from urllib.parse import quote, urlparse
 
 import httpx
-from dotenv import load_dotenv
 from fastapi import HTTPException, UploadFile
 
-load_dotenv()
-TOKEN = os.getenv("GITLAB_API_TOKEN")
-BASE_URL = os.getenv("GITLAB_BASE_URL")
-ROOT_ID = os.getenv("GITLAB_ROOT_ID")
+from app.core.settings import settings
+
+TOKEN = settings.gitlab_api_token
+BASE_URL = settings.gitlab_base_url
+ROOT_ID = settings.gitlab_root_id
 
 # Programme CRUD
 
@@ -417,6 +418,7 @@ async def gl_create_fork(name, user_id, group_id, template_id):
             print(f"Network Error: {err}")
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
 
+    print("CREATE FORK DATA: ", data)
     return data
 
 async def gl_create_project(name, user_id, group_id, template_group_id, template_id):
@@ -482,6 +484,106 @@ async def gl_get_project(project_id):
     project_data = {"id": data["id"], "name": data["name"], "path": data["path"], "web_url": data["web_url"]}
     return project_data
 
+def gitlab_project_path_from_repo_url(repo_url: str) -> str:
+    parsed = urlparse(repo_url)
+    project_path = parsed.path.strip("/")
+    if project_path.endswith(".git"):
+        project_path = project_path[:-4]
+    return project_path
+
+async def gl_get_project_commits(project_path: str, per_page: int = 5):
+    """This function returns commits to MAIN!!!/default branch because it doesn't specify ref_name"""
+    if not TOKEN or not BASE_URL:
+        raise HTTPException(status_code=500, detail="Missing GitLab configuration")
+
+    encoded_project_path = quote(project_path, safe="")
+
+    async with httpx.AsyncClient(base_url=BASE_URL) as client:
+        try:
+            response = await client.get(
+                f"/projects/{encoded_project_path}/repository/commits",
+                headers={
+                    "PRIVATE-TOKEN": TOKEN,
+                    "Content-Type": "application/json"
+                },
+                params={"per_page": per_page, "with_stats": "true"},
+                timeout=10.0
+            )
+            data = response.json()
+            if response.status_code != 200:
+                return {
+                    "success": False,
+                    "error": data.get("message") or "Failed to fetch project commits"
+                }
+        except httpx.RequestError as err:
+            print(f"Network Error: {err}")
+            raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
+
+    return data
+
+async def gl_get_commit_count(project_path: str, sha: str):
+    if not TOKEN or not BASE_URL:
+        raise HTTPException(status_code=500, detail="Missing GitLab configuration")
+
+    encoded_project_path = quote(project_path, safe="")
+    encoded_sha = quote(sha, safe="")
+
+    async with httpx.AsyncClient(base_url=BASE_URL) as client:
+        try:
+            response = await client.get(
+                f"/projects/{encoded_project_path}/repository/commits/{encoded_sha}/sequence",
+                headers={
+                    "PRIVATE-TOKEN": TOKEN,
+                    "Content-Type": "application/json"
+                },
+                timeout=10.0
+            )
+            data = response.json()
+            if response.status_code != 200:
+                return {
+                    "success": False,
+                    "error": data.get("message") or "Failed to fetch commit count"
+                }
+        except httpx.RequestError as err:
+            print(f"Network Error: {err}")
+            raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
+
+    return data
+
+async def gl_get_project_tree(project_path: str):
+    if not TOKEN or not BASE_URL:
+        raise HTTPException(status_code=500, detail="Missing GitLab configuration")
+
+    encoded_project_path = quote(project_path, safe="")
+
+    async with httpx.AsyncClient(base_url=BASE_URL) as client:
+        try:
+            response = await client.get(
+                f"/projects/{encoded_project_path}/repository/tree",
+                headers={
+                    "PRIVATE-TOKEN": TOKEN,
+                    "Content-Type": "application/json"
+                },
+                params={
+                    "recursive": "true",
+                    "per_page": "1000",
+                },
+                timeout=10.0
+            )
+            if response.status_code == 404:
+                return []
+            data = response.json()
+            if response.status_code != 200:
+                return {
+                    "success": False,
+                    "error": data.get("message") or "Failed to fetch project tree"
+                }
+        except httpx.RequestError as err:
+            print(f"Network Error: {err}")
+            raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
+
+    return data
+
 async def gl_delete_project(project_id):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
@@ -501,7 +603,7 @@ async def gl_delete_project(project_id):
             print(f"Network Error: {err}")
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
 
-    return response.status_code
+    return response
 
 
 async def gl_get_projects(group_id):
@@ -540,7 +642,7 @@ async def gl_delete_projects(group_id: int):
     for project in projects_to_delete:
         if project["name"] != "skeleton-code":
             status_code = await gl_delete_project(project["id"])
-        if status_code == 202:
+        if status_code.status_code == 202:
             status["deleted"].append(project["name"])
         else:
             status["failed"].append(project["name"])
@@ -571,6 +673,7 @@ async def gl_delete_coursework(gitlab_group_id):
             except httpx.RequestError as err:
                 print(f"Network Error: {err}")
                 raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
+
     return {
         "success": True
     }

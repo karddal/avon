@@ -16,14 +16,14 @@ export default function NotificationBar() {
   return (
     <Dialog>
       <DialogTrigger
-        data-cy="notification-trigger"
         className="p-2 hover:cursor-pointer hover:bg-accent hover:ease-in-out"
+        data-cy="notifications-trigger"
       >
         <Suspense>
           <NotificationsBellIcon />
         </Suspense>
       </DialogTrigger>
-      <DialogContent className={""}>
+      <DialogContent className={"min-w-screen md:min-w-[70%]"}>
         <DialogHeader>
           <DialogTitle className={"flex flex-row items-center gap-2"}>
             <Mailbox />

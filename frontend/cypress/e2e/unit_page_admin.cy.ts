@@ -50,6 +50,7 @@ describe("Unit page", () => {
     cy.getByCy("unit-edit-menu-item").click();
     cy.getByCy("unit-edit-name")
       .clear()
+      .should("have.value", "")
       .type("Mathematics for Computer Science B");
     cy.getByCy("unit-edit-save").click();
     cy.contains("Unit updated successfully.").should("be.visible");
@@ -62,12 +63,14 @@ describe("Unit page", () => {
   it("admin can delete unit", () => {
     cy.visit("/units");
     cy.contains('[role="tab"]', "Year 1 Computer Science 2025-2026").click();
-    cy.get("p")
-      .should("contain", "Mathematics for Computer Science B")
-      .should("be.visible");
-    cy.get("#unit-dropdown-button").click();
-    cy.get(`[data-cy="unit-delete-menu-item"]`).click();
-    cy.contains(`button`, "Delete").click();
-    cy.get('[data-content=""] > div').contains("Unit deleted successfully");
+    cy.contains("p", "Mathematics for Computer Science B")
+      .should("be.visible")
+      .closest("a")
+      .parent()
+      .as("unitCard");
+    cy.get("@unitCard").find("#unit-dropdown-button").click();
+    cy.get('[data-cy="unit-list-delete"]').click();
+    cy.get('[data-cy="confirm-delete-unit"]').click();
+    cy.contains("Unit deleted successfully").should("be.visible");
   });
 });

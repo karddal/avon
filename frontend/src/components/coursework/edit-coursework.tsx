@@ -52,7 +52,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Spinner } from "@/components/ui/spinner";
-import { update_coursework } from "@/lib/actions/update_coursework";
+import { update_coursework } from "@/lib/actions/coursework/update_coursework";
 
 interface FormProps {
   coursework_update_data: CourseworkUpdateData;
@@ -130,7 +130,6 @@ export default function EditCoursework({
   }, [open_state, editDefaultValues, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // do something with values, submit here
     setSubmitState(true);
     const req = {
       id: coursework_update_data.id,
@@ -142,7 +141,6 @@ export default function EditCoursework({
     };
     await update_coursework(req).then((r) => {
       if (!r.success) {
-        // console.log(r.data.detail);
         setAlertText(
           "An unknown error occurred. Your changes haven't been saved.",
         );
