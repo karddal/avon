@@ -2,23 +2,40 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { GridItem } from "@/components/modules/coursework_layout/coursework-types";
-import {
-  type CourseworkLayoutTarget,
-  defaultCourseworkLayoutStaff,
-  defaultCourseworkLayoutStudent,
-} from "@/lib/coursework-layout";
+import { defaultCourseworkLayout } from "@/lib/coursework-layout";
 import type { CourseworkModuleKey } from "@/components/modules/coursework_layout/coursework-module-registry";
 import CourseworkLayoutEditor from "@/components/modules/coursework_layout/coursework-layout-editor";
 import CourseworkRenderer from "@/components/modules/coursework_layout/coursework-renderer";
 import type { StudentNameAndRepo } from "@/lib/actions/coursework/get_student_repos";
-import type { CourseworkStudentRepo } from "@/lib/actions/coursework/get_my_coursework_repo";
 
-type CourseworkSummary = {
+
+type CourseworkClientProps = {
+  initialLayout: GridItem[];
+  availableModules: CourseworkModuleKey[];
+  saveLayout: (layout: GridItem[], slug: string) => Promise<void>;
+  slug: string;
+  token: string;
+  repos: StudentNameAndRepo[];
+  myRepo: StudentRepoData | null;
+  setupProgressData: SetupProgressItem[];
+  courseworkData: CourseworkData | null;
+};
+
+type CourseworkCommit = {
   id: string;
-  name: string;
-  description: string;
-  creation_date: string;
-  due_date: string;
+  web_url?: string;
+  title: string;
+  short_id: string;
+  author_name?: string;
+  authored_date?: string;
+  additions: number;
+  deletions: number;
+};
+
+type StudentRepoData = {
+  commits: CourseworkCommit[];
+  repo_url: string;
+  total_commits: number;
 };
 
 type SetupProgressItem = {
@@ -26,76 +43,45 @@ type SetupProgressItem = {
   completed: boolean;
 };
 
-
-type CourseworkClientProps = {
-  initialStudentLayout: GridItem[];
-  initialStaffLayout: GridItem[];
-  availableStudentModules: CourseworkModuleKey[];
-  availableStaffModules: CourseworkModuleKey[];
-  saveLayout: (
-    layout: GridItem[],
-    slug: string,
-    target: CourseworkLayoutTarget,
-  ) => Promise<void>;
-  coursework: CourseworkSummary;
-  canViewSetupProgress: boolean;
-  canViewStudentRepos: boolean;
-  repos: StudentNameAndRepo[];
-  setupProgress: SetupProgressItem[];
-  studentRepo: CourseworkStudentRepo | null;
-  canEditLayout: boolean;
+type CourseworkData = {
+  id: string;
+  name: string;
+  description: string;
+  code: string;
+  year: number;
+  finished: boolean;
+  color: string;
+  creation_date: string;
+  due_date: string;
+  testsPassed: number;
+  totalTests: number;
 };
 
 
 export default function CourseworkClient({
-  initialStudentLayout,
-  initialStaffLayout,
-  availableStudentModules,
-  availableStaffModules,
+  initialLayout,
+  availableModules,
   saveLayout,
-  coursework,
-  canViewSetupProgress,
-  canViewStudentRepos,
+  slug,
+  token,
   repos,
-  setupProgress,
-  studentRepo,
-  canEditLayout,
+  myRepo,
+  setupProgressData,
+  courseworkData,
 }: CourseworkClientProps) {
-  const [studentLayout, setStudentLayout] = useState<GridItem[]>(
-    initialStudentLayout.length > 0
-      ? initialStudentLayout
-      : defaultCourseworkLayoutStudent,
-  );
-  const [staffLayout, setStaffLayout] = useState<GridItem[]>(
-    initialStaffLayout.length > 0
-      ? initialStaffLayout
-      : defaultCourseworkLayoutStaff,
-  );
-  const [activeTarget, setActiveTarget] = useState<CourseworkLayoutTarget>(
-    canEditLayout ? "staff" : "student",
+  const [layout, setLayout] = useState<GridItem[]>(
+    initialLayout.length > 0 ? initialLayout : defaultCourseworkLayout,
   );
   const hasMounted = useRef(false);
 
-  const activeLayout =
-    activeTarget === "staff" ? staffLayout : studentLayout;
-  const activeAvailableModules =
-    activeTarget === "staff" ? availableStaffModules : availableStudentModules;
-
   useEffect(() => {
-    if (!canEditLayout) {
-      return;
-    }
-
     if (!hasMounted.current) {
       hasMounted.current = true;
       return;
     }
 
-    const layoutToSave =
-      activeTarget === "staff" ? staffLayout : studentLayout;
-
     const timeoutId = window.setTimeout(() => {
-      void saveLayout(layoutToSave, coursework.id, activeTarget).catch((error) => {
+      void saveLayout(layout, slug).catch((error) => {
         console.error("Failed to save dashboard layout", error);
       });
     }, 400);
@@ -103,45 +89,24 @@ export default function CourseworkClient({
     return () => {
       window.clearTimeout(timeoutId);
     };
-  }, [
-    activeTarget,
-    canEditLayout,
-    coursework.id,
-    saveLayout,
-    staffLayout,
-    studentLayout,
-  ]);
-
-  function setActiveLayout(nextLayout: GridItem[] | ((prev: GridItem[]) => GridItem[])) {
-    if (activeTarget === "staff") {
-      setStaffLayout(nextLayout);
-      return;
-    }
-
-    setStudentLayout(nextLayout);
-  }
+  }, [layout, saveLayout]);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      {canEditLayout && (
-        <CourseworkLayoutEditor
-          availableModules={activeAvailableModules}
-          layout={activeLayout}
-          onChange={setActiveLayout}
-          activeTarget={activeTarget}
-          onTargetChange={setActiveTarget}
-          canEditStaffView={canEditLayout}
-        />
-      )}
+      <CourseworkLayoutEditor
+        availableModules={availableModules}
+        layout={layout}
+        onChange={setLayout}
+      />
 
-      <CourseworkRenderer
-        layout={canEditLayout ? staffLayout : studentLayout}
-        coursework={coursework}
-        canViewSetupProgress={canViewSetupProgress}
-        canViewStudentRepos={canViewStudentRepos}
-        repos={repos}
-        setupProgress={setupProgress}
-        studentRepo={studentRepo}
+      <CourseworkRenderer 
+        layout={layout} 
+        slug={slug} 
+        token={token} 
+        repos={repos} 
+        myRepo={myRepo} 
+        setupProgressData={setupProgressData}
+        courseworkData={courseworkData}
       />
     </div>
   );

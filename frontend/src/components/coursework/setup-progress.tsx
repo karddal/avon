@@ -1,16 +1,22 @@
 import { ArrowRight, CheckCircle, Circle, CircleDashed } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cw_setup_progress } from "@/lib/actions/coursework/coursework-setup-progress";
 
-interface setupProgress {
+type SetupProgressItem = {
+  title: string;
+  completed: boolean;
+};
+
+interface SetupProgressProps {
   slug: string;
+  setupProgressData: SetupProgressItem[];
 }
 
-export default async function SetupProgress({ slug }: setupProgress) {
-  const steps = await cw_setup_progress(slug);
+export default function SetupProgress({ 
+  slug, 
+  setupProgressData 
+}: SetupProgressProps) {
+  const steps = setupProgressData;
   return (
-    // Need to use reusable components for the buttons and sections, just place with names or smth
-    // Add links to each one and actually do backend for it as well
     <Card className="h-full">
       <CardHeader className="flex flex-col ">
         <CardTitle>
@@ -25,7 +31,7 @@ export default async function SetupProgress({ slug }: setupProgress) {
       </CardHeader>
       <CardContent>
         <div className="flex flex-col items-center justify-center">
-          {steps.map((step, index) => (
+          {steps.map((step: SetupProgressItem, index: number) => (
             <div key={step.title} className="flex flex-col items-center w-full">
               {step.completed && (
                 <div

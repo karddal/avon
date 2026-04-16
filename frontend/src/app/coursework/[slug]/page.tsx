@@ -1,34 +1,67 @@
+import { Info } from "lucide-react";
 import { Suspense } from "react";
 import { CourseworkDeadlineBannerFromSlug } from "@/components/coursework/coursework-banner";
 import CourseworkLectDropdown from "@/components/coursework/coursework-lect-dropdown";
+import CourseworkRepoOverview from "@/components/coursework/coursework-repo-overview";
+import CourseworkStudentPanel from "@/components/coursework/coursework-student-panel";
+import SetupProgress from "@/components/coursework/setup-progress";
+import StudentRepoActivity from "@/components/coursework/student-repo-activity";
+import StudentRepoOverview from "@/components/coursework/student-repo-overview";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { get_base_images_cw_specific } from "@/lib/actions/coursework/get_base_images_cw_specific";
 import { get_coursework_scopes } from "@/lib/actions/coursework/get_coursework_scopes";
 import { get_cw_update_data } from "@/lib/actions/coursework/get_coursework_update_data";
 import { get_cw_engine_data } from "@/lib/actions/coursework/get_cw_engine_data";
-import { get_my_coursework_repo } from "@/lib/actions/coursework/get_my_coursework_repo";
 import { get_student_repos } from "@/lib/actions/coursework/get_student_repos";
-import { cw_setup_progress } from "@/lib/actions/coursework/coursework-setup-progress";
 import { getRequestJWT } from "@/lib/auth-utils";
 import Loading from "../loading";
+import CourseworkDescription from "./description";
+import CourseworkInformation from "./information";
 import CourseworkName from "./name";
 import CourseworkClient from "@/components/modules/coursework_layout/coursework-client";
+import { availableCourseworkModules, defaultCourseworkLayout } from "@/lib/coursework-layout";
 import {
-  availableCourseworkModulesStaff,
-  availableCourseworkModulesStudent,
-  defaultCourseworkLayoutStaff,
-} from "@/lib/coursework-layout";
-import {
-  getCourseworkLayoutForTarget,
-  saveCourseworkLayoutForTarget,
-} from "../../../lib/actions/coursework-layout";
+  getCourseworkLayoutForCurrentCoursework,
+  saveCourseworkLayoutForCurrentCoursework,
+} from "@/lib/actions/coursework-layout";
+import { get_my_coursework_repo } from "@/lib/actions/coursework/get_my_coursework_repo";
+import { cw_setup_progress } from "@/lib/actions/coursework/coursework-setup-progress";
 
-type CourseworkSummary = {
+type CourseworkCommit = {
+  id: string;
+  web_url?: string;
+  title: string;
+  short_id: string;
+  author_name?: string;
+  authored_date?: string;
+  additions: number;
+  deletions: number;
+};
+
+type StudentRepoData = {
+  commits: CourseworkCommit[];
+  repo_url: string;
+  total_commits: number;
+};
+
+type SetupProgressItem = {
+  title: string;
+  completed: boolean;
+};
+
+type CourseworkData = {
   id: string;
   name: string;
   description: string;
+  code: string;
+  year: number;
+  finished: boolean;
+  color: string;
   creation_date: string;
   due_date: string;
+  testsPassed: number;
+  totalTests: number;
 };
 
 async function CourseworkPageContent({
@@ -65,31 +98,20 @@ async function CourseworkPageContent({
   const cw_engine_data = canGetAvailImages
     ? await get_cw_engine_data({ coursework_id: slug })
     : undefined;
-  const studentLayout = await getCourseworkLayoutForTarget(slug, "student");
-  const staffLayout = canViewSetupProgress
-    ? await getCourseworkLayoutForTarget(slug, "staff")
-    : defaultCourseworkLayoutStaff;
-  const setupProgress = canViewSetupProgress ? await cw_setup_progress(slug) : [];
-  const studentRepo = !canViewSetupProgress
-    ? await get_my_coursework_repo(slug)
-    : null;
+  const savedLayout = await getCourseworkLayoutForCurrentCoursework(slug);
 
-  const courseworkResponse = await fetch(
+  // Fetch module-specific data
+  const myRepo: StudentRepoData | null = await get_my_coursework_repo(slug).catch(() => null);
+  const setupProgressData: SetupProgressItem[] = canViewSetupProgress ? await cw_setup_progress(slug) : [];
+  const courseworkData: CourseworkData | null = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/coursework/${slug}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      cache: "no-cache",
     },
-  );
-
-  if (!courseworkResponse.ok) {
-    throw new Error("Failed to fetch coursework");
-  }
-
-  const coursework = (await courseworkResponse.json()) as CourseworkSummary;
+  ).then((res) => (res.ok ? res.json() : null)).catch(() => null);
 
   return (
     <>
@@ -121,28 +143,23 @@ async function CourseworkPageContent({
         </div>
       </div>
       {!canViewSetupProgress && (
-        <Suspense>
-          <CourseworkDeadlineBannerFromSlug
-            slug={slug}
-            token={token}
-            warningThreshold={7}
-          />
-        </Suspense>
+        <CourseworkDeadlineBannerFromSlug
+          slug={slug}
+          courseworkData={courseworkData}
+          warningThreshold={7}
+        />
       )}
-      <section className="col-span-3 mb-8 min-h-0 w-full">
+      <section className="mb-8 min-h-0 flex-1">
         <CourseworkClient
-          initialStudentLayout={studentLayout}
-          initialStaffLayout={staffLayout}
-          availableStudentModules={availableCourseworkModulesStudent}
-          availableStaffModules={availableCourseworkModulesStaff}
-          saveLayout={saveCourseworkLayoutForTarget}
-          coursework={coursework}
-          canViewSetupProgress={canViewSetupProgress}
-          canViewStudentRepos={canViewStudentRepos}
+          initialLayout={savedLayout}
+          availableModules={availableCourseworkModules}
+          saveLayout={saveCourseworkLayoutForCurrentCoursework}
+          slug={slug}
+          token={token}
           repos={student_repos_data?.repos || []}
-          setupProgress={setupProgress}
-          studentRepo={studentRepo}
-          canEditLayout={canViewSetupProgress}
+          myRepo={myRepo}
+          setupProgressData={setupProgressData}
+          courseworkData={courseworkData}
         />
       </section>
     </>

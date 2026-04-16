@@ -30,8 +30,6 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import type { CourseworkModuleKey } from "@/components/modules/coursework_layout/coursework-module-registry";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { CourseworkLayoutTarget } from "@/lib/coursework-layout";
 
 
 
@@ -39,9 +37,6 @@ type CourseworkLayoutEditorProps = {
   availableModules: CourseworkModuleKey[];
   layout: GridItem[];
   onChange: Dispatch<SetStateAction<GridItem[]>>;
-  activeTarget: CourseworkLayoutTarget;
-  onTargetChange: (target: CourseworkLayoutTarget) => void;
-  canEditStaffView: boolean;
 };
 
 const GRID_COLUMNS = 10;
@@ -131,9 +126,6 @@ export default function CourseworkLayoutEditor({
   availableModules,
   layout,
   onChange,
-  activeTarget,
-  onTargetChange,
-  canEditStaffView,
 }: CourseworkLayoutEditorProps) {
   const setLayout = onChange;
 
@@ -165,7 +157,7 @@ export default function CourseworkLayoutEditor({
       const spot = findFirstOpenSpot(prev);
 
       if (!spot) {
-        toast.error("No space left in the 10x4 grid");
+        toast.error("No space left in the 3x3 grid");
         return prev;
       }
 
@@ -361,26 +353,10 @@ export default function CourseworkLayoutEditor({
                 <DialogTitle className="text-lg">Dashboard Layout</DialogTitle>
                 <DialogDescription className="text-sm">
                   Drag modules on the preview to move them. Drag the corner
-                  handle to resize. Items snap to the 10x4 grid and cannot
+                  handle to resize. Items snap to the 3x3 grid and cannot
                   overlap.
                 </DialogDescription>
               </DialogHeader>
-
-              {canEditStaffView && (
-                <div className="pt-4">
-                  <Tabs
-                    value={activeTarget}
-                    onValueChange={(value) =>
-                      onTargetChange(value as CourseworkLayoutTarget)
-                    }
-                  >
-                    <TabsList className="grid w-full grid-cols-2">
-                      <TabsTrigger value="student">Student View</TabsTrigger>
-                      <TabsTrigger value="staff">Lecturer View</TabsTrigger>
-                    </TabsList>
-                  </Tabs>
-                </div>
-              )}
             </div>
 
             <div className="overflow-y-auto px-6">
@@ -468,7 +444,7 @@ export default function CourseworkLayoutEditor({
                 onMouseLeave={commitDrag}
               >
                 {layout.length === 0 ? (
-                  <div className="col-span-10 row-span-4 flex items-center justify-center text-xs text-muted-foreground">
+                  <div className="col-span-3 row-span-3 flex items-center justify-center text-xs text-muted-foreground">
                     No modules placed yet.
                   </div>
                 ) : (

@@ -8,7 +8,6 @@ import {
   ZapOff,
 } from "lucide-react";
 import Link from "next/link";
-import { Suspense } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Empty,
@@ -17,8 +16,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { Skeleton } from "@/components/ui/skeleton";
-import { get_my_coursework_repo } from "@/lib/actions/coursework/get_my_coursework_repo";
 
 function formatCommitDate(date: string | null) {
   if (!date) {
@@ -34,12 +31,29 @@ function formatCommitDate(date: string | null) {
   });
 }
 
-async function StudentRepoOverviewContent({
-  courseworkId,
+type CourseworkCommit = {
+  id: string;
+  web_url?: string;
+  title: string;
+  short_id: string;
+  author_name?: string;
+  authored_date?: string;
+  additions: number;
+  deletions: number;
+};
+
+type StudentRepoDataType = {
+  commits: CourseworkCommit[];
+  repo_url: string;
+  total_commits: number;
+};
+
+function StudentRepoOverviewContent({
+  myRepo,
 }: {
-  courseworkId: string;
+  myRepo: StudentRepoDataType | null;
 }) {
-  const repo = await get_my_coursework_repo(courseworkId);
+  const repo = myRepo;
 
   if (!repo) {
     return (
@@ -62,7 +76,7 @@ async function StudentRepoOverviewContent({
 
   const commitCount = repo.total_commits;
   const linesChanged = repo.commits.reduce(
-    (total, commit) => total + commit.additions + commit.deletions,
+    (total: number, commit: any) => total + commit.additions + commit.deletions,
     0,
   );
   const latestCommit = repo.commits[0];
@@ -156,8 +170,10 @@ function StudentRepoOverviewFallback() {
 
 export default function StudentRepoOverview({
   slug,
+  myRepo,
 }: {
   slug: string;
+  myRepo: StudentRepoDataType | null;
 }) {
   return (
     <Card className="h-full">
@@ -173,9 +189,7 @@ export default function StudentRepoOverview({
         </CardTitle>
       </CardHeader>
       <CardContent className="min-h-0 flex-1">
-        <Suspense fallback={<StudentRepoOverviewFallback />}>
-          <StudentRepoOverviewContent courseworkId={slug} />
-        </Suspense>
+        <StudentRepoOverviewContent myRepo={myRepo} />
       </CardContent>
     </Card>
   );

@@ -4,7 +4,6 @@ import {
   GitCommitHorizontal,
   GitGraph,
 } from "lucide-react";
-import { Suspense } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Empty,
@@ -18,8 +17,6 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { get_my_coursework_repo } from "@/lib/actions/coursework/get_my_coursework_repo";
 
 function formatCommitDate(date: string | null) {
   if (!date) {
@@ -35,12 +32,29 @@ function formatCommitDate(date: string | null) {
   });
 }
 
-async function StudentRepoActivityContent({
-  courseworkId,
+type CourseworkCommit = {
+  id: string;
+  web_url?: string;
+  title: string;
+  short_id: string;
+  author_name?: string;
+  authored_date?: string;
+  additions: number;
+  deletions: number;
+};
+
+type StudentRepoDataType = {
+  commits: CourseworkCommit[];
+  repo_url: string;
+  total_commits: number;
+};
+
+function StudentRepoActivityContent({
+  myRepo,
 }: {
-  courseworkId: string;
+  myRepo: StudentRepoDataType | null;
 }) {
-  const repo = await get_my_coursework_repo(courseworkId);
+  const repo = myRepo;
 
   if (!repo) {
     return (
@@ -66,7 +80,7 @@ async function StudentRepoActivityContent({
       <div className="flex min-h-0 flex-1 flex-col justify-center space-y-2">
         {repo.commits.length > 0 ? (
           <div className="space-y-2">
-            {repo.commits.slice(0, 3).map((commit, index) => (
+            {repo.commits.slice(0, 3).map((commit: any, index: number) => (
               <a
                 key={commit.id}
                 href={commit.web_url ?? repo.repo_url}
@@ -143,20 +157,12 @@ async function StudentRepoActivityContent({
   );
 }
 
-function StudentRepoActivityFallback() {
-  return (
-    <div className="space-y-2">
-      <Skeleton className="h-14 w-full" />
-      <Skeleton className="h-14 w-full" />
-      <Skeleton className="h-14 w-full" />
-    </div>
-  );
-}
-
 export default function StudentRepoActivity({
   slug,
+  myRepo,
 }: {
   slug: string;
+  myRepo: StudentRepoDataType | null;
 }) {
   return (
     <Card className="h-full">
@@ -173,9 +179,7 @@ export default function StudentRepoActivity({
         </CardTitle>
       </CardHeader>
       <CardContent className="flex min-h-0 flex-1 flex-col space-y-4">
-        <Suspense fallback={<StudentRepoActivityFallback />}>
-          <StudentRepoActivityContent courseworkId={slug} />
-        </Suspense>
+        <StudentRepoActivityContent myRepo={myRepo} />
       </CardContent>
     </Card>
   );

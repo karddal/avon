@@ -1,20 +1,6 @@
 import { BellElectric, CalendarDays, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-type courseworkData = {
-  id: string;
-  name: string;
-  description: string;
-  code: string;
-  year: number;
-  finished: boolean;
-  color: string;
-  creation_date: string;
-  due_date: string;
-  testsPassed: number;
-  totalTests: number;
-};
-
 // Helper to separate Time and Date for the "Ticker" look
 function parseDateTime(dateStr: string) {
   const date = new Date(dateStr);
@@ -31,28 +17,30 @@ function parseDateTime(dateStr: string) {
   return { time, day };
 }
 
-export default async function CourseworkInformation({
+type CourseworkData = {
+  id: string;
+  name: string;
+  description: string;
+  code: string;
+  year: number;
+  finished: boolean;
+  color: string;
+  creation_date: string;
+  due_date: string;
+  testsPassed: number;
+  totalTests: number;
+};
+
+export default function CourseworkInformation({
   slug,
-  token,
+  courseworkData,
 }: {
   slug: string;
-  token?: string;
+  courseworkData?: CourseworkData | null;
 }) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/coursework/${slug}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    },
-  );
-
-  if (!res.ok) throw new Error("Failed to fetch coursework");
-
-  const coursework: courseworkData = await res.json();
-  const start = parseDateTime(coursework.creation_date);
-  const end = parseDateTime(coursework.due_date);
+  const coursework = courseworkData;
+  const start = coursework ? parseDateTime(coursework.creation_date) : { time: "", day: "" };
+  const end = coursework ? parseDateTime(coursework.due_date) : { time: "", day: "" };
 
   return (
     <Card className="h-full">

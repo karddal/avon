@@ -1,4 +1,7 @@
-type courseworkData = {
+import { Info } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+type CourseworkData = {
   id: string;
   name: string;
   description: string;
@@ -12,37 +15,41 @@ type courseworkData = {
   totalTests: number;
 };
 
-export default async function CourseworkDescription({
+export default function CourseworkDescription({
   slug,
-  token,
+  courseworkData,
 }: {
   slug: string;
-  token?: string;
+  courseworkData?: CourseworkData | null;
 }) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/coursework/${slug}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    },
-  );
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch unit");
-  }
-  const coursework: courseworkData = await res.json();
+  const coursework = courseworkData;
 
   return (
-    <div className="h-full overflow-y-auto whitespace-pre-wrap wrap-break-word rounded-md border bg-accent p-3">
-      {coursework.description ? (
-        coursework.description
-      ) : (
-        <span className="text-muted-foreground italic">
-          No description available.
-        </span>
-      )}
+    <div className="flex h-full flex-col gap-4">
+      <Card id="coursework-description" className="h-full min-h-0">
+        <CardHeader>
+          <CardTitle>
+            <div className="text-2xl flex flex-row gap-2 items-center">
+              <Info />
+              Description
+            </div>
+            <div className="font-light">
+              Information about the coursework.
+            </div>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="min-h-0 flex-1">
+          <div className="h-full overflow-y-auto whitespace-pre-wrap rounded-md border bg-accent p-3">
+            {coursework?.description ? (
+              coursework.description
+            ) : (
+              <span className="text-muted-foreground italic">
+                No description available.
+              </span>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
