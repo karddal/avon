@@ -21,6 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { formatIsoDate } from "@/lib/date-format";
 import { Card } from "../ui/card";
 
 type courseworkData = {
@@ -62,7 +63,7 @@ export default function Coursework({
             <div className="flex flex-row gap-2">
               <p className="text-sm lg:text-xl text-muted-foreground">
                 <span className="text-sm">Due: </span>
-                {new Date(props.due_date).toLocaleDateString()}
+                {formatIsoDate(props.due_date)}
               </p>
             </div>
           </div>

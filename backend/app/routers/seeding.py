@@ -1,22 +1,15 @@
-import os
-from pathlib import Path
-
-from dotenv import load_dotenv
 from fastapi import APIRouter, HTTPException, Request, status
 
+from app.core.env import is_development_app_env, is_test_app_env, load_backend_env
 from app.services.db_reset import reset_app_data, reset_database
 
-BACKEND_DIR = Path(__file__).resolve().parents[2]
-DEV_ENV_FILE = BACKEND_DIR / ".env.dev"
-
-if os.getenv("ENV") == "dev":
-    load_dotenv(DEV_ENV_FILE, override=False)
+load_backend_env()
 
 router = APIRouter(prefix="/seeding", tags=["seeding"])
 
 
 def reset_route_enabled() -> bool:
-    return os.getenv("ENV") == "dev"
+    return is_development_app_env() or is_test_app_env()
 
 
 def request_is_local(request: Request) -> bool:

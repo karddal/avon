@@ -23,13 +23,18 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  DropDrawer,
+  DropDrawerContent,
+  DropDrawerGroup,
+  DropDrawerItem,
+  DropDrawerLabel,
+  DropDrawerSeparator,
+  DropDrawerTrigger,
+} from "@/components/ui/dropdrawer";
 import DeleteUnitButton from "@/components/units/delete-unit-button";
 import EditUnit from "@/components/units/edit-unit";
 import ListMembers from "@/components/units/list-members";
@@ -103,33 +108,58 @@ export default function LecturerDropdown({
 
   return (
     <div className="aspect-square">
-      <DropdownMenu>
-        <DropdownMenuTrigger
+      <DropDrawer>
+        <DropDrawerTrigger
+          data-cy="unit-dropdown"
           id="unit-dropdown"
           className="border hover:bg-accent hover:transition p-2"
         >
           <Menu size={32} />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="flex flex-col">
-          <DropdownMenuLabel>Unit Options</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-
+        </DropDrawerTrigger>
+        <DropDrawerContent align="end">
+          <DropDrawerLabel>Unit Options</DropDrawerLabel>
           {hasReadScope && (
-            <DropdownMenuItem onSelect={() => setShowMembers(true)}>
-              <Users className="mr-2 h-4 w-4" /> Members
-            </DropdownMenuItem>
+            <DropDrawerGroup>
+              <DropDrawerLabel>Members</DropDrawerLabel>
+              <DropDrawerItem
+                onSelect={() => setShowMembers(true)}
+                icon={<Users />}
+              >
+                View members
+              </DropDrawerItem>
+            </DropDrawerGroup>
           )}
 
           {hasManageScope && (
-            <DropdownMenuItem onSelect={() => setShowEdit(true)}>
-              <SquarePen className="mr-2 h-4 w-4" /> Edit Unit
-            </DropdownMenuItem>
+            <>
+              {hasReadScope && <DropDrawerSeparator />}
+              <DropDrawerGroup>
+                <DropDrawerLabel>Manage</DropDrawerLabel>
+                <DropDrawerItem
+                  onSelect={() => setShowEdit(true)}
+                  data-cy="unit-edit"
+                  icon={<SquarePen />}
+                >
+                  Edit unit
+                </DropDrawerItem>
+              </DropDrawerGroup>
+            </>
           )}
 
           {hasNotificationScope && (
-            <DropdownMenuItem onSelect={() => setShowSendNotif(true)}>
-              <Siren className="mr-2 h-4 w-4" /> Send Notification
-            </DropdownMenuItem>
+            <>
+              {(hasReadScope || hasManageScope) && <DropDrawerSeparator />}
+              <DropDrawerGroup>
+                <DropDrawerLabel>Notifications</DropDrawerLabel>
+                <DropDrawerItem
+                  onSelect={() => setShowSendNotif(true)}
+                  data-cy="unit-send-notification"
+                  icon={<Siren />}
+                >
+                  Send notification
+                </DropDrawerItem>
+              </DropDrawerGroup>
+            </>
           )}
 
           {hasDeleteScope &&
@@ -174,18 +204,32 @@ export default function LecturerDropdown({
             </DropdownMenuItem>
           )}
 
-          <DropdownMenuSeparator />
+          {hasDeleteScope &&
+            (hasReadScope ||
+              hasEnrollScope ||
+              hasManageScope ||
+              hasNotificationScope) && <DropdownMenuSeparator />}
 
           {hasDeleteScope && (
-            <DropdownMenuItem
-              onSelect={() => setShowDelete(true)}
-              className="text-destructive focus:text-destructive"
-            >
-              <SquareX className="text-destructive mr-2 h-4 w-4" /> Delete Unit
-            </DropdownMenuItem>
+            <>
+              {(hasReadScope || hasManageScope || hasNotificationScope) && (
+                <DropDrawerSeparator />
+              )}
+              <DropDrawerGroup>
+                <DropDrawerLabel>Destructive options</DropDrawerLabel>
+                <DropDrawerItem
+                  onSelect={() => setShowDelete(true)}
+                  data-cy="unit-delete"
+                  className="text-destructive focus:text-destructive"
+                  icon={<SquareX className="text-destructive" />}
+                >
+                  Delete unit
+                </DropDrawerItem>
+              </DropDrawerGroup>
+            </>
           )}
-        </DropdownMenuContent>
-      </DropdownMenu>
+        </DropDrawerContent>
+      </DropDrawer>
 
       {hasReadScope && (
         <ListMembers
@@ -215,7 +259,7 @@ export default function LecturerDropdown({
 
       {hasDeleteScope && (
         <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
-          <AlertDialogContent>
+          <AlertDialogContent className="flex flex-col gap-4">
             <AlertDialogHeader>
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
               <AlertDialogDescription>
@@ -224,8 +268,10 @@ export default function LecturerDropdown({
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
-              <DeleteUnitButton unitId={slug} />
+              <AlertDialogCancel className="h-10 w-full sm:w-auto">
+                Cancel
+              </AlertDialogCancel>
+              <DeleteUnitButton className="w-full sm:w-auto" unitId={slug} />
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

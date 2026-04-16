@@ -71,6 +71,43 @@ I also used GH Copilot for autocompletion sometimes to save time.
 
 `How can I clean out a full subgroup in Gitlab without deleting it using the API? So all subgroups and projects in it should be deleted.`
 
+
+#### Used to design and set up the test running system
+
+I used it to write the dockerfile and script for the test running system, then customised the result. I used it because I am not very familiar with how docker works, and best practices for untrusted code. Me and Josh also used it initially with earlier attempts with Kubernetes, and also to try and architect a better design. We found it helpful because we don't have much experience with this.
+Once I had a working script, I was able to modify it for our own purpose. I also used it to help debug and iterate. 
+
+Example prompts:
+- ```Sure! What's the cleaner way to do this? It doesn't look like with this setup there is a clean way to git clone the code and then run the lecturer's dockerfile.```
+- ```Okay, so how about this, maybe we can just install uv, pip, all 'python' things into a single container, and then this is just a limitation of the system. Then the lecturer can define a series of commands to run in that container, and then we handle logging etc from this. Can you set up the container for this? This sounds clean.```
+- ```Yes that sounds important, clean it up, make sure it is as clean and simple and easy to maintain as possible, and prevent exploits. Make no mistakes, you are an expert aws engineer.```
+- ```Can i set the ecs task to have a timeout rather than having to do it manually in the python script?```
+- ```Can I test this locally @ChatGPT ?```
+- ```how can I give perms for the runner to be able to download the projects? Do I use an API key in gitlab?```
+- ```How can I use service accounts for this? I can generate a service account and pass it in in the git clone url with the service account token, to authenticate https git clones. Update the script.```
+- ```How will s3 and sqs auth work when deployed? How can it log in?```
+- ```how do I get the runner.py into the dockerifle? it says it cant find it```
+- ```how will I know whether it worked? nothing gets printed out```
+- ```How can I troubleshoot aws login etc errors? Can you add code to do that?```
+- ```I have an architecture on a VLE where lecturers can pick a base task definition and a tester command, and we have multiple task defs (python, c etc) with different dependencies installed. The runner script in each case git clones student work and runs the tester command. This all runs in an ecs task. What would be a clean db schema for storing test runs? The ecs task updates the backend by sending a sqs notification on finish with the exit code and the s3 url where logs were uploaded, and the fastapi backend consumes this and updates the db. I worked really hard to have this architecture be fault tolerant - so we can handle multiple backends, eg if one dies etc, and data doesn’t get lost.```
+- ```Why do we need the sqs table? won’t the unique constraint on test run id be sufficient?```
+- ```How do we handle submissions? Right now, we just have a system where lecturers can click 'grade', and we just take the repo url, and git clone from the default branch. Do we need to formalise this? I see you made some submission table - can you explain the logic here?```
+- ```Yeah - we have help text on our UI telling students to ensure that when the submission deadline passes, just make sure that the code on their default branch is the code that they want to submit. When this all gets fully set up, we will use GitLab invites, and their access will have an expiration equal to the cw due date. So they lose access to the remote and their submission is set in stone.```
+- ```I'd like to use a linux epoch timestamp because I find dealing with different timezones etc difficult. I'm using fastapi - can I just use an int field and use datetime to get the linux epoch?```
+- ```okay, so would I just use an sqlmodel datetime type field? What method do I use to get the current time, and then get it back later on? There's so many different ones (now, utcnow etc) and numerous footguns```
+- ```don't we need to store things like the task definition used to run the tests, and the tester command?```
+- ```yes - the idea is that the admins can define runner images with different dependencies installed, docker build, upload to ecr, and define aws task definition. Then we have a way in our frontend for admins to register them as a BaseImage which a lecturer can select when setting up the test running. I think that we need the task_definition name when running ecs tasks so is that what we should save?```
+- ```When it comes to api responses, is it standard to return a HTTPException (error code, detail) or do we have a custom json type with status: error, detail: str?```
+- ```Why isn't this formatting properly? Also, how can I display this nicely? This is a start date for a test run to be displayed in a data table. The formatting is just doing iso format which is ugly, not taking effect. CODE HERE```
+- ```CODE HERE this just prints DATE HERE in the row field.```
+
+#### Used to design and build the specific test run page
+I used AI to build the specific test run page, once I had already built the test runs list, start tests component etc. - it was given a popup set up with the data, and I asked it to build a layout to
+display the data nicely. I also asked it to add features like auto refreshing and fix some bugs. This was useful because
+it allowed me to quickly iterate the design, and get something that I can build on top of. Helped to overcome the 'blank page' problem.
+
+See the transcript in `transcript.md` in this folder.
+
 ### Josh
 
 **Tools used**

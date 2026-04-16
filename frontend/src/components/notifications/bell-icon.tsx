@@ -1,6 +1,6 @@
 "use server";
 import { Bell, BellDot } from "lucide-react";
-import { check_any_unread } from "@/lib/actions/check_any_unread";
+import { check_any_unread } from "@/lib/actions/notification/check_any_unread";
 
 export default async function NotificationsBellIcon() {
   const has_any_unread = await check_any_unread();

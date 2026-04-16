@@ -3,9 +3,9 @@
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { get_user_image_from_id } from "@/lib/actions/get_image";
-import { get_students } from "@/lib/actions/get_students";
-import { get_username_from_id } from "@/lib/actions/get_username";
+import { get_username_from_id } from "@/lib/actions/auth/get_username";
+import { get_user_image_from_id } from "@/lib/actions/coursework/get_image";
+import { get_students } from "@/lib/actions/unit/get_students";
 import ListOmittedusers from "./list-omitted-users";
 import UserSelectionOmittion from "./user-selection-omittion";
 
