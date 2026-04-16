@@ -2,6 +2,12 @@
 
 # AI in 2025-ContinuousAssessment
 
+LARGE AI COMMIT: ae98f7d9da427988da0d203176a8f96655d5f770
+
+- Very high usage of AI here to fix the state of the backend/frontend connection due to new Scopes/Seeding issue
+- Mechanical refactoring was done here by Codex instead of ourselves
+- Stopping the frontend tests from all failing - was causing frontend tests to take 22m.
+
 AI tools have been used in the following ways
 
 - Understanding best practices for architecting systems
@@ -43,6 +49,25 @@ Engine prototyping - For the initial prototype test runner (not merged), used to
 Debugging and setting up deployment - Very helpful when setting up deployment to AWS to explain things like how to setup the connections. A specific example was when I was trying to debug why sql queries weren't working with a cryptic error. With the error message and the code, it identified that in Postges you can't use ? for placeholders, you have to use $1. This is something that I didn't know about and wouldn't have found. It also suggested an improved way of sharing Postgres pools using a global variable.
 
 Used also when debugging and fixing the seed script - example prompt: `What does this error mean? detail: [ { type: 'model_attributes_type', loc: [Array], msg: 'Input should be a valid dictionary or object to extract fields from', input: '{"name":"Year 1 Computer Science 2025-2026","start_date":"2025-09-10","end_date":"2026-05-30"}' } ] Here is the api spec example { "name": "string", "start_date": "2026-02-08", "end_date": "2026-02-08" }`
+
+`How can I clean out a full subgroup in Gitlab without deleting it using the API? So all subgroups and projects in it should be deleted.`
+
+Used for setting up permissions scoping, and for debugging it. Useful because it gave me good ideas for how to do this properly, and how this could be done with fastapi. It suggested something much more complicated than necessary though, and I ended up simplifying it.
+Example prompts used here:
+
+- `How can I create a decorator in Python? I'm trying to refactor my backend's auth system and I think that would be the cleanest way of doing it.`
+- `The problem is that different functions need different types of auth - how can I be more flexible? Is this where decorators are less beneficial?`
+- `What is the scopes pattern and how does it work?`
+- `My backend and frontend are separated - my frontend uses betterauth, and the backend is fastapi. Right now, fastapi calls the frontend, verifies the jwt that the frontend sends with requests, and that's how it works. Frontend jwt has a 'role' attribute, but right now that is only really used on the fe for simple things like what pages are shown in the sidebar - the current backend has enrollment tables, and the enrollment has different 'types'. E.g. we have a Unit, and a UnitEnrollment can have type 'lecturer' which means that they can manage the unit. I want to migrate this to use scopes instead. How can I do this?`
+- `how can I use this on the fe to decide which ui actions to surface?`
+- `Should I allow custom scopes? For example, do I let a lecturer set a specific person to have specific permissions? Or is the roles we have now enough?`
+- `How can I write a function that works for different entities, not just units`
+- `async function get_cw_update_data( slug: string, scopes: Set<string>, ): Promise<CourseworkUpdateData | undefined> { const token = await getRequestJWT(); console.log(typeof scopes); if (scopes.has("unit:coursework_manage")) { it says scopes.has() is not a function, i can't figure out what I'm doing wrong.`
+- `in fastapi dependencies how can I get path parameters?`
+
+I found that it was useful in that it taught me about the pattern and gave me a good foundation code example, but I had to customise what it gave me, for example I ended up not using the decorator pattern that it suggested, but the scopes pattern example code it showed me was very good, and worked well with user types etc.
+
+I also used GH Copilot for autocompletion sometimes to save time.
 
 `How can I clean out a full subgroup in Gitlab without deleting it using the API? So all subgroups and projects in it should be deleted.`
 

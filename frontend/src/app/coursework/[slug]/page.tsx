@@ -28,6 +28,7 @@ import {
 import { get_my_coursework_repo } from "@/lib/actions/coursework/get_my_coursework_repo";
 import { cw_setup_progress } from "@/lib/actions/coursework/coursework-setup-progress";
 
+<<<<<<< HEAD
 type CourseworkCommit = {
   id: string;
   web_url: string | null;
@@ -64,6 +65,8 @@ type CourseworkData = {
   totalTests: number;
 };
 
+=======
+>>>>>>> dev
 async function CourseworkPageContent({
   params,
 }: {
@@ -98,6 +101,7 @@ async function CourseworkPageContent({
   const cw_engine_data = canGetAvailImages
     ? await get_cw_engine_data({ coursework_id: slug })
     : undefined;
+<<<<<<< HEAD
   const savedLayout = await getCourseworkLayoutForCurrentCoursework(slug, canViewSetupProgress ? "staff" : "student");
   const staffLayout = await getCourseworkLayoutForCurrentCoursework(slug, "staff");
   const studentLayout = await getCourseworkLayoutForCurrentCoursework(slug, "student");
@@ -115,6 +119,8 @@ async function CourseworkPageContent({
       },
     },
   ).then((res) => (res.ok ? res.json() : null)).catch(() => null);
+=======
+>>>>>>> dev
 
   return (
     <>
@@ -146,6 +152,7 @@ async function CourseworkPageContent({
         </div>
       </div>
       {!canViewSetupProgress && (
+<<<<<<< HEAD
         <CourseworkDeadlineBannerFromSlug
           slug={slug}
           courseworkData={courseworkData}
@@ -168,6 +175,83 @@ async function CourseworkPageContent({
           layoutType={canViewSetupProgress ? "staff" : "student"}
           canEditLayouts={canViewSetupProgress}
         />
+=======
+        <Suspense>
+          <CourseworkDeadlineBannerFromSlug
+            slug={slug}
+            token={token}
+            warningThreshold={7}
+          />
+        </Suspense>
+      )}
+      <section className="mb-8 grid min-h-0 grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="flex h-full flex-col gap-4 md:col-span-2 xl:col-span-2 xl:h-64">
+          <Card id="coursework-description" className="h-full min-h-0">
+            <CardHeader>
+              <CardTitle>
+                <div className="text-2xl flex flex-row gap-2 items-center">
+                  <Info />
+                  Description
+                </div>
+                <div className="font-light">
+                  Information about the coursework.
+                </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="min-h-0 flex-1">
+              <Suspense>
+                <CourseworkDescription slug={slug} token={token} />
+              </Suspense>
+            </CardContent>
+          </Card>
+        </div>
+        <div
+          id="coursework-information"
+          className="h-full md:col-span-2 xl:col-span-1 xl:h-64"
+        >
+          <Suspense>
+            <CourseworkInformation slug={slug} token={token} />
+          </Suspense>
+        </div>
+        <div
+          id="coursework-repos"
+          className="h-full md:col-span-2 xl:col-span-2"
+        >
+          {canViewSetupProgress ? (
+            canViewStudentRepos && student_repos_data ? (
+              <CourseworkRepoOverview repos={student_repos_data?.repos} />
+            ) : (
+              <></>
+            )
+          ) : (
+            <Suspense>
+              <StudentRepoOverview courseworkId={slug} />
+            </Suspense>
+          )}
+        </div>
+        <div
+          id="coursework-activity"
+          className="h-full md:col-span-2 xl:col-span-1"
+        >
+          {canViewSetupProgress ? (
+            <Suspense>
+              <SetupProgress cw_id={slug}></SetupProgress>
+            </Suspense>
+          ) : (
+            <Suspense>
+              <StudentRepoActivity courseworkId={slug} />
+            </Suspense>
+          )}
+        </div>
+        {!canViewSetupProgress && (
+          <div
+            id="coursework-students"
+            className="mb-8 h-full pb-4 md:col-span-2 md:mb-10 xl:col-span-3 xl:mb-16"
+          >
+            <CourseworkStudentPanel />
+          </div>
+        )}
+>>>>>>> dev
       </section>
     </>
   );

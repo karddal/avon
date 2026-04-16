@@ -1,5 +1,6 @@
 import os
 
+os.environ["APP_ENV"] = "test"
 os.environ["DATABASE_URL"] = "sqlite:///:memory:"
 os.environ["JWT_SECRET_KEY"] = "testSecretKey"
 os.environ["JWT_AUDIENCE"] = "testAudience"
@@ -8,6 +9,13 @@ os.environ["JWKS_URL"] = "http://testserver/jwks"
 os.environ["ACCESS_TOKEN_EXPIRY_MINUTES"] = "60"
 os.environ["CORS_ORIGIN"] = "http://testserver"
 os.environ["IGNORE_AUTH"] = "True"
+os.environ["TEST_FIXTURE_KEY"] = "test"
+os.environ["ENABLE_TEST_FIXTURES"] = "True"
+os.environ["ALLOW_HISTORICAL_SEED_DATA"] = "False"
+os.environ["RUN_BACKGROUND_WORKER"] = "False"
+os.environ["AWS_ECS_CLUSTER"] = "test-cluster"
+os.environ["AWS_RESULTS_QUEUE_URL"] = "https://example.invalid/test-queue"
+os.environ["AWS_BUCKET"] = "test-bucket"
 
 from app.core.security import get_bearer
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer

@@ -48,6 +48,9 @@ class UnitRead(BaseModel):
     unit_code: str
     colour: Colour
     programme_id: uuid.UUID
+    unlocked: bool
+
+
 
 
 class UnitReadWithDates(UnitRead):
@@ -65,12 +68,28 @@ class UnitStudents(BaseModel):
     students: List[str]
 
 
+class UnitUsers(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    users: List[str]
+
+
 class UnitCreate(BaseModel):
     name: Name
     description: Description
     unit_code: UnitCode
     colour: Colour
     programme_id: uuid.UUID
+    unlocked: bool | None = None
+
+
+class UnitCreateOwner(BaseModel):
+    name: Name
+    description: Description
+    unit_code: UnitCode
+    colour: Colour
+    programme_id: uuid.UUID
+    owner: str
+    unlocked: bool | None = None
 
 class UnitCreateOwner(BaseModel):
     name: Name
@@ -100,6 +119,9 @@ class UnitWithoutProgramme(BaseModel):
     creation_date: datetime
     unit_code: str
     colour: str
+    unlocked: bool
+
+
 
 
 class ProgrammeWithUnits(BaseModel):
@@ -129,6 +151,7 @@ class CourseworkReadWithoutUnit(BaseModel):
 class CourseworkAll(BaseModel):
     courseworks: List[CourseworkReadWithoutUnit]
 
+
 class UnitEventRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: uuid.UUID
@@ -136,3 +159,4 @@ class UnitEventRead(BaseModel):
     unit_code: str
     programme_start_date: str
     programme_end_date: str
+

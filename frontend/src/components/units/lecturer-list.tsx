@@ -1,6 +1,7 @@
 "use client";
 
 import { Crown, Menu, TextSearch, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
@@ -47,6 +48,8 @@ export default function lecturerList({
   const [showDelete, setShowDelete] = useState<boolean>(false);
   const [ownerID, setOwnerID] = useState<string>("");
   const [deleteID, setDeleteID] = useState<string>("");
+  const canTransferOwnership = userIsOwner || canManageEnrollment;
+  const router = useRouter();
 
   async function handleDelete() {
     const id = deleteID;
@@ -78,6 +81,7 @@ export default function lecturerList({
       throw new Error();
     }
     loadlecturers();
+    router.refresh();
   }
 
   const loadlecturers = useCallback(async () => {
@@ -179,7 +183,7 @@ export default function lecturerList({
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => handleTransferDialog(lecturer.id)}
-                      disabled={!userIsOwner}
+                      disabled={!canTransferOwnership}
                     >
                       <Crown className="text-foreground"></Crown>
                       Transfer Ownership

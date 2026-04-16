@@ -34,5 +34,3 @@ class Coursework(SQLModel, table=True):
     )
     base_image: "BaseImage" = Relationship(back_populates="courseworks")
     test_runs: list["TestRun"] = Relationship(back_populates="coursework")
-    coursework_layout_student: str | None = Field(default=None)
-    coursework_layout_staff: str | None = Field(default=None)

@@ -95,6 +95,7 @@ export default function Unit({
                   e.preventDefault();
                   setShowDelete(true);
                 }}
+                data-cy="unit-list-delete"
                 className="text-destructive focus:text-destructive flex flex-row gap-2"
               >
                 <SquareX size={16} />

@@ -18,6 +18,8 @@ def utcnow():
 
 
 class TestRun(SQLModel, table=True):
+    __test__ = False
+
     id: UUID = Field(primary_key=True, default_factory=uuid.uuid4)
     coursework_id: UUID = Field(foreign_key="coursework.id")
     coursework: "Coursework" = Relationship(back_populates="test_runs")
@@ -34,7 +36,10 @@ class TestRun(SQLModel, table=True):
     started_by: str = Field(nullable=False)
     batch_id: UUID = Field(nullable=False)
 
+
 class TestRunResult(SQLModel, table=True):
+    __test__ = False
+
     test_run_id: UUID = Field(primary_key=True, foreign_key="testrun.id")
     exit_code: int = Field(nullable=False)
     log_s3_uri: str | None = Field(nullable=False)

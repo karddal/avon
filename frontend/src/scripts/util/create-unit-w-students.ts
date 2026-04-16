@@ -31,6 +31,7 @@ export async function createUnitWithStudentsAndLecturers(
     unit_code: unitData.unit_code,
     programme_id: programmeId,
     owner: ownerId,
+    unlocked: true,
   });
 
   const unitId = unit.id;

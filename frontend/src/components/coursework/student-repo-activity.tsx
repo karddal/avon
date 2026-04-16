@@ -4,6 +4,7 @@ import {
   GitCommitHorizontal,
   GitGraph,
 } from "lucide-react";
+import { Suspense } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Empty,
@@ -17,6 +18,9 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { get_my_coursework_repo } from "@/lib/actions/coursework/get_my_coursework_repo";
+import { formatIsoDateTime } from "@/lib/date-format";
 
 function formatCommitDate(date: string | null) {
   if (!date) {
@@ -157,6 +161,17 @@ function StudentRepoActivityContent({
   );
 }
 
+
+function StudentRepoActivityFallback() {
+  return (
+    <div className="space-y-2">
+      <Skeleton className="h-14 w-full" />
+      <Skeleton className="h-14 w-full" />
+      <Skeleton className="h-14 w-full" />
+    </div>
+  );
+}
+
 export default function StudentRepoActivity({
   slug,
   myRepo,
@@ -179,7 +194,9 @@ export default function StudentRepoActivity({
         </CardTitle>
       </CardHeader>
       <CardContent className="flex min-h-0 flex-1 flex-col space-y-4">
-        <StudentRepoActivityContent myRepo={myRepo} />
+        <Suspense fallback={<StudentRepoActivityFallback />}>
+          <StudentRepoActivityContent myRepo={myRepo} />
+        </Suspense>
       </CardContent>
     </Card>
   );

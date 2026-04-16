@@ -9,6 +9,7 @@ type CreateUnitRequest = {
   colour: string;
   programme_id: string;
   owner: string;
+  unlocked: boolean | null;
 };
 
 export type CreatedUnit = {

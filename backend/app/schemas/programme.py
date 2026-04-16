@@ -3,8 +3,8 @@ from uuid import UUID
 from datetime import date
 
 from pydantic import BaseModel, AfterValidator
+from app.core.settings import settings
 from app.schemas.unit import UnitWithoutProgramme
-import os
 
 
 def is_valid_name(name: str) -> str:
@@ -15,7 +15,7 @@ def is_valid_name(name: str) -> str:
 
 
 def is_valid_date(value: date) -> date:
-    if os.getenv("TESTING_MODE") == "True":
+    if settings.allow_historical_seed_data:
         return value
     today = date.today()
 

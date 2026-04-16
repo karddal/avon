@@ -148,15 +148,8 @@ def test_units_invalid_item_raises_error():
 
 
 def test_units_valid_list_raises_no_error():
-    creation_date = date.today()
-    unit = UnitWithoutProgramme(
-        id=uuid4(),
-        name="Imp and Func",
-        description="2nd best first year unit",
-        creation_date=creation_date,
-        unit_code="COMS10016",
-        colour="abcdef",
-    )
+    creation_date=date.today()
+    unit = UnitWithoutProgramme(id=uuid4(), name="Imp and Func", description="2nd best first year unit", creation_date=creation_date, unit_code="COMS10016", colour="abcdef", unlocked=True)
 
     programme_id = uuid4()
     start = date.today()

@@ -30,6 +30,9 @@ COPY . .
 # ENV NEXT_TELEMETRY_DISABLED=1
 ENV NEXT_PUBLIC_CDN_PATH=https://cdn.avon.ac
 ENV NEXT_PUBLIC_API_URL=http://internal-avon-internal-lb-686286700.eu-north-1.elb.amazonaws.com
+# Build commit is injected at build time by CI (git is not available in the image)
+ARG NEXT_PUBLIC_BUILD_COMMIT
+ENV NEXT_PUBLIC_BUILD_COMMIT=$NEXT_PUBLIC_BUILD_COMMIT
 RUN \
   if [ -f yarn.lock ]; then yarn run build; \
   elif [ -f package-lock.json ]; then npm run build; \

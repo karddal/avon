@@ -80,7 +80,7 @@ export default function CreateStructurePage() {
   }
 
   return (
-    <div className="space-y-6 items-center flex justify-center h-full">
+    <div className="space-y-6 items-center flex justify-center h-full text-">
       <div className="flex flex-col-reverse lg:flex-row gap-6 w-full max-w-7xl">
         <Card className="flex-1 shadow-sm border-muted/60">
           <CardContent className="flex flex-col gap-8 h-full">

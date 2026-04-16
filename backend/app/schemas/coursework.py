@@ -1,11 +1,11 @@
 import datetime
-import os
 import re
 from typing import Annotated, Literal
 from uuid import UUID
 
 from pydantic import AfterValidator, BaseModel, ConfigDict
 
+from app.core.settings import settings
 from app.models.student_repo import StudentRepo
 from app.models.test_run import status_type, trigger_type
 
@@ -25,20 +25,23 @@ def is_valid_description(description: str) -> str:
 
 
 def is_valid_due_date(date: datetime.datetime) -> datetime.datetime:
-    if os.getenv("TESTING_MODE") == "True":
+    if settings.allow_historical_seed_data:
         return date
-    if date.tzinfo is None:
-        date = date.replace(tzinfo=datetime.timezone.utc)
 
-    now = datetime.datetime.now(datetime.timezone.utc)
+    if date.tzinfo is None:
+        now = datetime.datetime.now()
+    else:
+        now = datetime.datetime.now(datetime.timezone.utc)
+        date = date.astimezone(datetime.timezone.utc)
+
     one_year_onwards = now + datetime.timedelta(days=365)
 
     if date <= now:
         raise ValueError("Due date must be greater than now")
-    elif date > one_year_onwards:
+    if date > one_year_onwards:
         raise ValueError("Due date must be within one year from now")
-    else:
-        return date
+
+    return date
 
 
 def is_valid_colour(c: str) -> str:
@@ -130,7 +133,8 @@ class CourseworkCreate(BaseModel):
     description: Description
     unit_id: UUID
     due_date: DueDate
-    colour: str
+    colour: Colour
+
 
 
 class CourseworkTemplateFile(BaseModel):
@@ -146,7 +150,9 @@ class CourseworkUpdate(BaseModel):
     description: Description | None = None
     unit_id: UUID | None = None
     due_date: DueDate | None = None
-    colour: str | None = None
+    colour: Colour | None = None
+
+
 
 
 class CourseworkDelete(BaseModel):
@@ -229,4 +235,3 @@ class TestRunFullInfo(BaseModel):
 
 class CourseworkTestRuns(BaseModel):
     test_runs: list[TestRunBasicInfo]
-

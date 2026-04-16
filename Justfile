@@ -12,7 +12,7 @@ set windows-shell := ["powershell.exe", "-NoProfile", "-Command"]
     just -f Justfile -d documentation {{cmd}}-doc {{args}}
 
 @db cmd *args:
-    just -f Justfile {{cmd}}-db {{args}}
+    just -f Justfile -d backend {{cmd}}-db {{args}}
 
 # real command
 default:
@@ -62,11 +62,11 @@ test:
 
 [windows]
 run-be env = "dev":
-    $env:ENV="{{env}}"; uv run fastapi dev
+    $env:APP_ENV="{{env}}"; uv run fastapi dev
 
 [unix]
 run-be env = "dev":
-    ENV={{env}} uv run fastapi dev
+    APP_ENV={{env}} uv run fastapi dev
 
 sync-fe:
     npm i
@@ -78,11 +78,21 @@ sync:
     just fe sync
     just be sync
 
-seed-db:
-    just fe run db:seed
-
-reset-db:
-    just fe run db:reset
-
 serve-doc:
     mdbook serve --open
+
+[windows]
+seed-db env = "dev":
+    $env:APP_ENV="{{env}}"; uv run python -m app.cli.manage seeding
+
+[unix]
+seed-db env = "dev":
+    APP_ENV={{env}} uv run python -m app.cli.manage seeding
+
+[windows]
+seeding-db env = "dev":
+    $env:APP_ENV="{{env}}"; uv run python -m app.cli.manage seeding
+
+[unix]
+seeding-db env = "dev":
+    APP_ENV={{env}} uv run python -m app.cli.manage seeding

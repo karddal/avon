@@ -8,6 +8,7 @@ import {
   ZapOff,
 } from "lucide-react";
 import Link from "next/link";
+import { Suspense } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Empty,
@@ -16,6 +17,9 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { Skeleton } from "@/components/ui/skeleton";
+import { get_my_coursework_repo } from "@/lib/actions/coursework/get_my_coursework_repo";
+import { formatIsoDateTime } from "@/lib/date-format";
 
 function formatCommitDate(date: string | null) {
   if (!date) {
@@ -189,7 +193,9 @@ export default function StudentRepoOverview({
         </CardTitle>
       </CardHeader>
       <CardContent className="min-h-0 flex-1">
-        <StudentRepoOverviewContent myRepo={myRepo} />
+        <Suspense fallback={<StudentRepoOverviewFallback />}>
+          <StudentRepoOverviewContent myRepo={myRepo} />
+        </Suspense>
       </CardContent>
     </Card>
   );
