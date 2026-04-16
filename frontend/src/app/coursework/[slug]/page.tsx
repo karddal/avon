@@ -20,7 +20,7 @@ import CourseworkDescription from "./description";
 import CourseworkInformation from "./information";
 import CourseworkName from "./name";
 import CourseworkClient from "@/components/modules/coursework_layout/coursework-client";
-import { availableCourseworkModules, defaultCourseworkLayout } from "@/lib/coursework-layout";
+import { availableCourseworkModules, defaultCourseworkLayout, staffAvailableModules, studentAvailableModules } from "@/lib/coursework-layout";
 import {
   getCourseworkLayoutForCurrentCoursework,
   saveCourseworkLayoutForCurrentCoursework,
@@ -30,10 +30,10 @@ import { cw_setup_progress } from "@/lib/actions/coursework/coursework-setup-pro
 
 type CourseworkCommit = {
   id: string;
-  web_url?: string;
+  web_url: string | null;
   title: string;
   short_id: string;
-  author_name?: string;
+  author_name: string | null;
   authored_date?: string;
   additions: number;
   deletions: number;
@@ -98,7 +98,10 @@ async function CourseworkPageContent({
   const cw_engine_data = canGetAvailImages
     ? await get_cw_engine_data({ coursework_id: slug })
     : undefined;
-  const savedLayout = await getCourseworkLayoutForCurrentCoursework(slug);
+  const savedLayout = await getCourseworkLayoutForCurrentCoursework(slug, canViewSetupProgress ? "staff" : "student");
+  const staffLayout = await getCourseworkLayoutForCurrentCoursework(slug, "staff");
+  const studentLayout = await getCourseworkLayoutForCurrentCoursework(slug, "student");
+  const availableModulesForUser = canViewSetupProgress ? staffAvailableModules : studentAvailableModules;
 
   // Fetch module-specific data
   const myRepo: StudentRepoData | null = await get_my_coursework_repo(slug).catch(() => null);
@@ -152,14 +155,18 @@ async function CourseworkPageContent({
       <section className="mb-8 min-h-0 flex-1">
         <CourseworkClient
           initialLayout={savedLayout}
+          staffLayout={staffLayout}
+          studentLayout={studentLayout}
           availableModules={availableCourseworkModules}
+          editableModules={availableModulesForUser}
           saveLayout={saveCourseworkLayoutForCurrentCoursework}
           slug={slug}
-          token={token}
           repos={student_repos_data?.repos || []}
           myRepo={myRepo}
           setupProgressData={setupProgressData}
           courseworkData={courseworkData}
+          layoutType={canViewSetupProgress ? "staff" : "student"}
+          canEditLayouts={canViewSetupProgress}
         />
       </section>
     </>

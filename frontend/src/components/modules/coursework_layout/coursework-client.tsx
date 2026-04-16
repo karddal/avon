@@ -7,18 +7,23 @@ import type { CourseworkModuleKey } from "@/components/modules/coursework_layout
 import CourseworkLayoutEditor from "@/components/modules/coursework_layout/coursework-layout-editor";
 import CourseworkRenderer from "@/components/modules/coursework_layout/coursework-renderer";
 import type { StudentNameAndRepo } from "@/lib/actions/coursework/get_student_repos";
+import { staffAvailableModules, studentAvailableModules } from "@/lib/coursework-layout";
 
 
 type CourseworkClientProps = {
   initialLayout: GridItem[];
+  staffLayout: GridItem[];
+  studentLayout: GridItem[];
   availableModules: CourseworkModuleKey[];
-  saveLayout: (layout: GridItem[], slug: string) => Promise<void>;
+  editableModules: CourseworkModuleKey[];
+  saveLayout: (layout: GridItem[], slug: string, layoutType?: "staff" | "student") => Promise<void>;
   slug: string;
-  token: string;
   repos: StudentNameAndRepo[];
   myRepo: StudentRepoData | null;
   setupProgressData: SetupProgressItem[];
   courseworkData: CourseworkData | null;
+  layoutType: "staff" | "student";
+  canEditLayouts: boolean;
 };
 
 type CourseworkCommit = {
@@ -60,18 +65,22 @@ type CourseworkData = {
 
 export default function CourseworkClient({
   initialLayout,
+  staffLayout,
+  studentLayout,
   availableModules,
+  editableModules,
   saveLayout,
   slug,
-  token,
   repos,
   myRepo,
   setupProgressData,
   courseworkData,
+  layoutType,
+  canEditLayouts,
 }: CourseworkClientProps) {
-  const [layout, setLayout] = useState<GridItem[]>(
-    initialLayout.length > 0 ? initialLayout : defaultCourseworkLayout,
-  );
+  const [staffLayoutState, setStaffLayoutState] = useState<GridItem[]>(staffLayout);
+  const [studentLayoutState, setStudentLayoutState] = useState<GridItem[]>(studentLayout);
+  const [editingLayoutType, setEditingLayoutType] = useState<"staff" | "student">(layoutType);
   const hasMounted = useRef(false);
 
   useEffect(() => {
@@ -80,8 +89,9 @@ export default function CourseworkClient({
       return;
     }
 
+    const currentLayout = editingLayoutType === "staff" ? staffLayoutState : studentLayoutState;
     const timeoutId = window.setTimeout(() => {
-      void saveLayout(layout, slug).catch((error) => {
+      void saveLayout(currentLayout, slug, editingLayoutType).catch((error) => {
         console.error("Failed to save dashboard layout", error);
       });
     }, 400);
@@ -89,24 +99,39 @@ export default function CourseworkClient({
     return () => {
       window.clearTimeout(timeoutId);
     };
-  }, [layout, saveLayout]);
+  }, [staffLayoutState, studentLayoutState, saveLayout, editingLayoutType, slug]);
+
+  // Staff always see staff layout, students always see student layout
+  // editingLayoutType only affects what's being edited in the admin editor popup
+  const currentLayout = canEditLayouts ? staffLayoutState : studentLayoutState;
+  const currentEditableModules = canEditLayouts ? staffAvailableModules : studentAvailableModules;
+
+  const handleTabChange = (newLayoutType: "staff" | "student") => {
+    setEditingLayoutType(newLayoutType);
+  };
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <CourseworkLayoutEditor
-        availableModules={availableModules}
-        layout={layout}
-        onChange={setLayout}
+        staffLayout={staffLayoutState}
+        studentLayout={studentLayoutState}
+        onStaffLayoutChange={setStaffLayoutState}
+        onStudentLayoutChange={setStudentLayoutState}
+        editingLayoutType={editingLayoutType}
+        onEditingLayoutTypeChange={handleTabChange}
+        canEdit={canEditLayouts}
+        slug={slug}
+        saveLayout={saveLayout}
       />
 
       <CourseworkRenderer 
-        layout={layout} 
+        layout={currentLayout} 
         slug={slug} 
-        token={token} 
         repos={repos} 
         myRepo={myRepo} 
         setupProgressData={setupProgressData}
         courseworkData={courseworkData}
+        editableModules={currentEditableModules}
       />
     </div>
   );

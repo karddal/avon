@@ -47,7 +47,7 @@ async function ensureCourseworkLayoutColumnExists(): Promise<void> {
   }
 }
 
-async function getRawCourseworkLayout(courseworkId: string): Promise<string | null> {
+async function getRawCourseworkLayout(courseworkId: string, layoutType: "staff" | "student" = "staff"): Promise<string | null> {
   await ensureCourseworkLayoutColumnExists();
 
   if (isProductionDatabase()) {
@@ -59,7 +59,8 @@ async function getRawCourseworkLayout(courseworkId: string): Promise<string | nu
     const row = result.rows[0] as
       | { coursework_layout: string | null }
       | undefined;
-    return row?.coursework_layout ?? null;
+    const rawLayout = row?.coursework_layout ?? null;
+    return extractLayoutByType(rawLayout, layoutType);
   }
 
   const db = new DatabaseSync(dbPath);
@@ -71,21 +72,47 @@ async function getRawCourseworkLayout(courseworkId: string): Promise<string | nu
     | { coursework_layout: string | null }
     | undefined;
 
-  return result?.coursework_layout ?? null;
+  const rawLayout = result?.coursework_layout ?? null;
+  return extractLayoutByType(rawLayout, layoutType);
 }
 
-export async function getCourseworkLayoutForCurrentCoursework(cw_id: string): Promise<GridItem[]> {
+function extractLayoutByType(rawLayout: string | null, layoutType: "staff" | "student"): string | null {
+  if (!rawLayout) return null;
+
   try {
-    const rawLayout = await getRawCourseworkLayout(cw_id);
-    return parseCourseworkLayout(rawLayout) ?? defaultCourseworkLayout;
+    const parsed = JSON.parse(rawLayout) as unknown;
+    
+    // If it's an object with staff/student keys, extract the appropriate one
+    if (parsed && typeof parsed === "object" && ("staff" in parsed || "student" in parsed)) {
+      const layouts = parsed as Record<string, unknown>;
+      return layouts[layoutType] ? JSON.stringify(layouts[layoutType]) : null;
+    }
+    
+    // Otherwise assume it's a legacy single layout (treat as staff)
+    return layoutType === "staff" ? rawLayout : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function getCourseworkLayoutForCurrentCoursework(cw_id: string, layoutType: "staff" | "student" = "staff"): Promise<GridItem[]> {
+  try {
+    const rawLayout = await getRawCourseworkLayout(cw_id, layoutType);
+    const defaultLayout = layoutType === "staff" 
+      ? (await import("@/lib/coursework-layout")).defaultStaffCourseworkLayout
+      : (await import("@/lib/coursework-layout")).defaultStudentCourseworkLayout;
+    return parseCourseworkLayout(rawLayout) ?? defaultLayout;
   } catch (error) {
     console.error("Failed to load coursework layout from database", error);
-    return defaultCourseworkLayout;
+    const defaultLayout = layoutType === "staff"
+      ? (await import("@/lib/coursework-layout")).defaultStaffCourseworkLayout
+      : (await import("@/lib/coursework-layout")).defaultStudentCourseworkLayout;
+    return defaultLayout;
   }
 }
 
 export async function saveCourseworkLayoutForCurrentCoursework(
-  layout: GridItem[], cw_id: string
+  layout: GridItem[], cw_id: string, layoutType: "staff" | "student" = "staff"
 ): Promise<void> {
   const parsedLayout = parseCourseworkLayout(JSON.stringify(layout));
 
@@ -93,7 +120,39 @@ export async function saveCourseworkLayoutForCurrentCoursework(
     throw new Error("Invalid coursework layout");
   }
 
-  const serializedLayout = JSON.stringify(parsedLayout);
+  // Get existing layout or create new structure
+  const existingRaw = await getRawCourseworkLayout(cw_id, "staff");
+  const existingLayoutStr = existingRaw ? existingRaw : JSON.stringify((await import("@/lib/coursework-layout")).defaultStaffCourseworkLayout);
+  
+  let existingLayout: GridItem[] = [];
+  try {
+    existingLayout = JSON.parse(existingLayoutStr) as GridItem[];
+  } catch {
+    existingLayout = (await import("@/lib/coursework-layout")).defaultStaffCourseworkLayout;
+  }
+
+  // Get student layout
+  const studentRaw = await getRawCourseworkLayout(cw_id, "student");
+  const studentLayoutStr = studentRaw ? studentRaw : JSON.stringify((await import("@/lib/coursework-layout")).defaultStudentCourseworkLayout);
+  
+  let studentLayout: GridItem[] = [];
+  try {
+    studentLayout = JSON.parse(studentLayoutStr) as GridItem[];
+  } catch {
+    studentLayout = (await import("@/lib/coursework-layout")).defaultStudentCourseworkLayout;
+  }
+
+  // Update appropriate layout
+  if (layoutType === "staff") {
+    existingLayout = parsedLayout;
+  } else {
+    studentLayout = parsedLayout;
+  }
+
+  const serializedLayout = JSON.stringify({
+    staff: existingLayout,
+    student: studentLayout,
+  });
 
   await ensureCourseworkLayoutColumnExists();
 

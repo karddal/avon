@@ -4,7 +4,8 @@ import {
 } from "@/components/modules/coursework_layout/coursework-module-registry";
 import type { GridItem } from "@/components/modules/coursework_layout/coursework-types";
 
-export const defaultCourseworkLayout: GridItem[] = [
+// Staff/Admin layout - includes description, information, repo overview, setup progress
+export const defaultStaffCourseworkLayout: GridItem[] = [
   {
     id: "description",
     moduleKey: "description",
@@ -39,9 +40,73 @@ export const defaultCourseworkLayout: GridItem[] = [
   },
 ];
 
+// Student layout - includes description, information, student repo overview, student repo activity, student panel
+export const defaultStudentCourseworkLayout: GridItem[] = [
+  {
+    id: "description",
+    moduleKey: "description",
+    x: 0,
+    y: 0,
+    w: 5,
+    h: 2,
+  },
+  {
+    id: "information",
+    moduleKey: "information",
+    x: 5,
+    y: 0,
+    w: 5,
+    h: 1,
+  },
+  {
+    id: "student_repo_overview",
+    moduleKey: "student_repo_overview",
+    x: 5,
+    y: 1,
+    w: 5,
+    h: 1,
+  },
+  {
+    id: "student_repo_activity",
+    moduleKey: "student_repo_activity",
+    x: 0,
+    y: 2,
+    w: 5,
+    h: 2,
+  },
+  {
+    id: "student_panel",
+    moduleKey: "student_panel",
+    x: 5,
+    y: 2,
+    w: 5,
+    h: 2,
+  },
+];
+
+// For backwards compatibility
+export const defaultCourseworkLayout = defaultStaffCourseworkLayout;
+
 export const availableCourseworkModules = Object.keys(
   courseworkModuleRegistry,
 ) as CourseworkModuleKey[];
+
+// Staff modules - what staff/admins can see
+export const staffAvailableModules: CourseworkModuleKey[] = [
+  "description",
+  "information",
+  "repo_overview",
+  "setup_progress",
+];
+
+// Student modules - what students can see
+export const studentAvailableModules: CourseworkModuleKey[] = [
+  "description",
+  "information",
+  "student_repo_overview",
+  "student_repo_activity",
+  "student_panel",
+];
 
 export function isValidGridItem(value: unknown): value is GridItem {
   if (!value || typeof value !== "object") return false;

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { courseworkModuleRegistry } from "@/components/modules/coursework_layout/coursework-module-registry";
+import type { CourseworkModuleKey } from "@/components/modules/coursework_layout/coursework-module-registry";
 import type { GridItem } from "@/components/modules/coursework_layout/coursework-types";
 import { cn } from "@/lib/utils";
 import type { StudentNameAndRepo } from "@/lib/actions/coursework/get_student_repos";
@@ -45,11 +46,11 @@ type CourseworkData = {
 type CourseworkRendererProps = {
   layout: GridItem[];
   slug: string;
-  token: string;
   repos: StudentNameAndRepo[];
   myRepo: StudentRepoData | null;
   setupProgressData: SetupProgressItem[];
   courseworkData: CourseworkData | null;
+  editableModules: CourseworkModuleKey[];
 };
 
 
@@ -156,11 +157,11 @@ function getResponsiveMdLayout(layout: GridItem[]) {
 export default function CourseworkRenderer({ 
   layout, 
   slug, 
-  token, 
   repos, 
   myRepo, 
   setupProgressData,
-  courseworkData
+  courseworkData,
+  editableModules
 }: CourseworkRendererProps) {
   const [isDesktopLayout, setIsDesktopLayout] = useState(false);
 
@@ -207,7 +208,9 @@ export default function CourseworkRenderer({
           </div>
         ) : null}
 
-        {orderedLayout.map((item) => {
+        {orderedLayout
+          .filter((item) => editableModules.includes(item.moduleKey as CourseworkModuleKey))
+          .map((item) => {
           const moduleDef = courseworkModuleRegistry[item.moduleKey];
           const mdItem = mdLayout.find((entry) => entry.id === item.id);
 
@@ -235,7 +238,6 @@ export default function CourseworkRenderer({
               <div className="h-full min-h-0 overflow-visible lg:overflow-auto">
                 <Component 
                   slug={slug} 
-                  token={token} 
                   repos={repos}
                   myRepo={myRepo}
                   setupProgressData={setupProgressData}

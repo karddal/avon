@@ -1,8 +1,6 @@
 "use client";
 
 import {
-  ChevronDown,
-  ChevronRight,
   Edit,
   GripVertical,
   Plus,
@@ -30,13 +28,20 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import type { CourseworkModuleKey } from "@/components/modules/coursework_layout/coursework-module-registry";
+import { staffAvailableModules, studentAvailableModules } from "@/lib/coursework-layout";
 
 
 
 type CourseworkLayoutEditorProps = {
-  availableModules: CourseworkModuleKey[];
-  layout: GridItem[];
-  onChange: Dispatch<SetStateAction<GridItem[]>>;
+  staffLayout: GridItem[];
+  studentLayout: GridItem[];
+  onStaffLayoutChange: Dispatch<SetStateAction<GridItem[]>>;
+  onStudentLayoutChange: Dispatch<SetStateAction<GridItem[]>>;
+  editingLayoutType: "staff" | "student";
+  onEditingLayoutTypeChange: (layoutType: "staff" | "student") => void;
+  canEdit: boolean;
+  slug: string;
+  saveLayout: (layout: GridItem[], slug: string, layoutType?: "staff" | "student") => Promise<void>;
 };
 
 const GRID_COLUMNS = 10;
@@ -123,13 +128,20 @@ function findFirstOpenSpot(layout: GridItem[]) {
 }
 
 export default function CourseworkLayoutEditor({
-  availableModules,
-  layout,
-  onChange,
+  staffLayout,
+  studentLayout,
+  onStaffLayoutChange,
+  onStudentLayoutChange,
+  editingLayoutType,
+  onEditingLayoutTypeChange,
+  canEdit,
+  slug,
+  saveLayout,
 }: CourseworkLayoutEditorProps) {
-  const setLayout = onChange;
+  const layout = editingLayoutType === "staff" ? staffLayout : studentLayout;
+  const setLayout = editingLayoutType === "staff" ? onStaffLayoutChange : onStudentLayoutChange;
+  const availableModules = editingLayoutType === "staff" ? staffAvailableModules : studentAvailableModules;
 
-  const [showModules, setShowModules] = useState(true);
   const [_showPlacedModules, _setShowPlacedModules] = useState(true);
   const [dragState, setDragState] = useState<DragState>(null);
   const [hoverPreviewRect, setHoverPreviewRect] = useState<
@@ -332,59 +344,74 @@ export default function CourseworkLayoutEditor({
   }
 
   return (
-    <Dialog>
-      <div className="flex w-full justify-end">
-        <DialogTrigger asChild>
-          <Button
-            variant="outline"
-            className="h-9 rounded-xl border px-4 text-sm shadow-sm"
-          >
-            <Edit className="mr-2 h-4 w-4" />
-            Edit Layout
-          </Button>
-        </DialogTrigger>
-      </div>
+    <>
+      {canEdit && (
+        <Dialog>
+          <div className="flex w-full justify-end">
+            <DialogTrigger asChild>
+              <Button
+                variant="outline"
+                className="h-9 rounded-xl border px-4 text-sm shadow-sm"
+              >
+                <Edit className="mr-2 h-4 w-4" />
+                Edit Layout
+              </Button>
+            </DialogTrigger>
+          </div>
 
-      <DialogContent className="max-w-full! w-full max-h-full! overflow-y-auto border-none bg-transparent p-0 shadow-none lg:max-h-[82vh]! lg:max-w-[86%]! xl:max-w-[80%]!">
-        <div className="flex w-full flex-col-reverse items-stretch justify-center gap-4 lg:flex-row">
-          <div className="flex flex-col justify-between bg-background shadow-lg lg:max-h-[82vh] lg:basis-[34%] lg:min-w-[320px]">
-            <div className="p-6 pb-0">
-              <DialogHeader>
-                <DialogTitle className="text-lg">Dashboard Layout</DialogTitle>
-                <DialogDescription className="text-sm">
-                  Drag modules on the preview to move them. Drag the corner
-                  handle to resize. Items snap to the 3x3 grid and cannot
-                  overlap.
-                </DialogDescription>
-              </DialogHeader>
-            </div>
+          <DialogContent className="max-w-full! w-full max-h-full! overflow-y-auto border-none bg-transparent p-0 shadow-none lg:max-h-[82vh]! lg:max-w-[86%]! xl:max-w-[80%]!">
+            <div className="flex w-full flex-col-reverse items-stretch justify-center gap-4 lg:flex-row">
+              <div className="flex flex-col justify-between bg-background shadow-lg lg:max-h-[82vh] lg:basis-[34%] lg:min-w-[320px]">
+                <div className="p-6 pb-0">
+                  <DialogHeader>
+                    <DialogTitle className="text-lg">Dashboard Layout</DialogTitle>
+                    <div className="mt-4 flex items-center gap-1 border-b">
+                      <button
+                        type="button"
+                        onClick={() => onEditingLayoutTypeChange("staff")}
+                        className={cn(
+                          "px-4 py-2 text-sm font-medium border-b-2 transition-colors",
+                          editingLayoutType === "staff"
+                            ? "border-b-primary text-primary"
+                            : "border-b-transparent text-muted-foreground hover:text-foreground"
+                        )}
+                      >
+                        Staff Layout
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onEditingLayoutTypeChange("student")}
+                        className={cn(
+                          "px-4 py-2 text-sm font-medium border-b-2 transition-colors",
+                          editingLayoutType === "student"
+                            ? "border-b-primary text-primary"
+                            : "border-b-transparent text-muted-foreground hover:text-foreground"
+                        )}
+                      >
+                        Student Layout
+                      </button>
+                    </div>
+                    <DialogDescription className="text-sm">
+                      Drag modules on the preview to move them. Drag the corner
+                      handle to resize. Items snap to the 3x3 grid and cannot
+                      overlap.
+                    </DialogDescription>
+                  </DialogHeader>
+                </div>
 
             <div className="overflow-y-auto px-6">
               <div className="space-y-5">
                 <div className="space-y-2 pt-5">
-                  <button
-                    type="button"
-                    onClick={() => setShowModules(!showModules)}
-                    className="flex w-full items-center gap-2 transition-opacity hover:opacity-80"
-                  >
-                    {showModules ? (
-                      <ChevronDown className="h-4 w-4" />
-                    ) : (
-                      <ChevronRight className="h-4 w-4" />
-                    )}
-                    <div className="text-left">
-                      <DialogTitle className="text-sm font-medium">
-                        Available Modules
-                      </DialogTitle>
-                      <p className="text-xs text-muted-foreground">
-                        Add modules into the dashboard layout.
-                      </p>
-                    </div>
-                  </button>
-
-                  {showModules && (
-                    <div className="space-y-2 pl-5">
-                      <div className="grid max-h-52 grid-cols-1 gap-2 overflow-y-auto border bg-accent p-3 md:grid-cols-2">
+                  <div className="text-left">
+                    <DialogTitle className="text-sm font-medium">
+                      Available Modules
+                    </DialogTitle>
+                    <p className="text-xs text-muted-foreground">
+                      Add modules into the dashboard layout.
+                    </p>
+                  </div>
+                  <div className="space-y-2 pl-5">
+                    <div className="grid max-h-52 grid-cols-1 gap-2 overflow-y-auto border bg-accent p-3 md:grid-cols-2">
                         {remainingModules.length === 0 ? (
                           <div className="col-span-full border border-dashed bg-background p-3 text-xs text-muted-foreground">
                             All modules have already been placed.
@@ -404,9 +431,8 @@ export default function CourseworkLayoutEditor({
                             </Card>
                           ))
                         )}
-                      </div>
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -518,6 +544,8 @@ export default function CourseworkLayoutEditor({
           </div>
         </div>
       </DialogContent>
-    </Dialog>
+        </Dialog>
+      )}
+    </>
   );
 }
