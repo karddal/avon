@@ -46,8 +46,8 @@ build-fe:
     npm run build
 
 test-be:
-	@echo "Testing backend routers..."
-	uv run pytest -v
+    @echo "Testing backend routers..."
+    uv run pytest -v
 
 run-fe env = "dev":
     npm run {{env}}
@@ -56,7 +56,7 @@ test-fe:
     @echo "Testing frontend..."
     npm test
 
-test: 
+test:
     just fe test
     just be test
 
@@ -83,16 +83,8 @@ serve-doc:
 
 [windows]
 seed-db env = "dev":
-    $env:APP_ENV="{{env}}"; uv run python -m app.cli.manage seeding
+    $env:APP_ENV="{{env}}"; uv run python -m app.cli.manage seed
 
 [unix]
 seed-db env = "dev":
-    APP_ENV={{env}} uv run python -m app.cli.manage seeding
-
-[windows]
-seeding-db env = "dev":
-    $env:APP_ENV="{{env}}"; uv run python -m app.cli.manage seeding
-
-[unix]
-seeding-db env = "dev":
-    APP_ENV={{env}} uv run python -m app.cli.manage seeding
+    APP_ENV={{env}} uv run python -m app.cli.manage seed

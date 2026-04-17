@@ -96,7 +96,11 @@ async function CourseworkPageContent({
       )}
       <section className="mb-8 grid min-h-0 grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         <div className="flex h-full flex-col gap-4 md:col-span-2 xl:col-span-2 xl:h-64">
-          <Card id="coursework-description" className="h-full min-h-0">
+          <Card
+            id="coursework-description"
+            data-cy="coursework-description-section"
+            className="h-full min-h-0"
+          >
             <CardHeader>
               <CardTitle>
                 <div className="text-2xl flex flex-row gap-2 items-center">

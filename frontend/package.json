@@ -14,7 +14,7 @@
     "cy:run": "cypress run",
     "test": "npm run db:seed && cross-env APP_ENV=test CI_MODE=True TESTING_MODE=True TEST_FIXTURE_KEY=sep-test-fixture-key NEXT_PUBLIC_API_URL=http://localhost:8000 NEXT_PUBLIC_CDN_PATH= BETTER_AUTH_SECRET=wwZgZ19qBU3L0Rxf4oVzAbpw7xkmDOLG BETTER_AUTH_URL=https://localhost:3000 npm run build && npm run test:run",
     "test:run": "cross-env APP_ENV=test CI_MODE=True TESTING_MODE=True TEST_FIXTURE_KEY=sep-test-fixture-key NEXT_PUBLIC_API_URL=http://localhost:8000 NEXT_PUBLIC_CDN_PATH= BETTER_AUTH_SECRET=wwZgZ19qBU3L0Rxf4oVzAbpw7xkmDOLG BETTER_AUTH_URL=https://localhost:3000 tsx src/scripts/run-test-stack.ts",
-    "db:seed": "cd ../backend && cross-env APP_ENV=test DATABASE_URL=sqlite:///../sqlite.db uv run python -m app.cli.manage seeding"
+    "db:seed": "cd ../backend && cross-env APP_ENV=test DATABASE_URL=sqlite:///../sqlite.db uv run python -m app.cli.manage seed"
   },
   "dependencies": {
     "16": "^0.0.2",
@@ -38,6 +38,7 @@
     "@radix-ui/react-toggle-group": "^1.1.11",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@tanstack/react-table": "^8.21.3",
+    "@tanstack/table-core": "^8.21.3",
     "@types/better-sqlite3": "^7.6.13",
     "@types/pg": "^8.16.0",
     "axios": "^1.13.2",

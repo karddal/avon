@@ -112,7 +112,7 @@ export default function LecturerDropdown({
         <DropDrawerTrigger
           data-cy="unit-dropdown"
           id="unit-dropdown"
-          className="border hover:bg-accent hover:transition p-2"
+          className="border p-2 hover:bg-accent hover:transition"
         >
           <Menu size={32} />
         </DropDrawerTrigger>
@@ -137,7 +137,7 @@ export default function LecturerDropdown({
                 <DropDrawerLabel>Manage</DropDrawerLabel>
                 <DropDrawerItem
                   onSelect={() => setShowEdit(true)}
-                  data-cy="unit-edit"
+                  data-cy="unit-edit-menu-item"
                   icon={<SquarePen />}
                 >
                   Edit unit
@@ -174,7 +174,7 @@ export default function LecturerDropdown({
                   ? setShowLock(true)
                   : setShowUnlock(true)
               }
-              className="group flex items-center cursor-pointer"
+              className="group flex cursor-pointer items-center"
             >
               {unit_update_data.unlocked ? (
                 <>
