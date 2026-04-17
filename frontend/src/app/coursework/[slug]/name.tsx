@@ -59,11 +59,13 @@ export default async function CourseworkName({
   const courseworkUnit: courseworkUnitData = await unitRes.json();
 
   return (
-    <div className="flex items-center gap-3">
+    <div data-cy="coursework-title" className="flex items-center gap-3">
       <Link href={`/units/${courseworkUnit.unit_id}`} className="shrink-0">
         <Undo2 className="h-7 w-7" />
       </Link>
-      <div className="text-3xl lg:text-5xl">{coursework.name}</div>
+      <div className="text-3xl lg:text-5xl">
+        <span className="font-light">{coursework.code}</span> {coursework.name}
+      </div>
     </div>
   );
 }

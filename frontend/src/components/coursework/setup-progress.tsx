@@ -9,9 +9,7 @@ interface setupProgress {
 export default async function SetupProgress({ cw_id }: setupProgress) {
   const steps = await cw_setup_progress(cw_id);
   return (
-    // Need to use reusable components for the buttons and sections, just place with names or smth
-    // Add links to each one and actually do backend for it as well
-    <Card className="h-full">
+    <Card data-cy="coursework-setup-progress" className="h-full">
       <CardHeader className="flex flex-col ">
         <CardTitle>
           <div className="text-2xl flex flex-row items-center gap-2">

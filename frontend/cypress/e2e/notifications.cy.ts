@@ -31,6 +31,7 @@ describe("Notifications", () => {
     cy.contains("button", "Send").click();
     cy.contains("Notification sent.").should("be.visible");
 
+    cy.clearAuthSession();
     cy.login("rohan@bris.ac.uk", "changeme", true);
     openNotifications();
     cy.contains('[role="tab"]', "Imperative and Functional Programming").should(
