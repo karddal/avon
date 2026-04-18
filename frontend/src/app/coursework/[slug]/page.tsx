@@ -1,43 +1,24 @@
+import { Info } from "lucide-react";
 import { Suspense } from "react";
+import { CourseworkDeadlineBannerFromSlug } from "@/components/coursework/coursework-banner";
 import CourseworkLectDropdown from "@/components/coursework/coursework-lect-dropdown";
+import CourseworkRepoOverview from "@/components/coursework/coursework-repo-overview";
+import CourseworkStudentPanel from "@/components/coursework/coursework-student-panel";
 import SetupProgress from "@/components/coursework/setup-progress";
+import StudentRepoActivity from "@/components/coursework/student-repo-activity";
+import StudentRepoOverview from "@/components/coursework/student-repo-overview";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getRequestJWT, requireSession } from "@/lib/auth-utils";
+import { get_base_images_cw_specific } from "@/lib/actions/coursework/get_base_images_cw_specific";
+import { get_coursework_scopes } from "@/lib/actions/coursework/get_coursework_scopes";
+import { get_cw_update_data } from "@/lib/actions/coursework/get_coursework_update_data";
+import { get_cw_engine_data } from "@/lib/actions/coursework/get_cw_engine_data";
+import { get_student_repos } from "@/lib/actions/coursework/get_student_repos";
+import { getRequestJWT } from "@/lib/auth-utils";
 import Loading from "../loading";
 import CourseworkDescription from "./description";
 import CourseworkInformation from "./information";
 import CourseworkName from "./name";
-
-type CourseworkUpdateReqResponse = {
-  id: string;
-  name: string;
-  description?: string;
-  unit_id: string;
-  due_date: string;
-  creation_date: string;
-  colour: string;
-  unit_name: string;
-  unit_code: string;
-  gitlabId: string;
-  templateId: string;
-  max_end_date: string;
-};
-
-type CourseworkUpdateData = {
-  id: string;
-  name: string;
-  description?: string;
-  unit_id: string;
-  due_date: string;
-  creation_date: string;
-  colour: string;
-  unit_name: string;
-  unit_code: string;
-  gitlabId: string;
-  templateId: string;
-  max_end_date: Date;
-};
 
 async function CourseworkPageContent({
   params,
@@ -46,48 +27,39 @@ async function CourseworkPageContent({
 }) {
   const p = await params;
   const slug = p.slug;
-  console.log("CW", slug);
-  const s = await requireSession();
   const token = await getRequestJWT();
-  const me = s.user.role;
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/coursework/${slug}/update_form_data`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      cache: "no-cache",
-    },
-  );
-  const c: CourseworkUpdateReqResponse = await response.json();
-  const end = new Date(c.max_end_date);
-  const data: CourseworkUpdateData = {
-    id: c.id,
-    name: c.name,
-    description: c.description,
-    unit_id: c.unit_id,
-    due_date: c.due_date,
-    creation_date: c.creation_date,
-    colour: c.colour,
-    unit_name: c.unit_name,
-    unit_code: c.unit_code,
-    gitlabId: c.gitlabId,
-    templateId: c.templateId,
-    max_end_date: end,
-  };
   // Hardcoded the template id here, when merged, I should be able to get the template id from jack's code
-  const gitlab_data = {
-    name: c.name,
-    coursework_id: c.id,
-    template_id: String(data.templateId),
-  };
+
+  const scopes: Set<string> = await get_coursework_scopes(slug);
+  const canViewSetupProgress =
+    scopes.has("unit:coursework_manage") ||
+    scopes.has("unit:coursework_gitlab") ||
+    scopes.has("unit:coursework_engine") ||
+    scopes.has("unit:coursework_delete");
+  const canViewStudentRepos = scopes.has("unit:coursework_engine");
+  const canLoadCourseworkTools = scopes.has("unit:coursework_manage");
+  const data = canLoadCourseworkTools
+    ? await get_cw_update_data(slug)
+    : undefined;
+
+  const canGetAvailImages = scopes.has("unit:coursework_engine");
+
+  const student_repos_data = canViewStudentRepos
+    ? await get_student_repos({ coursework_id: slug })
+    : undefined;
+
+  const images = canGetAvailImages
+    ? await get_base_images_cw_specific({ coursework_id: slug })
+    : undefined;
+  const cw_engine_data = canGetAvailImages
+    ? await get_cw_engine_data({ coursework_id: slug })
+    : undefined;
 
   return (
     <>
       {/* Header */}
-      <div className="flex flex-col col-span-3 min-h-0">
-        <div className="font-semibold text-5xl text-shadow-2xs">
+      <div className="flex flex-col col-span-3">
+        <div className="font-semibold text-5xl text-shadow-2xs mt-2">
           <Suspense
             fallback={
               <div className={"h-16"}>
@@ -97,56 +69,95 @@ async function CourseworkPageContent({
           >
             <div
               className={
-                "flex flex-row gap-4 justify-between items-center mt-4 flex-wrap"
+                "flex flex-row gap-4 justify-between items-center my-2"
               }
             >
               <CourseworkName slug={slug} token={token} />
-              {(me === "lecturer" || me === "admin") && (
-                <CourseworkLectDropdown
-                  _me={me}
-                  slug={slug}
-                  coursework_update_data={data}
-                  gitlab_data={gitlab_data}
-                ></CourseworkLectDropdown>
-              )}
+              <CourseworkLectDropdown
+                slug={slug}
+                scopes={scopes}
+                coursework_update_data={data}
+                avail_images_data={images?.images}
+                cw_engine_data={cw_engine_data}
+              ></CourseworkLectDropdown>
             </div>
           </Suspense>
         </div>
       </div>
-
-      <section className="grid gap-4 grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 min-h-0 mb-2">
-        <div className="flex flex-col gap-4 col-span-3 lg:col-span-2">
-          <Card>
+      {!canViewSetupProgress && (
+        <Suspense>
+          <CourseworkDeadlineBannerFromSlug
+            slug={slug}
+            token={token}
+            warningThreshold={7}
+          />
+        </Suspense>
+      )}
+      <section className="mb-8 grid min-h-0 grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="flex h-full flex-col gap-4 md:col-span-2 xl:col-span-2 xl:h-64">
+          <Card id="coursework-description" className="h-full min-h-0">
             <CardHeader>
               <CardTitle>
-                <div className="text-2xl">Description</div>
+                <div className="text-2xl flex flex-row gap-2 items-center">
+                  <Info />
+                  Description
+                </div>
                 <div className="font-light">
                   Information about the coursework.
                 </div>
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="min-h-0 flex-1">
               <Suspense>
                 <CourseworkDescription slug={slug} token={token} />
               </Suspense>
             </CardContent>
           </Card>
         </div>
-        <div className="col-span-3 lg:col-span-1">
+        <div
+          id="coursework-information"
+          className="h-full md:col-span-2 xl:col-span-1 xl:h-64"
+        >
           <Suspense>
             <CourseworkInformation slug={slug} token={token} />
           </Suspense>
         </div>
-
-        {/*
-        TODO: In the future, this should check the backend to ensure that they are a lecturer on this specific unit. For now this is okay for the demo, but this
-        needs to be fixed because a lect could be a student on a nother unit.
-          */}
-        {(me === "admin" || me === "lecturer") && (
-          <div className="flex flex-col col-span-3 min-h-0">
+        <div
+          id="coursework-repos"
+          className="h-full md:col-span-2 xl:col-span-2"
+        >
+          {canViewSetupProgress ? (
+            canViewStudentRepos && student_repos_data ? (
+              <CourseworkRepoOverview repos={student_repos_data?.repos} />
+            ) : (
+              <></>
+            )
+          ) : (
             <Suspense>
-              <SetupProgress cw_id={data.id} />
+              <StudentRepoOverview courseworkId={slug} />
             </Suspense>
+          )}
+        </div>
+        <div
+          id="coursework-activity"
+          className="h-full md:col-span-2 xl:col-span-1"
+        >
+          {canViewSetupProgress ? (
+            <Suspense>
+              <SetupProgress cw_id={slug}></SetupProgress>
+            </Suspense>
+          ) : (
+            <Suspense>
+              <StudentRepoActivity courseworkId={slug} />
+            </Suspense>
+          )}
+        </div>
+        {!canViewSetupProgress && (
+          <div
+            id="coursework-students"
+            className="mb-8 h-full pb-4 md:col-span-2 md:mb-10 xl:col-span-3 xl:mb-16"
+          >
+            <CourseworkStudentPanel />
           </div>
         )}
       </section>

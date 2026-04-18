@@ -9,9 +9,11 @@ description = "FastAPI backend"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "aioboto3>=15.5.0",
     "bcrypt<5",
     "beautifulsoup4>=4.14.3",
     "cryptography>=46.0.3",
+    "dotenv>=0.9.9",
     "fastapi[standard-no-fastapi-cloud-cli]>=0.121.0",
     "httpx>=0.28.1",
     "passlib>=1.7.4",
@@ -21,6 +23,7 @@ dependencies = [
     "pyjwt>=2.10.1",
     "pytest>=8.4.2",
     "pytest-asyncio>=1.3.0",
+    "python-gitlab>=8.1.0",
     "python-jose>=3.5.0",
     "sqlmodel>=0.0.27",
     "uvicorn>=0.30.0",
@@ -30,6 +33,8 @@ dependencies = [
 dev = [
     "pytest>=8.4.2",
     "ruff>=0.14.4",
+    "ty>=0.0.24",
+    "types-aioboto3[ec2,ecs,sqs]>=15.5.0",
 ]
 
 [tool.setuptools]
@@ -42,6 +47,5 @@ include = ["app*"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = ["F401"]
-

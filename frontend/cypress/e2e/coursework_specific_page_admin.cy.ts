@@ -2,7 +2,7 @@ import "cypress-real-events";
 
 describe("Coursework page", () => {
   before(() => {
-    cy.exec("npm run db:seed");
+    cy.resetDb();
   });
 
   beforeEach(() => {
@@ -49,17 +49,27 @@ describe("Coursework page", () => {
 
   it("Admin can edit a coursework name", () => {
     cy.visit("/coursework");
-    cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
+    cy.contains('a[href^="/coursework/"]', "Encrypt").click();
+
     cy.get('[data-cy="coursework-lect-dropdown"]').click();
     cy.get('[data-state="open"]')
       .find('[data-slot="dropdown-menu-item"]')
       .contains("Edit coursework")
       .click();
-    cy.get('[name="name"]').clear().type("Encrypt 2");
+
+    cy.get('[name="name"]')
+      .should("be.visible")
+      .should("have.value", "Encrypt")
+      .click()
+      .clear()
+      .should("have.value", "")
+      .type("Encrypt 2")
+      .should("have.value", "Encrypt 2");
+
     cy.get(".mt-auto > .flex > .inline-flex").click();
-    // cy.wait(5000);
+
     cy.visit("/coursework");
-    cy.get("p").contains("Encrypt 2").should("be.visible");
+    cy.contains("p", "Encrypt 2").should("be.visible");
   });
 
   it("Admin can edit a coursework description", () => {

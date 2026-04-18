@@ -1,3 +1,4 @@
+2025-ContinuousAssessment.code-workspace
 # MacOS
 .DS_Store
 .AppleDouble
@@ -49,3 +50,6 @@ node_modules/
 
 # frontend cypress
 /frontend/cypress/screenshots
+
+
+.zed

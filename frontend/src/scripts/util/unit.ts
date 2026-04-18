@@ -1,36 +1,29 @@
 "use server";
 
-type createUnitReq = {
+import { fixtureRequest } from "@/scripts/util/fixture-api";
+
+type CreateUnitRequest = {
   name: string;
   description: string;
   unit_code: string;
   colour: string;
   programme_id: string;
+  owner: string;
+  unlocked: boolean | null;
 };
 
-export async function create_unit(req: createUnitReq) {
-  "use server";
-  console.log(req);
-  const r = await fetch(`http://localhost:8000/units/create`, {
-    method: "POST",
-    credentials: "include",
-    body: JSON.stringify(req),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+export type CreatedUnit = {
+  id: string;
+  name: string;
+  description: string;
+  creation_date: string;
+  unit_code: string;
+  colour: string;
+  programme_id: string;
+};
 
-  if (!r.ok) {
-    const json = await r.json();
-    return {
-      success: false,
-      data: json,
-    };
-  } else {
-    const json = await r.json();
-    return {
-      success: true,
-      data: json,
-    };
-  }
+export async function create_unit(req: CreateUnitRequest) {
+  return fixtureRequest<CreatedUnit>("/testing/fixtures/units", {
+    body: JSON.stringify(req),
+  });
 }

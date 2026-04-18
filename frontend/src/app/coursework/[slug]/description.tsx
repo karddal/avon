@@ -26,7 +26,7 @@ export default async function CourseworkDescription({
     `${process.env.NEXT_PUBLIC_API_URL}/coursework/${slug}`,
     {
       headers: {
-        Cookie: `access_token=${token}`,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     },
@@ -38,7 +38,7 @@ export default async function CourseworkDescription({
   const coursework: courseworkData = await res.json();
 
   return (
-    <div className="flex flex-col overflow-y-auto wrap-break-word h-32 border bg-accent p-2">
+    <div className="h-full overflow-y-auto whitespace-pre-wrap wrap-break-word rounded-md border bg-accent p-3">
       {coursework.description ? (
         <div className="prose prose-sm max-w-none dark:prose-invert">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>

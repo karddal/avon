@@ -1,6 +1,7 @@
 import UserCard from "@/components/user-card";
-import { get_user_image_from_id } from "@/lib/actions/get_image";
-import { get_username_from_id } from "@/lib/actions/get_username";
+import { get_username_from_id } from "@/lib/actions/auth/get_username";
+import { get_user_image_from_id } from "@/lib/actions/coursework/get_image";
+import { get_owner_of_unit } from "@/lib/actions/unit/get_owner_of_unit";
 import { getRequestJWT } from "@/lib/auth-utils";
 
 type Response = {
@@ -11,6 +12,7 @@ type Lecturer = {
   id: string;
   name: string;
   image: string;
+  role: boolean;
 };
 
 export default async function Lecturers({ unit_id }: { unit_id: string }) {
@@ -30,17 +32,20 @@ export default async function Lecturers({ unit_id }: { unit_id: string }) {
   const lecturerResponse: Response = await response.json();
   const lecturers = lecturerResponse.lecturers;
 
+  const owner = await get_owner_of_unit(unit_id);
+  console.log("OWNER", owner);
+
   if (lecturers === undefined) {
     return <></>;
   }
 
   const results: Lecturer[] = [];
   for (const lecturer of lecturers) {
-    console.log(lecturer);
     results.push({
       id: lecturer,
       name: await get_username_from_id(lecturer),
       image: await get_user_image_from_id(lecturer),
+      role: lecturer === owner,
     });
   }
 
@@ -52,6 +57,7 @@ export default async function Lecturers({ unit_id }: { unit_id: string }) {
           name={lecturer.name}
           id={lecturer.id}
           image={lecturer.image}
+          user_role={lecturer.role}
         ></UserCard>
       ))}
     </div>

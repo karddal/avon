@@ -17,7 +17,7 @@ CREATE TABLE programme (
 
 -- "user" definition
 
-CREATE TABLE "user" ("id" text not null primary key, "name" text not null, "email" text not null unique, "emailVerified" integer not null, "image" text, "createdAt" date not null, "updatedAt" date not null, "role" text, "banned" integer, "banReason" text, "banExpires" date);
+CREATE TABLE "user" ("id" text not null primary key, "name" text not null, "email" text not null unique, "emailVerified" integer not null, "image" text, "createdAt" date not null, "updatedAt" date not null, "role" text, "banned" integer, "banReason" text, "banExpires" date, "dashboard_layout" text);
 
 -- "notification" definition
 CREATE TABLE "notification" ("id" UUID not null primary key, "recipient_id" VARCHAR not null, "unit_id" UUID, "title" text not null, "body" text not null, "created_at" TIMESTAMP not null, "viewed" boolean not null);
@@ -54,6 +54,7 @@ CREATE TABLE unit (
                       colour VARCHAR NOT NULL,
                       programme_id UUID NOT NULL,
                       gitlab_id VARCHAR NOT NULL,
+                      unlocked BOOLEAN NOT NULL,
                       PRIMARY KEY (id),
                       FOREIGN KEY(programme_id) REFERENCES programme (id) ON DELETE CASCADE
 );
@@ -73,7 +74,16 @@ CREATE TABLE unitenrollment (
                                 FOREIGN KEY(unit_id) REFERENCES unit (id)
 );
 
+-- base image definition
 
+CREATE TABLE baseimage (
+    id UUID NOT NULL,
+    name VARCHAR NOT NULL,
+    description VARCHAR NOT NULL,
+    task_definition VARCHAR NOT NULL,
+    is_active BOOLEAN NOT NULL,
+    PRIMARY KEY (id)
+);
 -- coursework definition
 
 CREATE TABLE coursework (
@@ -86,8 +96,60 @@ CREATE TABLE coursework (
                             colour VARCHAR NOT NULL,
                             gitlab_id VARCHAR NOT NULL,
                             template_id INTEGER,
+                            base_image_id UUID,
+                            tester_command VARCHAR,
                             PRIMARY KEY (id),
-                            FOREIGN KEY(unit_id) REFERENCES unit (id) ON DELETE CASCADE
+                            CONSTRAINT unit_id
+                                FOREIGN KEY (unit_id) REFERENCES unit (id)
+                                ON DELETE CASCADE,
+                            CONSTRAINT base_image_id
+                                FOREIGN KEY (base_image_id) REFERENCES baseimage (id)
+);
+
+-- testrun definition
+CREATE TABLE testrun (
+    id UUID NOT NULL PRIMARY KEY,
+    coursework_id UUID NOT NULL,
+    ecs_task_arn VARCHAR NOT NULL,
+    git_url VARCHAR NOT NULL,
+    task_def VARCHAR NOT NULL,
+    gitlab_repo_id VARCHAR NOT NULL,
+    started_by VARCHAR NOT NULL,
+    batch_id UUID NOT NULL,
+    tester_command VARCHAR NOT NULL,
+    status VARCHAR NOT NULL,
+    dispatched_at DATE NOT NULL,
+    completed_at DATE,
+    trigger VARCHAR NOT NULL,
+    created_at DATE NOT NULL,
+    notifications_enabled BOOLEAN NOT NULL,
+    CONSTRAINT coursework_id
+        FOREIGN KEY (coursework_id) REFERENCES coursework (id)
+        ON DELETE CASCADE
+);
+
+--testrunresult definition
+CREATE TABLE testrunresult(
+    test_run_id UUID PRIMARY KEY,
+    exit_code INT NOT NULL,
+    log_s3_uri VARCHAR,
+    received_at DATE NOT NULL,
+    CONSTRAINT test_run_id
+        FOREIGN KEY (test_run_id) REFERENCES testrun(id)
+        ON DELETE CASCADE
+);
+
+-- student repo definition
+
+CREATE TABLE studentrepo (
+    student_id VARCHAR NOT NULL,
+    repo_url VARCHAR NOT NULL,
+    cw_id UUID NOT NULL,
+    gl_repo_id VARCHAR NOT NULL,
+    PRIMARY KEY (student_id, cw_id),
+    CONSTRAINT cw_id
+        FOREIGN KEY (cw_id) REFERENCES coursework(id)
+        ON DELETE CASCADE
 );
 
 CREATE INDEX ix_coursework_name ON coursework (name);

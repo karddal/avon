@@ -1,13 +1,33 @@
 
 from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
 
-from app.core.helpers.gitlab import gl_create_fork, gl_create_project, gl_create_skeleton_code, gl_create_template_group, gl_create_template_project, gl_delete_project, gl_delete_projects, gl_get_project, gl_get_projects
+from app.core.helpers.gitlab import (
+    gl_create_fork,
+    gl_create_project,
+    gl_create_skeleton_code,
+    gl_create_template_group,
+    gl_create_template_project,
+    gl_delete_project,
+    gl_delete_projects,
+    gl_get_project,
+    gl_get_projects,
+)
 from app.db.session import get_session
 from app.models.coursework import Coursework
+from app.models.student_repo import StudentRepo
 from app.models.unit_enrollment import UnitEnrollment
-from app.schemas.project import ProjectCreate, ProjectFork, ProjectRead, ProjectSkeleton, ProjectsInCoursework, TemplateCreate
+from app.schemas.project import (
+    CreateProjectForkForSpecificStudent,
+    ProjectCreate,
+    ProjectFork,
+    ProjectRead,
+    ProjectsInCoursework,
+    ProjectSkeleton,
+    TemplateCreate,
+)
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 session_dependency = Annotated[Session, Depends(get_session)]
@@ -23,16 +43,16 @@ async def create_templates(template: TemplateCreate, session: session_dependency
     try:
         gl_template_group = await gl_create_template_group(gitlab_id)
     except Exception:
-        raise HTTPException(                
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Template could not be created"
         )
 
     try:
         await gl_create_template_project(gl_template_group["gitlabGroupId"])
     except Exception:
-        raise HTTPException(                
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Template could not be created"
         )
 
@@ -55,7 +75,7 @@ async def create_projects(project: ProjectCreate, session: session_dependency):
             await gl_create_project(name, student, gitlab_id, project.template_group_id, project.template_id)
         except Exception:
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Project for the student: " + student + " could not be created."
             )
     # Get the number of students enrolled onto a unit, by the courseworkid courseworkid -> unit -> unit_enrollement
@@ -76,18 +96,85 @@ async def create_fork(project: ProjectFork, session: session_dependency):
     statement = select(UnitEnrollment.user_id).where((UnitEnrollment.unit_id == unit_id) & (UnitEnrollment.type == "student"))
     students_enrolled = session.exec(statement).all()
 
+    # check whether any student repos already exist. if so bail out early
+    if session.exec(select(StudentRepo).where(StudentRepo.cw_id == project.coursework_id)).first():
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Some student repos have alrady been provisioned."
+        )
+
     for student in students_enrolled:
         try:
             # Call helper function to create project
-            await gl_create_fork(name, user_id=student, group_id=gitlab_id, template_id=project.template_id)
+            # create student_repo entry for each
+
+            data = await gl_create_fork(name, user_id=student, group_id=gitlab_id, template_id=project.template_id)
+            http_url_to_repo = data["http_url_to_repo"]
+
+            # we first check whether there is already a student repo db entry for this student
+            # if there is we delete it first
+
+            db_exists = session.exec(select(StudentRepo).where((StudentRepo.student_id == student) & (StudentRepo.cw_id == project.coursework_id))).first()
+            if db_exists:
+                session.delete(db_exists)
+                session.flush()
+
+            db_student_repo = StudentRepo(student_id=student, repo_url=http_url_to_repo, cw_id=project.coursework_id, gl_repo_id=data["id"])
+            session.add(db_student_repo)
+
         except Exception:
+
             raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Project for the student: " + student + " could not be created."
             )
+    session.commit()
     # Get the number of students enrolled onto a unit, by the courseworkid courseworkid -> unit -> unit_enrollement
     # Make an API call to gitlab to create a project using a helper function for those many students
-    return {"unit id": students_enrolled} 
+    return {"unit id": students_enrolled}
+
+@router.post("/create-fork-for-student", status_code=status.HTTP_201_CREATED)
+async def create_fork_specific_student(project: CreateProjectForkForSpecificStudent, session: session_dependency):
+    statement = select(Coursework.unit_id, Coursework.name, Coursework.gitlab_id).where(Coursework.id == project.coursework_id)
+    cw_object = session.exec(statement).first()
+    unit_id, name, gitlab_id = cw_object
+
+    created = []
+    failed = []
+    # Get the student enrollment
+    for student in project.student_ids:
+        try:
+            # Call helper function to create project
+            # create student_repo entry for each
+
+            # check whether student is actually enrolled in the unit
+            if not session.exec(select(UnitEnrollment).where((UnitEnrollment.unit_id == unit_id) & (UnitEnrollment.user_id == student) & (UnitEnrollment.type == "student"))).first():
+                return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Could not find that student")
+
+            data = await gl_create_fork(name, user_id=student, group_id=gitlab_id, template_id=project.template_id)
+            http_url_to_repo = data["http_url_to_repo"]
+            repo_id = data["id"]
+
+            # we first check whether there is already a student repo db entry for this student
+            # if there is we delete it first
+
+            db_exists = session.exec(select(StudentRepo).where((StudentRepo.student_id == student) & (StudentRepo.cw_id == project.coursework_id))).first()
+            if db_exists:
+                session.delete(db_exists)
+                session.flush()
+
+            db_student_repo = StudentRepo(student_id=student, repo_url=http_url_to_repo, cw_id=project.coursework_id, gl_repo_id=repo_id)
+            session.add(db_student_repo)
+            created.append(student)
+
+        except Exception:
+            # gitlab error occurred probably
+            # we don't save that student as created.
+            failed.append(student)
+    session.commit()
+    # Get the number of students enrolled onto a unit, by the courseworkid courseworkid -> unit -> unit_enrollement
+    # Make an API call to gitlab to create a project using a helper function for those many students
+    return {"created": created, "failed": failed}
 
 @router.get("/{project_id}", response_model=ProjectRead)
 async def get_specific_project(project_id: int):

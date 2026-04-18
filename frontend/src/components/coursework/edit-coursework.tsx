@@ -23,6 +23,7 @@ import {
 import { Input } from "@/components/ui/input";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
   SheetFooter,
@@ -41,19 +42,9 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { HexColorInput, HexColorPicker } from "react-colorful";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Spinner } from "@/components/ui/spinner";
-import { update_coursework } from "@/lib/actions/update_coursework";
+import { update_coursework } from "@/lib/actions/coursework/update_coursework";
 
 interface FormProps {
   coursework_update_data: CourseworkUpdateData;
@@ -109,28 +100,15 @@ export default function EditCoursework({
       ),
   });
 
-  const editDefaultValues = useMemo(
-    () => ({
-      name: coursework_update_data.name ?? "",
-      description: coursework_update_data.description ?? "",
-      due_date: new Date(coursework_update_data.due_date),
-      color: `#${coursework_update_data.colour}`,
-    }),
-    [coursework_update_data],
-  );
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: editDefaultValues,
+    defaultValues: {
+      name: coursework_update_data.name,
+      description: coursework_update_data.description,
+      due_date: new Date(coursework_update_data.due_date),
+      color: `#${coursework_update_data.colour}`,
+    },
   });
-
-  useEffect(() => {
-    if (open_state) {
-      form.reset(editDefaultValues);
-      setShowAlert(false);
-      setAlertText("");
-    }
-  }, [open_state, editDefaultValues, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     // do something with values, submit here
@@ -155,332 +133,256 @@ export default function EditCoursework({
         toast.success("Coursework updated successfully.");
         setSubmitState(false);
         router.refresh();
-        form.reset(values);
-        set_open_state(false);
       }
     });
   }
   const colour = form.watch("color");
 
-  function requestClose() {
-    if (submitState) return;
-
-    if (form.formState.isDirty) {
-      setConfirmDiscardOpen(true);
-      return;
-    }
-
-    form.reset(editDefaultValues);
-    set_open_state(false);
-  }
-
-  function discardClose() {
-    form.reset(editDefaultValues);
-    setConfirmDiscardOpen(false);
-    set_open_state(false);
-  }
-
   return (
-    <>
-      <Sheet
-        open={open_state}
-        onOpenChange={(nextOpen) => {
-          if (nextOpen) {
-            set_open_state(true);
-          } else {
-            requestClose();
-          }
-        }}
+    <Sheet open={open_state} onOpenChange={set_open_state}>
+      <SheetContent
+        className={"h-full overflow-y-scroll"}
+        side={b ? "top" : "right"}
       >
-        <SheetContent
-          className={"h-full flex flex-col p-0"}
-          side={b ? "top" : "right"}
-          onInteractOutside={(event) => {
-            if (form.formState.isDirty) {
-              event.preventDefault();
-              setConfirmDiscardOpen(true);
-            }
-          }}
-          onEscapeKeyDown={(event) => {
-            if (form.formState.isDirty) {
-              event.preventDefault();
-              setConfirmDiscardOpen(true);
-            }
-          }}
-        >
-          <div className="px-6 pt-6">
-            <SheetHeader>
-              <SheetTitle>Edit this coursework</SheetTitle>
-              <SheetDescription>
-                You can modify this coursework here. Please remember to save
-                when you are done.
-              </SheetDescription>
-            </SheetHeader>
-          </div>
+        <SheetHeader>
+          <SheetTitle>Edit this coursework</SheetTitle>
+          <SheetDescription>
+            You can modify this coursework here. Please remember to save when
+            you are done.
+          </SheetDescription>
+        </SheetHeader>
 
-          <div className={"h-full overflow-y-scroll px-4"}>
-            <form
-              id="edit-coursework-form"
-              className={"h-full form-flow flex flex-col justify-between"}
-              onSubmit={form.handleSubmit(onSubmit)}
-            >
-              <FieldGroup className={""}>
-                <Controller
-                  name={"name"}
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor={"form-flow-name"}>
-                        Coursework name
-                      </FieldLabel>
-                      <Input
-                        {...field}
-                        id={"form-flow-name"}
-                        aria-invalid={fieldState.invalid}
-                        placeholder={"My amazing coursework"}
-                        autoComplete={"off"}
-                      />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
-                    </Field>
-                  )}
-                />
-                <Controller
-                  name={"description"}
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor={"form-flow-description"}>
-                        Coursework description
-                      </FieldLabel>
-                      <div
+        <div className={"h-full overflow-y-scroll px-4"}>
+          <form
+            className={"h-full form-flow flex flex-col justify-between"}
+            onSubmit={form.handleSubmit(onSubmit)}
+          >
+            <FieldGroup className={""}>
+              <Controller
+                name={"name"}
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor={"form-flow-name"}>
+                      Coursework name
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      id={"form-flow-name"}
+                      aria-invalid={fieldState.invalid}
+                      placeholder={"My amazing coursework"}
+                      autoComplete={"off"}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                name={"description"}
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor={"form-flow-description"}>
+                      Coursework description
+                    </FieldLabel>
+                    <div
                         data-cy="markdown-editor"
                         className="overflow-hidden rounded-md border"
                       >
-                        <Editor
-                          height="250px"
-                          defaultLanguage="markdown"
-                          value={field.value}
-                          onChange={(v) => field.onChange(v ?? "")}
-                          theme={isDark ? "vs-dark" : "vs-light"}
-                          options={{
-                            minimap: { enabled: false },
-                            wordWrap: "on",
-                            lineNumbers: "off",
-                            folding: false,
-                            scrollBeyondLastLine: false,
-                            fontSize: 14,
-                            quickSuggestions: false,
-                            suggestOnTriggerCharacters: false,
-                            wordBasedSuggestions: "off",
-                            parameterHints: { enabled: false },
-                          }}
-                        />
-                      </div>
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
-                    </Field>
-                  )}
-                />
-                <Controller
-                  name={"due_date"}
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor={"date"}>
-                        Coursework due date
-                      </FieldLabel>
-                      <Calendar29
-                        props={{
-                          date: field.value,
-                          setDate: field.onChange,
+                      <Editor
+                        height="250px"
+                        defaultLanguage="markdown"
+                        value={field.value}
+                        onChange={(v) => field.onChange(v ?? "")}
+                        theme={isDark ? "vs-dark" : "vs-light"}
+                        options={{
+                          minimap: { enabled: false },
+                          wordWrap: "on",
+                          lineNumbers: "off",
+                          folding: false,
+                          scrollBeyondLastLine: false,
+                          fontSize: 14,
+                          quickSuggestions: false,
+                          suggestOnTriggerCharacters: false,
+                          wordBasedSuggestions: "off",
+                          parameterHints: { enabled: false },
                         }}
                       />
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
-                    </Field>
-                  )}
-                ></Controller>
-                <Controller
-                  name={"color"}
-                  control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel htmlFor={"form-flow-description"}>
-                        Coursework colour
-                      </FieldLabel>
-                      <div
-                        role={"listbox"}
-                        className={
-                          "flex flex-row flex-wrap gap-2 w-full justify-items-center align-items-center"
-                        }
-                      >
-                        <span
-                          tabIndex={0}
-                          role={"option"}
-                          onKeyDown={(e) => {
-                            e.key === "Enter" && field.onChange("#ff6467");
-                          }}
-                          onClick={() => {
-                            field.onChange("#ff6467");
-                          }}
-                          className=" aspect-square border-2 border-input hover:bg-red-300 cursor-pointer size-8 rounded-none bg-red-400"
-                        ></span>
-                        <span
-                          tabIndex={0}
-                          role={"option"}
-                          onKeyDown={(e) => {
-                            e.key === "Enter" && field.onChange("#e17100");
-                          }}
-                          onClick={() => {
-                            field.onChange("#e17100");
-                          }}
-                          className=" aspect-square border-2 border-input hover:bg-amber-300 cursor-pointer size-8 rounded-none bg-amber-400"
-                        ></span>
-                        <span
-                          tabIndex={0}
-                          role={"option"}
-                          onKeyDown={(e) => {
-                            e.key === "Enter" && field.onChange("#05df72");
-                          }}
-                          onClick={() => {
-                            field.onChange("#05df72");
-                          }}
-                          className=" aspect-square border-2 border-input hover:bg-green-300 cursor-pointer size-8 rounded-none bg-green-400"
-                        ></span>
-                        <span
-                          tabIndex={0}
-                          role={"option"}
-                          onKeyDown={(e) => {
-                            e.key === "Enter" && field.onChange("#51a2ff");
-                          }}
-                          onClick={() => {
-                            field.onChange("#51a2ff");
-                          }}
-                          className=" aspect-square border-2 border-input hover:bg-blue-300 cursor-pointer size-8 rounded-none bg-blue-400"
-                        ></span>
-                        <span
-                          tabIndex={0}
-                          role={"option"}
-                          onKeyDown={(e) => {
-                            e.key === "Enter" && field.onChange("#c27aff");
-                          }}
-                          onClick={() => {
-                            field.onChange("#c27aff");
-                          }}
-                          className=" aspect-square border-2 border-input hover:bg-purple-300 cursor-pointer size-8 rounded-none bg-purple-400"
-                        ></span>
-                        <span
-                          tabIndex={0}
-                          role={"option"}
-                          onKeyDown={(e) => {
-                            e.key === "Enter" && field.onChange("#fb64b6");
-                          }}
-                          onClick={() => {
-                            field.onChange("#fb64b6");
-                          }}
-                          className=" aspect-square border-2 border-input hover:bg-pink-300 cursor-pointer size-8 rounded-none bg-pink-400"
-                        ></span>
-                      </div>
-                      or pick from the picker below:
-                      <div
-                        className={
-                          "flex flex-col justify-items-center align-center gap-2"
-                        }
-                      >
-                        <HexColorPicker
-                          className={"w-full! border-none border-input"}
-                          color={field.value}
-                          onChange={(color) => {
-                            field.onChange(color);
-                          }}
-                        />
-                        <HexColorInput
-                          prefixed={true}
-                          className={"border bg-accent p-2 border-input"}
-                          color={field.value}
-                          onChange={(color) => {
-                            field.onChange(color);
-                          }}
-                        />
-                      </div>
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]}></FieldError>
-                      )}
-                    </Field>
-                  )}
-                />
-              </FieldGroup>
-
-              {showAlert && (
-                <Alert variant="destructive">
-                  <OctagonAlert />
-                  <AlertTitle>Heads up!</AlertTitle>
-                  <AlertDescription>{alertText}</AlertDescription>
-                </Alert>
-              )}
-            </form>
-          </div>
-
-          <div className="sticky bottom-0 border-t bg-background px-6 py-4">
-            <SheetFooter>
-              <ButtonGroup orientation={"vertical"} className={"gap-2 w-full"}>
-                {submitState && (
-                  <Button disabled={true} className="w-full">
-                    <Spinner />
-                    Save changes
-                  </Button>
+                    </div>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
                 )}
-                {!submitState && (
-                  <Button
-                    type={"submit"}
-                    form="edit-coursework-form"
-                    className="w-full"
-                  >
-                    <Save />
-                    Save changes
-                  </Button>
+              />
+              <Controller
+                name={"due_date"}
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor={"date"}>
+                      Coursework due date
+                    </FieldLabel>
+                    <Calendar29
+                      props={{
+                        date: field.value,
+                        setDate: field.onChange,
+                      }}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
                 )}
-              </ButtonGroup>
+              ></Controller>
+              <Controller
+                name={"color"}
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor={"form-flow-description"}>
+                      Coursework colour
+                    </FieldLabel>
+                    <div
+                      role={"listbox"}
+                      className={
+                        "flex flex-row flex-wrap gap-2 w-full justify-items-center align-items-center"
+                      }
+                    >
+                      <span
+                        tabIndex={0}
+                        role={"option"}
+                        onKeyDown={(e) => {
+                          e.key === "Enter" && field.onChange("#ff6467");
+                        }}
+                        onClick={() => {
+                          field.onChange("#ff6467");
+                        }}
+                        className=" aspect-square border-2 border-input hover:bg-red-300 cursor-pointer size-8 rounded-none bg-red-400"
+                      ></span>
+                      <span
+                        tabIndex={0}
+                        role={"option"}
+                        onKeyDown={(e) => {
+                          e.key === "Enter" && field.onChange("#e17100");
+                        }}
+                        onClick={() => {
+                          field.onChange("#e17100");
+                        }}
+                        className=" aspect-square border-2 border-input hover:bg-amber-300 cursor-pointer size-8 rounded-none bg-amber-400"
+                      ></span>
+                      <span
+                        tabIndex={0}
+                        role={"option"}
+                        onKeyDown={(e) => {
+                          e.key === "Enter" && field.onChange("#05df72");
+                        }}
+                        onClick={() => {
+                          field.onChange("#05df72");
+                        }}
+                        className=" aspect-square border-2 border-input hover:bg-green-300 cursor-pointer size-8 rounded-none bg-green-400"
+                      ></span>
+                      <span
+                        tabIndex={0}
+                        role={"option"}
+                        onKeyDown={(e) => {
+                          e.key === "Enter" && field.onChange("#51a2ff");
+                        }}
+                        onClick={() => {
+                          field.onChange("#51a2ff");
+                        }}
+                        className=" aspect-square border-2 border-input hover:bg-blue-300 cursor-pointer size-8 rounded-none bg-blue-400"
+                      ></span>
+                      <span
+                        tabIndex={0}
+                        role={"option"}
+                        onKeyDown={(e) => {
+                          e.key === "Enter" && field.onChange("#c27aff");
+                        }}
+                        onClick={() => {
+                          field.onChange("#c27aff");
+                        }}
+                        className=" aspect-square border-2 border-input hover:bg-purple-300 cursor-pointer size-8 rounded-none bg-purple-400"
+                      ></span>
+                      <span
+                        tabIndex={0}
+                        role={"option"}
+                        onKeyDown={(e) => {
+                          e.key === "Enter" && field.onChange("#fb64b6");
+                        }}
+                        onClick={() => {
+                          field.onChange("#fb64b6");
+                        }}
+                        className=" aspect-square border-2 border-input hover:bg-pink-300 cursor-pointer size-8 rounded-none bg-pink-400"
+                      ></span>
+                    </div>
+                    or pick from the picker below:
+                    <div
+                      className={
+                        "flex flex-col justify-items-center align-center gap-2"
+                      }
+                    >
+                      <HexColorPicker
+                        className={"w-full! border-none border-input"}
+                        color={field.value}
+                        onChange={(color) => {
+                          field.onChange(color);
+                        }}
+                      />
+                      <HexColorInput
+                        prefixed={true}
+                        className={"border bg-accent p-2 border-input"}
+                        color={field.value}
+                        onChange={(color) => {
+                          field.onChange(color);
+                        }}
+                      />
+                    </div>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]}></FieldError>
+                    )}
+                  </Field>
+                )}
+              />
+            </FieldGroup>
+            <div>
+              <SheetFooter>
+                <ButtonGroup
+                  orientation={"vertical"}
+                  className={"gap-2 w-full"}
+                >
+                  {submitState && (
+                    <Button disabled={true}>
+                      <Spinner />
+                      Save changes
+                    </Button>
+                  )}
+                  {!submitState && (
+                    <Button type={"submit"}>
+                      <Save />
+                      Save changes
+                    </Button>
+                  )}
+                </ButtonGroup>
 
-              <Button
-                type="button"
-                variant={"outline"}
-                onClick={requestClose}
-                disabled={submitState}
-                className="w-full"
-              >
-                Close
-              </Button>
-            </SheetFooter>
-          </div>
-        </SheetContent>
-      </Sheet>
+                {showAlert && (
+                  <Alert variant="destructive">
+                    <OctagonAlert />
+                    <AlertTitle>Heads up!</AlertTitle>
+                    <AlertDescription>{alertText}</AlertDescription>
+                  </Alert>
+                )}
 
-      <AlertDialog
-        open={confirmDiscardOpen}
-        onOpenChange={setConfirmDiscardOpen}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Discard changes?</AlertDialogTitle>
-
-            <AlertDialogDescription>
-              Unsaved changes. If you close now, your edits won&apos;t be saved.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction onClick={discardClose}>
-              Discard & exit
-            </AlertDialogAction>
-
-            <AlertDialogCancel>Keep editing</AlertDialogCancel>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
+                <SheetClose asChild>
+                  <Button variant={"outline"}>Cancel</Button>
+                </SheetClose>
+              </SheetFooter>
+            </div>
+          </form>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }

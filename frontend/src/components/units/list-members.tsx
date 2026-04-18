@@ -16,11 +16,13 @@ import LecturerList from "@/components/units/lecturer-list";
 import StudentList from "@/components/units/student-list";
 
 export default function ListMembers({
+  canManageEnrollment,
   unit_id,
   me,
   openState,
   setOpenState,
 }: {
+  canManageEnrollment: boolean;
   unit_id: string;
   me: string;
   openState: boolean;
@@ -29,14 +31,18 @@ export default function ListMembers({
   return (
     <Dialog open={openState} onOpenChange={setOpenState}>
       <DialogContent className="max-h-[80%] md:overflow-auto overflow-y-scroll ">
-        <Tabs>
+        <Tabs defaultValue="View">
           <div className="flex flex-col md:flex-row gap-2 items-center mb-2">
             <DialogTitle className="text-xl">Members</DialogTitle>
 
             <TabsList className="">
               <TabsTrigger value="View">View</TabsTrigger>
-              <TabsTrigger value="Add Student">Add Student</TabsTrigger>
-              <TabsTrigger value="Add Lecturer">Add Lecturer</TabsTrigger>
+              {canManageEnrollment && (
+                <TabsTrigger value="Add Student">Add Student</TabsTrigger>
+              )}
+              {canManageEnrollment && (
+                <TabsTrigger value="Add Lecturer">Add Lecturer</TabsTrigger>
+              )}
             </TabsList>
           </div>
           <TabsContent value="View">
@@ -45,33 +51,44 @@ export default function ListMembers({
               <DialogDescription>
                 Lecturers enrolled on this unit are listed below.
               </DialogDescription>
-              <LecturerList me={me} unit_id={unit_id} />
+              <LecturerList
+                canManageEnrollment={canManageEnrollment}
+                me={me}
+                unit_id={unit_id}
+              />
               <Separator className="my-4"></Separator>
               <DialogTitle>Students</DialogTitle>
               <DialogDescription>
                 Students enrolled on this unit are listed below.
               </DialogDescription>
-              <StudentList unit_id={unit_id} />
+              <StudentList
+                canManageEnrollment={canManageEnrollment}
+                unit_id={unit_id}
+              />
             </DialogHeader>
           </TabsContent>
-          <TabsContent value="Add Student">
-            <DialogHeader>
-              <DialogTitle>Add a student</DialogTitle>
-              <DialogDescription>
-                Find someone using the search bar below.
-              </DialogDescription>
-              <AddMember unit_id={unit_id}></AddMember>
-            </DialogHeader>
-          </TabsContent>
-          <TabsContent value="Add Lecturer">
-            <DialogHeader>
-              <DialogTitle>Add a lecturer</DialogTitle>
-              <DialogDescription>
-                Find someone using the search bar below.
-              </DialogDescription>
-              <AddMemberLecturer unit_id={unit_id}></AddMemberLecturer>
-            </DialogHeader>
-          </TabsContent>
+          {canManageEnrollment && (
+            <TabsContent value="Add Student">
+              <DialogHeader>
+                <DialogTitle>Add a student</DialogTitle>
+                <DialogDescription>
+                  Find someone using the search bar below.
+                </DialogDescription>
+                <AddMember unit_id={unit_id}></AddMember>
+              </DialogHeader>
+            </TabsContent>
+          )}
+          {canManageEnrollment && (
+            <TabsContent value="Add Lecturer">
+              <DialogHeader>
+                <DialogTitle>Add a lecturer</DialogTitle>
+                <DialogDescription>
+                  Find someone using the search bar below.
+                </DialogDescription>
+                <AddMemberLecturer unit_id={unit_id}></AddMemberLecturer>
+              </DialogHeader>
+            </TabsContent>
+          )}
         </Tabs>
       </DialogContent>
     </Dialog>
