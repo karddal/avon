@@ -60,6 +60,7 @@ if settings.enable_test_fixtures:
 
 create_db_and_tables()
 
+
 def main():
     print("[BACKEND] Hello from backend!")
 

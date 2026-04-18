@@ -223,12 +223,13 @@ async def get_unit_with_dates(
         session=session,
     )
     unit = session.get(Unit, unit_id)
-    start = unit.programme.start_date
-    end = unit.programme.end_date
     if unit is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Unit not found"
         )
+
+    start = unit.programme.start_date
+    end = unit.programme.end_date
 
     return UnitReadWithDates(
         id=unit.id,
@@ -238,9 +239,9 @@ async def get_unit_with_dates(
         unit_code=unit.unit_code,
         colour=unit.colour,
         programme_id=unit.programme_id,
+        unlocked=unit.unlocked,
         start_date=start,
         end_date=end,
-        unlocked=unit.unlocked,
     )
 
 

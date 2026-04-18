@@ -38,7 +38,10 @@ export default async function CourseworkDescription({
   const coursework: courseworkData = await res.json();
 
   return (
-    <div className="h-full overflow-y-auto whitespace-pre-wrap wrap-break-word rounded-md border bg-accent p-3">
+    <div
+      data-cy="coursework-description-content"
+      className="h-full overflow-y-auto whitespace-pre-wrap wrap-break-word rounded-md border bg-accent p-3"
+    >
       {coursework.description ? (
         <div className="prose prose-sm max-w-none dark:prose-invert">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>

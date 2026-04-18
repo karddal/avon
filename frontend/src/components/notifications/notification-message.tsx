@@ -21,7 +21,6 @@ import {
 async function setAsRead(
   router: AppRouterInstance,
   id: string,
-  _state: boolean,
   setState: Dispatch<SetStateAction<boolean>>,
 ) {
   setState(true);
@@ -37,7 +36,6 @@ async function setAsRead(
 }
 
 export default function NotificationMessage({ data }: { data: Notification2 }) {
-  const _unreadMessage = data.viewed ? "hidden" : "";
   const [submittedState, setSubmittedState] = useState<boolean>(false);
   const router = useRouter();
   return (
@@ -64,9 +62,7 @@ export default function NotificationMessage({ data }: { data: Notification2 }) {
         )}
         {!submittedState && !data.viewed && (
           <Button
-            onClick={() =>
-              setAsRead(router, data.id, submittedState, setSubmittedState)
-            }
+            onClick={() => setAsRead(router, data.id, setSubmittedState)}
             data-cy="notification-mark-read"
             size={"icon-sm"}
             variant={"ghost"}
