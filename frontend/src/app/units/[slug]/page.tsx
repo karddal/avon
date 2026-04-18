@@ -13,6 +13,7 @@ import LecturerDropdown from "@/components/units/lecturer-dropdown";
 import Lecturers from "@/components/units/lecturers";
 import OpenEdit from "@/components/units/open-edit";
 import UnitsCourseworkList from "@/components/units/units-coursework-list";
+import { get_unit_scopes } from "@/lib/actions/get_unit_scopes";
 import { getRequestJWT, requireSession } from "@/lib/auth-utils";
 
 type UnitDataResponse = {
@@ -42,6 +43,8 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
   console.log("UNIT", slug);
   const s = await requireSession();
   const token = await getRequestJWT();
+  const scopes: Set<string> = await get_unit_scopes(slug);
+
   let userRole = s.user.role;
   const me = s.user.id;
   if (!userRole) {
@@ -88,6 +91,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
                   unit_update_data={data}
                   me={me}
                   slug={slug}
+                  scopes={scopes}
                 ></LecturerDropdown>
               )}
             </div>
