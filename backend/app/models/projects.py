@@ -15,11 +15,14 @@ class ProvisionProject(SQLModel, table=True):
     # str because thats how the uuid is stored
     student_id: str = Field(nullable=False) 
     cw_id: UUID = Field(nullable=False)
+    # better to denormalise
+    cw_name: str = Field(nullable=False)
     # You need a template
     template_id: int = Field(nullable=False)
+    gitlab_id: int = Field(nullable=False)
 
-    # status: Literal["pending", "in_progress", "success", "failed"] = Field(default="pending", sa_type=String)
-    status: str
+    status: Literal["pending", "in_progress", "success", "failed"] = Field(default="pending", sa_type=String)
+    # status: str
     attempts: int = 0
     max_attempts: int = 4
 

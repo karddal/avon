@@ -216,6 +216,7 @@ async def get_unit_with_dates(unit_id: UUID, session: session_dependency, token:
         programme_id=unit.programme_id,
         start_date=start,
         end_date=end,
+        unlocked=unit.unlocked
     )
 
 

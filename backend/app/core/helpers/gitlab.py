@@ -388,12 +388,15 @@ async def gl_create_fork(name, user_id, group_id, template_id):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
 
-    name = name+"-"+user_id
+
+    print(1)
+    name = str(name)+"-"+str(user_id)
+    print("template_id",template_id)
     path = generate_gitlab_path(name)
     async with httpx.AsyncClient(base_url=BASE_URL) as client:
         try:
             response = await client.post(
-                "/projects/"+template_id+"/fork",
+                "/projects/"+str(template_id)+"/fork",
                 headers={
                     "PRIVATE-TOKEN": TOKEN,
                     "Content-Type": "application/json",
@@ -403,49 +406,6 @@ async def gl_create_fork(name, user_id, group_id, template_id):
                     "path": path,
                     "namespace_id":group_id,
                     "description":"Project repo for " + user_id,
-                },
-                timeout=10.0
-            )
-            data = response.json()
-            if response.status_code != 201:
-                return {
-                    "success": False,
-                    "error": data.get("message") or "Failed to create GitLab group"
-                }
-
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
-            raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
-
-    return data
-
-
-# Do not use this for creating projects
-async def gl_create_project(name, user_id, group_id, template_group_id, template_id):
-    print(template_group_id, template_id)
-    if not TOKEN or not BASE_URL:
-        raise HTTPException(status_code=500, detail="Missing GitLab configuration")
-
-    name = name+"-"+user_id
-    path = generate_gitlab_path(name)
-    async with httpx.AsyncClient(base_url=BASE_URL) as client:
-        try:
-            response = await client.post(
-                "/projects/",
-                headers={
-                    "PRIVATE-TOKEN": TOKEN,
-                    "Content-Type": "application/json",
-                },
-                json={
-                    "name": name,
-                    "path": path,
-                    "namespace_id":group_id,
-                    "description":"Project repo for " + user_id,
-                    "use_custom_template": "true",
-                    # "group_with_project_templates_id": 124803838,
-                    # "template_project_id": 79388377
-                    "group_with_project_templates_id": template_group_id,
-                    "template_project_id": template_id
                 },
                 timeout=10.0
             )
@@ -958,3 +918,46 @@ async def gl_overwrite_zip(templateId: str, file: UploadFile):
             )
 
     return {"success": True}
+
+
+# Do not use this for creating projects
+async def gl_create_project(name, user_id, group_id, template_group_id, template_id):
+    print(template_group_id, template_id)
+    if not TOKEN or not BASE_URL:
+        raise HTTPException(status_code=500, detail="Missing GitLab configuration")
+
+    name = name+"-"+user_id
+    path = generate_gitlab_path(name)
+    async with httpx.AsyncClient(base_url=BASE_URL) as client:
+        try:
+            response = await client.post(
+                "/projects/",
+                headers={
+                    "PRIVATE-TOKEN": TOKEN,
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "name": name,
+                    "path": path,
+                    "namespace_id":group_id,
+                    "description":"Project repo for " + user_id,
+                    "use_custom_template": "true",
+                    # "group_with_project_templates_id": 124803838,
+                    # "template_project_id": 79388377
+                    "group_with_project_templates_id": template_group_id,
+                    "template_project_id": template_id
+                },
+                timeout=10.0
+            )
+            data = response.json()
+            if response.status_code != 201:
+                return {
+                    "success": False,
+                    "error": data.get("message") or "Failed to create GitLab group"
+                }
+
+        except httpx.RequestError as err:
+            print(f"Network Error: {err}")
+            raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
+
+    return data
