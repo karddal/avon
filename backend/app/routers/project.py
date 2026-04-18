@@ -1,6 +1,9 @@
 
+import logging
+import os
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import text
 from sqlmodel import Session, select
 
 from datetime import datetime, timedelta
@@ -67,15 +70,26 @@ async def run_provision_worker():
 
         await asyncio.gather(*(process_job(job_id) for job_id in job_ids))  
 
-sem = asyncio.Semaphore(4)
+sem = asyncio.Semaphore(1)
 
 async def process_job(job_id: int):
     async with sem:
         with Session(engine) as session:
             job = session.get(ProvisionProject, job_id)
             try: 
-                await gl_create_fork(name=job.cw_name, user_id=job.student_id, group_id=job.gitlab_id, template_id=job.template_id)
-                job.status = "success"
+                response = await gl_create_fork(name=job.cw_name, user_id=job.student_id, group_id=job.gitlab_id, template_id=job.template_id)
+                if response["status_code"] == 201:
+                    job.status = "success"
+                else:
+                    print(response["status_code"])
+                    if job.attempts < job.max_attempts:
+                        job.attempts += 1
+                        backoff = 2 ** job.attempts
+                        job.next_run_at = datetime.now() + timedelta(seconds=backoff)
+                    else:
+                        job.status = "failed"
+                        print("Failed", job) 
+
             except Exception as e:
                 print("oops", e)
                 if job.attempts < job.max_attempts:
@@ -85,8 +99,8 @@ async def process_job(job_id: int):
                 else:
                     job.status = "failed"
                     print("Failed", job)
-    
-    session.commit()
+
+            session.commit()
 
 # Creating the fork creates the project. Use this.
 @router.post("/create-fork", status_code=status.HTTP_201_CREATED)
@@ -115,9 +129,9 @@ async def create_fork(project: ProjectFork, session: session_dependency):
         session.add(job)
     
     session.commit()
-    print("done")
+    # print("done")
     asyncio.create_task(run_provision_worker())
-    
+    print("done 1234")
     return {"queued": len(students_enrolled)}
 
     # sem = asyncio.Semaphore(4)
@@ -125,7 +139,7 @@ async def create_fork(project: ProjectFork, session: session_dependency):
     # async def create(student):
     #     async with sem:
     #         try:
-    #             return await gl_create_fork(name, user_id=student, group_id=gitlab_id, template_id=project.template_id)
+    #             return await gl_create_fork(name=cw_name, user_id=student, group_id=gitlab_id, template_id=project.template_id)
     #         except Exception:
     #            raise HTTPException(
     #             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
@@ -135,7 +149,7 @@ async def create_fork(project: ProjectFork, session: session_dependency):
     # tasks = [create(student) for student in students_enrolled]
     # await asyncio.gather(*tasks, return_exceptions=True)
 
-    # # exception handling
+    # exception handling
 
     # # Get the number of students enrolled onto a unit, by the courseworkid courseworkid -> unit -> unit_enrollement
     # # Make an API call to gitlab to create a project using a helper function for those many students

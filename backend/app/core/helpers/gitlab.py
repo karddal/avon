@@ -389,10 +389,10 @@ async def gl_create_fork(name, user_id, group_id, template_id):
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
 
 
-    print(1)
     name = str(name)+"-"+str(user_id)
-    print("template_id",template_id)
     path = generate_gitlab_path(name)
+    print("NAME:", name)
+    print("PATH:", path)
     async with httpx.AsyncClient(base_url=BASE_URL) as client:
         try:
             response = await client.post(
