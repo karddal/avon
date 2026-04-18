@@ -2,9 +2,9 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Editor from "@monaco-editor/react";
-import { useTheme } from "next-themes";
 import { OctagonAlert, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import {
   type Dispatch,
   type SetStateAction,
@@ -45,7 +45,6 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Spinner } from "@/components/ui/spinner";
-import { Textarea } from "@/components/ui/textarea";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { update_unit } from "@/lib/actions/unit/update_unit";
 
@@ -260,8 +259,8 @@ export default function EditUnit({
                         Unit description
                       </FieldLabel>
                       <div
-                      data-cy="markdown-editor"
-                      className="overflow-hidden rounded-md border"
+                        data-cy="markdown-editor"
+                        className="overflow-hidden rounded-md border"
                       >
                         <Editor
                           height="15vh"

@@ -257,26 +257,26 @@ export default function EditCoursework({
                         data-cy="markdown-editor"
                         className="overflow-hidden rounded-md border"
                       >
-                      <Editor
-                        height="15vh"
-                        defaultLanguage="markdown"
-                        value={field.value}
-                        onChange={(v) => field.onChange(v ?? "")}
-                        theme={isDark ? "vs-dark" : "vs-light"}
-                        options={{
-                          minimap: { enabled: false },
-                          wordWrap: "on",
-                          lineNumbers: "off",
-                          folding: false,
-                          scrollBeyondLastLine: false,
-                          fontSize: 14,
-                          quickSuggestions: false,
-                          suggestOnTriggerCharacters: false,
-                          wordBasedSuggestions: "off",
-                          parameterHints: { enabled: false },
-                        }}
-                      />
-                    </div>
+                        <Editor
+                          height="15vh"
+                          defaultLanguage="markdown"
+                          value={field.value}
+                          onChange={(v) => field.onChange(v ?? "")}
+                          theme={isDark ? "vs-dark" : "vs-light"}
+                          options={{
+                            minimap: { enabled: false },
+                            wordWrap: "on",
+                            lineNumbers: "off",
+                            folding: false,
+                            scrollBeyondLastLine: false,
+                            fontSize: 14,
+                            quickSuggestions: false,
+                            suggestOnTriggerCharacters: false,
+                            wordBasedSuggestions: "off",
+                            parameterHints: { enabled: false },
+                          }}
+                        />
+                      </div>
                       {fieldState.invalid && (
                         <FieldError errors={[fieldState.error]} />
                       )}
