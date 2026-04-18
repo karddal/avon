@@ -77,19 +77,8 @@ async def process_job(job_id: int):
         with Session(engine) as session:
             job = session.get(ProvisionProject, job_id)
             try: 
-                response = await gl_create_fork(name=job.cw_name, user_id=job.student_id, group_id=job.gitlab_id, template_id=job.template_id)
-                if response["status_code"] == 201:
-                    job.status = "success"
-                else:
-                    print(response["status_code"])
-                    if job.attempts < job.max_attempts:
-                        job.attempts += 1
-                        backoff = 2 ** job.attempts
-                        job.next_run_at = datetime.now() + timedelta(seconds=backoff)
-                    else:
-                        job.status = "failed"
-                        print("Failed", job) 
-
+                await gl_create_fork(name=job.cw_name, user_id=job.student_id, group_id=job.gitlab_id, template_id=job.template_id)
+                job.status = "success"
             except Exception as e:
                 print("oops", e)
                 if job.attempts < job.max_attempts:
