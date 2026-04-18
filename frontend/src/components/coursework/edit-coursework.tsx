@@ -192,7 +192,7 @@ export default function EditCoursework({
                         className="overflow-hidden rounded-md border"
                       >
                       <Editor
-                        height="250px"
+                        height="15vh"
                         defaultLanguage="markdown"
                         value={field.value}
                         onChange={(v) => field.onChange(v ?? "")}

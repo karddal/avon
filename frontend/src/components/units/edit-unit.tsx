@@ -203,6 +203,7 @@ export default function EditUnit({
                       className="overflow-hidden rounded-md border"
                     >
                       <Editor
+                        height="15vh"
                         defaultLanguage="markdown"
                         value={field.value}
                         onChange={(v) => field.onChange(v ?? "")}
