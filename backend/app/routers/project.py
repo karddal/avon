@@ -6,6 +6,7 @@ from sqlmodel import Session, select
 from app.core.helpers.gitlab import gl_create_fork, gl_create_project, gl_create_skeleton_code, gl_create_template_group, gl_create_template_project, gl_delete_project, gl_delete_projects, gl_get_project, gl_get_projects
 from app.db.session import get_session
 from app.models.coursework import Coursework
+from app.models.projects import ProvisionProject
 from app.models.unit_enrollment import UnitEnrollment
 from app.schemas.project import ProjectCreate, ProjectFork, ProjectRead, ProjectSkeleton, ProjectsInCoursework, TemplateCreate
 
@@ -47,34 +48,50 @@ async def create_skeleton_code(details: ProjectSkeleton):
 # Creating the fork creates the project. Use this.
 @router.post("/create-fork", status_code=status.HTTP_201_CREATED)
 async def create_fork(project: ProjectFork, session: session_dependency):
+    # Add projects to be provisioned to the queue (yes the queue is a table)
+    # This is essentially the producer
+    
     statement = select(Coursework.unit_id, Coursework.name, Coursework.gitlab_id).where(Coursework.id == project.coursework_id)
     cw_object = session.exec(statement).first()
     unit_id, name, gitlab_id = cw_object
 
-    # Get the student enrollment
+    # Get the students enrolled
     statement = select(UnitEnrollment.user_id).where((UnitEnrollment.unit_id == unit_id) & (UnitEnrollment.type == "student"))
     students_enrolled = session.exec(statement).all()
 
-    sem = asyncio.Semaphore(4)
+    # Add them to the queue
+    for student in students_enrolled:
+        job = ProvisionProject(
+            student_id=student,
+            cw_id=project.coursework_id,
+            template_id=gitlab_id,
+            status="pending"
+        )
+        session.add(job)
+    
+    session.commit()
+    return {"queued": len(students_enrolled)}
 
-    async def create(student):
-        async with sem:
-            try:
-                return await gl_create_fork(name, user_id=student, group_id=gitlab_id, template_id=project.template_id)
-            except Exception:
-               raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
-                detail="Project for the student: " + student + " could not be created."
-                )
+    # sem = asyncio.Semaphore(4)
 
-    tasks = [create(student) for student in students_enrolled]
-    await asyncio.gather(*tasks, return_exceptions=True)
+    # async def create(student):
+    #     async with sem:
+    #         try:
+    #             return await gl_create_fork(name, user_id=student, group_id=gitlab_id, template_id=project.template_id)
+    #         except Exception:
+    #            raise HTTPException(
+    #             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+    #             detail="Project for the student: " + student + " could not be created."
+    #             )
 
-    # exception handling
+    # tasks = [create(student) for student in students_enrolled]
+    # await asyncio.gather(*tasks, return_exceptions=True)
 
-    # Get the number of students enrolled onto a unit, by the courseworkid courseworkid -> unit -> unit_enrollement
-    # Make an API call to gitlab to create a project using a helper function for those many students
-    return {"unit id": students_enrolled} 
+    # # exception handling
+
+    # # Get the number of students enrolled onto a unit, by the courseworkid courseworkid -> unit -> unit_enrollement
+    # # Make an API call to gitlab to create a project using a helper function for those many students
+    # return {"unit id": students_enrolled} 
 
 @router.get("/{project_id}", response_model=ProjectRead)
 async def get_specific_project(project_id: int):

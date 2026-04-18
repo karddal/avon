@@ -7,24 +7,27 @@ import uuid
 from sqlalchemy import String
 from sqlmodel import Field, SQLModel
 
-from app.models import coursework
+from app.models.coursework import Coursework
 
 
-class ProvisionProjects(SQLModel, table=True):
+class ProvisionProject(SQLModel, table=True):
     id: UUID = Field(primary_key=True, default_factory=uuid.uuid4)
-    student_id: UUID = Field(nullable=False) # This should be a foreign key, but idk how to access
-    cw_id: UUID = Field(foreign_key=coursework.id)
-    template_id: int = Field(nullable=True)
+    # str because thats how the uuid is stored
+    student_id: str = Field(nullable=False) 
+    cw_id: UUID = Field(nullable=False)
+    # You need a template
+    template_id: int = Field(nullable=False)
 
-    status: Literal["pending", "in_progress", "success", "failed"] = Field(default="pending", sa_type=String)
+    # status: Literal["pending", "in_progress", "success", "failed"] = Field(default="pending", sa_type=String)
+    status: str
     attempts: int = 0
     max_attempts: int = 4
 
     last_error: str | None = None
-    next_run_at: datetime = Field(default_factory=datetime.utcnow)
+    next_run_at: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
-    created_at: datetime = Field(default_factory=datetime.utcnow) 
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime.datetime = Field(default_factory=datetime.datetime.now) 
+    updated_at: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
 
 
