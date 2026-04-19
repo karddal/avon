@@ -11,36 +11,9 @@ AWS is the main backbone of the Avon Platform. To understand how Avon works, you
 
 A [CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html) stack will be provided, but it is recommended to learn the structure of the project incase you need to debug/change key functionality of Avon.
 
-Contents:
-- [AWS](#aws)
-  - [VPC](#vpc)
-    - [Subnets](#subnets)
-    - [Route Tables](#route-tables)
-    - [Security Groups](#security-groups)
-  - [ECS](#ecs)
-    - [Task Definitions](#task-definitions)
-    - [ECR](#ecr)
-    - [Load Balancing](#load-balancing)
-      - [Target Groups](#target-groups)
-  - [RDS](#rds)
-  - [AWS Secrets Manager](#aws-secrets-manager)
-  - [S3](#s3)
-  - [Cloudfront](#cloudfront)
-  - [IAM](#iam)
-    - [Users](#users)
-    - [Roles](#roles)
-    - [Identity Providers](#identity-providers)
-  - [SQS](#sqs)
-  - [Architecture Structure (Application)](#architecture-structure-application)
-    - [Public ALB](#public-alb)
-    - [Frontend](#frontend)
-    - [Internal ALB](#internal-alb)
-    - [Backend](#backend)
-    - [RDS](#rds-1)
-    - [Summary](#summary)
-  - [Architecture Structure (Testing Engine)](#architecture-structure-testing-engine)
+## Main system architecture
 
-## VPC
+### VPC
 
 AWS [VPC (Virtual Private Cloud)](https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html) is how all parts of the Avon AWS system exist on the same (virtual) network. This allows the different components of the platform to easily connect/work with one another.
 
@@ -242,7 +215,7 @@ The PostgreSQL RDS database is inside the `avon-database-sg` security group, mea
 
 This is the main structure of the application (ignoring the testing functionality), allowing the user to connect to Avon and permit their traffic to travel through cleanly and reach the database. All sections of Avon are ordered and do not allow traffic to intercept the chaining, meaning that traffic between instances/resources is protected by the VPC.
 
-## Architecture Structure (Testing Engine)
+## Testing engine architecture
 
 Avon's testing engine is the main functionality that makes Avon stand out when compared to other competitors. It allows lecturers to run tests on their student's code.
 
