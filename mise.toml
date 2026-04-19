@@ -1,5 +1,4 @@
 [tools]
-"github:rust-lang/mdBook" = "latest"
 just = "latest"
 node = "25.8.2"
 uv = "latest"
