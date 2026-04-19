@@ -100,9 +100,12 @@ describe("Coursework listing page - admin tests", () => {
     });
     cy.getByCy("create-coursework-selected-unit").should("be.visible");
     cy.getByCy("create-coursework-name").type(courseworkName);
-    cy.getByCy("create-coursework-description").type(
-      "Coursework created by the admin Cypress flow.",
-    );
+    cy.get('[data-cy="markdown-editor"]').find(".monaco-editor").click();
+    cy.focused().type("{ctrl}a{del}", { force: true });
+    cy.get('[data-cy="markdown-editor"]')
+      .find(".monaco-editor")
+      .realClick()
+      .realType("Coursework created by the admin Cypress flow.");
     cy.getByCy("create-coursework-next-step-1").click();
     cy.getByCy("create-coursework-next-step-2").click();
     cy.getByCy("create-coursework-submit").click();

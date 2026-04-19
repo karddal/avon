@@ -1,3 +1,5 @@
+import "cypress-real-events";
+
 describe("Coursework page", () => {
   beforeEach(() => {
     cy.resetDb();
@@ -92,9 +94,12 @@ describe("Coursework page", () => {
     );
     cy.getByCy("coursework-lect-dropdown").click();
     cy.getByCy("coursework-edit-menu-item").click();
-    cy.getByCy("coursework-edit-description")
-      .clear()
-      .type("UNique Text 2837t37");
+    cy.get('[data-cy="markdown-editor"]').find(".monaco-editor").click();
+    cy.focused().type("{ctrl}a{del}", { force: true });
+    cy.get('[data-cy="markdown-editor"]')
+      .find(".monaco-editor")
+      .realClick()
+      .realType("UNique Text 2837t37");
     cy.getByCy("coursework-edit-save").click();
     cy.contains("Coursework updated successfully.").should("be.visible");
     cy.getByCy("coursework-description-content").should(
@@ -123,14 +128,14 @@ describe("Coursework page", () => {
   //     .find('[data-slot="dropdown-menu-item"]')
   //     .contains("Edit coursework")
   //     .click();
-  //   cy.get("#date").clear().type("24 February 2026");
+  //   cy.get("#date").clear().type("24 July 2026");
   //   cy.get(".mt-auto > .flex > .inline-flex").click();
   //   cy.wait(5000);
   //   cy.visit("/coursework");
   //   cy.contains('a[href^="/coursework/"]', "Encrypt").click({ force: true });
   //   cy.get("div").contains("24/02/26 at 12:00").should("be.visible");
   // });
-  //
+
   it("shows the CW setup flow", () => {
     cy.visit("/coursework");
     cy.getByCy("coursework-tab-finished").click();

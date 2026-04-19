@@ -1,3 +1,6 @@
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
 type courseworkData = {
   id: string;
   name: string;
@@ -40,7 +43,11 @@ export default async function CourseworkDescription({
       className="h-full overflow-y-auto whitespace-pre-wrap wrap-break-word rounded-md border bg-accent p-3"
     >
       {coursework.description ? (
-        coursework.description
+        <div className="prose prose-sm max-w-none dark:prose-invert">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {coursework.description}
+          </ReactMarkdown>
+        </div>
       ) : (
         <span className="text-muted-foreground italic">
           No description available.
