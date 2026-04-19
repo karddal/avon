@@ -155,7 +155,7 @@ export default function SetupProgressCarousel({
   }
 
   return (
-    <Card className="h-full">
+    <Card className="h-full" data-cy="coursework-setup-progress">
       <CardHeader>
         <CardTitle>
           <div className="flex flex-row items-center gap-2 text-2xl">
