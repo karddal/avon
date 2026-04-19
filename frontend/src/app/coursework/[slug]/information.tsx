@@ -16,7 +16,6 @@ type courseworkData = {
   totalTests: number;
 };
 
-// Helper to separate Time and Date for the "Ticker" look
 function parseDateTime(dateStr: string) {
   const time = formatIsoTime(dateStr);
   const day = formatIsoShortDate(dateStr);
@@ -47,7 +46,7 @@ export default async function CourseworkInformation({
   const end = parseDateTime(coursework.due_date);
 
   return (
-    <Card className="h-full">
+    <Card data-cy="coursework-information-section" className="h-full">
       <CardHeader className="flex flex-col">
         <CardTitle>
           <div className="text-2xl flex flex-row items-center gap-2">

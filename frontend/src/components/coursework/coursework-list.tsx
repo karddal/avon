@@ -10,6 +10,38 @@ import {
   EmptyTitle,
 } from "../ui/empty";
 
+type CourseworkData = {
+  id: string;
+  name: string;
+  description: string;
+  due_date: string;
+  creation_date: string;
+  colour: string;
+};
+
+type unit = {
+  id: string;
+  unit_code: string;
+  name: string;
+  programme_start_date: string;
+  programme_end_date: string;
+  courseworks: CourseworkData[];
+};
+
+function toDataCyValue(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function getUnitYears(unit: unit) {
+  return `${new Date(unit.programme_start_date).getFullYear()}-${new Date(
+    unit.programme_end_date,
+  ).getFullYear()}`;
+}
+
 export default async function CourseworkList({
   finished,
 }: {
@@ -45,6 +77,9 @@ export default async function CourseworkList({
             {filteredUnitsList.map((unit) => (
               <TabsTrigger
                 key={unit.id}
+                data-cy={`coursework-unit-tab-${toDataCyValue(
+                  `${unit.name} ${getUnitYears(unit)}`,
+                )}`}
                 className={"p-4 w-full text-ellipsis flex"}
                 value={unit.id}
               >
@@ -74,6 +109,9 @@ export default async function CourseworkList({
                         colour: coursework.colour,
                         creation_date: coursework.creation_date,
                         due_date: coursework.due_date,
+                        selector_suffix: toDataCyValue(
+                          `${unit.name} ${getUnitYears(unit)} ${coursework.name}`,
+                        ),
                         unit_code: unit.unit_code,
                       }}
                     />

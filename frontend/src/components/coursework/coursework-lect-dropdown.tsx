@@ -96,7 +96,7 @@ export default function CourseworkLectDropdown({
       <DropDrawer>
         <DropDrawerTrigger
           data-cy="coursework-lect-dropdown"
-          className="border hover:bg-accent hover:transition p-2"
+          className="border p-2 hover:bg-accent hover:transition"
         >
           <Menu size={32} />
         </DropDrawerTrigger>
@@ -109,7 +109,7 @@ export default function CourseworkLectDropdown({
               <DropDrawerLabel>Engine</DropDrawerLabel>
               {!engineIsSetup && (
                 <>
-                  <Item variant={"outline"} className={"p-2 m-2"}>
+                  <Item variant={"outline"} className={"m-2 p-2"}>
                     <ItemMedia variant={"icon"}>
                       <BookPlus />
                     </ItemMedia>
@@ -204,6 +204,7 @@ export default function CourseworkLectDropdown({
                 <DropDrawerLabel>Manage</DropDrawerLabel>
                 <DropDrawerItem
                   key={"Edit"}
+                  data-cy="coursework-edit-menu-item"
                   onSelect={() => setShowEdit(true)}
                   disabled={!canEdit}
                   icon={<SquarePen />}
