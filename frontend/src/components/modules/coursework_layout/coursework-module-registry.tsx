@@ -23,6 +23,14 @@ export const courseworkModuleRegistry = {
     maxW: 10,
     maxH: 4,
   },
+  information2: {
+    title: "Information2",
+    component: CourseworkInformation,
+    minW: 1,
+    minH: 1,
+    maxW: 10,
+    maxH: 4,
+  },
   repo_overview: {
     title: "Repository Overview",
     component: CourseworkRepoOverview,
