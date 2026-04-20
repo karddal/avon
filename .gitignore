@@ -1,3 +1,4 @@
+2025-ContinuousAssessment.code-workspace
 # MacOS
 .DS_Store
 .AppleDouble
@@ -6,9 +7,6 @@ Thumbs.db
 
 # Logs
 *.log
-
-# Zed
-.zed/
 
 # IntellIJ
 .idea/
@@ -52,3 +50,6 @@ node_modules/
 
 # frontend cypress
 /frontend/cypress/screenshots
+
+
+.zed

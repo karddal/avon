@@ -46,8 +46,8 @@ build-fe:
     npm run build
 
 test-be:
-	@echo "Testing backend routers..."
-	uv run pytest -v
+    @echo "Testing backend routers..."
+    uv run pytest -v
 
 run-fe env = "dev":
     npm run {{env}}
@@ -56,17 +56,17 @@ test-fe:
     @echo "Testing frontend..."
     npm test
 
-test: 
+test:
     just fe test
     just be test
 
 [windows]
 run-be env = "dev":
-    $env:ENV="{{env}}"; uv run fastapi dev
+    $env:APP_ENV="{{env}}"; uv run fastapi dev
 
 [unix]
 run-be env = "dev":
-    ENV={{env}} uv run fastapi dev
+    APP_ENV={{env}} uv run fastapi dev
 
 sync-fe:
     npm i
@@ -81,5 +81,10 @@ sync:
 serve-doc:
     mdbook serve --open
 
-seeding-db:
-    uv run python -m app.cli.manage seeding
+[windows]
+seed-db env = "dev":
+    $env:APP_ENV="{{env}}"; uv run python -m app.cli.manage seed
+
+[unix]
+seed-db env = "dev":
+    APP_ENV={{env}} uv run python -m app.cli.manage seed

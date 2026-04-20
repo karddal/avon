@@ -1,6 +1,10 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import Editor from "@monaco-editor/react";
+import { OctagonAlert, Save } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import {
   type Dispatch,
   type SetStateAction,
@@ -8,10 +12,23 @@ import {
   useMemo,
   useState,
 } from "react";
+import { HexColorInput, HexColorPicker } from "react-colorful";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
 import {
   Field,
   FieldError,
@@ -27,32 +44,9 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Textarea } from "@/components/ui/textarea";
-import { useIsMobile } from "@/hooks/use-mobile";
-
-const _Calendar29 = dynamic(
-  () => import("@/components/calendar").then((mod) => mod.Calendar29),
-  { ssr: false },
-);
-
-import { OctagonAlert, Save } from "lucide-react";
-import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
-import { HexColorInput, HexColorPicker } from "react-colorful";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { ButtonGroup } from "@/components/ui/button-group";
 import { Spinner } from "@/components/ui/spinner";
-import { update_unit } from "@/lib/actions/update_unit";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { update_unit } from "@/lib/actions/unit/update_unit";
 
 interface FormProps {
   unit_update_data: UnitUpdateData;
@@ -80,6 +74,8 @@ export default function EditUnit({
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [alertText, setAlertText] = useState<string>("");
   const [confirmDiscardOpen, setConfirmDiscardOpen] = useState(false);
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
   const router = useRouter();
   const formSchema = z.object({
@@ -130,7 +126,6 @@ export default function EditUnit({
   }, [open_state, editDefaultValues, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // do something with values, submit here
     setSubmitState(true);
     const req = {
       id: unit_update_data.id,
@@ -138,7 +133,7 @@ export default function EditUnit({
       description: values.description,
       unit_code: values.unit_code,
       colour: colour.substring(1),
-      programme_id: values.programme_id,
+      programme_id: unit_update_data.programme_id,
     };
     await update_unit(req).then((r) => {
       if (!r.success) {
@@ -252,6 +247,7 @@ export default function EditUnit({
                       </FieldLabel>
                       <Input
                         {...field}
+                        data-cy="unit-edit-name"
                         id={"form-flow-name"}
                         aria-invalid={fieldState.invalid}
                         placeholder={"My amazing unit"}
@@ -271,13 +267,30 @@ export default function EditUnit({
                       <FieldLabel htmlFor={"form-flow-description"}>
                         Unit description
                       </FieldLabel>
-                      <Textarea
-                        {...field}
-                        id={"form-flow-description"}
-                        aria-invalid={fieldState.invalid}
-                        placeholder={"A great description"}
-                        autoComplete={"off"}
-                      />
+                      <div
+                        data-cy="markdown-editor"
+                        className="overflow-hidden rounded-md border"
+                      >
+                        <Editor
+                          height="15vh"
+                          defaultLanguage="markdown"
+                          value={field.value}
+                          onChange={(v) => field.onChange(v ?? "")}
+                          theme={isDark ? "vs-dark" : "vs-light"}
+                          options={{
+                            minimap: { enabled: false },
+                            wordWrap: "on",
+                            lineNumbers: "off",
+                            folding: false,
+                            scrollBeyondLastLine: false,
+                            fontSize: 14,
+                            quickSuggestions: false,
+                            suggestOnTriggerCharacters: false,
+                            wordBasedSuggestions: "off",
+                            parameterHints: { enabled: false },
+                          }}
+                        />
+                      </div>
                       {fieldState.invalid && (
                         <FieldError errors={[fieldState.error]} />
                       )}
@@ -405,7 +418,6 @@ export default function EditUnit({
             </form>
           </div>
 
-          {/* Sticky footer */}
           <div className="sticky bottom-0 border-t bg-background px-6 py-4">
             <SheetFooter>
               <ButtonGroup orientation={"vertical"} className={"gap-2 w-full"}>
@@ -417,6 +429,7 @@ export default function EditUnit({
                 )}
                 {!submitState && (
                   <Button
+                    data-cy="unit-edit-save"
                     type={"submit"}
                     form="edit-unit-form"
                     className="w-full"

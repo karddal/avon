@@ -25,10 +25,12 @@ class ResourceType(Enum):
     UNIT = "unit"
     PROGRAMME = "programme"
 
+
 class FERoles(Enum):
     ADMIN = "admin"
     USER = "user"
     LECTURER = "lecturer"
+
 
 class Scopes(Enum):
     """
@@ -48,7 +50,7 @@ class Scopes(Enum):
     UNIT_COURSEWORK_ENGINE = "unit:coursework_engine"  # Manage Engine for coursework
     UNIT_LOCKING = "unit:locking"
 
-    COURSEWORK_ALL = "coursework:all" # Read all courseworks
+    COURSEWORK_ALL = "coursework:all"  # Read all courseworks
 
     # Programme related scopes
     PROGRAMME_CREATE = "programme:create"
@@ -172,7 +174,6 @@ async def authenticate_user(
     Optionally, provide a Resource and any scopes that they have for that resource are also returned.
     """
 
-
     if settings.ignore_auth:
         logger.debug("ignore auth mode set, so authenticating as admin")
         user = AuthenticatedUser(
@@ -231,12 +232,24 @@ async def require_scopes(
     required = set(required_scopes)
     missing = required - user.scopes
     if missing:
+        logger.info(
+            "scopes verify failure, user_id=%s, scopes_required=%s, missing=%s",
+            user.user_id,
+            required,
+            missing,
+        )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"Authentication error. Missing scopes: {missing}",
         )
 
+    logger.info(
+        "scopes verify success user_id=%s scopes_required=%s",
+        user.user_id,
+        required_scopes,
+    )
     return user
+
 
 async def require_role(
     role: FERoles,
@@ -251,10 +264,11 @@ async def require_role(
         token=token,
         session=session,
     )
-    
-    if user.fe_role == role:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-        detail=f"Authentication error. Not correct role: {role}")
-    
-    return True
 
+    if user.fe_role == role:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Authentication error. Not correct role: {role}",
+        )
+
+    return True

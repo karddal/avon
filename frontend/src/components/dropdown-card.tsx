@@ -1,13 +1,14 @@
 "use client";
+import type * as React from "react";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
-interface DropdownCardProps {
+interface DropdownCardProps extends React.ComponentProps<typeof Card> {
   title: string;
   desc: string;
   openByDefault: boolean;
   children: React.ReactNode;
-  className?: string;
 }
 
 export function DropdownCard({
@@ -16,10 +17,11 @@ export function DropdownCard({
   openByDefault,
   children,
   className,
+  ...props
 }: DropdownCardProps) {
   const [open, setOpen] = useState(openByDefault);
   return (
-    <Card className={`flex flex-col gap-0 ${className}`}>
+    <Card className={cn("flex flex-col gap-0", className)} {...props}>
       <CardHeader
         className="flex flex-row items-center gap-4 cursor-pointer select-none "
         onClick={() => setOpen(!open)}

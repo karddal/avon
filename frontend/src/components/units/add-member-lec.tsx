@@ -22,12 +22,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import UserCard from "@/components/user-card";
-import { batch_add_lecturers_to_unit } from "@/lib/actions/batch_add_lecturers_to_unit";
-import { get_lecturers } from "@/lib/actions/get_lecturers";
+import { batch_add_lecturers_to_unit } from "@/lib/actions/unit/batch_add_lecturers_to_unit";
+import { get_lecturers } from "@/lib/actions/unit/get_lecturers";
 import {
   type SearchResponse,
   search_by_name,
-} from "@/lib/actions/search_by_name";
+} from "@/lib/actions/unit/search_by_name";
 
 function _getInitials(name: string) {
   if (!name || typeof name !== "string") return "?";

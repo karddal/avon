@@ -21,6 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { formatIsoDate } from "@/lib/date-format";
 import { Card } from "../ui/card";
 
 type courseworkData = {
@@ -31,6 +32,7 @@ type courseworkData = {
   colour: string;
   creation_date: string;
   due_date: string;
+  selector_suffix?: string;
   unit_code?: string;
 };
 
@@ -48,12 +50,22 @@ export default function Coursework({
   const colouring = {
     backgroundColor: `#${props.colour}`,
   };
+  const cardDataCy = props.selector_suffix
+    ? `coursework-card-${props.selector_suffix}`
+    : "coursework-card";
+  const linkDataCy = props.selector_suffix
+    ? `coursework-link-${props.selector_suffix}`
+    : "coursework-link";
   const [showDelete, setShowDelete] = useState(false);
   return (
-    <div>
+    <div data-cy={cardDataCy}>
       <div style={colouring} className="h-2 w-full"></div>
       <Card className="bg-muted h-full flex flex-row p-2 hover:bg-foreground/10">
-        <Link className={"flex-1 h-full"} href={`/coursework/${props.id}`}>
+        <Link
+          data-cy={linkDataCy}
+          className={"flex-1 h-full"}
+          href={`/coursework/${props.id}`}
+        >
           <div className="h-full flex-row justify-between">
             <div className="flex flex-col">
               <p className="text-lg lg:text-xl">{props.name}</p>
@@ -62,7 +74,7 @@ export default function Coursework({
             <div className="flex flex-row gap-2">
               <p className="text-sm lg:text-xl text-muted-foreground">
                 <span className="text-sm">Due: </span>
-                {new Date(props.due_date).toLocaleDateString()}
+                {formatIsoDate(props.due_date)}
               </p>
             </div>
           </div>
@@ -71,7 +83,11 @@ export default function Coursework({
           <div className={"z-20 place-self-end"}>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant={"outline"} size={"icon"}>
+                <Button
+                  data-cy="coursework-list-actions-trigger"
+                  variant={"outline"}
+                  size={"icon"}
+                >
                   <Ellipsis />
                 </Button>
               </DropdownMenuTrigger>
@@ -79,6 +95,7 @@ export default function Coursework({
                 <DropdownMenuLabel>Coursework Options</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
+                  data-cy="coursework-list-delete-item"
                   onSelect={() => setShowDelete(true)}
                   className={
                     "text-destructive focus:text-destructive flex flex-row"

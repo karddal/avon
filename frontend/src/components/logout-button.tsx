@@ -2,7 +2,7 @@
 
 import { DoorOpen } from "lucide-react";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { logout } from "@/lib/actions/login";
+import { logout } from "@/lib/actions/auth/login";
 
 export default function LogoutButton() {
   // const router = useRouter();
