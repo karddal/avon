@@ -1,18 +1,18 @@
 import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
 import UnitName from "@/app/units/[slug]/name";
+import UnitClient from "@/components/modules/unit-client";
 import { Skeleton } from "@/components/ui/skeleton";
 import LecturerDropdown from "@/components/units/lecturer-dropdown";
-import { get_unit_scopes } from "@/lib/actions/unit/get_unit_scopes";
-import { getRequestJWT, requireSession } from "@/lib/auth-utils";
 import { get_username_from_id } from "@/lib/actions/auth/get_username";
 import { get_user_image_from_id } from "@/lib/actions/coursework/get_image";
 import { get_owner_of_unit } from "@/lib/actions/unit/get_owner_of_unit";
+import { get_unit_scopes } from "@/lib/actions/unit/get_unit_scopes";
 import {
   getUnitLayoutForCurrentUnit,
   saveUnitLayoutForCurrentUnit,
 } from "@/lib/actions/unit-layout";
-import UnitClient from "@/components/modules/unit-client";
+import { getRequestJWT, requireSession } from "@/lib/auth-utils";
 import { availableUnitModules } from "@/lib/unit-layout";
 
 type Response = {
@@ -74,7 +74,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
     userRole = "user";
   }
   const canEditLayouts = userRole === "lecturer" || userRole === "admin";
-  
+
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/units/${slug}/`,
     {
@@ -111,16 +111,16 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
   const lecturers = lecturerResponse.lecturers;
   const owner = await get_owner_of_unit(data.id);
 
-    const results: Lecturer[] = [];
-    for (const lecturer of lecturers) {
-      console.log(lecturer);
-      results.push({
-        id: lecturer,
-        name: await get_username_from_id(lecturer),
-        image: await get_user_image_from_id(lecturer),
-        role: lecturer === owner,
-      });
-    }
+  const results: Lecturer[] = [];
+  for (const lecturer of lecturers) {
+    console.log(lecturer);
+    results.push({
+      id: lecturer,
+      name: await get_username_from_id(lecturer),
+      image: await get_user_image_from_id(lecturer),
+      role: lecturer === owner,
+    });
+  }
 
   const courseworkResponseRaw = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/units/${data.id}/courseworks`,
@@ -134,7 +134,8 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
     },
   );
   const savedLayout = await getUnitLayoutForCurrentUnit(data.id);
-  const courseworkResponse: courseworkResponse = await courseworkResponseRaw.json();
+  const courseworkResponse: courseworkResponse =
+    await courseworkResponseRaw.json();
 
   return (
     <>
@@ -175,7 +176,6 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
           courseworks={courseworkResponse}
         />
       </div>
-      
     </>
   );
 }

@@ -4,10 +4,7 @@ import path from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import type { GridItem } from "@/components/modules/unit-types";
 import { pool } from "@/lib/actions/auth/db_pool";
-import {
-  defaultUnitLayout,
-  parseUnitLayout,
-} from "@/lib/unit-layout";
+import { defaultUnitLayout, parseUnitLayout } from "@/lib/unit-layout";
 
 var dbPath = "../sqlite.db";
 if (process.env.CI_MODE === "True") {
@@ -56,9 +53,7 @@ async function getRawUnitLayout(unitId: string): Promise<string | null> {
       [unitId],
     );
 
-    const row = result.rows[0] as
-      | { unit_layout: string | null }
-      | undefined;
+    const row = result.rows[0] as { unit_layout: string | null } | undefined;
     return row?.unit_layout ?? null;
   }
 
@@ -74,7 +69,9 @@ async function getRawUnitLayout(unitId: string): Promise<string | null> {
   return result?.unit_layout ?? null;
 }
 
-export async function getUnitLayoutForCurrentUnit(unitId: string): Promise<GridItem[]> {
+export async function getUnitLayoutForCurrentUnit(
+  unitId: string,
+): Promise<GridItem[]> {
   try {
     const rawLayout = await getRawUnitLayout(unitId);
     return parseUnitLayout(rawLayout) ?? defaultUnitLayout;
@@ -86,7 +83,7 @@ export async function getUnitLayoutForCurrentUnit(unitId: string): Promise<GridI
 
 export async function saveUnitLayoutForCurrentUnit(
   layout: GridItem[],
-  unitId: string
+  unitId: string,
 ): Promise<void> {
   const parsedLayout = parseUnitLayout(JSON.stringify(layout));
 
@@ -99,10 +96,10 @@ export async function saveUnitLayoutForCurrentUnit(
   await ensureUnitLayoutColumnExists();
 
   if (isProductionDatabase()) {
-    await pool.query(
-      'UPDATE "unit" SET unit_layout = $1 WHERE id = $2',
-      [serializedLayout, unitId],
-    );
+    await pool.query('UPDATE "unit" SET unit_layout = $1 WHERE id = $2', [
+      serializedLayout,
+      unitId,
+    ]);
     return;
   }
 
@@ -110,8 +107,6 @@ export async function saveUnitLayoutForCurrentUnit(
   db.createSession();
 
   const sqliteUnitId = normalizeSqliteUuid(unitId);
-  const query = db.prepare(
-    "UPDATE unit SET unit_layout = ? WHERE id = ?",
-  );
+  const query = db.prepare("UPDATE unit SET unit_layout = ? WHERE id = ?");
   query.run(serializedLayout, sqliteUnitId);
 }
