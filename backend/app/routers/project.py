@@ -1,6 +1,7 @@
 
 import logging
 import os
+import random
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import text
@@ -52,15 +53,26 @@ async def create_templates(template: TemplateCreate, session: session_dependency
 async def create_skeleton_code(details: ProjectSkeleton):
     return await gl_create_skeleton_code(details.group_id, details.coursework_name)
 
+# @app.on_event("startup")
+# async def start_worker():
+#     asyncio.create_task(run_provision_worker())
+
 async def run_provision_worker():
     while True:
         job_ids = []
         with Session(engine) as session:
-            statement = select(ProvisionProject).where(ProvisionProject.status=="pending").limit(10)
+            statement = select(ProvisionProject).where(
+                (ProvisionProject.status== "pending") | 
+                ((ProvisionProject.status == "ongoing") &
+                 (ProvisionProject.next_run_at <= datetime.now())
+                )).limit(10)
             jobs = session.exec(statement).all()
             if not jobs:
-                print("Nothing found in the jobs")
-                return
+
+                # print("Nothing found in the jobs")
+                # return
+                await asyncio.sleep(1)
+                continue
             
             for job in jobs:
                 job.status = "in_progress"
@@ -73,22 +85,31 @@ async def run_provision_worker():
 sem = asyncio.Semaphore(1)
 
 async def process_job(job_id: int):
+    switch = random.randint(0, 5)
     async with sem:
         with Session(engine) as session:
             job = session.get(ProvisionProject, job_id)
-            try: 
-                await gl_create_fork(name=job.cw_name, user_id=job.student_id, group_id=job.gitlab_id, template_id=job.template_id)
-                job.status = "success"
-            except Exception as e:
-                print("oops", e)
-                if job.attempts < job.max_attempts:
-                    job.attempts += 1
-                    backoff = 2 ** job.attempts
-                    job.next_run_at = datetime.now() + timedelta(seconds=backoff)
-                else:
-                    job.status = "failed"
-                    print("Failed", job)
-
+            print("switch", switch)
+            if switch == 5:
+                try: 
+                    await gl_create_fork(name=job.cw_name, user_id=job.student_id, group_id=job.gitlab_id, template_id=job.template_id)
+                    job.status = "success"
+                except Exception as e:
+                    print("oops", e)
+                    if job.attempts < job.max_attempts:
+                        job.attempts += 1
+                        backoff = 2 ** job.attempts
+                        job.status = "retry"
+                        job.next_run_at = datetime.now() + timedelta(seconds=backoff)
+                    else:
+                        job.status = "failed"
+                        print("Failed", job)
+            else:    
+                job.attempts += 1
+                backoff = 2 ** job.attempts
+                job.status = "retry"
+                job.next_run_at = datetime.now() + timedelta(seconds=backoff) 
+                switch = False
             session.commit()
 
 # Creating the fork creates the project. Use this.
@@ -96,53 +117,82 @@ async def process_job(job_id: int):
 async def create_fork(project: ProjectFork, session: session_dependency):
     # Add projects to be provisioned to the queue (yes the queue is a table)
     # This is essentially the producer
-    
+
+
     statement = select(Coursework.unit_id, Coursework.name, Coursework.gitlab_id).where(Coursework.id == project.coursework_id)
     cw_object = session.exec(statement).first()
-    unit_id, cw_name, gitlab_id = cw_object
+    unit_id, name, gitlab_id = cw_object
 
-    # Get the students enrolled
-    statement = select(UnitEnrollment.user_id).where((UnitEnrollment.unit_id == unit_id) & (UnitEnrollment.type == "student"))
+    statement = select(UnitEnrollment.user_id).where(
+        (UnitEnrollment.unit_id == unit_id) & (UnitEnrollment.type == "student")
+    )
     students_enrolled = session.exec(statement).all()
+    print(f"Total students: {len(students_enrolled)}")
+    print(f"Unique students: {len(set(students_enrolled))}") 
+    # if session.exec(select(StudentRepo).where(StudentRepo.cw_id == project.coursework_id)).first():
+    #     raise HTTPException(
+    #         status_code=status.HTTP_409_CONFLICT,
+    #         detail="Some student repos have already been provisioned."
+    #     )
+
+    semaphore = asyncio.Semaphore(4)  # Max 8 concurrent GitLab API calls
+
+    async def provision_student(student):
+        async with semaphore:
+            data = await gl_create_fork(name, user_id=student, group_id=gitlab_id, template_id=project.template_id)
+            return student, data  # Return data, don't touch the DB here
+
+    # --- Concurrent fork creation ---
+    results = await asyncio.gather(
+        *[provision_student(s) for s in students_enrolled],
+        return_exceptions=True  # Don't let one failure cancel others
+    ) 
+    # statement = select(Coursework.unit_id, Coursework.name, Coursework.gitlab_id).where(Coursework.id == project.coursework_id)
+    # cw_object = session.exec(statement).first()
+    # unit_id, cw_name, gitlab_id = cw_object
+
+    # # Get the students enrolled
+    # statement = select(UnitEnrollment.user_id).where((UnitEnrollment.unit_id == unit_id) & (UnitEnrollment.type == "student"))
+    # students_enrolled = session.exec(statement).all()
+
+    # levels = {0: [], 1: [], 2: [], 3: [], 4:[], "failed":[]}
+
+    # for student in students_enrolled:
+    #     job = {
+    #         "student_id": student,
+    #         "cw_id": project.coursework_id,
+    #         "cw_name": cw_name,
+    #         "gitlab_id": gitlab_id,
+    #         "template_id": project.template_id,
+    #     }
+    #     levels[0].append(job)
+    
+    # for level in levels:
+        # do stuff in each level, if it doesn't work move it to the next level and try again with exponential backoff
+        # otherwise just add it to another table which says failure so it can be manually retried
+
 
     # Add them to the queue
-    for student in students_enrolled:
-        job = ProvisionProject(
-            student_id=student,
-            cw_id=project.coursework_id,
-            cw_name=cw_name,
-            gitlab_id=gitlab_id,
-            template_id=project.template_id,
-            status="pending"
-        )
-        session.add(job)
+    # for student in students_enrolled:
+    #     job = ProvisionProject(
+    #         student_id=student,
+    #         cw_id=project.coursework_id,
+    #         cw_name=cw_name,
+    #         gitlab_id=gitlab_id,
+    #         template_id=project.template_id,
+    #         status="pending"
+    #     )
+    #     session.add(job)
     
-    session.commit()
-    # print("done")
-    asyncio.create_task(run_provision_worker())
-    print("done 1234")
-    return {"queued": len(students_enrolled)}
+    # session.commit()
+    # # print("done")
+    
+    # for i 
 
-    # sem = asyncio.Semaphore(4)
 
-    # async def create(student):
-    #     async with sem:
-    #         try:
-    #             return await gl_create_fork(name=cw_name, user_id=student, group_id=gitlab_id, template_id=project.template_id)
-    #         except Exception:
-    #            raise HTTPException(
-    #             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
-    #             detail="Project for the student: " + student + " could not be created."
-    #             )
-
-    # tasks = [create(student) for student in students_enrolled]
-    # await asyncio.gather(*tasks, return_exceptions=True)
-
-    # exception handling
-
-    # # Get the number of students enrolled onto a unit, by the courseworkid courseworkid -> unit -> unit_enrollement
-    # # Make an API call to gitlab to create a project using a helper function for those many students
-    # return {"unit id": students_enrolled} 
+    # asyncio.create_task(run_provision_worker())
+    # print("done 1234")
+    # return {"queued": len(students_enrolled)}
 
 @router.delete("/clear-queue")
 async def clear_queue(session: session_dependency):
