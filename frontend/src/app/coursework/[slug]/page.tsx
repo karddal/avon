@@ -16,11 +16,8 @@ import { get_cw_engine_data } from "@/lib/actions/coursework/get_cw_engine_data"
 import { get_student_repos } from "@/lib/actions/coursework/get_student_repos";
 import { getRequestJWT } from "@/lib/auth-utils";
 import Loading from "../loading";
-import CourseworkDescription from "./description";
-import CourseworkInformation from "./information";
 import CourseworkName from "./name";
 import CourseworkClient from "@/components/modules/coursework_layout/coursework-client";
-import { availableCourseworkModules, defaultCourseworkLayout, staffAvailableModules, studentAvailableModules } from "@/lib/coursework-layout";
 import {
   getCourseworkLayoutForCurrentCoursework,
   saveCourseworkLayoutForCurrentCoursework,
@@ -99,10 +96,8 @@ async function CourseworkPageContent({
   const cw_engine_data = canGetAvailImages
     ? await get_cw_engine_data({ coursework_id: slug })
     : undefined;
-  const savedLayout = await getCourseworkLayoutForCurrentCoursework(slug, canEditLayouts ? "staff" : "student");
   const staffLayout = await getCourseworkLayoutForCurrentCoursework(slug, "staff");
   const studentLayout = await getCourseworkLayoutForCurrentCoursework(slug, "student");
-  const availableModulesForUser = canEditLayouts ? staffAvailableModules : studentAvailableModules;
 
   // Fetch module-specific data
   const myRepo: StudentRepoData | null = await get_my_coursework_repo(slug).catch(() => null);
@@ -155,18 +150,14 @@ async function CourseworkPageContent({
       )}
       <section className="mb-8 min-h-0 flex-1">
         <CourseworkClient
-          initialLayout={savedLayout}
           staffLayout={staffLayout}
           studentLayout={studentLayout}
-          availableModules={availableCourseworkModules}
-          editableModules={availableModulesForUser}
           saveLayout={saveCourseworkLayoutForCurrentCoursework}
           slug={slug}
           repos={student_repos_data?.repos || []}
           myRepo={myRepo}
           setupProgressData={setupProgressData}
           courseworkData={courseworkData}
-          layoutType={canEditLayouts ? "staff" : "student"}
           canEditLayouts={canEditLayouts}
         />
       </section>

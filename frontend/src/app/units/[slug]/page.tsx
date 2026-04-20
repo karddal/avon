@@ -21,7 +21,6 @@ import {
   saveUnitLayoutForCurrentUnit,
 } from "@/lib/actions/unit-layout";
 import UnitClient from "@/components/modules/unit-client";
-import { availableUnitModules, defaultUnitLayout } from "@/lib/unit-layout";
 
 type Response = {
   lecturers: string[];
@@ -141,7 +140,8 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
       cache: "no-cache",
     },
   );
-  const savedLayout = await getUnitLayoutForCurrentUnit(data.id);
+  const staffLayout = await getUnitLayoutForCurrentUnit(data.id, "staff");
+  const studentLayout = await getUnitLayoutForCurrentUnit(data.id, "student");
   const courseworkResponse: courseworkResponse = await courseworkResponseRaw.json();
 
   return (
@@ -173,8 +173,8 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
       </div>
       <div className="flex min-h-0 mt-4 md:mt-0 mb-0 flex-1 flex-col space-y-4 md:space-y-6">
         <UnitClient
-          initialLayout={savedLayout}
-          availableModules={availableUnitModules}
+          staffLayout={staffLayout}
+          studentLayout={studentLayout}
           saveLayout={saveUnitLayoutForCurrentUnit}
           unit={data}
           role={userRole}

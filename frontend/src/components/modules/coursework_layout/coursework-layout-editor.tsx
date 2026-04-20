@@ -33,15 +33,11 @@ import { staffAvailableModules, studentAvailableModules } from "@/lib/coursework
 
 
 type CourseworkLayoutEditorProps = {
+  canEditLayouts: boolean;
   staffLayout: GridItem[];
   studentLayout: GridItem[];
   onStaffLayoutChange: Dispatch<SetStateAction<GridItem[]>>;
   onStudentLayoutChange: Dispatch<SetStateAction<GridItem[]>>;
-  editingLayoutType: "staff" | "student";
-  onEditingLayoutTypeChange: (layoutType: "staff" | "student") => void;
-  canEdit: boolean;
-  slug: string;
-  saveLayout: (layout: GridItem[], slug: string, layoutType?: "staff" | "student") => Promise<void>;
 };
 
 const GRID_COLUMNS = 10;
@@ -128,19 +124,20 @@ function findFirstOpenSpot(layout: GridItem[]) {
 }
 
 export default function CourseworkLayoutEditor({
+  canEditLayouts,
   staffLayout,
   studentLayout,
   onStaffLayoutChange,
   onStudentLayoutChange,
-  editingLayoutType,
-  onEditingLayoutTypeChange,
-  canEdit,
-  slug,
-  saveLayout,
 }: CourseworkLayoutEditorProps) {
+  const [editingLayoutType, setEditingLayoutType] =
+    useState<"staff" | "student">("staff");
+
   const layout = editingLayoutType === "staff" ? staffLayout : studentLayout;
-  const setLayout = editingLayoutType === "staff" ? onStaffLayoutChange : onStudentLayoutChange;
-  const availableModules = editingLayoutType === "staff" ? staffAvailableModules : studentAvailableModules;
+  const setLayout =
+    editingLayoutType === "staff" ? onStaffLayoutChange : onStudentLayoutChange;
+  const availableModules =
+    editingLayoutType === "staff" ? staffAvailableModules : studentAvailableModules;
 
   const [_showPlacedModules, _setShowPlacedModules] = useState(true);
   const [dragState, setDragState] = useState<DragState>(null);
@@ -345,7 +342,7 @@ export default function CourseworkLayoutEditor({
 
   return (
     <>
-      {canEdit && (
+      {canEditLayouts && (
         <Dialog>
           <div className="flex w-full justify-end">
             <DialogTrigger asChild>
@@ -368,7 +365,7 @@ export default function CourseworkLayoutEditor({
                     <div className="mt-4 flex items-center gap-1 border-b">
                       <button
                         type="button"
-                        onClick={() => onEditingLayoutTypeChange("staff")}
+                        onClick={() => setEditingLayoutType("staff")}
                         className={cn(
                           "px-4 py-2 text-sm font-medium border-b-2 transition-colors",
                           editingLayoutType === "staff"
@@ -380,7 +377,7 @@ export default function CourseworkLayoutEditor({
                       </button>
                       <button
                         type="button"
-                        onClick={() => onEditingLayoutTypeChange("student")}
+                        onClick={() => setEditingLayoutType("student")}
                         className={cn(
                           "px-4 py-2 text-sm font-medium border-b-2 transition-colors",
                           editingLayoutType === "student"
