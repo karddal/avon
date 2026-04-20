@@ -9,11 +9,7 @@ type UnitData = {
   programme_id: string;
 };
 
-export default function UnitDescription({
-  unit,
-}: {
-  unit: UnitData;
-}) {
+export default function UnitDescription({ unit }: { unit: UnitData }) {
   return (
     <ScrollArea className="h-full border bg-accent p-2">
       {unit.description ? (

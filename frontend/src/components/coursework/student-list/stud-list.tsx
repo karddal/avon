@@ -8,7 +8,7 @@ import {
   SendHorizonal,
   UserIcon,
 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -22,12 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import UserCard from "@/components/user-card";
-import { get_all_students_with_maybe_repos } from "@/lib/actions/coursework/get_all_students_on_unit_with_repos";
 import { batch_add_students_to_unit } from "@/lib/actions/unit/batch_add_students_to_unit";
-import {
-  get_addable_students_courswork_id,
-  get_students,
-} from "@/lib/actions/unit/get_students";
 import {
   type SearchResponse,
   search_by_name,
@@ -51,6 +46,7 @@ export default function StudList({
   cw_id: string;
   repo_id: string;
 }) {
+  void repo_id;
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<SearchResponse>({
@@ -62,7 +58,7 @@ export default function StudList({
   const [offset, setOffset] = useState<number>(0);
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
   const [length, setLength] = useState<number>(0);
-  const [disabledUsers, setDisabledUsers] = useState<string[]>([]);
+  const [disabledUsers, _setDisabledUsers] = useState<string[]>([]);
 
   const limit = 5;
 

@@ -111,7 +111,7 @@ export const columns: (
       id: "repo_url",
       accessorKey: "repo_url",
       enableHiding: true,
-      header: ({ column }) => {
+      header: () => {
         return <div>Repo name</div>;
       },
       cell: ({ row }) => {
@@ -131,7 +131,7 @@ export const columns: (
       id: "repo_id",
       accessorKey: "repo_id",
       enableHiding: true,
-      header: ({ column }) => {
+      header: () => {
         return <div>Repo ID</div>;
       },
       cell: ({ row }) => {

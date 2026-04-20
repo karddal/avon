@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import UnitLayoutEditor from "@/components/modules/unit-layout-editor";
+import type { UnitModuleKey } from "@/components/modules/unit-module-registry";
+import UnitRenderer from "@/components/modules/unit-renderer";
 import type { GridItem } from "@/components/modules/unit-types";
 import { defaultUnitLayout } from "@/lib/unit-layout";
-import type { UnitModuleKey } from "@/components/modules/unit-module-registry";
-import UnitLayoutEditor from "@/components/modules/unit-layout-editor";
-import UnitRenderer from "@/components/modules/unit-renderer";
 
 type Lecturer = {
   id: string;
@@ -14,8 +14,8 @@ type Lecturer = {
 };
 
 type UnitClientProps = {
-  initialLayout: GridItem[];
-  availableModules: UnitModuleKey[];
+  initialLayout?: GridItem[] | null;
+  availableModules?: UnitModuleKey[];
   saveLayout: (layout: GridItem[], unitId: string) => Promise<void>;
   unit: UnitData;
   role: string;
@@ -56,8 +56,13 @@ export default function UnitClient({
   lecturers,
   courseworks,
 }: UnitClientProps) {
+  const safeInitialLayout = Array.isArray(initialLayout) ? initialLayout : [];
+  const safeAvailableModules = Array.isArray(availableModules)
+    ? availableModules
+    : [];
+
   const [layout, setLayout] = useState<GridItem[]>(
-    initialLayout.length > 0 ? initialLayout : defaultUnitLayout,
+    safeInitialLayout.length > 0 ? safeInitialLayout : defaultUnitLayout,
   );
   const hasMounted = useRef(false);
 
@@ -80,19 +85,25 @@ export default function UnitClient({
     return () => {
       window.clearTimeout(timeoutId);
     };
-  }, [layout, saveLayout, canEditLayouts]);
+  }, [layout, saveLayout, canEditLayouts, unit.id]);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       {canEditLayouts ? (
         <UnitLayoutEditor
-          availableModules={availableModules}
+          availableModules={safeAvailableModules}
           layout={layout}
           onChange={setLayout}
         />
       ) : null}
 
-      <UnitRenderer layout={layout} unit={unit} role={role} lecturers={lecturers} courseworks={courseworks} />
+      <UnitRenderer
+        layout={layout}
+        unit={unit}
+        role={role}
+        lecturers={lecturers}
+        courseworks={courseworks}
+      />
     </div>
   );
 }

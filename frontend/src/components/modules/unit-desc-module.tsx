@@ -1,6 +1,6 @@
-import { Skeleton } from "@/components/ui/skeleton";
 import { Suspense } from "react";
 import UnitDescription from "@/app/units/[slug]/description";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type UnitData = {
   id: string;

@@ -11,10 +11,11 @@ interface SetupProgressProps {
   setupProgressData: SetupProgressItem[];
 }
 
-export default function SetupProgress({ 
-  slug, 
-  setupProgressData 
+export default function SetupProgress({
+  slug,
+  setupProgressData,
 }: SetupProgressProps) {
+  void slug;
   const steps = setupProgressData;
   return (
     <Card className="h-full">

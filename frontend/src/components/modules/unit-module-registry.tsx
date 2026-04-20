@@ -1,6 +1,6 @@
 import AnnouncementsModule from "@/components/modules/announcements-module";
-import UnitDescriptionModule from "@/components/modules/unit-desc-module";
 import UnitCourseworksModule from "@/components/modules/unit-courseworks-module";
+import UnitDescriptionModule from "@/components/modules/unit-desc-module";
 import UnitMembersModule from "@/components/modules/unit-members-module";
 
 export const unitModuleRegistry = {

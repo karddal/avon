@@ -18,8 +18,6 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
-import { get_my_coursework_repo } from "@/lib/actions/coursework/get_my_coursework_repo";
-import { formatIsoDateTime } from "@/lib/date-format";
 
 function formatCommitDate(date: string | null) {
   if (!date) {
@@ -80,7 +78,8 @@ function StudentRepoOverviewContent({
 
   const commitCount = repo.total_commits;
   const linesChanged = repo.commits.reduce(
-    (total: number, commit: any) => total + commit.additions + commit.deletions,
+    (total: number, commit: CourseworkCommit) =>
+      total + commit.additions + commit.deletions,
     0,
   );
   const latestCommit = repo.commits[0];
@@ -179,6 +178,7 @@ export default function StudentRepoOverview({
   slug: string;
   myRepo: StudentRepoDataType | null;
 }) {
+  void slug;
   return (
     <Card className="h-full">
       <CardHeader>

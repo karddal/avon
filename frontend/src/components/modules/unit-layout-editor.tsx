@@ -16,6 +16,7 @@ import {
   useState,
 } from "react";
 import { toast } from "sonner";
+import type { UnitModuleKey } from "@/components/modules/unit-module-registry";
 import { unitModuleRegistry } from "@/components/modules/unit-module-registry";
 import type { GridItem } from "@/components/modules/unit-types";
 import { Button } from "@/components/ui/button";
@@ -29,9 +30,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import type { UnitModuleKey } from "@/components/modules/unit-module-registry";
-
-
 
 type UnitLayoutEditorProps = {
   availableModules: UnitModuleKey[];

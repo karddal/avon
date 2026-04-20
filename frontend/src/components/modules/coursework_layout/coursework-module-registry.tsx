@@ -1,10 +1,10 @@
-import CourseworkInformation from "@/app/coursework/[slug]/information";
 import CourseworkDescription from "@/app/coursework/[slug]/description";
-import StudentRepoOverview from "@/components/coursework/student-repo-overview";
+import CourseworkInformation from "@/app/coursework/[slug]/information";
 import CourseworkRepoOverview from "@/components/coursework/coursework-repo-overview";
+import CourseworkStudentPanel from "@/components/coursework/coursework-student-panel";
 import SetupProgress from "@/components/coursework/setup-progress";
 import StudentRepoActivity from "@/components/coursework/student-repo-activity";
-import CourseworkStudentPanel from "@/components/coursework/coursework-student-panel";
+import StudentRepoOverview from "@/components/coursework/student-repo-overview";
 
 export const courseworkModuleRegistry = {
   description: {

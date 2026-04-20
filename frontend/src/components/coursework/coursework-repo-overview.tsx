@@ -27,6 +27,7 @@ export default function CourseworkRepoOverview({
   slug: string;
   repos: StudentNameAndRepo[];
 }) {
+  void slug;
   const sorted = repos.sort((a, b) => a.student.localeCompare(b.student));
 
   return (

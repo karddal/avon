@@ -1,6 +1,5 @@
 import { BookDashed } from "lucide-react";
 import Coursework from "@/components/coursework/coursework";
-import { getRequestJWT, requireSession } from "@/lib/auth-utils";
 import {
   Empty,
   EmptyDescription,

@@ -58,6 +58,7 @@ export function StudentsTableWithMaybeRepos({
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+  void setRefreshTable;
   // const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({

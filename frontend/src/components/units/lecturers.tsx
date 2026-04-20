@@ -1,12 +1,4 @@
 import UserCard from "@/components/user-card";
-import { get_username_from_id } from "@/lib/actions/auth/get_username";
-import { get_user_image_from_id } from "@/lib/actions/coursework/get_image";
-import { get_owner_of_unit } from "@/lib/actions/unit/get_owner_of_unit";
-import { getRequestJWT } from "@/lib/auth-utils";
-
-type Response = {
-  lecturers: string[];
-};
 
 type Lecturer = {
   id: string;

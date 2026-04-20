@@ -32,7 +32,9 @@ export default async function Layout({
           </div>
         </header>
 
-        <div className="flex flex-1 flex-col gap-4 min-h-0 px-4 mt-4">{children}</div>
+        <div className="flex flex-1 flex-col gap-4 min-h-0 px-4 mt-4">
+          {children}
+        </div>
       </SidebarInset>
     </SidebarProvider>
   );

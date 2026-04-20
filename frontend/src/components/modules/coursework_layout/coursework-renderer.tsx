@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { courseworkModuleRegistry } from "@/components/modules/coursework_layout/coursework-module-registry";
 import type { CourseworkModuleKey } from "@/components/modules/coursework_layout/coursework-module-registry";
+import { courseworkModuleRegistry } from "@/components/modules/coursework_layout/coursework-module-registry";
 import type { GridItem } from "@/components/modules/coursework_layout/coursework-types";
-import { cn } from "@/lib/utils";
 import type { StudentNameAndRepo } from "@/lib/actions/coursework/get_student_repos";
+import { cn } from "@/lib/utils";
 
 type CourseworkCommit = {
   id: string;
@@ -52,8 +52,6 @@ type CourseworkRendererProps = {
   courseworkData: CourseworkData | null;
   editableModules: CourseworkModuleKey[];
 };
-
-
 
 const GRID_ROWS = 4;
 const MD_COLUMNS = 2;
@@ -154,14 +152,14 @@ function getResponsiveMdLayout(layout: GridItem[]) {
   });
 }
 
-export default function CourseworkRenderer({ 
-  layout, 
-  slug, 
-  repos, 
-  myRepo, 
+export default function CourseworkRenderer({
+  layout,
+  slug,
+  repos,
+  myRepo,
   setupProgressData,
   courseworkData,
-  editableModules
+  editableModules,
 }: CourseworkRendererProps) {
   const [isDesktopLayout, setIsDesktopLayout] = useState(false);
 
@@ -209,44 +207,46 @@ export default function CourseworkRenderer({
         ) : null}
 
         {orderedLayout
-          .filter((item) => editableModules.includes(item.moduleKey as CourseworkModuleKey))
+          .filter((item) =>
+            editableModules.includes(item.moduleKey as CourseworkModuleKey),
+          )
           .map((item) => {
-          const moduleDef = courseworkModuleRegistry[item.moduleKey];
-          const mdItem = mdLayout.find((entry) => entry.id === item.id);
+            const moduleDef = courseworkModuleRegistry[item.moduleKey];
+            const mdItem = mdLayout.find((entry) => entry.id === item.id);
 
-          if (!moduleDef) return null;
+            if (!moduleDef) return null;
 
-          const Component = moduleDef.component;
+            const Component = moduleDef.component;
 
-          return (
-            <div
-              key={item.id}
-              className={cn(
-                "min-h-35 overflow-hidden border bg-background md:min-h-45 lg:min-h-0",
-                mdItem?.colSpan === 2 ? "md:col-span-2" : "md:col-span-1",
-                mdItem?.rowSpan === 2 ? "md:row-span-2" : "md:row-span-1",
-              )}
-              style={
-                isDesktopLayout
-                  ? {
-                      gridColumn: `${item.x + 1} / span ${item.w}`,
-                      gridRow: `${item.y + 1} / span ${item.h}`,
-                    }
-                  : undefined
-              }
-            >
-              <div className="h-full min-h-0 overflow-visible lg:overflow-auto">
-                <Component 
-                  slug={slug} 
-                  repos={repos}
-                  myRepo={myRepo}
-                  setupProgressData={setupProgressData}
-                  courseworkData={courseworkData}
-                />
+            return (
+              <div
+                key={item.id}
+                className={cn(
+                  "min-h-35 overflow-hidden border bg-background md:min-h-45 lg:min-h-0",
+                  mdItem?.colSpan === 2 ? "md:col-span-2" : "md:col-span-1",
+                  mdItem?.rowSpan === 2 ? "md:row-span-2" : "md:row-span-1",
+                )}
+                style={
+                  isDesktopLayout
+                    ? {
+                        gridColumn: `${item.x + 1} / span ${item.w}`,
+                        gridRow: `${item.y + 1} / span ${item.h}`,
+                      }
+                    : undefined
+                }
+              >
+                <div className="h-full min-h-0 overflow-visible lg:overflow-auto">
+                  <Component
+                    slug={slug}
+                    repos={repos}
+                    myRepo={myRepo}
+                    setupProgressData={setupProgressData}
+                    courseworkData={courseworkData}
+                  />
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
     </div>
   );

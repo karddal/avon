@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  Edit,
-  GripVertical,
-  Plus,
-  Trash2,
-} from "lucide-react";
+import { Edit, GripVertical, Plus, Trash2 } from "lucide-react";
 import {
   type Dispatch,
   type SetStateAction,
@@ -14,6 +9,7 @@ import {
   useState,
 } from "react";
 import { toast } from "sonner";
+import type { CourseworkModuleKey } from "@/components/modules/coursework_layout/coursework-module-registry";
 import { courseworkModuleRegistry } from "@/components/modules/coursework_layout/coursework-module-registry";
 import type { GridItem } from "@/components/modules/coursework_layout/coursework-types";
 import { Button } from "@/components/ui/button";
@@ -26,11 +22,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  staffAvailableModules,
+  studentAvailableModules,
+} from "@/lib/coursework-layout";
 import { cn } from "@/lib/utils";
-import type { CourseworkModuleKey } from "@/components/modules/coursework_layout/coursework-module-registry";
-import { staffAvailableModules, studentAvailableModules } from "@/lib/coursework-layout";
-
-
 
 type CourseworkLayoutEditorProps = {
   canEditLayouts: boolean;
@@ -130,14 +126,17 @@ export default function CourseworkLayoutEditor({
   onStaffLayoutChange,
   onStudentLayoutChange,
 }: CourseworkLayoutEditorProps) {
-  const [editingLayoutType, setEditingLayoutType] =
-    useState<"staff" | "student">("staff");
+  const [editingLayoutType, setEditingLayoutType] = useState<
+    "staff" | "student"
+  >("staff");
 
   const layout = editingLayoutType === "staff" ? staffLayout : studentLayout;
   const setLayout =
     editingLayoutType === "staff" ? onStaffLayoutChange : onStudentLayoutChange;
   const availableModules =
-    editingLayoutType === "staff" ? staffAvailableModules : studentAvailableModules;
+    editingLayoutType === "staff"
+      ? staffAvailableModules
+      : studentAvailableModules;
 
   const [_showPlacedModules, _setShowPlacedModules] = useState(true);
   const [dragState, setDragState] = useState<DragState>(null);
@@ -361,7 +360,9 @@ export default function CourseworkLayoutEditor({
               <div className="flex flex-col justify-between bg-background shadow-lg lg:max-h-[82vh] lg:basis-[34%] lg:min-w-[320px]">
                 <div className="p-6 pb-0">
                   <DialogHeader>
-                    <DialogTitle className="text-lg">Dashboard Layout</DialogTitle>
+                    <DialogTitle className="text-lg">
+                      Dashboard Layout
+                    </DialogTitle>
                     <div className="mt-4 flex items-center gap-1 border-b">
                       <button
                         type="button"
@@ -370,7 +371,7 @@ export default function CourseworkLayoutEditor({
                           "px-4 py-2 text-sm font-medium border-b-2 transition-colors",
                           editingLayoutType === "staff"
                             ? "border-b-primary text-primary"
-                            : "border-b-transparent text-muted-foreground hover:text-foreground"
+                            : "border-b-transparent text-muted-foreground hover:text-foreground",
                         )}
                       >
                         Staff Layout
@@ -382,7 +383,7 @@ export default function CourseworkLayoutEditor({
                           "px-4 py-2 text-sm font-medium border-b-2 transition-colors",
                           editingLayoutType === "student"
                             ? "border-b-primary text-primary"
-                            : "border-b-transparent text-muted-foreground hover:text-foreground"
+                            : "border-b-transparent text-muted-foreground hover:text-foreground",
                         )}
                       >
                         Student Layout
@@ -396,151 +397,160 @@ export default function CourseworkLayoutEditor({
                   </DialogHeader>
                 </div>
 
-            <div className="overflow-y-auto px-6">
-              <div className="space-y-5">
-                <div className="space-y-2 pt-5">
-                  <div className="text-left">
+                <div className="overflow-y-auto px-6">
+                  <div className="space-y-5">
+                    <div className="space-y-2 pt-5">
+                      <div className="text-left">
+                        <DialogTitle className="text-sm font-medium">
+                          Available Modules
+                        </DialogTitle>
+                        <p className="text-xs text-muted-foreground">
+                          Add modules into the dashboard layout.
+                        </p>
+                      </div>
+                      <div className="space-y-2 pl-5">
+                        <div className="grid max-h-52 grid-cols-1 gap-2 overflow-y-auto border bg-accent p-3 md:grid-cols-2">
+                          {remainingModules.length === 0 ? (
+                            <div className="col-span-full border border-dashed bg-background p-3 text-xs text-muted-foreground">
+                              All modules have already been placed.
+                            </div>
+                          ) : (
+                            remainingModules.map((moduleKey) => (
+                              <Card
+                                key={moduleKey}
+                                onClick={() => addModule(moduleKey)}
+                                className="flex cursor-pointer flex-row items-center gap-2 rounded-none px-3 py-2 transition-all hover:border-primary hover:bg-primary/5"
+                              >
+                                <Plus className="h-3.5 w-3.5 text-primary" />
+                                <span className="text-xs font-medium">
+                                  {courseworkModuleRegistry[moduleKey]?.title ??
+                                    moduleKey}
+                                </span>
+                              </Card>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-auto flex flex-col gap-2 border-t bg-background p-6">
+                  <div className="space-y-2">
                     <DialogTitle className="text-sm font-medium">
-                      Available Modules
+                      Notes
                     </DialogTitle>
                     <p className="text-xs text-muted-foreground">
-                      Add modules into the dashboard layout.
+                      Some modules can be locked to certain sizes. For example,
+                      the commits chart can be forced to 1x1.
                     </p>
                   </div>
-                  <div className="space-y-2 pl-5">
-                    <div className="grid max-h-52 grid-cols-1 gap-2 overflow-y-auto border bg-accent p-3 md:grid-cols-2">
-                        {remainingModules.length === 0 ? (
-                          <div className="col-span-full border border-dashed bg-background p-3 text-xs text-muted-foreground">
-                            All modules have already been placed.
+                </div>
+              </div>
+
+              <div className="flex flex-col border bg-background p-6 shadow-lg lg:max-h-[82vh] lg:basis-[66%]">
+                <div className="mb-4 flex items-center justify-between gap-4">
+                  <DialogTitle className="text-lg">Preview</DialogTitle>
+                </div>
+
+                <div className="flex flex-1 items-start justify-center overflow-auto border bg-background p-4">
+                  <div
+                    ref={previewRef}
+                    className="grid w-full max-w-7xl select-none border border-dashed bg-background p-2"
+                    role="application"
+                    aria-label="Dashboard layout preview"
+                    style={{
+                      gridTemplateColumns: `repeat(${GRID_COLUMNS}, minmax(0, 1fr))`,
+                      gridTemplateRows: `repeat(${GRID_ROWS}, minmax(120px, 1fr))`,
+                      gap: "8px",
+                      minHeight: 420,
+                    }}
+                    onMouseMove={handlePointerMove}
+                    onMouseUp={commitDrag}
+                    onMouseLeave={commitDrag}
+                  >
+                    {layout.length === 0 ? (
+                      <div className="col-span-3 row-span-3 flex items-center justify-center text-xs text-muted-foreground">
+                        No modules placed yet.
+                      </div>
+                    ) : (
+                      layout.map((item) => {
+                        const moduleDef =
+                          courseworkModuleRegistry[item.moduleKey];
+                        const previewItem =
+                          hoverPreviewRect && dragState?.id === item.id
+                            ? hoverPreviewRect
+                            : item;
+
+                        return (
+                          <div
+                            key={item.id}
+                            className={cn(
+                              "min-h-0 overflow-hidden rounded-none border bg-card shadow-sm",
+                              dragState?.id === item.id && "opacity-80",
+                            )}
+                            style={{
+                              gridColumn: `${previewItem.x + 1} / span ${previewItem.w}`,
+                              gridRow: `${previewItem.y + 1} / span ${previewItem.h}`,
+                            }}
+                          >
+                            <div className="flex h-full flex-col">
+                              <div className="flex items-center justify-between border-b bg-muted/60 px-2.5 py-1.5">
+                                <button
+                                  type="button"
+                                  className="min-w-0 cursor-move"
+                                  onMouseDown={(event) =>
+                                    startMove(event, item)
+                                  }
+                                  aria-label={`Move ${moduleDef?.title ?? item.moduleKey}`}
+                                >
+                                  <span className="flex min-w-0 items-center gap-2">
+                                    <GripVertical className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                                    <span className="truncate text-xs font-medium">
+                                      {moduleDef?.title ?? item.moduleKey}
+                                    </span>
+                                  </span>
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onMouseDown={(event) =>
+                                    event.stopPropagation()
+                                  }
+                                  onClick={() => removeItem(item.id)}
+                                  className="flex h-6 w-6 shrink-0 items-center justify-center text-muted-foreground hover:bg-accent hover:text-destructive"
+                                  aria-label={`Delete ${moduleDef?.title ?? item.moduleKey}`}
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+
+                              <div className="relative flex flex-1 items-center justify-center p-2 text-xs text-muted-foreground">
+                                {moduleDef?.title ?? item.moduleKey}
+
+                                <button
+                                  type="button"
+                                  onMouseDown={(event) =>
+                                    startResize(event, item)
+                                  }
+                                  className="absolute bottom-0 right-0 h-4 w-4 cursor-se-resize border-l border-t bg-muted hover:bg-accent"
+                                  aria-label={`Resize ${moduleDef?.title ?? item.moduleKey}`}
+                                >
+                                  <span className="pointer-events-none absolute bottom-px right-px text-[8px] leading-none">
+                                    ◢
+                                  </span>
+                                </button>
+                              </div>
+                            </div>
                           </div>
-                        ) : (
-                          remainingModules.map((moduleKey) => (
-                            <Card
-                              key={moduleKey}
-                              onClick={() => addModule(moduleKey)}
-                              className="flex cursor-pointer flex-row items-center gap-2 rounded-none px-3 py-2 transition-all hover:border-primary hover:bg-primary/5"
-                            >
-                              <Plus className="h-3.5 w-3.5 text-primary" />
-                              <span className="text-xs font-medium">
-                                {courseworkModuleRegistry[moduleKey]?.title ??
-                                  moduleKey}
-                              </span>
-                            </Card>
-                          ))
-                        )}
-                    </div>
+                        );
+                      })
+                    )}
                   </div>
                 </div>
               </div>
             </div>
-
-            <div className="mt-auto flex flex-col gap-2 border-t bg-background p-6">
-              <div className="space-y-2">
-                <DialogTitle className="text-sm font-medium">Notes</DialogTitle>
-                <p className="text-xs text-muted-foreground">
-                  Some modules can be locked to certain sizes. For example, the
-                  commits chart can be forced to 1x1.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col border bg-background p-6 shadow-lg lg:max-h-[82vh] lg:basis-[66%]">
-            <div className="mb-4 flex items-center justify-between gap-4">
-              <DialogTitle className="text-lg">Preview</DialogTitle>
-            </div>
-
-            <div className="flex flex-1 items-start justify-center overflow-auto border bg-background p-4">
-              <div
-                ref={previewRef}
-                className="grid w-full max-w-7xl select-none border border-dashed bg-background p-2"
-                role="application"
-                aria-label="Dashboard layout preview"
-                style={{
-                  gridTemplateColumns: `repeat(${GRID_COLUMNS}, minmax(0, 1fr))`,
-                  gridTemplateRows: `repeat(${GRID_ROWS}, minmax(120px, 1fr))`,
-                  gap: "8px",
-                  minHeight: 420,
-                }}
-                onMouseMove={handlePointerMove}
-                onMouseUp={commitDrag}
-                onMouseLeave={commitDrag}
-              >
-                {layout.length === 0 ? (
-                  <div className="col-span-3 row-span-3 flex items-center justify-center text-xs text-muted-foreground">
-                    No modules placed yet.
-                  </div>
-                ) : (
-                  layout.map((item) => {
-                    const moduleDef = courseworkModuleRegistry[item.moduleKey];
-                    const previewItem =
-                      hoverPreviewRect && dragState?.id === item.id
-                        ? hoverPreviewRect
-                        : item;
-
-                    return (
-                      <div
-                        key={item.id}
-                        className={cn(
-                          "min-h-0 overflow-hidden rounded-none border bg-card shadow-sm",
-                          dragState?.id === item.id && "opacity-80",
-                        )}
-                        style={{
-                          gridColumn: `${previewItem.x + 1} / span ${previewItem.w}`,
-                          gridRow: `${previewItem.y + 1} / span ${previewItem.h}`,
-                        }}
-                      >
-                        <div className="flex h-full flex-col">
-                          <div className="flex items-center justify-between border-b bg-muted/60 px-2.5 py-1.5">
-                            <button
-                              type="button"
-                              className="min-w-0 cursor-move"
-                              onMouseDown={(event) => startMove(event, item)}
-                              aria-label={`Move ${moduleDef?.title ?? item.moduleKey}`}
-                            >
-                              <span className="flex min-w-0 items-center gap-2">
-                                <GripVertical className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                                <span className="truncate text-xs font-medium">
-                                  {moduleDef?.title ?? item.moduleKey}
-                                </span>
-                              </span>
-                            </button>
-
-                            <button
-                              type="button"
-                              onMouseDown={(event) => event.stopPropagation()}
-                              onClick={() => removeItem(item.id)}
-                              className="flex h-6 w-6 shrink-0 items-center justify-center text-muted-foreground hover:bg-accent hover:text-destructive"
-                              aria-label={`Delete ${moduleDef?.title ?? item.moduleKey}`}
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </button>
-                          </div>
-
-                          <div className="relative flex flex-1 items-center justify-center p-2 text-xs text-muted-foreground">
-                            {moduleDef?.title ?? item.moduleKey}
-
-                            <button
-                              type="button"
-                              onMouseDown={(event) => startResize(event, item)}
-                              className="absolute bottom-0 right-0 h-4 w-4 cursor-se-resize border-l border-t bg-muted hover:bg-accent"
-                              aria-label={`Resize ${moduleDef?.title ?? item.moduleKey}`}
-                            >
-                              <span className="pointer-events-none absolute bottom-px right-px text-[8px] leading-none">
-                                ◢
-                              </span>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </DialogContent>
+          </DialogContent>
         </Dialog>
       )}
     </>

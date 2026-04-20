@@ -19,8 +19,6 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { get_my_coursework_repo } from "@/lib/actions/coursework/get_my_coursework_repo";
-import { formatIsoDateTime } from "@/lib/date-format";
 
 function formatCommitDate(date: string | null) {
   if (!date) {
@@ -84,60 +82,64 @@ function StudentRepoActivityContent({
       <div className="flex min-h-0 flex-1 flex-col justify-center space-y-2">
         {repo.commits.length > 0 ? (
           <div className="space-y-2">
-            {repo.commits.slice(0, 3).map((commit: any, index: number) => (
-              <a
-                key={commit.id}
-                href={commit.web_url ?? repo.repo_url}
-                target="_blank"
-                rel="noreferrer"
-                className={`block rounded-md border px-3 py-2 transition-colors ${
-                  index === 0
-                    ? "border-emerald-300 bg-emerald-50 hover:bg-emerald-100/80 dark:border-emerald-800 dark:bg-emerald-950/40 dark:hover:bg-emerald-950/60"
-                    : "hover:bg-accent/40"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <GitCommitHorizontal
-                    className={`mt-0.5 h-4 w-4 shrink-0 text-muted-foreground ${index === 0 ? "text-emerald-700 dark:text-emerald-300" : ""}`}
-                  />
-                  <div className="min-w-0 flex-1">
-                    {index === 0 && (
-                      <div className="mb-1 text-[11px] font-medium flex flex-row gap-2 items-center uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
-                        Current submission{" "}
-                        <HoverCard openDelay={10} closeDelay={100}>
-                          <HoverCardTrigger asChild>
-                            <CircleQuestionMark className={""} />
-                          </HoverCardTrigger>
-                          <HoverCardContent
-                            className={"flex w-64 flex-col gap-0.5 text-sm"}
-                          >
-                            <div className={"font-medium"}>What is this?</div>
-                            <div>
-                              The Avon Engine always marks the most recent
-                              commit on the default branch. Ensure that when the
-                              coursework deadline passes, the default branch on
-                              your GitLab repository contains the code that you
-                              wish to submit.
-                            </div>
-                          </HoverCardContent>
-                        </HoverCard>
+            {repo.commits
+              .slice(0, 3)
+              .map((commit: CourseworkCommit, index: number) => (
+                <a
+                  key={commit.id}
+                  href={commit.web_url ?? repo.repo_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={`block rounded-md border px-3 py-2 transition-colors ${
+                    index === 0
+                      ? "border-emerald-300 bg-emerald-50 hover:bg-emerald-100/80 dark:border-emerald-800 dark:bg-emerald-950/40 dark:hover:bg-emerald-950/60"
+                      : "hover:bg-accent/40"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <GitCommitHorizontal
+                      className={`mt-0.5 h-4 w-4 shrink-0 text-muted-foreground ${index === 0 ? "text-emerald-700 dark:text-emerald-300" : ""}`}
+                    />
+                    <div className="min-w-0 flex-1">
+                      {index === 0 && (
+                        <div className="mb-1 text-[11px] font-medium flex flex-row gap-2 items-center uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
+                          Current submission{" "}
+                          <HoverCard openDelay={10} closeDelay={100}>
+                            <HoverCardTrigger asChild>
+                              <CircleQuestionMark className={""} />
+                            </HoverCardTrigger>
+                            <HoverCardContent
+                              className={"flex w-64 flex-col gap-0.5 text-sm"}
+                            >
+                              <div className={"font-medium"}>What is this?</div>
+                              <div>
+                                The Avon Engine always marks the most recent
+                                commit on the default branch. Ensure that when
+                                the coursework deadline passes, the default
+                                branch on your GitLab repository contains the
+                                code that you wish to submit.
+                              </div>
+                            </HoverCardContent>
+                          </HoverCard>
+                        </div>
+                      )}
+                      <div className="truncate text-sm font-medium leading-5">
+                        {commit.title}
                       </div>
-                    )}
-                    <div className="truncate text-sm font-medium leading-5">
-                      {commit.title}
+                      <div className="text-xs text-muted-foreground">
+                        {commit.short_id} · {commit.author_name ?? "Unknown"} ·{" "}
+                        {formatCommitDate(commit.authored_date)}
+                      </div>
                     </div>
-                    <div className="text-xs text-muted-foreground">
-                      {commit.short_id} · {commit.author_name ?? "Unknown"} ·{" "}
-                      {formatCommitDate(commit.authored_date)}
+                    <div className="flex shrink-0 items-center gap-3 self-center text-xs font-medium">
+                      <span className="text-green-600">
+                        +{commit.additions}
+                      </span>
+                      <span className="text-red-600">-{commit.deletions}</span>
                     </div>
                   </div>
-                  <div className="flex shrink-0 items-center gap-3 self-center text-xs font-medium">
-                    <span className="text-green-600">+{commit.additions}</span>
-                    <span className="text-red-600">-{commit.deletions}</span>
-                  </div>
-                </div>
-              </a>
-            ))}
+                </a>
+              ))}
           </div>
         ) : (
           <div className="rounded-md border border-dashed p-4 text-sm h-full">
@@ -161,7 +163,6 @@ function StudentRepoActivityContent({
   );
 }
 
-
 function StudentRepoActivityFallback() {
   return (
     <div className="space-y-2">
@@ -179,6 +180,7 @@ export default function StudentRepoActivity({
   slug: string;
   myRepo: StudentRepoDataType | null;
 }) {
+  void slug;
   return (
     <Card className="h-full">
       <CardHeader>

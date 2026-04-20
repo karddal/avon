@@ -1,21 +1,25 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import CourseworkLayoutEditor from "@/components/modules/coursework_layout/coursework-layout-editor";
+import CourseworkRenderer from "@/components/modules/coursework_layout/coursework-renderer";
 import type { GridItem } from "@/components/modules/coursework_layout/coursework-types";
+import type { StudentNameAndRepo } from "@/lib/actions/coursework/get_student_repos";
 import {
   defaultStaffCourseworkLayout,
   defaultStudentCourseworkLayout,
+  staffAvailableModules,
+  studentAvailableModules,
 } from "@/lib/coursework-layout";
-import CourseworkLayoutEditor from "@/components/modules/coursework_layout/coursework-layout-editor";
-import CourseworkRenderer from "@/components/modules/coursework_layout/coursework-renderer";
-import type { StudentNameAndRepo } from "@/lib/actions/coursework/get_student_repos";
-import { staffAvailableModules, studentAvailableModules } from "@/lib/coursework-layout";
-
 
 type CourseworkClientProps = {
   staffLayout: GridItem[];
   studentLayout: GridItem[];
-  saveLayout: (layout: GridItem[], slug: string, layoutType?: "staff" | "student") => Promise<void>;
+  saveLayout: (
+    layout: GridItem[],
+    slug: string,
+    layoutType?: "staff" | "student",
+  ) => Promise<void>;
   slug: string;
   repos: StudentNameAndRepo[];
   myRepo: StudentRepoData | null;
@@ -59,7 +63,6 @@ type CourseworkData = {
   testsPassed: number;
   totalTests: number;
 };
-
 
 export default function CourseworkClient({
   staffLayout,
@@ -126,7 +129,9 @@ export default function CourseworkClient({
   // Staff always see staff layout, students always see student layout
   // editingLayoutType only affects what's being edited in the admin editor popup
   const currentLayout = canEditLayouts ? staffLayoutState : studentLayoutState;
-  const currentEditableModules = canEditLayouts ? staffAvailableModules : studentAvailableModules;
+  const currentEditableModules = canEditLayouts
+    ? staffAvailableModules
+    : studentAvailableModules;
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -138,11 +143,11 @@ export default function CourseworkClient({
         onStudentLayoutChange={setStudentLayoutState}
       />
 
-      <CourseworkRenderer 
-        layout={currentLayout} 
-        slug={slug} 
-        repos={repos} 
-        myRepo={myRepo} 
+      <CourseworkRenderer
+        layout={currentLayout}
+        slug={slug}
+        repos={repos}
+        myRepo={myRepo}
         setupProgressData={setupProgressData}
         courseworkData={courseworkData}
         editableModules={currentEditableModules}

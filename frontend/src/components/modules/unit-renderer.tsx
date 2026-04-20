@@ -140,7 +140,13 @@ function getResponsiveMdLayout(layout: GridItem[]) {
   });
 }
 
-export default function UnitRenderer({ layout, unit, role, lecturers, courseworks }: UnitRendererProps) {
+export default function UnitRenderer({
+  layout,
+  unit,
+  role,
+  lecturers,
+  courseworks,
+}: UnitRendererProps) {
   const [isDesktopLayout, setIsDesktopLayout] = useState(false);
 
   useEffect(() => {
@@ -212,7 +218,12 @@ export default function UnitRenderer({ layout, unit, role, lecturers, coursework
               }
             >
               <div className="h-full min-h-0 overflow-visible lg:overflow-auto">
-                <Component unit={unit} lecturers={lecturers} role={role} courseworks={courseworks} />
+                <Component
+                  unit={unit}
+                  lecturers={lecturers}
+                  role={role}
+                  courseworks={courseworks}
+                />
               </div>
             </div>
           );

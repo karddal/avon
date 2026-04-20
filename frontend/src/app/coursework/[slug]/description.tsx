@@ -22,6 +22,7 @@ export default function CourseworkDescription({
   slug: string;
   courseworkData?: CourseworkData | null;
 }) {
+  void slug;
   const coursework = courseworkData;
 
   return (
@@ -33,9 +34,7 @@ export default function CourseworkDescription({
               <Info />
               Description
             </div>
-            <div className="font-light">
-              Information about the coursework.
-            </div>
+            <div className="font-light">Information about the coursework.</div>
           </CardTitle>
         </CardHeader>
         <CardContent className="min-h-0 flex-1">

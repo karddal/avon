@@ -30,9 +30,14 @@ export default function CourseworkInformation({
   slug: string;
   courseworkData?: CourseworkData | null;
 }) {
+  void slug;
   const coursework = courseworkData;
-  const start = coursework ? parseDateTime(coursework.creation_date) : { time: "", day: "" };
-  const end = coursework ? parseDateTime(coursework.due_date) : { time: "", day: "" };
+  const start = coursework
+    ? parseDateTime(coursework.creation_date)
+    : { time: "", day: "" };
+  const end = coursework
+    ? parseDateTime(coursework.due_date)
+    : { time: "", day: "" };
 
   return (
     <Card className="h-full">

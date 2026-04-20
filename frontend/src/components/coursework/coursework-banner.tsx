@@ -62,10 +62,6 @@ export function CourseworkDeadlineBanner({
   );
 }
 
-type CourseworkDeadlineBannerData = {
-  due_date: string;
-};
-
 type CourseworkData = {
   id: string;
   name: string;
@@ -91,6 +87,7 @@ export function CourseworkDeadlineBannerFromSlug({
   warningThreshold?: number;
   className?: string;
 }) {
+  void slug;
   if (!courseworkData?.due_date) {
     return null;
   }

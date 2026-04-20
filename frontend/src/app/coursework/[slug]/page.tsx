@@ -1,29 +1,22 @@
-import { Info } from "lucide-react";
 import { Suspense } from "react";
 import { CourseworkDeadlineBannerFromSlug } from "@/components/coursework/coursework-banner";
 import CourseworkLectDropdown from "@/components/coursework/coursework-lect-dropdown";
-import CourseworkRepoOverview from "@/components/coursework/coursework-repo-overview";
-import CourseworkStudentPanel from "@/components/coursework/coursework-student-panel";
-import SetupProgress from "@/components/coursework/setup-progress";
-import StudentRepoActivity from "@/components/coursework/student-repo-activity";
-import StudentRepoOverview from "@/components/coursework/student-repo-overview";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import CourseworkClient from "@/components/modules/coursework_layout/coursework-client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cw_setup_progress } from "@/lib/actions/coursework/coursework-setup-progress";
 import { get_base_images_cw_specific } from "@/lib/actions/coursework/get_base_images_cw_specific";
 import { get_coursework_scopes } from "@/lib/actions/coursework/get_coursework_scopes";
 import { get_cw_update_data } from "@/lib/actions/coursework/get_coursework_update_data";
 import { get_cw_engine_data } from "@/lib/actions/coursework/get_cw_engine_data";
+import { get_my_coursework_repo } from "@/lib/actions/coursework/get_my_coursework_repo";
 import { get_student_repos } from "@/lib/actions/coursework/get_student_repos";
-import { getRequestJWT } from "@/lib/auth-utils";
-import Loading from "../loading";
-import CourseworkName from "./name";
-import CourseworkClient from "@/components/modules/coursework_layout/coursework-client";
 import {
   getCourseworkLayoutForCurrentCoursework,
   saveCourseworkLayoutForCurrentCoursework,
 } from "@/lib/actions/coursework-layout";
-import { get_my_coursework_repo } from "@/lib/actions/coursework/get_my_coursework_repo";
-import { cw_setup_progress } from "@/lib/actions/coursework/coursework-setup-progress";
+import { getRequestJWT } from "@/lib/auth-utils";
+import Loading from "../loading";
+import CourseworkName from "./name";
 
 type CourseworkCommit = {
   id: string;
@@ -96,12 +89,22 @@ async function CourseworkPageContent({
   const cw_engine_data = canGetAvailImages
     ? await get_cw_engine_data({ coursework_id: slug })
     : undefined;
-  const staffLayout = await getCourseworkLayoutForCurrentCoursework(slug, "staff");
-  const studentLayout = await getCourseworkLayoutForCurrentCoursework(slug, "student");
+  const staffLayout = await getCourseworkLayoutForCurrentCoursework(
+    slug,
+    "staff",
+  );
+  const studentLayout = await getCourseworkLayoutForCurrentCoursework(
+    slug,
+    "student",
+  );
 
   // Fetch module-specific data
-  const myRepo: StudentRepoData | null = await get_my_coursework_repo(slug).catch(() => null);
-  const setupProgressData: SetupProgressItem[] = canViewSetupProgress ? await cw_setup_progress(slug) : [];
+  const myRepo: StudentRepoData | null = await get_my_coursework_repo(
+    slug,
+  ).catch(() => null);
+  const setupProgressData: SetupProgressItem[] = canViewSetupProgress
+    ? await cw_setup_progress(slug)
+    : [];
   const courseworkData: CourseworkData | null = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/coursework/${slug}`,
     {
@@ -110,7 +113,9 @@ async function CourseworkPageContent({
         "Content-Type": "application/json",
       },
     },
-  ).then((res) => (res.ok ? res.json() : null)).catch(() => null);
+  )
+    .then((res) => (res.ok ? res.json() : null))
+    .catch(() => null);
 
   return (
     <>

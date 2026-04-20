@@ -40,6 +40,7 @@ export function TestBatchesTable({
   coursework_id: string;
   refreshTable: () => void;
 }) {
+  void refreshTable;
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
