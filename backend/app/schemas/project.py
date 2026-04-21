@@ -3,6 +3,7 @@ from typing import Literal
 from typing import Any
 
 from pydantic import BaseModel
+from pydantic import field_validator
 
 
 class TemplateCreate(BaseModel):
@@ -55,6 +56,11 @@ class ProjectInviteCreate(BaseModel):
 class ProjectInviteStatusTarget(BaseModel):
     project_id: str
     user_email: str
+
+    @field_validator("user_email")
+    @classmethod
+    def normalize_user_email(cls, value: str) -> str:
+        return value.strip().lower()
 
 
 class ProjectInviteStatusBatchCreate(BaseModel):

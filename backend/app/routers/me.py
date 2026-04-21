@@ -1,15 +1,21 @@
 import datetime
 from collections import defaultdict
+from pathlib import Path
+from uuid import uuid4
+
+import aioboto3
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlalchemy import exists
 from sqlalchemy.orm import with_loader_criteria
 from sqlalchemy.orm.strategy_options import selectinload
 from sqlmodel import Session, select
 from starlette import status
 
+from app.core.env import is_development_app_env
 from app.core.security import get_current_user, get_current_user_with_role
+from app.core.settings import settings
 from app.db.session import get_session
 from app.models.notification import Notification
 from app.models.programme import Programme
@@ -18,11 +24,23 @@ from app.models.unit_enrollment import UnitEnrollment
 from app.schemas.coursework import CourseworkRead
 from app.schemas.notification import Notifications, ReadNotification, UnitWithNotifs, \
     NotificationsUnreadExist
+from app.schemas.profile_image import ProfileImageUploadResponse
 from app.schemas.security import CurrentUser
 from app.schemas.unit import UnitAll, UnitAllByGroup, UnitRead
 
 router = APIRouter(prefix="/me", tags=["me"])
 session_dependency = Annotated[Session, Depends(get_session)]
+
+ALLOWED_PROFILE_IMAGE_TYPES = {
+    "image/jpeg": ".jpg",
+    "image/png": ".png",
+    "image/webp": ".webp",
+    "image/gif": ".gif",
+}
+MAX_PROFILE_IMAGE_SIZE = 5 * 1024 * 1024
+REPO_ROOT = Path(__file__).resolve().parents[3]
+FRONTEND_PUBLIC_DIR = REPO_ROOT / "frontend" / "public"
+
 
 @router.get("/units", response_model=UnitAll)
 async def me_units(session: session_dependency, me: str = Depends(get_current_user)):
@@ -32,6 +50,70 @@ async def me_units(session: session_dependency, me: str = Depends(get_current_us
     return UnitAll(
         units=results
     )
+
+
+@router.post("/profile-image/upload", response_model=ProfileImageUploadResponse)
+async def upload_profile_image(
+    file: UploadFile = File(...),
+    me: CurrentUser = Depends(get_current_user_with_role),
+):
+    if not me.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Only admins can upload profile images",
+        )
+
+    content_type = file.content_type or ""
+    extension = ALLOWED_PROFILE_IMAGE_TYPES.get(content_type)
+
+    if extension is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Unsupported image type",
+        )
+
+    file_bytes = await file.read()
+
+    if len(file_bytes) == 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Empty image file",
+        )
+
+    if len(file_bytes) > MAX_PROFILE_IMAGE_SIZE:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Image file is too large",
+        )
+
+    original_extension = Path(file.filename or "").suffix.lower()
+    if original_extension in {".jpg", ".jpeg", ".png", ".webp", ".gif"}:
+        extension = ".jpg" if original_extension == ".jpeg" else original_extension
+
+    key = f"profile-pictures/{uuid4().hex}{extension}"
+
+    if is_development_app_env() and not settings.aws_cdn_bucket:
+        destination = FRONTEND_PUBLIC_DIR / key
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(file_bytes)
+    else:
+        if not settings.aws_cdn_bucket:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="AWS CDN bucket is not configured",
+            )
+
+        async with aioboto3.Session().client("s3") as s3:
+            await s3.put_object(
+                Bucket=settings.aws_cdn_bucket,
+                Key=key,
+                Body=file_bytes,
+                ContentType=content_type,
+                CacheControl="public, max-age=31536000, immutable",
+            )
+
+    return ProfileImageUploadResponse(key=key)
+
 
 @router.get("/units/active", response_model=UnitAll)
 async def me_active_units(

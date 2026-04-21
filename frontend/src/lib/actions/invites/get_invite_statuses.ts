@@ -16,12 +16,17 @@ export type InviteStatusResult = {
 type GetInviteStatusesResponse = {
   success: boolean;
   data: InviteStatusResult[];
+  error?: string;
 };
 
 export async function get_invite_statuses(
   targets: InviteStatusTarget[],
 ): Promise<GetInviteStatusesResponse> {
   const token = await getRequestJWT();
+  const normalizedTargets = targets.map((target) => ({
+    project_id: target.project_id,
+    user_email: target.user_email.toLowerCase(),
+  }));
 
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/projects/invites/statuses`,
@@ -33,15 +38,23 @@ export async function get_invite_statuses(
       },
       cache: "no-cache",
       body: JSON.stringify({
-        targets,
+        targets: normalizedTargets,
       }),
     },
   );
 
   const json = await response.json();
+  const data = Array.isArray(json.data) ? json.data : [];
+  const error =
+    typeof json.detail === "string"
+      ? json.detail
+      : typeof json.error === "string"
+        ? json.error
+        : undefined;
 
   return {
     success: response.ok,
-    data: json.data ?? [],
+    data,
+    error,
   };
 }

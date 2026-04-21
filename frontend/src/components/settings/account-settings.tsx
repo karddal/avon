@@ -21,9 +21,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getInitials } from "@/components/user-card";
+import { update_user_profile_image } from "@/lib/actions/auth/update_user_profile_image";
 import { get_user_role } from "@/lib/actions/get_user_role";
 import { authClient } from "@/lib/auth-client";
 import ChangeRoleButton from "../management/change-role-button";
+import ProfileImageUploader from "../management/profile-image-uploader";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import DeleteUserButton from "./delete-user-button";
@@ -35,10 +37,12 @@ export default function AccountSettings({
   user,
   isAdmin,
   settingsPage,
+  onProfileImageUpdated,
 }: {
   user: User | null;
   isAdmin: boolean;
   settingsPage: boolean;
+  onProfileImageUpdated?: () => void;
 }) {
   const { data: session, isPending } = authClient.useSession();
   const [role, setRole] = useState<string | null>(null);
@@ -53,6 +57,10 @@ export default function AccountSettings({
     string | null
   >(null);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
+  const [updatedImage, setUpdatedImage] = useState<{
+    userId: string;
+    imageUrl: string;
+  } | null>(null);
   const isValidPassword =
     newPasswordInp &&
     newPasswordInp.length >= 8 &&
@@ -115,7 +123,10 @@ export default function AccountSettings({
 
   const name = activeUser.name;
   const email = activeUser.email;
-  const image = activeUser.image || "";
+  const image =
+    updatedImage?.userId === activeUser.id
+      ? updatedImage.imageUrl
+      : (activeUser.image ?? "");
 
   return (
     <div className="w-full">
@@ -152,6 +163,37 @@ export default function AccountSettings({
             <p className="text-sm text-muted-foreground">Email address</p>
             <p className="text-base font-medium">{email}</p>
           </div>
+
+          {isAdmin && !settingsPage ? (
+            <div className="mt-4 border-t pt-4">
+              <p className="mb-3 text-sm text-muted-foreground">
+                Update the selected user's profile picture.
+              </p>
+              <ProfileImageUploader
+                imageUrl={image}
+                name={name}
+                buttonLabel="Upload new profile picture"
+                onUploaded={async (imageUrl) => {
+                  const result = await update_user_profile_image(
+                    activeUser.id,
+                    imageUrl,
+                  );
+
+                  if (!result.success) {
+                    throw new Error(
+                      result.error ?? "Failed to update profile image",
+                    );
+                  }
+
+                  setUpdatedImage({
+                    userId: activeUser.id,
+                    imageUrl,
+                  });
+                  onProfileImageUpdated?.();
+                }}
+              />
+            </div>
+          ) : null}
         </div>
         {/* <div className="mt-8 px-6"> */}
         <div className="rounded-md border border-border p-4">

@@ -19,6 +19,7 @@ import {
   type SearchResponse,
   search_by_name_all_users,
 } from "@/lib/actions/search_by_name_all_users";
+import CreateUserDialog from "./create-user-dialog";
 
 export default function ListMembers({
   externalSetSelectedUser,
@@ -48,7 +49,18 @@ export default function ListMembers({
     );
     setLoading(false);
     setResponse(response);
+
+    if (selectedUser) {
+      const refreshedSelectedUser =
+        response.users.find((user) => user.id === selectedUser.id) ?? null;
+      setSelectedUser(refreshedSelectedUser);
+      externalSetSelectedUser(refreshedSelectedUser);
+    }
   }
+
+  const shouldShowCreateUserButton =
+    searchQuery.length === 0 ||
+    (!loading && searchQuery.length > 0 && response.users.length === 0);
 
   return (
     <div className="flex flex-col gap-4">
@@ -60,10 +72,20 @@ export default function ListMembers({
           onChange={(e) => {
             setOffset(0);
             setSearchQuery(e.target.value);
-            showUsers(e.target.value, offset);
+            showUsers(e.target.value, 0);
           }}
         />
       </div>
+      {shouldShowCreateUserButton ? (
+        <CreateUserDialog
+          onUserCreated={() => {
+            if (searchQuery.length > 0) {
+              void showUsers(searchQuery, 0);
+              setOffset(0);
+            }
+          }}
+        />
+      ) : null}
       {loading && searchQuery.length === 0 ? (
         <div className="flex flex-col items-center gap-4 w-full">
           <Skeleton className="bg-accent w-full h-12" />

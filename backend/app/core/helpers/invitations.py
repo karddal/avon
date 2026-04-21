@@ -15,6 +15,8 @@ from app.schemas.project import (
 load_dotenv()
 TOKEN = os.getenv("GITLAB_API_TOKEN")
 BASE_URL = os.getenv("GITLAB_BASE_URL")
+QUERY_LOOKUP_THRESHOLD = 2
+GITLAB_PAGE_SIZE = 100
 
 
 async def gl_inv_add_user(
@@ -79,6 +81,11 @@ async def gl_inv_add_user(
                 status_code=500,
                 detail="Internal Server Error when connecting to GitLab",
             )
+        except httpx.HTTPStatusError as err:
+            raise HTTPException(
+                status_code=err.response.status_code,
+                detail=f"GitLab request failed for project invites: {err.response.text}",
+            )
 
 
 async def gl_inv_batch_get_statuses(
@@ -97,48 +104,41 @@ async def gl_inv_batch_get_statuses(
 
     async with httpx.AsyncClient() as client:
         try:
-            project_ids = {target.project_id for target in targets}
+            project_targets: dict[str, list[ProjectInviteStatusTarget]] = {}
+            for target in targets:
+                normalized_target = ProjectInviteStatusTarget(
+                    project_id=target.project_id,
+                    user_email=target.user_email.lower(),
+                )
+                project_targets.setdefault(target.project_id, []).append(
+                    normalized_target
+                )
+
             project_state: dict[str, tuple[set[str], set[str]]] = {}
 
-            for project_id in project_ids:
-                invites_response = await client.get(
-                    f"{BASE_URL}/projects/{project_id}/invitations",
-                    headers={
-                        "PRIVATE-TOKEN": TOKEN,
-                        "Content-Type": "application/json",
-                    },
-                    timeout=10.0,
-                )
-                members_response = await client.get(
-                    f"{BASE_URL}/projects/{project_id}/members/all",
-                    headers={
-                        "PRIVATE-TOKEN": TOKEN,
-                        "Content-Type": "application/json",
-                    },
-                    params={"per_page": 100},
-                    timeout=10.0,
-                )
+            for project_id, project_items in project_targets.items():
+                target_emails = {target.user_email for target in project_items}
 
-                try:
-                    invites_data = invites_response.json()
-                except ValueError:
-                    invites_data = []
-
-                try:
-                    members_data = members_response.json()
-                except ValueError:
-                    members_data = []
-
-                invited_emails = {
-                    invite["invite_email"].lower()
-                    for invite in invites_data
-                    if isinstance(invite, dict) and invite.get("invite_email")
-                }
-                member_emails = {
-                    member["email"].lower()
-                    for member in members_data
-                    if isinstance(member, dict) and member.get("email")
-                }
+                if len(target_emails) <= QUERY_LOOKUP_THRESHOLD:
+                    invited_emails = await _lookup_invited_emails_by_query(
+                        client=client,
+                        project_id=project_id,
+                        emails=target_emails,
+                    )
+                    member_emails = await _lookup_member_emails_by_query(
+                        client=client,
+                        project_id=project_id,
+                        emails=target_emails,
+                    )
+                else:
+                    invited_emails = await _fetch_all_project_invited_emails(
+                        client=client,
+                        project_id=project_id,
+                    )
+                    member_emails = await _fetch_all_project_member_emails(
+                        client=client,
+                        project_id=project_id,
+                    )
 
                 project_state[project_id] = (invited_emails, member_emails)
 
@@ -169,6 +169,140 @@ async def gl_inv_batch_get_statuses(
                 status_code=500,
                 detail="Internal Server Error when connecting to GitLab",
             )
+        except httpx.HTTPStatusError as err:
+            raise HTTPException(
+                status_code=err.response.status_code,
+                detail=f"GitLab request failed for project invite statuses: {err.response.text}",
+            )
+
+
+def _gitlab_headers() -> dict[str, str]:
+    return {
+        "PRIVATE-TOKEN": TOKEN,
+        "Content-Type": "application/json",
+    }
+
+
+def _extract_invited_emails(data: list[dict]) -> set[str]:
+    return {
+        invite["invite_email"].lower()
+        for invite in data
+        if isinstance(invite, dict) and invite.get("invite_email")
+    }
+
+
+def _extract_member_emails(data: list[dict]) -> set[str]:
+    return {
+        member["email"].lower()
+        for member in data
+        if isinstance(member, dict) and member.get("email")
+    }
+
+
+async def _gitlab_get_list(
+    client: httpx.AsyncClient,
+    url: str,
+    params: dict | None = None,
+) -> tuple[list[dict], httpx.Response]:
+    response = await client.get(
+        url,
+        headers=_gitlab_headers(),
+        params=params,
+        timeout=10.0,
+    )
+    response.raise_for_status()
+    try:
+        data = response.json()
+    except ValueError:
+        data = []
+    if not isinstance(data, list):
+        data = []
+    return data, response
+
+
+async def _fetch_paginated_list(
+    client: httpx.AsyncClient,
+    url: str,
+    params: dict | None = None,
+) -> list[dict]:
+    page = 1
+    results: list[dict] = []
+    while True:
+        request_params = {"page": page, "per_page": GITLAB_PAGE_SIZE}
+        if params:
+            request_params.update(params)
+
+        data, response = await _gitlab_get_list(
+            client=client,
+            url=url,
+            params=request_params,
+        )
+        results.extend(item for item in data if isinstance(item, dict))
+
+        next_page = response.headers.get("x-next-page")
+        if not next_page:
+            break
+        page = int(next_page)
+
+    return results
+
+
+async def _fetch_all_project_invited_emails(
+    client: httpx.AsyncClient,
+    project_id: str,
+) -> set[str]:
+    data = await _fetch_paginated_list(
+        client=client,
+        url=f"{BASE_URL}/projects/{project_id}/invitations",
+    )
+    return _extract_invited_emails(data)
+
+
+async def _fetch_all_project_member_emails(
+    client: httpx.AsyncClient,
+    project_id: str,
+) -> set[str]:
+    data = await _fetch_paginated_list(
+        client=client,
+        url=f"{BASE_URL}/projects/{project_id}/members/all",
+    )
+    return _extract_member_emails(data)
+
+
+async def _lookup_invited_emails_by_query(
+    client: httpx.AsyncClient,
+    project_id: str,
+    emails: set[str],
+) -> set[str]:
+    invited_emails: set[str] = set()
+    for email in emails:
+        data, _ = await _gitlab_get_list(
+            client=client,
+            url=f"{BASE_URL}/projects/{project_id}/invitations",
+            params={"query": email},
+        )
+        extracted_emails = _extract_invited_emails(data)
+        if email in extracted_emails:
+            invited_emails.add(email)
+    return invited_emails
+
+
+async def _lookup_member_emails_by_query(
+    client: httpx.AsyncClient,
+    project_id: str,
+    emails: set[str],
+) -> set[str]:
+    member_emails: set[str] = set()
+    for email in emails:
+        data, _ = await _gitlab_get_list(
+            client=client,
+            url=f"{BASE_URL}/projects/{project_id}/members/all",
+            params={"query": email, "per_page": GITLAB_PAGE_SIZE},
+        )
+        extracted_emails = _extract_member_emails(data)
+        if email in extracted_emails:
+            member_emails.add(email)
+    return member_emails
   
 async def gl_inv_list(
     project_id: str,

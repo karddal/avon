@@ -9,12 +9,13 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
+  type PaginationState,
   getSortedRowModel,
   type SortingState,
   type VisibilityState,
 } from "@tanstack/table-core";
 import { ChevronDown, ChevronRight, SendHorizontal, Users } from "lucide-react";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   columns,
@@ -35,10 +36,7 @@ import {
 import { get_batch_user_info } from "@/lib/actions/auth/get_batch_user_details";
 import { get_all_students_with_maybe_repos } from "@/lib/actions/coursework/get_all_students_on_unit_with_repos";
 import { delete_invite } from "@/lib/actions/invites/delete_invite";
-import {
-  get_invite_statuses,
-  type InviteStatusResult,
-} from "@/lib/actions/invites/get_invite_statuses";
+import { get_invite_statuses } from "@/lib/actions/invites/get_invite_statuses";
 import { batch_invite_users } from "@/lib/actions/invites/invite_user";
 import { cn } from "@/lib/utils";
 
@@ -66,9 +64,79 @@ export function StudentsTableWithMaybeRepos({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [pagination, setPagination] = React.useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 2,
+  });
+  const inviteStatusRequestRef = useRef(0);
   const inviteExpiryDate = useMemo(
     () => (due_date ? due_date.slice(0, 10) : undefined),
     [due_date],
+  );
+
+  const refreshStudentsInviteStatuses = useCallback(
+    async (
+      students: StudentNameAndPotentiallyRepo[],
+      options?: {
+        requestId?: number;
+        suppressErrorToast?: boolean;
+      },
+    ) => {
+      const targets = students
+        .filter((student) => student.repo_id && student.email)
+        .map((student) => ({
+          project_id: student.repo_id as string,
+          user_email: student.email as string,
+        }));
+
+      if (targets.length === 0) {
+        return;
+      }
+
+      try {
+        const statusResponse = await get_invite_statuses(targets);
+        const statusMap = new Map(
+          statusResponse.data.map((result) => [
+            `${result.project_id}:${result.user_email.toLowerCase()}`,
+            result.status,
+          ]),
+        );
+        const studentIds = new Set(students.map(({ id }) => id));
+        const studentsById = new Map(students.map((student) => [student.id, student]));
+
+        setData((current) => {
+          if (
+            options?.requestId !== undefined &&
+            options.requestId !== inviteStatusRequestRef.current
+          ) {
+            return current;
+          }
+
+          return current.map((row) => {
+            if (!studentIds.has(row.id)) {
+              return row;
+            }
+
+            const student = studentsById.get(row.id);
+            if (!student?.repo_id || !student.email) {
+              return row;
+            }
+
+            const key = `${student.repo_id}:${student.email.toLowerCase()}`;
+            return {
+              ...row,
+              invite_status:
+                statusMap.get(key) ?? ("not_invited" as StudentInviteStatus),
+            };
+          });
+        });
+      } catch {
+        if (!options?.suppressErrorToast) {
+          toast.error("Failed to refresh student invitation status");
+        }
+      }
+    },
+    [],
   );
 
   const loadData = useCallback(async () => {
@@ -92,58 +160,32 @@ export function StudentsTableWithMaybeRepos({
       const mergedStudents: StudentNameAndPotentiallyRepo[] = studentRepos.map(
         (student) => {
           const user = usersById.get(student.id);
+          const hasInviteLookup = Boolean(user?.email) && Boolean(student.repo_id);
           return {
             ...student,
             name: user?.displayName ?? student.name,
             src: user?.src,
             email: user?.email,
-            invite_status: "not_invited",
+            invite_status: hasInviteLookup ? "loading" : "not_invited",
           };
         },
       );
+      setData(mergedStudents);
+      setLoading(false);
 
-      const statusTargets = mergedStudents
-        .filter((student) => student.email && student.repo_id)
-        .map((student) => ({
-          project_id: student.repo_id as string,
-          user_email: student.email as string,
-        }));
-
-      if (statusTargets.length === 0) {
-        setData(mergedStudents);
-        return;
-      }
-
-      const statusResponse = await get_invite_statuses(statusTargets);
-      const statusMap = new Map<string, InviteStatusResult>(
-        statusResponse.data.map((result) => [
-          `${result.project_id}:${result.user_email.toLowerCase()}`,
-          result,
-        ]),
-      );
-
-      setData(
-        mergedStudents.map((student) => {
-          if (!student.email || !student.repo_id) {
-            return student;
-          }
-
-          const key = `${student.repo_id}:${student.email.toLowerCase()}`;
-          return {
-            ...student,
-            invite_status:
-              statusMap.get(key)?.status ??
-              ("not_invited" as StudentInviteStatus),
-          };
-        }),
-      );
+      const requestId = inviteStatusRequestRef.current + 1;
+      inviteStatusRequestRef.current = requestId;
+      void refreshStudentsInviteStatuses(mergedStudents, {
+        requestId,
+        suppressErrorToast: true,
+      });
     } catch {
       setData([]);
       toast.error("Failed to load student repositories");
     } finally {
       setLoading(false);
     }
-  }, [coursework_id]);
+  }, [coursework_id, refreshStudentsInviteStatuses]);
 
   const table = useReactTable({
     data,
@@ -167,12 +209,15 @@ export function StudentsTableWithMaybeRepos({
     getExpandedRowModel: getExpandedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    onPaginationChange: setPagination,
     getRowId: (row) => row.id,
+    paginateExpandedRows: false,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
+      pagination,
     },
   });
 
@@ -272,49 +317,6 @@ export function StudentsTableWithMaybeRepos({
 
   async function handleInviteStudents() {
     await inviteStudents(selectedInviteableIds);
-  }
-
-  async function refreshStudentsInviteStatuses(
-    students: StudentNameAndPotentiallyRepo[],
-  ) {
-    const targets = students
-      .filter((student) => student.repo_id && student.email)
-      .map((student) => ({
-        project_id: student.repo_id as string,
-        user_email: student.email as string,
-      }));
-
-    if (targets.length === 0) {
-      return;
-    }
-
-    try {
-      const statusResponse = await get_invite_statuses(targets);
-      const statusMap = new Map(
-        statusResponse.data.map((result) => [
-          `${result.project_id}:${result.user_email.toLowerCase()}`,
-          result.status,
-        ]),
-      );
-
-      setData((current) =>
-        current.map((row) => {
-          const student = students.find(({ id }) => id === row.id);
-          if (!student?.repo_id || !student.email) {
-            return row;
-          }
-
-          const key = `${student.repo_id}:${student.email.toLowerCase()}`;
-          return {
-            ...row,
-            invite_status:
-              statusMap.get(key) ?? ("not_invited" as StudentInviteStatus),
-          };
-        }),
-      );
-    } catch {
-      toast.error("Failed to refresh student invitation status");
-    }
   }
 
   async function handleInviteStudentsByList(

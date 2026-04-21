@@ -52,7 +52,11 @@ import { coursework_delete_repo } from "@/lib/actions/coursework/coursework_dele
 import { cn } from "@/lib/utils";
 import StudList from "./stud-list";
 
-export type StudentInviteStatus = "accepted" | "invited" | "not_invited";
+export type StudentInviteStatus = 
+  | "accepted"
+  | "invited"
+  | "not_invited"
+  | "loading";
 
 export type StudentNameAndPotentiallyRepo = {
   id: string;
@@ -78,12 +82,23 @@ type ColumnsOptions = {
 };
 
 function statusBadge(status: StudentInviteStatus) {
+  if (status === "loading") {
+    return {
+      label: "Checking...",
+      icon: Loader2,
+      className:
+        "border-slate-600/30 bg-slate-500/10 text-slate-700 dark:text-slate-300",
+      spin: true,
+    };
+  }
+
   if (status === "accepted") {
     return {
       label: "Accepted",
       icon: CheckCircle2,
       className:
         "border-green-600/30 bg-green-500/10 text-green-700 dark:text-green-400",
+      spin: false,
     };
   }
 
@@ -93,6 +108,7 @@ function statusBadge(status: StudentInviteStatus) {
       icon: Clock3,
       className:
         "border-orange-600/30 bg-orange-500/10 text-orange-700 dark:text-orange-400",
+      spin: false,
     };
   }
 
@@ -100,6 +116,7 @@ function statusBadge(status: StudentInviteStatus) {
     label: "Not Invited",
     icon: AlertCircle,
     className: "border-red-600/30 bg-red-500/10 text-red-700 dark:text-red-400",
+    spin: false,
   };
 }
 
@@ -119,10 +136,12 @@ function InviteStatusCell({
         accepted: 0,
         invited: 0,
         not_invited: 0,
+        loading: 0,
       } as Record<StudentInviteStatus, number>,
     );
 
     const summary = [
+      counts.loading > 0 ? `${counts.loading} checking` : null,
       counts.accepted > 0 ? `${counts.accepted} accepted` : null,
       counts.invited > 0 ? `${counts.invited} invited` : null,
       counts.not_invited > 0 ? `${counts.not_invited} not invited` : null,
@@ -146,7 +165,7 @@ function InviteStatusCell({
 
   return (
     <Badge className={cn("gap-1", badge.className)}>
-      <Icon className="h-3.5 w-3.5" />
+      <Icon className={cn("h-3.5 w-3.5", badge.spin && "animate-spin")} />
       {badge.label}
     </Badge>
   );
