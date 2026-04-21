@@ -9,14 +9,12 @@ import StudentRepoActivity from "@/components/coursework/student-repo-activity";
 import StudentRepoOverview from "@/components/coursework/student-repo-overview";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { get_batch_user_info } from "@/lib/actions/auth/get_batch_user_details";
 import { get_all_students_with_maybe_repos } from "@/lib/actions/coursework/get_all_students_on_unit_with_repos";
 import { get_base_images_cw_specific } from "@/lib/actions/coursework/get_base_images_cw_specific";
 import { get_coursework_scopes } from "@/lib/actions/coursework/get_coursework_scopes";
 import { get_cw_update_data } from "@/lib/actions/coursework/get_coursework_update_data";
 import { get_cw_engine_data } from "@/lib/actions/coursework/get_cw_engine_data";
 import { get_student_repos } from "@/lib/actions/coursework/get_student_repos";
-import { get_invite_statuses } from "@/lib/actions/invites/get_invite_statuses";
 import { getRequestJWT } from "@/lib/auth-utils";
 import Loading from "../loading";
 import CourseworkDescription from "./description";
@@ -51,38 +49,6 @@ async function CourseworkPageContent({
   const studentsWithMaybeRepos = canViewStudentRepos
     ? await get_all_students_with_maybe_repos({ coursework_id: slug })
     : [];
-
-  const inviteableStudents = canViewStudentRepos
-    ? await (async () => {
-        const userInfo = await get_batch_user_info(
-          studentsWithMaybeRepos.map((student) => student.id),
-        );
-        const usersById = new Map(userInfo.map((user) => [user.id, user]));
-
-        return studentsWithMaybeRepos
-          .map((student) => ({
-            ...student,
-            email: usersById.get(student.id)?.email,
-          }))
-          .filter(
-            (student) => Boolean(student.repo_id) && Boolean(student.email),
-          );
-      })()
-    : [];
-
-  const inviteStatusResponse =
-    inviteableStudents.length > 0
-      ? await get_invite_statuses(
-          inviteableStudents.map((student) => ({
-            project_id: student.repo_id as string,
-            user_email: student.email as string,
-          })),
-        )
-      : { data: [] };
-
-  const invitedStudentsCount = inviteStatusResponse.data.filter(
-    (result) => result.status === "invited" || result.status === "accepted",
-  ).length;
 
   const images = canGetAvailImages
     ? await get_base_images_cw_specific({ coursework_id: slug })
@@ -183,8 +149,7 @@ async function CourseworkPageContent({
             canViewStudentRepos && student_repos_data ? (
               <CourseworkRepoOverview
                 repos={student_repos_data?.repos}
-                invitedStudentsCount={invitedStudentsCount}
-                inviteableStudentsCount={inviteableStudents.length}
+                totalStudentGroups={studentsWithMaybeRepos.length}
               />
             ) : (
               <></>

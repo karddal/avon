@@ -236,7 +236,7 @@ export default function CourseworkLectDropdown({
         </DropDrawerContent>
       </DropDrawer>
 
-      {engineIsSetup && cw_engine_data && avail_images_data && (
+      {showStartTests && engineIsSetup && cw_engine_data && avail_images_data && (
         <>
           <StartTestBatchPopup
             open_state={showStartTests}
@@ -246,15 +246,18 @@ export default function CourseworkLectDropdown({
             cw_engine_data={cw_engine_data}
             available_images={avail_images_data}
           />
-          <TestBatchesDialog
-            open_state={showTestBatches}
-            set_open_state={setShowTestBatches}
-            courseworkId={slug}
-          />
         </>
       )}
 
-      {avail_images_data && cw_engine_data && (
+      {showTestBatches && engineIsSetup && (
+        <TestBatchesDialog
+          open_state={showTestBatches}
+          set_open_state={setShowTestBatches}
+          courseworkId={slug}
+        />
+      )}
+
+      {showDocker && avail_images_data && cw_engine_data && (
         <ConfigureCWTesting
           open_state={showDocker}
           set_open_state={setShowDocker}
@@ -264,7 +267,7 @@ export default function CourseworkLectDropdown({
         />
       )}
 
-      {coursework_update_data && (
+      {showEdit && coursework_update_data && (
         <EditCoursework
           coursework_update_data={coursework_update_data}
           open_state={showEdit}
@@ -272,7 +275,7 @@ export default function CourseworkLectDropdown({
         />
       )}
 
-      {coursework_update_data && (
+      {showTemplates && coursework_update_data && (
         <CreateTemplate
           open_state={showTemplates}
           set_open_state={setShowTemplate}
@@ -282,7 +285,7 @@ export default function CourseworkLectDropdown({
         />
       )}
 
-      {hasGitlabScope && (
+      {viewRepos && hasGitlabScope && (
         <ReposListDialog
           open_state={viewRepos}
           set_open_state={setViewRepos}
@@ -292,7 +295,7 @@ export default function CourseworkLectDropdown({
         />
       )}
 
-      {coursework_update_data && (
+      {showProvision && coursework_update_data && (
         <ProvisionCoursework
           open_state={showProvision}
           set_open_state={setShowProvision}
@@ -306,21 +309,23 @@ export default function CourseworkLectDropdown({
         />
       )}
 
-      <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              coursework and all of its data.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="sm:h-full">Cancel</AlertDialogCancel>
-            <DeleteCourseworkButton courseworkId={slug} />
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {showDelete && (
+        <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the
+                coursework and all of its data.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="sm:h-full">Cancel</AlertDialogCancel>
+              <DeleteCourseworkButton courseworkId={slug} />
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
     </div>
   );
 }

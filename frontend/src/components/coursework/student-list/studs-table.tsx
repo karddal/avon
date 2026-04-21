@@ -9,13 +9,19 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
-  type PaginationState,
   getSortedRowModel,
+  type PaginationState,
   type SortingState,
   type VisibilityState,
 } from "@tanstack/table-core";
 import { ChevronDown, ChevronRight, SendHorizontal, Users } from "lucide-react";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { toast } from "sonner";
 import {
   columns,
@@ -102,7 +108,9 @@ export function StudentsTableWithMaybeRepos({
           ]),
         );
         const studentIds = new Set(students.map(({ id }) => id));
-        const studentsById = new Map(students.map((student) => [student.id, student]));
+        const studentsById = new Map(
+          students.map((student) => [student.id, student]),
+        );
 
         setData((current) => {
           if (
@@ -160,7 +168,8 @@ export function StudentsTableWithMaybeRepos({
       const mergedStudents: StudentNameAndPotentiallyRepo[] = studentRepos.map(
         (student) => {
           const user = usersById.get(student.id);
-          const hasInviteLookup = Boolean(user?.email) && Boolean(student.repo_id);
+          const hasInviteLookup =
+            Boolean(user?.email) && Boolean(student.repo_id);
           return {
             ...student,
             name: user?.displayName ?? student.name,

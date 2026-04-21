@@ -52,7 +52,7 @@ import { coursework_delete_repo } from "@/lib/actions/coursework/coursework_dele
 import { cn } from "@/lib/utils";
 import StudList from "./stud-list";
 
-export type StudentInviteStatus = 
+export type StudentInviteStatus =
   | "accepted"
   | "invited"
   | "not_invited"
