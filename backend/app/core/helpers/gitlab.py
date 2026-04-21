@@ -392,8 +392,6 @@ async def gl_create_fork(name, user_id, group_id, template_id):
 
     name = str(name)+"-"+str(user_id)
     path = generate_gitlab_path(name)
-    print("NAME:", name)
-    print("PATH:", path)
     async with httpx.AsyncClient(base_url=BASE_URL) as client:
         try:
             response = await client.post(

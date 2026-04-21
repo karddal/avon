@@ -53,34 +53,39 @@ async def create_templates(template: TemplateCreate, session: session_dependency
 async def create_skeleton_code(details: ProjectSkeleton):
     return await gl_create_skeleton_code(details.group_id, details.coursework_name)
 
-# @app.on_event("startup")
-# async def start_worker():
-#     asyncio.create_task(run_provision_worker())
+# A module-level flag to prevent duplicate workers
+_worker_running = False
 
 async def run_provision_worker():
-    while True:
-        job_ids = []
-        with Session(engine) as session:
-            statement = select(ProvisionProject).where(
-                (ProvisionProject.status== "pending") | 
-                ((ProvisionProject.status == "ongoing") &
-                 (ProvisionProject.next_run_at <= datetime.now())
-                )).limit(10)
-            jobs = session.exec(statement).all()
-            if not jobs:
+    global _worker_running
+    _worker_running = True
+    try:
+        while True:
+            job_ids = []
+            with Session(engine) as session:
+                statement = select(ProvisionProject).where(
+                    (ProvisionProject.status== "pending") | 
+                    ((ProvisionProject.status == "ongoing") &
+                    (ProvisionProject.next_run_at <= datetime.now())
+                    )).limit(10)
+                jobs = session.exec(statement).all()
+                if not jobs:
 
-                # print("Nothing found in the jobs")
-                # return
-                await asyncio.sleep(1)
-                continue
-            
-            for job in jobs:
-                job.status = "in_progress"
-                job_ids.append(job.id)
-            
-            session.commit()
+                    # print("Nothing found in the jobs")
+                    # return
+                    await asyncio.sleep(1)
+                    continue
+                
+                for job in jobs:
+                    job.status = "in_progress"
+                    job_ids.append(job.id)
+                
+                session.commit()
 
-        await asyncio.gather(*(process_job(job_id) for job_id in job_ids))  
+            await asyncio.gather(*(process_job(job_id) for job_id in job_ids))  
+    
+    finally:
+        _worker_running = False
 
 sem = asyncio.Semaphore(1)
 
@@ -89,25 +94,29 @@ async def process_job(job_id: int):
     async with sem:
         with Session(engine) as session:
             job = session.get(ProvisionProject, job_id)
-            print("switch", switch)
+            print("job", job.student_id, "has failed")
             if switch == 5:
                 try: 
                     await gl_create_fork(name=job.cw_name, user_id=job.student_id, group_id=job.gitlab_id, template_id=job.template_id)
                     job.status = "success"
+                    print(job.student_id, "has been successful")
                 except Exception as e:
                     print("oops", e)
                     if job.attempts < job.max_attempts:
                         job.attempts += 1
                         backoff = 2 ** job.attempts
-                        job.status = "retry"
+                        job.status = "pending"
                         job.next_run_at = datetime.now() + timedelta(seconds=backoff)
+                        job.last_error = str(e)
                     else:
                         job.status = "failed"
-                        print("Failed", job)
+                        job.last_error = str(e)
+                        print("Failed", job.student_id)    
             else:    
+                print(job.student_id, "is has failed. On attempt", job.attempts)
                 job.attempts += 1
                 backoff = 2 ** job.attempts
-                job.status = "retry"
+                job.status = "pending"
                 job.next_run_at = datetime.now() + timedelta(seconds=backoff) 
                 switch = False
             session.commit()
@@ -118,84 +127,51 @@ async def create_fork(project: ProjectFork, session: session_dependency):
     # Add projects to be provisioned to the queue (yes the queue is a table)
     # This is essentially the producer
 
+    # for student in students_enrolled:
+    #     try:
+    #         # Call helper function to create project
+    #         # create student_repo entry for each
+
+    #         data = await gl_create_fork(cw_name, user_id=student, group_id=gitlab_id, template_id=project.template_id)
+    #         # we first check whether there is already a student repo db entry for this student
+    #         # if there is we delete it first
+
+    #     except Exception:
+    #         print("raising here")
+    #         raise HTTPException(
+    #             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+    #             detail="Project for the student: " + student + " could not be created."
+    #         )
+    # session.commit()
+
 
     statement = select(Coursework.unit_id, Coursework.name, Coursework.gitlab_id).where(Coursework.id == project.coursework_id)
     cw_object = session.exec(statement).first()
     unit_id, cw_name, gitlab_id = cw_object
 
-    statement = select(UnitEnrollment.user_id).where(
-        (UnitEnrollment.unit_id == unit_id) & (UnitEnrollment.type == "student")
-    )
-
+    # Get the students enrolled
+    statement = select(UnitEnrollment.user_id).where((UnitEnrollment.unit_id == unit_id) & (UnitEnrollment.type == "student"))
     students_enrolled = session.exec(statement).all()
 
-    for student in students_enrolled:
-        try:
-            # Call helper function to create project
-            # create student_repo entry for each
-
-            data = await gl_create_fork(cw_name, user_id=student, group_id=gitlab_id, template_id=project.template_id)
-            # we first check whether there is already a student repo db entry for this student
-            # if there is we delete it first
-
-        except Exception:
-            print("raising here")
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Project for the student: " + student + " could not be created."
-            )
-    session.commit()
-
-
-
-    return "it works"
-
-    # statement = select(Coursework.unit_id, Coursework.name, Coursework.gitlab_id).where(Coursework.id == project.coursework_id)
-    # cw_object = session.exec(statement).first()
-    # unit_id, cw_name, gitlab_id = cw_object
-
-    # # Get the students enrolled
-    # statement = select(UnitEnrollment.user_id).where((UnitEnrollment.unit_id == unit_id) & (UnitEnrollment.type == "student"))
-    # students_enrolled = session.exec(statement).all()
-
-    # levels = {0: [], 1: [], 2: [], 3: [], 4:[], "failed":[]}
-
-    # for student in students_enrolled:
-    #     job = {
-    #         "student_id": student,
-    #         "cw_id": project.coursework_id,
-    #         "cw_name": cw_name,
-    #         "gitlab_id": gitlab_id,
-    #         "template_id": project.template_id,
-    #     }
-    #     levels[0].append(job)
-    
-    # for level in levels:
-        # do stuff in each level, if it doesn't work move it to the next level and try again with exponential backoff
-        # otherwise just add it to another table which says failure so it can be manually retried
-
-
     # Add them to the queue
-    # for student in students_enrolled:
-    #     job = ProvisionProject(
-    #         student_id=student,
-    #         cw_id=project.coursework_id,
-    #         cw_name=cw_name,
-    #         gitlab_id=gitlab_id,
-    #         template_id=project.template_id,
-    #         status="pending"
-    #     )
-    #     session.add(job)
+    for student in students_enrolled:
+        job = ProvisionProject(
+            student_id=student,
+            cw_id=project.coursework_id,
+            cw_name=cw_name,
+            gitlab_id=gitlab_id,
+            template_id=project.template_id,
+            status="pending"
+        )
+        session.add(job)
     
-    # session.commit()
-    # # print("done")
-    
-    # for i 
+    session.commit()
+    print("done")
 
-
-    # asyncio.create_task(run_provision_worker())
-    # print("done 1234")
-    # return {"queued": len(students_enrolled)}
+    if not _worker_running: 
+        asyncio.create_task(run_provision_worker())
+    print("done 1234")
+    return {"queued": len(students_enrolled)}
 
 @router.delete("/clear-queue")
 async def clear_queue(session: session_dependency):
