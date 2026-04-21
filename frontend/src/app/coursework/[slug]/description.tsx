@@ -1,7 +1,7 @@
 import { Info } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 type CourseworkData = {
   id: string;
@@ -29,7 +29,11 @@ export default function CourseworkDescription({
 
   return (
     <div className="flex h-full flex-col gap-4">
-      <Card id="coursework-description" className="h-full min-h-0">
+      <Card
+        data-cy="coursework-description-section"
+        id="coursework-description"
+        className="h-full min-h-0"
+      >
         <CardHeader>
           <CardTitle>
             <div className="text-2xl flex flex-row gap-2 items-center">
