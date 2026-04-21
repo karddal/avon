@@ -12,7 +12,7 @@ import asyncio
 
 from app.db.session import engine
 
-from app.core.helpers.gitlab import gl_create_fork, gl_create_project, gl_create_skeleton_code, gl_create_template_group, gl_create_template_project, gl_delete_project, gl_delete_projects, gl_get_project, gl_get_projects
+from app.core.helpers.gitlab import gl_create_fork, gl_create_project, gl_create_project_group, gl_create_skeleton_code, gl_create_template_group, gl_create_template_project, gl_delete_project, gl_delete_projects, gl_get_project, gl_get_projects
 from app.db.session import get_session
 from app.models.coursework import Coursework
 from app.models.projects import ProvisionProject
@@ -121,32 +121,54 @@ async def create_fork(project: ProjectFork, session: session_dependency):
 
     statement = select(Coursework.unit_id, Coursework.name, Coursework.gitlab_id).where(Coursework.id == project.coursework_id)
     cw_object = session.exec(statement).first()
-    unit_id, name, gitlab_id = cw_object
+    unit_id, cw_name, gitlab_id = cw_object
 
     statement = select(UnitEnrollment.user_id).where(
         (UnitEnrollment.unit_id == unit_id) & (UnitEnrollment.type == "student")
     )
+
     students_enrolled = session.exec(statement).all()
-    print(f"Total students: {len(students_enrolled)}")
-    print(f"Unique students: {len(set(students_enrolled))}") 
+
+    for student in students_enrolled:
+        try:
+            # Call helper function to create project
+            # create student_repo entry for each
+
+            group_data = await gl_create_project_group(coursework_name=cw_name, student_id=student, coursework_id=gitlab_id)
+            parent_id = group_data["gitlabGroupId"]
+            print(group_data, parent_id)
+            data = await gl_create_fork(cw_name, user_id=student, group_id=parent_id, template_id=project.template_id)
+            # print(data)
+            # we first check whether there is already a student repo db entry for this student
+            # if there is we delete it first
+
+        except Exception:
+            print("raising here")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Project for the student: " + student + " could not be created."
+            )
+    session.commit()
+
+
     # if session.exec(select(StudentRepo).where(StudentRepo.cw_id == project.coursework_id)).first():
     #     raise HTTPException(
     #         status_code=status.HTTP_409_CONFLICT,
     #         detail="Some student repos have already been provisioned."
     #     )
 
-    semaphore = asyncio.Semaphore(4)  # Max 8 concurrent GitLab API calls
+    # semaphore = asyncio.Semaphore(4)  # Max 8 concurrent GitLab API calls
 
-    async def provision_student(student):
-        async with semaphore:
-            data = await gl_create_fork(name, user_id=student, group_id=gitlab_id, template_id=project.template_id)
-            return student, data  # Return data, don't touch the DB here
+    # async def provision_student(student):
+    #     async with semaphore:
+    #         data = await gl_create_fork(name, user_id=student, group_id=gitlab_id, template_id=project.template_id)
+    #         return student, data  # Return data, don't touch the DB here
 
-    # --- Concurrent fork creation ---
-    results = await asyncio.gather(
-        *[provision_student(s) for s in students_enrolled],
-        return_exceptions=True  # Don't let one failure cancel others
-    ) 
+    # # --- Concurrent fork creation ---
+    # results = await asyncio.gather(
+    #     *[provision_student(s) for s in students_enrolled],
+    #     return_exceptions=True  # Don't let one failure cancel others
+    # ) 
     # statement = select(Coursework.unit_id, Coursework.name, Coursework.gitlab_id).where(Coursework.id == project.coursework_id)
     # cw_object = session.exec(statement).first()
     # unit_id, cw_name, gitlab_id = cw_object
