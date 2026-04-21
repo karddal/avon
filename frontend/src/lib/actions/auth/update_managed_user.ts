@@ -56,11 +56,26 @@ export async function update_managed_user({
   }
 
   try {
+    const trimmedName = name?.trim() || undefined;
+    const normalizedEmail = email?.trim().toLowerCase() || undefined;
+
+    if (!trimmedUserId) {
+      throw new Error("Missing user ID");
+    }
+
+    const data = {
+      ...(trimmedName !== undefined ? { name: trimmedName } : {}),
+      ...(normalizedEmail !== undefined ? { email: normalizedEmail } : {}),
+    };
+
+    if (Object.keys(data).length === 0) {
+      throw new Error("No update data provided");
+    }
+
     await auth.api.adminUpdateUser({
       body: {
         userId: trimmedUserId,
-        ...(trimmedName !== undefined ? { name: trimmedName } : {}),
-        ...(normalizedEmail !== undefined ? { email: normalizedEmail } : {}),
+        data,
       },
       headers: await headers(),
     });
