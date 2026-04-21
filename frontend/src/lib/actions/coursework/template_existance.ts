@@ -26,7 +26,7 @@ export async function template_existance(
     },
   );
   const data = await response.json();
-  console.log("Responssyy:", data);
+  // console.log("Responssyy:", data);
 
   if (!response.ok) {
     throw new Error("Failed to check template existence");

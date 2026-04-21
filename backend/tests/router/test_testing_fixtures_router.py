@@ -12,6 +12,7 @@ from app.models.programme import Programme
 from app.models.unit import Unit
 from app.models.unit_enrollment import UnitEnrollment
 from app.routers.testing_fixtures import router
+from datetime import datetime, timedelta
 
 
 @pytest.fixture
@@ -112,6 +113,9 @@ def test_testing_fixture_router_creates_and_resets_domain_data(
     assert unit_response.status_code == 201
     unit_id = unit_response.json()["id"]
 
+    time = datetime.now() + timedelta(days=2)
+    due_date = time.strftime("%Y-%m-%dT17:00:00")
+
     coursework_response = client.post(
         "/testing/fixtures/courseworks",
         headers=headers,
@@ -119,7 +123,7 @@ def test_testing_fixture_router_creates_and_resets_domain_data(
             "name": "Fixture Coursework",
             "description": "Fixture coursework description",
             "unit_id": unit_id,
-            "due_date": "2026-04-20T17:00:00",
+            "due_date": due_date,
             "colour": "123abc",
         },
     )
@@ -198,6 +202,9 @@ def test_testing_fixture_router_rejects_invalid_foreign_keys(
     )
     assert unit_response.status_code == 404
 
+    time = datetime.now() + timedelta(days=2)
+    due_date = time.strftime("%Y-%m-%dT17:00:00")
+
     coursework_response = client.post(
         "/testing/fixtures/courseworks",
         headers=headers,
@@ -205,7 +212,7 @@ def test_testing_fixture_router_rejects_invalid_foreign_keys(
             "name": "Fixture Coursework",
             "description": "Fixture coursework description",
             "unit_id": "5991fe5e-3b25-4fe7-8f8d-9d5c826a91f9",
-            "due_date": "2026-04-20T17:00:00",
+            "due_date": due_date,
             "colour": "123abc",
         },
     )

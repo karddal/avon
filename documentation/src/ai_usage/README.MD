@@ -167,9 +167,8 @@ Overall, I mainly use AI as a tool for faster, more specific searches for my sce
 
 **Tools used**
 
-- ChatGPT
-- Claude
-- Gemini
+- ChatGPT(through codex and website)
+- Gemini(website)
 
 **Where did you use AI tools and why**
 
@@ -180,3 +179,9 @@ Translation - As a student whose first language is not English, sometimes I have
 Research framework usage - Some technical framework documents are not easy to understand, while others break down the usage of a method into the more basic and advanced usage. If I miss some content, or sometimes I use search to find the content I need in the document, I will find some more simple introductions to the method I want to use. At those situations, AI can help me understand and use these frameworks more correctly.
 
 Bug fix - Sometimes the error message output by the framework we use is not only lengthy but also difficult to understand. At this time, I will use AI to help me analyze the error information, to better locate the cause and location cause the error. At the times without AI, I found difficult to find the specific location cause the error, and the emergence of AI really help me to faster locate bugs.
+
+Merging branch - when package.json in our FE broke in my branch, it is nearly impossible for me to fix by hand so I use Codex to fixit, also when there is complex i.e. two branch change same code that I am not sure how to merge to lose feature from one of the branch
+
+Windows environment - in the run-test-stack part about windows specific environment is suggested by AI as windows use some weird command
+
+Library usage - when I want to find a function from some library that I never used before I will use AI to see the usage of that function. Also when I want a specific function that our current library can not find I will ask AI to suggest some library. 
