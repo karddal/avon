@@ -1,10 +1,7 @@
 
-import logging
-import os
 import random
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import text
 from sqlmodel import Session, select
 
 from datetime import datetime, timedelta
@@ -64,10 +61,10 @@ async def run_provision_worker():
             job_ids = []
             with Session(engine) as session:
                 statement = select(ProvisionProject).where(
-                    (ProvisionProject.status== "pending") | 
-                    ((ProvisionProject.status == "ongoing") &
-                    (ProvisionProject.next_run_at <= datetime.now())
-                    )).limit(10)
+                    (ProvisionProject.status== "pending") &
+                    (ProvisionProject.next_run_at <= datetime.now()) &
+                    (ProvisionProject.attempts <= ProvisionProject.max_attempts)
+                    ).limit(10)
                 jobs = session.exec(statement).all()
                 if not jobs:
 
@@ -90,7 +87,7 @@ async def run_provision_worker():
 sem = asyncio.Semaphore(1)
 
 async def process_job(job_id: int):
-    switch = random.randint(0, 5)
+    switch = random.randint(0, 10)
     async with sem:
         with Session(engine) as session:
             job = session.get(ProvisionProject, job_id)
@@ -114,11 +111,14 @@ async def process_job(job_id: int):
                         print("Failed", job.student_id)    
             else:    
                 print(job.student_id, "is has failed. On attempt", job.attempts)
-                job.attempts += 1
-                backoff = 2 ** job.attempts
-                job.status = "pending"
-                job.next_run_at = datetime.now() + timedelta(seconds=backoff) 
-                switch = False
+                if job.attempts < job.max_attempts:
+                    job.attempts += 1
+                    backoff = 2 ** job.attempts
+                    job.status = "pending"
+                    job.next_run_at = datetime.now() + timedelta(seconds=backoff)
+                else:
+                    job.status = "failed"
+                    print("Failed", job.student_id) 
             session.commit()
 
 # Creating the fork creates the project. Use this.
@@ -126,25 +126,6 @@ async def process_job(job_id: int):
 async def create_fork(project: ProjectFork, session: session_dependency):
     # Add projects to be provisioned to the queue (yes the queue is a table)
     # This is essentially the producer
-
-    # for student in students_enrolled:
-    #     try:
-    #         # Call helper function to create project
-    #         # create student_repo entry for each
-
-    #         data = await gl_create_fork(cw_name, user_id=student, group_id=gitlab_id, template_id=project.template_id)
-    #         # we first check whether there is already a student repo db entry for this student
-    #         # if there is we delete it first
-
-    #     except Exception:
-    #         print("raising here")
-    #         raise HTTPException(
-    #             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-    #             detail="Project for the student: " + student + " could not be created."
-    #         )
-    # session.commit()
-
-
     statement = select(Coursework.unit_id, Coursework.name, Coursework.gitlab_id).where(Coursework.id == project.coursework_id)
     cw_object = session.exec(statement).first()
     unit_id, cw_name, gitlab_id = cw_object
