@@ -53,6 +53,7 @@ export default function DeleteCourseworkButton({
 
       {status === 0 && (
         <Button
+          data-cy="coursework-delete-confirm"
           variant="destructive"
           size="lg"
           className="w-full"

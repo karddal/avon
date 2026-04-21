@@ -1,5 +1,7 @@
 import { Info } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 type CourseworkData = {
   id: string;
@@ -38,9 +40,16 @@ export default function CourseworkDescription({
           </CardTitle>
         </CardHeader>
         <CardContent className="min-h-0 flex-1">
-          <div className="h-full overflow-y-auto whitespace-pre-wrap rounded-md border bg-accent p-3">
+          <div
+            data-cy="coursework-description-content"
+            className="h-full overflow-y-auto whitespace-pre-wrap wrap-break-word rounded-md border bg-accent p-3"
+          >
             {coursework?.description ? (
-              coursework.description
+              <div className="prose prose-sm max-w-none dark:prose-invert">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {coursework.description}
+                </ReactMarkdown>
+              </div>
             ) : (
               <span className="text-muted-foreground italic">
                 No description available.

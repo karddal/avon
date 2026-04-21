@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import SidebarBottomActions from "@/components/sidebar/sidebar-bottom-actions";
 import { SidebarLink } from "@/components/sidebar/sidebar-link";
 
 import { Kbd, KbdGroup } from "@/components/ui/kbd";
@@ -203,3 +204,8 @@ export default async function AppSidebarContent() {
           </div>
 
           <SidebarBottomActions userName={s.user.name} role={type} />
+        </SidebarMenu>
+      </SidebarGroup>
+    </SidebarContent>
+  );
+}

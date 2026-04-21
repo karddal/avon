@@ -7,6 +7,7 @@ from pydantic_settings import BaseSettings, NoDecode
 
 load_backend_env()
 
+
 class Settings(BaseSettings):
     app_env: AppEnv = Field(
         default="production",
@@ -81,5 +82,6 @@ class Settings(BaseSettings):
     @property
     def testing_mode(self) -> bool:
         return self.app_env == "test"
+
 
 settings = Settings()

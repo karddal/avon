@@ -1,3 +1,5 @@
+from ipaddress import ip_address
+
 from fastapi import APIRouter, HTTPException, Request, status
 
 from app.core.env import is_development_app_env, is_test_app_env, load_backend_env
@@ -17,7 +19,20 @@ def request_is_local(request: Request) -> bool:
     if client is None:
         return False
 
-    return client.host in {"127.0.0.1", "::1"}
+    host = client.host
+
+    if host == "localhost":
+        return True
+
+    if host.startswith("::ffff:"):
+        host = host.removeprefix("::ffff:")
+
+    host = host.split("%", 1)[0]
+
+    try:
+        return ip_address(host).is_loopback
+    except ValueError:
+        return False
 
 
 @router.post("/reset-db", include_in_schema=False)

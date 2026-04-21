@@ -1,9 +1,7 @@
 describe("Coursework listing page - admin tests", () => {
-  before(() => {
-    cy.resetDb();
-  });
-
   beforeEach(() => {
+    cy.resetDb();
+    cy.clearAuthSession();
     cy.login("admin@bris.ac.uk", "changeme", false);
   });
 
@@ -14,66 +12,127 @@ describe("Coursework listing page - admin tests", () => {
 
   it("has tabs", () => {
     cy.visit("/coursework");
-    cy.get('[data-slot="tabs"]').should("be.visible");
+    cy.getByCy("coursework-tabs").should("be.visible");
   });
 
   // Ongoing coursework stuff
 
   it("has default ongoing unit", () => {
     cy.visit("/coursework");
-    cy.get("span").should("contain", "Computer Architecture");
+    cy.getByCy("coursework-unit-tab-computer-architecture-2025-2026").should(
+      "be.visible",
+    );
   });
 
   it("has default finished coursework", () => {
     cy.visit("/coursework");
-    cy.get("p").should("contain", "Encrypt");
+    cy.getByCy(
+      "coursework-link-computer-architecture-2025-2026-encrypt",
+    ).should("be.visible");
   });
 
   it("Allows navigation through the ongoing coursework tabslist", () => {
     cy.visit("/coursework");
-    cy.contains('[role="tab"]', "Software Engineering Project").click();
-    cy.get("p").should("contain", "AI Bill Splitter");
+    cy.getByCy(
+      "coursework-unit-tab-software-engineering-project-2025-2026",
+    ).click();
+    cy.getByCy(
+      "coursework-link-software-engineering-project-2025-2026-ai-bill-splitter",
+    ).should("be.visible");
   });
 
   // Finsihed coursework stuff
   it("has default finished unit", () => {
     cy.visit("/coursework");
-    cy.contains("button", "Finished").click();
-    cy.get("span").should("contain", "Computer Architecture");
+    cy.getByCy("coursework-tab-finished").click();
+    cy.getByCy("coursework-unit-tab-computer-architecture-2024-2025").should(
+      "be.visible",
+    );
   });
 
   it("has default finished coursework", () => {
     cy.visit("/coursework");
-    cy.contains("button", "Finished").click();
-    cy.contains('[role="tab"]', "Computer Architecture").click();
-    cy.get("p").should("contain", "Encrypt");
+    cy.getByCy("coursework-tab-finished").click();
+    cy.getByCy("coursework-unit-tab-computer-architecture-2024-2025").click();
+    cy.getByCy(
+      "coursework-link-computer-architecture-2024-2025-encrypt",
+    ).should("be.visible");
   });
 
   it("Allows navigation through the finsihed coursework tabslist", () => {
     cy.visit("/coursework");
-    cy.contains("button", "Finished").click();
-    cy.contains(
-      '[role="tab"]',
-      "Imperative and Functional Programming 2024-2025",
+    cy.getByCy("coursework-tab-finished").click();
+    cy.getByCy(
+      "coursework-unit-tab-imperative-and-functional-programming-2024-2025",
     ).click();
-    cy.get("p").should("contain", "Power to the People in 2024");
+    cy.getByCy(
+      "coursework-link-imperative-and-functional-programming-2024-2025-power-to-the-people-in-2024",
+    ).should("be.visible");
+  });
+
+  it("Admin can open the create coursework flow", () => {
+    cy.visit("/coursework");
+    cy.getByCy("create-coursework-link").click();
+    cy.url().should("include", "/coursework/create-coursework");
+    cy.getByCy("create-coursework-title").should("be.visible");
+    cy.getByCy("create-coursework-unit").should("be.visible");
+  });
+
+  it("Admin can create coursework", () => {
+    const courseworkName = `Cypress Created Coursework ${Date.now()}`;
+    const courseworkSelectorName = courseworkName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
+    cy.visit("/coursework");
+    cy.getByCy("create-coursework-link").click();
+    cy.getByCy(
+      "create-coursework-unit-option-coms20006-software-engineering-project",
+    ).then(($option) => {
+      const unitValue = $option.val()?.toString();
+      expect(unitValue).to.be.a("string");
+      expect(unitValue).to.not.equal("");
+      if (!unitValue) {
+        throw new Error("Expected coursework unit option to have a value.");
+      }
+      cy.getByCy("create-coursework-unit").select(unitValue);
+    });
+    cy.getByCy("create-coursework-selected-unit").should("be.visible");
+    cy.getByCy("create-coursework-name").type(courseworkName);
+    cy.get('[data-cy="markdown-editor"]').find(".monaco-editor").click();
+    cy.focused().type("{ctrl}a{del}", { force: true });
+    cy.get('[data-cy="markdown-editor"]')
+      .find(".monaco-editor")
+      .realClick()
+      .realType("Coursework created by the admin Cypress flow.");
+    cy.getByCy("create-coursework-next-step-1").click();
+    cy.getByCy("create-coursework-next-step-2").click();
+    cy.getByCy("create-coursework-submit").click();
+
+    cy.url().should("include", "/coursework");
+    cy.url().should("not.include", "/create-coursework");
+    cy.getByCy(
+      "coursework-unit-tab-software-engineering-project-2025-2026",
+    ).click();
+    cy.getByCy(
+      `coursework-link-software-engineering-project-2025-2026-${courseworkSelectorName}`,
+    ).should("be.visible");
   });
 
   // Deletion
   it("Admin can delete coursework", () => {
     cy.visit("/coursework");
-    cy.contains("p", "Encrypt")
+    cy.getByCy("coursework-card-computer-architecture-2025-2026-encrypt")
       .should("be.visible")
-      .closest(".bg-muted")
       .as("courseworkCard");
     cy.get("@courseworkCard")
-      .find('button[data-slot="dropdown-menu-trigger"]')
+      .find('[data-cy="coursework-list-actions-trigger"]')
       .click();
-    cy.get(`[data-slot="dropdown-menu-item"]`).click();
-    cy.get(`[data-slot="button"]`).click();
-    // cy.get('[data-content=""] > div').contains(
-    //   "Coursework deleted successfully",
-    // );
-    cy.get("p").should("not.contain", "Encrypt");
+    cy.getByCy("coursework-list-delete-item").click();
+    cy.getByCy("coursework-delete-confirm").click();
+    cy.get(
+      '[data-cy="coursework-link-computer-architecture-2025-2026-encrypt"]',
+    ).should("not.exist");
   });
 });

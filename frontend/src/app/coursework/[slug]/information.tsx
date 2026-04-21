@@ -23,7 +23,7 @@ type CourseworkData = {
   totalTests: number;
 };
 
-export default function CourseworkInformation({
+export default async function CourseworkInformation({
   slug,
   courseworkData,
 }: {
@@ -40,7 +40,7 @@ export default function CourseworkInformation({
     : { time: "", day: "" };
 
   return (
-    <Card className="h-full">
+    <Card data-cy="coursework-information-section" className="h-full">
       <CardHeader className="flex flex-col">
         <CardTitle>
           <div className="text-2xl flex flex-row items-center gap-2">

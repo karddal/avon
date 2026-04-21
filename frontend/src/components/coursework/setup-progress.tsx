@@ -18,7 +18,7 @@ export default function SetupProgress({
   void slug;
   const steps = setupProgressData;
   return (
-    <Card className="h-full">
+    <Card data-cy="coursework-setup-progress" className="h-full">
       <CardHeader className="flex flex-col ">
         <CardTitle>
           <div className="text-2xl flex flex-row items-center gap-2">

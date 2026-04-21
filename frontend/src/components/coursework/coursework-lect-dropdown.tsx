@@ -66,11 +66,11 @@ export default function CourseworkLectDropdown({
   const [showStartTests, setShowStartTests] = useState<boolean>(false);
   const [showTestBatches, setShowTestBatches] = useState<boolean>(false);
   const [viewRepos, setViewRepos] = useState<boolean>(false);
+  const [showProvision, setShowProvision] = useState(false);
   const router = useRouter();
   const refresh = useCallback(() => {
     router.refresh();
   }, [router]);
-  const [showProvision, setShowProvision] = useState(false);
 
   const hasManageScope = scopes.has("unit:coursework_manage");
   const hasGitlabScope = scopes.has("unit:coursework_gitlab");
@@ -86,30 +86,31 @@ export default function CourseworkLectDropdown({
   if (!hasEntries) {
     return null;
   }
-  console.log(cw_engine_data?.base_image_id);
-  const engine_is_setup = !(
+
+  const engineIsSetup = !(
     cw_engine_data?.base_image_id == null ||
     cw_engine_data?.tester_command == null
   );
+
   return (
     <div className="aspect-square">
       <DropDrawer>
         <DropDrawerTrigger
           data-cy="coursework-lect-dropdown"
-          className="border hover:bg-accent hover:transition p-2"
+          className="border p-2 hover:bg-accent hover:transition"
         >
           <Menu size={32} />
         </DropDrawerTrigger>
-        <DropDrawerContent className="" align={"end"}>
+        <DropDrawerContent align={"end"}>
           <DropDrawerLabel>Coursework Options</DropDrawerLabel>
           <DropDrawerSeparator />
 
           {hasEngineScope && (
             <DropDrawerGroup>
               <DropDrawerLabel>Engine</DropDrawerLabel>
-              {!engine_is_setup && (
+              {!engineIsSetup && (
                 <>
-                  <Item variant={"outline"} className={"p-2 m-2"}>
+                  <Item variant={"outline"} className={"m-2 p-2"}>
                     <ItemMedia variant={"icon"}>
                       <Container />
                     </ItemMedia>
@@ -124,7 +125,7 @@ export default function CourseworkLectDropdown({
                         </span>
                       </FieldLabel>
                       <FieldContent>
-                        <Progress id="progress-engine" value={0}></Progress>
+                        <Progress id="progress-engine" value={0} />
                       </FieldContent>
                     </Field>
                   </Item>
@@ -144,7 +145,7 @@ export default function CourseworkLectDropdown({
                   </DropDrawerItem>
                 </>
               )}
-              {engine_is_setup && (
+              {engineIsSetup && (
                 <>
                   <DropDrawerItem
                     key={"Engine"}
@@ -213,6 +214,7 @@ export default function CourseworkLectDropdown({
                 <DropDrawerLabel>Manage</DropDrawerLabel>
                 <DropDrawerItem
                   key={"Edit"}
+                  data-cy="coursework-edit-menu-item"
                   onSelect={() => setShowEdit(true)}
                   disabled={!canEdit}
                   icon={<SquarePen />}
@@ -244,7 +246,7 @@ export default function CourseworkLectDropdown({
         </DropDrawerContent>
       </DropDrawer>
 
-      {engine_is_setup && cw_engine_data && avail_images_data && (
+      {engineIsSetup && cw_engine_data && avail_images_data && (
         <>
           <StartTestBatchPopup
             open_state={showStartTests}
@@ -253,7 +255,7 @@ export default function CourseworkLectDropdown({
             refresh={refresh}
             cw_engine_data={cw_engine_data}
             available_images={avail_images_data}
-          ></StartTestBatchPopup>
+          />
           <TestBatchesDialog
             open_state={showTestBatches}
             set_open_state={setShowTestBatches}
@@ -296,7 +298,7 @@ export default function CourseworkLectDropdown({
           set_open_state={setViewRepos}
           courseworkId={slug}
           refresh={refresh}
-        ></ReposListDialog>
+        />
       )}
 
       {coursework_update_data && (
