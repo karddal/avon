@@ -9,6 +9,7 @@ type Lecturer = {
   id: string;
   name: string;
   image: string;
+  role: boolean;
 };
 
 type UnitRendererProps = {

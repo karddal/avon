@@ -5,6 +5,7 @@ type Lecturer = {
   id: string;
   name: string;
   image: string;
+  role: boolean;
 };
 
 export default function UnitMembersModule({
