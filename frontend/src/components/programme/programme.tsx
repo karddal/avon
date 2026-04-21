@@ -40,6 +40,7 @@ export default function Coursework({
 }) {
   const [showDelete, setShowDelete] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
+  // console.log(props);
   return (
     <div>
       <Card className="bg-muted h-full justify-between flex-1 flex flex-row p-2 hover:bg-foreground/10">

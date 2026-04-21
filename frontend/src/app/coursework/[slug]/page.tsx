@@ -14,7 +14,7 @@ import {
   getCourseworkLayoutForCurrentCoursework,
   saveCourseworkLayoutForCurrentCoursework,
 } from "@/lib/actions/coursework-layout";
-import { getRequestJWT } from "@/lib/auth-utils";
+import { getRequestJWT, requireSession } from "@/lib/auth-utils";
 import Loading from "../loading";
 import CourseworkName from "./name";
 
@@ -61,6 +61,7 @@ async function CourseworkPageContent({
 }) {
   const p = await params;
   const slug = p.slug;
+  await requireSession();
   const token = await getRequestJWT();
   // Hardcoded the template id here, when merged, I should be able to get the template id from jack's code
 

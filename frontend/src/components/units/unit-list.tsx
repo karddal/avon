@@ -61,7 +61,7 @@ export default async function UnitList({ finished }: { finished: boolean }) {
 
     return isActive;
   });
-  console.log(unitData);
+  // console.log(unitData);
   // const filtered = await getData(currentYear, finished)
   const d = programmes.at(0)?.id ?? "0";
   return (
