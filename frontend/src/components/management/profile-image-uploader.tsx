@@ -7,28 +7,49 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { getInitials } from "@/components/user-card";
 import { upload_profile_image } from "@/lib/actions/auth/upload_profile_image";
+import { cn } from "@/lib/utils";
 
 type ProfileImageUploaderProps = {
   imageUrl?: string | null;
   name: string;
   buttonLabel: string;
   disabled?: boolean;
+  layout?: "inline" | "stacked";
+  imageSizeClassName?: string;
+  showPreview?: boolean;
+  showButton?: boolean;
+  showMeta?: boolean;
+  className?: string;
+  previewWrapperClassName?: string;
   onUploaded: (imageUrl: string) => Promise<void> | void;
 };
+
+function normaliseImageUrl(url?: string | null) {
+  return url && url.trim() !== "" ? url : undefined;
+}
 
 export default function ProfileImageUploader({
   imageUrl,
   name,
   buttonLabel,
   disabled = false,
+  layout = "inline",
+  imageSizeClassName,
+  showPreview = true,
+  showButton = true,
+  showMeta = true,
+  className,
+  previewWrapperClassName,
   onUploaded,
 }: ProfileImageUploaderProps) {
-  const [previewUrl, setPreviewUrl] = useState(imageUrl ?? "");
+  const [previewUrl, setPreviewUrl] = useState<string | undefined>(
+    normaliseImageUrl(imageUrl),
+  );
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    setPreviewUrl(imageUrl ?? "");
+    setPreviewUrl(normaliseImageUrl(imageUrl));
   }, [imageUrl]);
 
   async function handleFileSelection(event: ChangeEvent<HTMLInputElement>) {
@@ -54,7 +75,7 @@ export default function ProfileImageUploader({
 
     try {
       await onUploaded(result.imageUrl);
-      setPreviewUrl(result.imageUrl);
+      setPreviewUrl(normaliseImageUrl(result.imageUrl));
       toast.success("Profile image uploaded");
     } catch (error) {
       toast.error(
@@ -67,21 +88,53 @@ export default function ProfileImageUploader({
   }
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-3">
-        <Avatar className="size-16 border rounded-none">
-          <AvatarImage src={previewUrl} alt={name} className="rounded-none" />
-          <AvatarFallback className="rounded-none">
-            {getInitials(name)}
-          </AvatarFallback>
-        </Avatar>
-        <div className="min-w-0">
-          <p className="font-medium">{name}</p>
-          <p className="text-sm text-muted-foreground">
-            JPG, PNG, GIF or WebP up to 5MB.
-          </p>
-        </div>
-      </div>
+    <div
+      className={cn(
+        showPreview && showButton ? "space-y-3" : undefined,
+        className,
+      )}
+    >
+      {showPreview ? (
+        layout === "stacked" ? (
+          <div className={previewWrapperClassName}>
+            <Avatar
+              className={`w-full border rounded-none ${imageSizeClassName ?? "aspect-square h-auto"}`}
+            >
+              <AvatarImage
+                src={previewUrl}
+                alt={name}
+                className="rounded-none"
+              />
+              <AvatarFallback className="rounded-none w-full p-20 font-semibold text-5xl">
+                {getInitials(name)}
+              </AvatarFallback>
+            </Avatar>
+          </div>
+        ) : (
+          <div className="flex items-center gap-3">
+            <Avatar
+              className={`border rounded-none ${imageSizeClassName ?? "size-16"}`}
+            >
+              <AvatarImage
+                src={previewUrl}
+                alt={name}
+                className="rounded-none"
+              />
+              <AvatarFallback className="rounded-none">
+                {getInitials(name)}
+              </AvatarFallback>
+            </Avatar>
+            {showMeta ? (
+              <div className="min-w-0">
+                <p className="font-medium">{name}</p>
+                <p className="text-sm text-muted-foreground">
+                  JPG, PNG, GIF or WebP up to 5MB.
+                </p>
+              </div>
+            ) : null}
+          </div>
+        )
+      ) : null}
 
       <input
         ref={inputRef}
@@ -92,25 +145,27 @@ export default function ProfileImageUploader({
         disabled={disabled || uploading}
       />
 
-      <Button
-        type="button"
-        variant="outline"
-        className="w-full justify-start"
-        disabled={disabled || uploading}
-        onClick={() => inputRef.current?.click()}
-      >
-        {uploading ? (
-          <>
-            <Loader2 className="size-4 animate-spin" />
-            Uploading...
-          </>
-        ) : (
-          <>
-            <ImagePlus className="size-4" />
-            {buttonLabel}
-          </>
-        )}
-      </Button>
+      {showButton ? (
+        <Button
+          type="button"
+          variant="outline"
+          className={layout === "stacked" ? "w-full" : "w-full justify-start"}
+          disabled={disabled || uploading}
+          onClick={() => inputRef.current?.click()}
+        >
+          {uploading ? (
+            <>
+              <Loader2 className="size-4 animate-spin" />
+              Uploading...
+            </>
+          ) : (
+            <>
+              <ImagePlus className="size-4" />
+              {buttonLabel}
+            </>
+          )}
+        </Button>
+      ) : null}
     </div>
   );
 }

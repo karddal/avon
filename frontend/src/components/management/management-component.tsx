@@ -30,6 +30,7 @@ export default function ManagementComponent({ isAdmin }: { isAdmin: boolean }) {
           user={selectedUser}
           isAdmin={isAdmin}
           settingsPage={false}
+          onUserUpdated={setSelectedUser}
           onProfileImageUpdated={() =>
             setSearchRefreshKey((current) => current + 1)
           }

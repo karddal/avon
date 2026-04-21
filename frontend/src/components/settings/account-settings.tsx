@@ -1,8 +1,9 @@
 "use client";
 
 import type { User } from "better-auth";
-import Image from "next/image";
+import { Info, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -12,7 +13,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Select,
   SelectContent,
@@ -20,14 +20,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getInitials } from "@/components/user-card";
+import { update_managed_user } from "@/lib/actions/auth/update_managed_user";
 import { update_user_profile_image } from "@/lib/actions/auth/update_user_profile_image";
+import { change_role } from "@/lib/actions/change_role";
 import { get_user_role } from "@/lib/actions/get_user_role";
 import { authClient } from "@/lib/auth-client";
-import ChangeRoleButton from "../management/change-role-button";
+import EditUserFieldButton from "../management/edit-user-field-button";
 import ProfileImageUploader from "../management/profile-image-uploader";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import DeleteUserButton from "./delete-user-button";
 import ResetPasswordButtonAdmin from "./reset-password-button-manage";
 import ResetPasswordButtonSettings from "./reset-password-button-settings";
@@ -37,17 +39,18 @@ export default function AccountSettings({
   user,
   isAdmin,
   settingsPage,
+  onUserUpdated,
   onProfileImageUpdated,
 }: {
   user: User | null;
   isAdmin: boolean;
   settingsPage: boolean;
+  onUserUpdated?: (user: User | null) => void;
   onProfileImageUpdated?: () => void;
 }) {
   const { data: session, isPending } = authClient.useSession();
   const [role, setRole] = useState<string | null>(null);
   const [showDelete, setShowDelete] = useState(false);
-  const [showRoleChange, setShowRoleChange] = useState(false);
   const [showPasswordReset, setShowPasswordReset] = useState(false);
   const [newPasswordInp, setNewPasswordInp] = useState<string | null>(null);
   const [OldPasswordInpStudent, setOldPasswordInpStudent] = useState<
@@ -61,6 +64,10 @@ export default function AccountSettings({
     userId: string;
     imageUrl: string;
   } | null>(null);
+  const [draftName, setDraftName] = useState("");
+  const [draftEmail, setDraftEmail] = useState("");
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [isEditingEmail, setIsEditingEmail] = useState(false);
   const isValidPassword =
     newPasswordInp &&
     newPasswordInp.length >= 8 &&
@@ -84,8 +91,15 @@ export default function AccountSettings({
     { value: "lecturer", label: "Lecturer" },
     { value: "user", label: "Student" },
   ];
-  const hasRoleChanged = selectedRole && role !== selectedRole;
   const activeUser = settingsPage ? session?.user : user;
+  const trimmedDraftName = draftName.trim();
+  const normalizedDraftEmail = draftEmail.trim().toLowerCase();
+  const hasNameChanged = Boolean(
+    activeUser && trimmedDraftName !== activeUser.name,
+  );
+  const hasEmailChanged = Boolean(
+    activeUser && normalizedDraftEmail !== activeUser.email,
+  );
 
   useEffect(() => {
     if (!activeUser) return;
@@ -109,6 +123,21 @@ export default function AccountSettings({
     setSelectedRole(role);
   }, [role]);
 
+  useEffect(() => {
+    if (!activeUser) {
+      setDraftName("");
+      setDraftEmail("");
+      setIsEditingName(false);
+      setIsEditingEmail(false);
+      return;
+    }
+
+    setDraftName(activeUser.name);
+    setDraftEmail(activeUser.email);
+    setIsEditingName(false);
+    setIsEditingEmail(false);
+  }, [activeUser]);
+
   if (settingsPage && isPending) {
     return <div className="p-4">Loading...</div>;
   }
@@ -128,119 +157,308 @@ export default function AccountSettings({
       ? updatedImage.imageUrl
       : (activeUser.image ?? "");
 
+  const syncActiveUser = (changes: Partial<User>) => {
+    const updatedUser = {
+      ...activeUser,
+      ...changes,
+    };
+
+    onUserUpdated?.(updatedUser);
+  };
+
   return (
     <div className="w-full">
-      <div className="relative w-full aspect-5/1 overflow-hidden rounded-lg bg-muted">
-        <Image
-          src={`${process.env.NEXT_PUBLIC_CDN_PATH}/images/campus.jpg`}
-          alt="Campus"
-          fill
-          className="object-cover object-[50%_65%]"
-          priority
-        />
-      </div>
-
-      <div className="-mt-12 sm:-mt-10 md:-mt-12 lg:-mt-14 flex justify-center">
-        <Avatar className="size-16 sm:size-20 md:size-24 lg:size-28 border-4 border-background bg-background rounded-none">
-          <AvatarImage src={image} className="rounded-none" />
-          <AvatarFallback className="rounded-none">
-            {getInitials(name)}
-          </AvatarFallback>
-        </Avatar>
-      </div>
-      <div className="mt-6 px-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div className="rounded-md border border-border p-4">
+      <div
+        className={`mt-6 px-6 grid grid-cols-1 gap-4 ${
+          settingsPage ? "" : "md:grid-cols-2"
+        }`}
+      >
+        <div
+          className={`w-full rounded-md border border-border p-4 ${
+            settingsPage ? "" : "md:col-span-2"
+          }`}
+        >
           <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
             Profile
           </h3>
-
-          <div>
-            <p className="text-sm text-muted-foreground">Full name</p>
-            <p className="text-base font-medium">{name}</p>
-          </div>
-
-          <div>
-            <p className="text-sm text-muted-foreground">Email address</p>
-            <p className="text-base font-medium">{email}</p>
-          </div>
-
-          {isAdmin && !settingsPage ? (
-            <div className="mt-4 border-t pt-4">
-              <p className="mb-3 text-sm text-muted-foreground">
-                Update the selected user's profile picture.
-              </p>
+          <div
+            className={`${settingsPage ? "" : "flex flex-row gap-4 items-center"}`}
+          >
+            <div
+              className={`w-full ${
+                settingsPage ? "max-w-full" : "md:h-full md:w-fit"
+              }`}
+            >
               <ProfileImageUploader
                 imageUrl={image}
                 name={name}
                 buttonLabel="Upload new profile picture"
-                onUploaded={async (imageUrl) => {
-                  const result = await update_user_profile_image(
-                    activeUser.id,
-                    imageUrl,
-                  );
-
-                  if (!result.success) {
-                    throw new Error(
-                      result.error ?? "Failed to update profile image",
-                    );
-                  }
-
-                  setUpdatedImage({
-                    userId: activeUser.id,
-                    imageUrl,
-                  });
-                  onProfileImageUpdated?.();
-                }}
+                disabled
+                layout="stacked"
+                className={settingsPage ? undefined : "md:h-full"}
+                previewWrapperClassName={settingsPage ? undefined : "md:h-full"}
+                imageSizeClassName={
+                  settingsPage
+                    ? "aspect-square h-auto"
+                    : "aspect-square h-auto md:h-full md:w-auto md:max-w-48"
+                }
+                showButton={false}
+                onUploaded={() => {}}
               />
             </div>
-          ) : null}
+
+            <div className={`${settingsPage ? "space-y-4 my-2" : "space-y-4"}`}>
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Full name</p>
+                {isEditingName ? (
+                  <div className="space-y-2">
+                    <Input
+                      value={draftName}
+                      onChange={(e) => setDraftName(e.target.value)}
+                      placeholder="Full name"
+                    />
+                    <EditUserFieldButton
+                      actionLabel="Save name"
+                      successMessage="Name updated successfully"
+                      errorMessage="Failed to update name"
+                      disabled={
+                        !hasNameChanged || trimmedDraftName.length === 0
+                      }
+                      onCancel={() => {
+                        setDraftName(name);
+                        setIsEditingName(false);
+                      }}
+                      onSuccess={() => {
+                        syncActiveUser({ name: trimmedDraftName });
+                        setIsEditingName(false);
+                      }}
+                      onSubmit={async () => {
+                        const result = await update_managed_user({
+                          userId: activeUser.id,
+                          name: trimmedDraftName,
+                        });
+
+                        return result.success;
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <p className="text-base font-medium">{name}</p>
+                    {isAdmin && !settingsPage ? (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="size-7"
+                        onClick={() => {
+                          setDraftName(name);
+                          setIsEditingName(true);
+                        }}
+                      >
+                        <Pencil />
+                      </Button>
+                    ) : null}
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Email address</p>
+                {isEditingEmail ? (
+                  <div className="space-y-2">
+                    <Input
+                      type="email"
+                      value={draftEmail}
+                      onChange={(e) => setDraftEmail(e.target.value)}
+                      placeholder="Email address"
+                    />
+                    <EditUserFieldButton
+                      actionLabel="Save email"
+                      successMessage="Email updated successfully"
+                      errorMessage="Failed to update email"
+                      disabled={
+                        !hasEmailChanged || normalizedDraftEmail.length === 0
+                      }
+                      onCancel={() => {
+                        setDraftEmail(email);
+                        setIsEditingEmail(false);
+                      }}
+                      onSuccess={() => {
+                        syncActiveUser({ email: normalizedDraftEmail });
+                        setIsEditingEmail(false);
+                      }}
+                      onSubmit={async () => {
+                        const result = await update_managed_user({
+                          userId: activeUser.id,
+                          email: normalizedDraftEmail,
+                        });
+
+                        if (!result.success && result.error) {
+                          toast.error(result.error);
+                        }
+
+                        return result.success;
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <p className="text-base font-medium">{email}</p>
+                    {isAdmin && !settingsPage ? (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="size-7"
+                        onClick={() => {
+                          setDraftEmail(email);
+                          setIsEditingEmail(true);
+                        }}
+                      >
+                        <Pencil />
+                      </Button>
+                    ) : null}
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <div
+                  className={`flex gap-2 ${
+                    settingsPage
+                      ? "flex-col"
+                      : "flex-col sm:flex-row sm:items-center"
+                  }`}
+                >
+                  {isAdmin && !settingsPage ? (
+                    <ProfileImageUploader
+                      imageUrl={image}
+                      name={name}
+                      buttonLabel="Upload new profile picture"
+                      showPreview={false}
+                      onUploaded={async (imageUrl) => {
+                        const result = await update_user_profile_image(
+                          activeUser.id,
+                          imageUrl,
+                        );
+
+                        if (!result.success) {
+                          throw new Error(
+                            result.error ?? "Failed to update profile image",
+                          );
+                        }
+
+                        setUpdatedImage({
+                          userId: activeUser.id,
+                          imageUrl,
+                        });
+                        onProfileImageUpdated?.();
+                      }}
+                    />
+                  ) : (
+                    <ProfileImageUploader
+                      imageUrl={image}
+                      name={name}
+                      buttonLabel="Upload new profile picture"
+                      disabled
+                      showPreview={false}
+                      onUploaded={() => {}}
+                    />
+                  )}
+                  {!settingsPage ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="size-8 text-muted-foreground"
+                          aria-label="Profile image requirements"
+                        >
+                          <Info className="size-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" sideOffset={8}>
+                        JPG, PNG, GIF or WebP up to 5MB.
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    <p className="text-sm text-muted-foreground text-center">
+                      JPG, PNG, GIF or WebP up to 5MB.
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         {/* <div className="mt-8 px-6"> */}
-        <div className="rounded-md border border-border p-4">
-          <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-            Security
-          </h3>
-
-          <p className="mt-1 text-sm text-muted-foreground">
-            Reset your password.
-          </p>
-
-          <Button
-            variant="outline"
-            className="mt-3 w-full sm:w-fit"
-            onClick={() => setShowPasswordReset(true)}
-          >
-            Reset Password
-          </Button>
-        </div>
-        <div className="rounded-md border border-border p-4">
+        <div className="w-full rounded-md border border-border p-4">
           <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
             Role
           </h3>
-          <p className="text-base font-medium">{roleLabel}</p>
+          <div className="space-y-2">
+            {isAdmin && !settingsPage ? (
+              <Select
+                value={selectedRole ?? undefined}
+                onValueChange={async (value) => {
+                  setSelectedRole(value);
 
-          {isAdmin && !settingsPage && (
-            <Button
-              variant="outline"
-              className="w-fit justify-self-end mt-3"
-              onClick={() => setShowRoleChange(true)}
-            >
-              Change Role
-            </Button>
-          )}
+                  if (value === role) {
+                    return;
+                  }
+
+                  const result = await change_role(activeUser.id, value);
+
+                  if (!result.success) {
+                    toast.error("Failed to update role");
+                    setSelectedRole(role);
+                    return;
+                  }
+
+                  setRole(value);
+                  toast.success("Role updated successfully");
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select role" />
+                </SelectTrigger>
+
+                <SelectContent>
+                  {ROLES.map((r) => (
+                    <SelectItem key={r.value} value={r.value}>
+                      {r.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <p className="text-base font-medium">{roleLabel}</p>
+            )}
+          </div>
         </div>
         {isAdmin ? (
-          <div className="rounded-md border border-border p-4">
+          <div className="w-full rounded-md border border-border p-4">
             <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-              Deletion
+              Security
             </h3>
-            <Button
-              variant="destructive"
-              className="mt-3 w-full sm:w-fit"
-              onClick={() => setShowDelete(true)}
-            >
-              Delete User
-            </Button>
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <Button
+                variant="outline"
+                className="w-full sm:w-fit"
+                onClick={() => setShowPasswordReset(true)}
+              >
+                Reset Password
+              </Button>
+              <Button
+                variant="destructive"
+                className="w-full sm:w-fit"
+                onClick={() => setShowDelete(true)}
+              >
+                Delete User
+              </Button>
+            </div>
           </div>
         ) : (
           <></>
@@ -268,57 +486,6 @@ export default function AccountSettings({
           </AlertDialogContent>
         </AlertDialog>
 
-        <AlertDialog open={showRoleChange} onOpenChange={setShowRoleChange}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Role Change</AlertDialogTitle>
-              <AlertDialogDescription asChild>
-                <div className="flex flex-col gap-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">Selected User</span>
-
-                    <span className="font-bold text-foreground">
-                      {name} ({email})
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">Role</span>
-
-                    <Select
-                      value={selectedRole ?? undefined}
-                      onValueChange={(value) => setSelectedRole(value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select role" />
-                      </SelectTrigger>
-
-                      <SelectContent>
-                        {ROLES.map((r) => (
-                          <SelectItem key={r.value} value={r.value}>
-                            {r.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
-              <ChangeRoleButton
-                user_id={activeUser.id}
-                closeDialog={() => {
-                  setShowRoleChange(false);
-                  setRole(selectedRole);
-                }}
-                newRole={selectedRole ?? ""}
-                disabled={!hasRoleChanged}
-              />
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-
         <AlertDialog
           open={showPasswordReset}
           onOpenChange={setShowPasswordReset}
@@ -329,7 +496,7 @@ export default function AccountSettings({
                 <AlertDialogTitle>Password Reset</AlertDialogTitle>
                 <AlertDialogDescription asChild>
                   <div className="flex flex-col gap-4">
-                    <div className="flex flex-row gap-2">
+                    <div className="flex flex-row flex-wrap gap-2">
                       <span>Reset the password for user:</span>
                       <div className="font-bold text-foreground">
                         {name} ({email})

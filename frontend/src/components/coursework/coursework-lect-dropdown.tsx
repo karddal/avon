@@ -236,18 +236,21 @@ export default function CourseworkLectDropdown({
         </DropDrawerContent>
       </DropDrawer>
 
-      {showStartTests && engineIsSetup && cw_engine_data && avail_images_data && (
-        <>
-          <StartTestBatchPopup
-            open_state={showStartTests}
-            set_open_state={setShowStartTests}
-            courseworkId={slug}
-            refresh={refresh}
-            cw_engine_data={cw_engine_data}
-            available_images={avail_images_data}
-          />
-        </>
-      )}
+      {showStartTests &&
+        engineIsSetup &&
+        cw_engine_data &&
+        avail_images_data && (
+          <>
+            <StartTestBatchPopup
+              open_state={showStartTests}
+              set_open_state={setShowStartTests}
+              courseworkId={slug}
+              refresh={refresh}
+              cw_engine_data={cw_engine_data}
+              available_images={avail_images_data}
+            />
+          </>
+        )}
 
       {showTestBatches && engineIsSetup && (
         <TestBatchesDialog
@@ -320,7 +323,9 @@ export default function CourseworkLectDropdown({
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="sm:h-full">Cancel</AlertDialogCancel>
+              <AlertDialogCancel className="sm:h-full">
+                Cancel
+              </AlertDialogCancel>
               <DeleteCourseworkButton courseworkId={slug} />
             </AlertDialogFooter>
           </AlertDialogContent>
