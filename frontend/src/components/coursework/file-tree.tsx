@@ -93,7 +93,7 @@ function TreeNode({ node }: { node: RepoNode }) {
 }
 
 export default function RepoTree({ fileTree }: RepoTree) {
-  console.log(fileTree);
+  // console.log(fileTree);
   const nestedTree = React.useMemo(() => buildTree(fileTree), [fileTree]);
 
   const isEmpty = nestedTree.length === 0;

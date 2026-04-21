@@ -15,7 +15,7 @@ import { get_coursework_scopes } from "@/lib/actions/coursework/get_coursework_s
 import { get_cw_update_data } from "@/lib/actions/coursework/get_coursework_update_data";
 import { get_cw_engine_data } from "@/lib/actions/coursework/get_cw_engine_data";
 import { get_student_repos } from "@/lib/actions/coursework/get_student_repos";
-import { getRequestJWT } from "@/lib/auth-utils";
+import { getRequestJWT, requireSession } from "@/lib/auth-utils";
 import Loading from "../loading";
 import CourseworkDescription from "./description";
 import CourseworkInformation from "./information";
@@ -28,6 +28,7 @@ async function CourseworkPageContent({
 }) {
   const p = await params;
   const slug = p.slug;
+  await requireSession();
   const token = await getRequestJWT();
   const scopes: Set<string> = await get_coursework_scopes(slug);
   const canViewSetupProgress =
