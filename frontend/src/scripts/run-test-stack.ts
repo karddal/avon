@@ -7,6 +7,8 @@ const EXIT_CODE_SIGINT = 130;
 const EXIT_CODE_SIGTERM = 143;
 const WINDOWS_KILL_WAIT_MS = 1_000;
 
+// type for the subprocess this script manage
+// like BE and FE
 type ManagedProcess = {
   readonly child: ChildProcess;
   readonly name: string;
@@ -16,6 +18,7 @@ type ManagedProcess = {
   exitSignal: NodeJS.Signals | null;
 };
 
+// type for the config subprocess need to run
 type RuntimeConfig = {
   readonly platform: {
     readonly isWindows: boolean;
@@ -47,6 +50,7 @@ type RuntimeConfig = {
   };
 };
 
+// helpers
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -65,6 +69,7 @@ function ensureFileExists(filePath: string, label: string): void {
   }
 }
 
+// cross-platform
 function getBackendPythonPath(backendDir: string, isWindows: boolean): string {
   return isWindows
     ? path.join(backendDir, ".venv", "Scripts", "python.exe")
@@ -84,6 +89,7 @@ function waitForExitCode(processToWait: ManagedProcess): Promise<number> {
   );
 }
 
+// wrapper to make sure things work cross-platform
 function createManagedProcess(
   name: string,
   command: string,
@@ -124,6 +130,7 @@ function createManagedProcess(
   return managed;
 }
 
+// all the key, path, link for the subprocess
 function buildRuntimeConfig(): RuntimeConfig {
   const frontendDir = path.resolve(__dirname, "..", "..");
   const backendDir = path.resolve(frontendDir, "..", "backend");
@@ -211,6 +218,7 @@ function buildRuntimeConfig(): RuntimeConfig {
   };
 }
 
+// make sure process not running when the BE and FE is not start up yet
 async function waitForHttpReady(
   url: string,
   label: string,
@@ -243,6 +251,7 @@ async function waitForHttpReady(
   throw new Error(`Timed out waiting for ${label} at ${url}`);
 }
 
+// unexpected-exit monitoring and shutdown manager for each subprocess
 class ProcessSupervisor {
   private readonly processes: ManagedProcess[] = [];
   private shuttingDown = false;
@@ -270,6 +279,7 @@ class ProcessSupervisor {
     return managed;
   }
 
+  //catch unexpected exit
   failOnUnexpectedExit(processToWatch: ManagedProcess): Promise<never> {
     return processToWatch.exitPromise.then(
       () => {
@@ -291,6 +301,7 @@ class ProcessSupervisor {
     );
   }
 
+  //some node specific fix(by ai), (still have residual when exit)
   readonly cleanupSync = (): void => {
     for (const processToStop of [...this.processes].reverse()) {
       this.terminate(processToStop, "SIGKILL");
@@ -319,6 +330,7 @@ class ProcessSupervisor {
       return;
     }
 
+    //process kill for windows
     if (this.config.isWindows) {
       spawnSync(
         "taskkill",
@@ -330,6 +342,7 @@ class ProcessSupervisor {
       return;
     }
 
+    //for unix
     try {
       process.kill(-processToStop.child.pid, signal);
     } catch {
@@ -348,6 +361,7 @@ class ProcessSupervisor {
 
     this.terminate(processToStop, "SIGTERM");
 
+    // fix by AI "Windows path does not use Unix-style signal escalation"
     if (this.config.isWindows) {
       await Promise.race([
         processToStop.exitPromise,
@@ -371,6 +385,7 @@ class ProcessSupervisor {
   }
 }
 
+// catch every type of the exit(type suggest by AI)
 function registerLifecycleHandlers(supervisor: ProcessSupervisor): void {
   process.on("SIGINT", () => {
     void supervisor.cleanup(EXIT_CODE_SIGINT);
