@@ -58,7 +58,7 @@ export default function AnalyticsLineGraphModule() {
               Activity Trend
             </div>
             <div className="font-light">
-              Dense 24-hour activity trace across commits and test execution.
+              24-hour Activity trace across commits and test execution.
             </div>
           </div>
         </CardTitle>

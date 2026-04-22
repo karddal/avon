@@ -11,7 +11,7 @@ export const defaultAnalyticsLayout: GridItem[] = [
     x: 0,
     y: 0,
     w: 5,
-    h: 10,
+    h: 5,
   },
   {
     id: "test-runs-live-feed",
@@ -19,7 +19,31 @@ export const defaultAnalyticsLayout: GridItem[] = [
     x: 5,
     y: 0,
     w: 5,
-    h: 10,
+    h: 5,
+  },
+  {
+    id: "run-status-donut",
+    moduleKey: "run-status-donut",
+    x: 0,
+    y: 5,
+    w: 3,
+    h: 5,
+  },
+  {
+    id: "activity-trend-line",
+    moduleKey: "activity-trend-line",
+    x: 3,
+    y: 5,
+    w: 4,
+    h: 5,
+  },
+  {
+    id: "cohort-signal-radar",
+    moduleKey: "cohort-signal-radar",
+    x: 7,
+    y: 5,
+    w: 3,
+    h: 5,
   },
 ];
 

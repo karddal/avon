@@ -43,7 +43,7 @@ export default function AnalyticsRadarModule() {
               Cohort Signal
             </div>
             <div className="font-light">
-              Benchmark spread across six tracked dimensions.
+              Analyse cohort performance across multiple categories.
             </div>
           </div>
         </CardTitle>

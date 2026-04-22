@@ -92,8 +92,8 @@ export default function TestRunsActivityModule() {
                 Test Runs Activity
               </div>
               <div className="font-light">
-                Live database-backed feed of coursework test runs from the last
-                24 hours.
+                Recent test runs across coursework repositories. <br />
+                This feed refreshes automatically.
               </div>
             </div>
             <Button

@@ -76,7 +76,7 @@ export default function AnalyticsActivityModule() {
                 Commits Activity
               </div>
               <div className="font-light">
-                Recent default-branch commits across coursework repositories.
+                Recent commits across coursework repositories. <br />
                 This feed refreshes automatically.
               </div>
             </div>
