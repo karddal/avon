@@ -14,7 +14,7 @@ import {
   type SortingState,
   type VisibilityState,
 } from "@tanstack/table-core";
-import { ChevronDown, ChevronRight, SendHorizontal, Users } from "lucide-react";
+import { ChevronDown, ChevronRight, SendHorizontal } from "lucide-react";
 import React, {
   useCallback,
   useEffect,
@@ -72,7 +72,7 @@ export function StudentsTableWithMaybeRepos({
   const [rowSelection, setRowSelection] = React.useState({});
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 2,
+    pageSize: 5,
   });
   const inviteStatusRequestRef = useRef(0);
   const inviteExpiryDate = useMemo(
@@ -483,37 +483,31 @@ export function StudentsTableWithMaybeRepos({
             }
             className="lg:max-w-sm"
           />
-          <Button
-            onClick={() => void handleInviteStudents()}
-            disabled={inviteCount === 0 || submitLoading}
-          >
-            {submitLoading ? (
-              <>
-                <Spinner className="mr-2 h-4 w-4" />
-                Sending invitations...
-              </>
-            ) : (
-              <>
-                <SendHorizontal className="mr-2 h-4 w-4" />
-                {mode === "all"
-                  ? "Invite All Eligible Students"
-                  : "Invite Selected Students"}
-                {inviteCount > 0 ? ` (${inviteCount})` : ""}
-              </>
-            )}
-          </Button>
-        </div>
-
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <span>
-            {mode === "all"
-              ? `${eligibleStudentIds.length} students are eligible for invites.`
-              : `${selectedStudentIds.length} students selected`}
-          </span>
-          <span className="inline-flex items-center gap-1">
-            <Users className="h-4 w-4" />
-            {table.getFilteredRowModel().rows.length} rows shown
-          </span>
+          <div className="flex flex-col gap-2 lg:flex-row lg:items-center">
+            <span className="text-sm text-muted-foreground">
+              {mode === "all"
+                ? `${eligibleStudentIds.length} students are eligible for invites.`
+                : `${inviteCount} invites will be sent to the selected students.`}
+            </span>
+            <Button
+              onClick={() => void handleInviteStudents()}
+              disabled={inviteCount === 0 || submitLoading}
+            >
+              {submitLoading ? (
+                <>
+                  <Spinner className="mr-2 h-4 w-4" />
+                  Sending invitations...
+                </>
+              ) : (
+                <>
+                  <SendHorizontal className="mr-2 h-4 w-4" />
+                  {mode === "all"
+                    ? "Invite All Eligible Students"
+                    : "Invite Selected Students"}
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -620,7 +614,7 @@ export function StudentsTableWithMaybeRepos({
           {table.getFilteredRowModel().rows.length} student(s) or group(s)
           selected.
         </div>
-        <div className="space-x-2">
+        <div className="flex items-center gap-2">
           <Button
             variant="outline"
             size="sm"
@@ -629,6 +623,9 @@ export function StudentsTableWithMaybeRepos({
           >
             Previous
           </Button>
+          <span className="text-sm text-muted-foreground">
+            {table.getState().pagination.pageIndex + 1}/{table.getPageCount()}
+          </span>
           <Button
             variant="outline"
             size="sm"
