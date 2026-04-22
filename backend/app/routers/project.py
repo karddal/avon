@@ -139,7 +139,16 @@ async def process_job(job_id: int):
             print("job", job.student_id, "has failed")
             if switch == 5:
                 try: 
-                    await gl_create_fork(name=job.cw_name, user_id=job.student_id, group_id=job.gitlab_id, template_id=job.template_id)
+                    data = await gl_create_fork(name=job.cw_name, user_id=job.student_id, group_id=job.gitlab_id, template_id=job.template_id)
+                    http_url_to_repo = data["http_url_to_repo"]
+
+                    db_exists = session.exec(select(StudentRepo).where((StudentRepo.student_id == job.student_id) & (StudentRepo.cw_id == job.cw_id))).first()
+                    if db_exists:
+                        session.delete(db_exists)
+                        session.flush()
+
+                    db_student_repo = StudentRepo(student_id=job.student_id, repo_url=http_url_to_repo, cw_id=job.cw_id, gl_repo_id=data["id"])
+                    session.add(db_student_repo)
                     job.status = "success"
                     print(job.student_id, "has been successful")
                 except Exception as e:
@@ -193,16 +202,6 @@ async def create_fork(project: ProjectFork, session: session_dependency):
         
         ## Part of Misi Code
         ## SEE end of file for deleted section.
-        
-        http_url_to_repo = data["http_url_to_repo"]
-
-        db_exists = session.exec(select(StudentRepo).where((StudentRepo.student_id == student) & (StudentRepo.cw_id == project.coursework_id))).first()
-        if db_exists:
-            session.delete(db_exists)
-            session.flush()
-
-        db_student_repo = StudentRepo(student_id=student, repo_url=http_url_to_repo, cw_id=project.coursework_id, gl_repo_id=data["id"])
-        session.add(db_student_repo)
 
     session.commit()
     print("done")
