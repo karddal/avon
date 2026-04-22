@@ -6,44 +6,12 @@ import type { GridItem } from "@/components/analytics-page/analytics-types";
 
 export const defaultAnalyticsLayout: GridItem[] = [
   {
-    id: "commits_chart",
-    moduleKey: "commits_chart",
+    id: "commits-live-feed",
+    moduleKey: "commits-live-feed",
     x: 0,
     y: 0,
     w: 1,
     h: 1,
-  },
-  {
-    id: "tests_passed",
-    moduleKey: "tests_passed",
-    x: 1,
-    y: 0,
-    w: 1,
-    h: 1,
-  },
-  {
-    id: "late_submissions",
-    moduleKey: "late_submissions",
-    x: 2,
-    y: 0,
-    w: 1,
-    h: 1,
-  },
-  {
-    id: "active_units",
-    moduleKey: "active_units",
-    x: 0,
-    y: 1,
-    w: 2,
-    h: 2,
-  },
-  {
-    id: "active_coursework",
-    moduleKey: "active_coursework",
-    x: 2,
-    y: 1,
-    w: 1,
-    h: 2,
   },
 ];
 
