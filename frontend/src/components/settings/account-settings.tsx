@@ -162,6 +162,7 @@ export default function AccountSettings({
       ...activeUser,
       ...changes,
     };
+    onProfileImageUpdated?.();
 
     onUserUpdated?.(updatedUser);
   };
