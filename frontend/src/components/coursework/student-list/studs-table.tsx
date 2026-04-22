@@ -436,7 +436,6 @@ export function StudentsTableWithMaybeRepos({
 		paginateExpandedRows: false,
 		autoResetExpanded: false,
 		autoResetPageIndex: false,
-		autoResetRowSelection: false,
 		state: {
 			sorting,
 			columnFilters,
