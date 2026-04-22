@@ -13,6 +13,35 @@
   - [Courseworks listing]()
   - [Creating a coursework]() -->
 
+# Handover documentation
+
+- [Handover introduction](handover/README.md)
+- [System architecture](handover/arch/README.md)
+  - [Frontend](handover/arch/frontend.md)
+  - [Backend](handover/arch/backend.md)
+  - [GitLab](handover/arch/gitlab.md)
+  - [Test running system](handover/arch/tests.md)
+  - [AWS](handover/arch/aws.md)
+- [Project structure](handover/project/README.md)
+- [Future work](handover/future/README.md)
+
+
+# Developer documentation
+
+- [Setting up a local dev environment](dev_env/README.md)
+  - [Environment variables](dev_env/environment_variables.md)
+  - [Frontend setup](dev_env/frontend.md)
+  - [Backend setup](dev_env/backend.md)
+  - [mdBook setup](dev_env/mdbook.md)
+- [Dev workflow](dev_workflow/README.md)
+  - [Making issues](dev_workflow/issues.md)
+  - [Making branches](dev_workflow/branches.md)
+  - [Pull requests](dev_workflow/prs.md)
+- [Deployment](deployment/README.md)
+- [Testing](testing/README.md)
+- [CI/CD](ci_cd/README.md)
+- [AI Usage Policy](ai_usage/README.MD)
+
 # Project management
 
 - [Reflection on TB-1](management/tb-1-reflection.md)
@@ -58,19 +87,3 @@
  - [Standups](agendas/standups/README.md)
     - [06-10-2025 Team Standup](agendas/standups/06-10-25.md)
     - [10-10-2025 Team Standup](agendas/standups/10-10-25.md)
-
-# Developer documentation
-
-- [Setting up a local dev environment](dev_env/README.md)
-  - [Environment variables](dev_env/environment_variables.md)
-  - [Frontend setup](dev_env/frontend.md)
-  - [Backend setup](dev_env/backend.md)
-  - [mdBook setup](dev_env/mdbook.md)
-- [Dev workflow](dev_workflow/README.md)
-  - [Making issues](dev_workflow/issues.md)
-  - [Making branches](dev_workflow/branches.md)
-  - [Pull requests](dev_workflow/prs.md)
-- [Deployment](deployment/README.md)
-- [Testing](testing/README.md)
-- [CI/CD](ci_cd/README.md)
-- [AI Usage Policy](ai_usage/README.MD)

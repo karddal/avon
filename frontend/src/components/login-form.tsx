@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import LoginButton from "@/components/ui/login-button";
-import { type SignInData, signIn } from "@/lib/actions/login";
+import { type SignInData, signIn } from "@/lib/actions/auth/login";
 import { cn } from "@/lib/utils";
 
 export function LoginForm({

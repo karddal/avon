@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getProgrammes } from "@/lib/actions/get_all_programmes";
+import { getProgrammes } from "@/lib/actions/programme/get_all_programmes";
 import { Button } from "../ui/button";
 import BulkDeleteButton from "./bulk-delete-button";
 import OmitMembers from "./omit-users";
@@ -65,7 +65,7 @@ export default function BulkDelete() {
   const loadProgrammes = useCallback(async () => {
     const programmesReq = await getProgrammes();
     if (programmesReq.success) {
-      console.log("Programmes array:", programmesReq.data.programmes);
+      // console.log("Programmes array:", programmesReq.data.programmes);
       setProgrammes(programmesReq.data.programmes);
     } else {
       toast.error("Failed to load programmes");

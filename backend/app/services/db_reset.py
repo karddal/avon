@@ -1,15 +1,18 @@
 import threading
-from datetime import date, datetime
+from datetime import date, datetime, time, timedelta
 from pathlib import Path
 from typing import Sequence
 
 from sqlalchemy import Column, MetaData, String, Table, select as sa_select, text
-from sqlmodel import Session
+from sqlmodel import Session, SQLModel
 
+from app.models.base_image import BaseImage
 from app.db.session import engine
 from app.models.coursework import Coursework
 from app.models.notification import Notification  # Registers Unit.notifications.
 from app.models.programme import Programme
+from app.models.student_repo import StudentRepo
+from app.models.test_run import TestRun, TestRunResult
 from app.models.unit import Unit
 from app.models.unit_enrollment import UnitEnrollment
 
@@ -22,31 +25,31 @@ RESET_LOCK = threading.Lock()
 
 PROGRAMME_SEEDS = (
     {
-        "name": "Year 1 Computer Science 2025-2026",
-        "start_date": "2025-09-10",
-        "end_date": "2026-05-30",
+        "key": "y1_current",
+        "study_year": 1,
+        "academic_year_offset": 0,# for example if today is before september 10th, so this year and last year "2025-2026"
     },
     {
-        "name": "Year 2 Computer Science 2025-2026",
-        "start_date": "2025-09-10",
-        "end_date": "2026-05-30",
+        "key": "y2_current",
+        "study_year": 2,
+        "academic_year_offset": 0,
     },
     {
-        "name": "Year 1 Computer Science 2024-2025",
-        "start_date": "2024-09-10",
-        "end_date": "2025-05-30",
+        "key": "y1_previous",
+        "study_year": 1,
+        "academic_year_offset": -1,# this as the last example data will be "2024-2025"
     },
     {
-        "name": "Year 2 Computer Science 2024-2025",
-        "start_date": "2024-09-10",
-        "end_date": "2025-05-30",
+        "key": "y2_previous",
+        "study_year": 2,
+        "academic_year_offset": -1,
     },
 )
 
 UNIT_SEEDS = (
     {
         "key": "maths24",
-        "programme_name": "Year 1 Computer Science 2024-2025",
+        "programme_key": "y1_previous",
         "name": "Mathematics for Computer Science A",
         "description": "I love maths A",
         "colour": "abcdef",
@@ -54,7 +57,7 @@ UNIT_SEEDS = (
     },
     {
         "key": "arch24",
-        "programme_name": "Year 1 Computer Science 2024-2025",
+        "programme_key": "y1_previous",
         "name": "Computer Architecture",
         "description": "Encrypt coursework very hard",
         "colour": "343434",
@@ -62,7 +65,7 @@ UNIT_SEEDS = (
     },
     {
         "key": "impfunc24",
-        "programme_name": "Year 1 Computer Science 2024-2025",
+        "programme_key": "y1_previous",
         "name": "Imperative and Functional Programming",
         "description": "malloc() and memory leaks",
         "colour": "565656",
@@ -70,7 +73,7 @@ UNIT_SEEDS = (
     },
     {
         "key": "maths25",
-        "programme_name": "Year 1 Computer Science 2025-2026",
+        "programme_key": "y1_current",
         "name": "Mathematics for Computer Science A",
         "description": "I love maths A, now in 2025!!",
         "colour": "abcdef",
@@ -78,7 +81,7 @@ UNIT_SEEDS = (
     },
     {
         "key": "arch25",
-        "programme_name": "Year 1 Computer Science 2025-2026",
+        "programme_key": "y1_current",
         "name": "Computer Architecture",
         "description": "Encrypt coursework very hard",
         "colour": "343434",
@@ -86,7 +89,7 @@ UNIT_SEEDS = (
     },
     {
         "key": "impfunc25",
-        "programme_name": "Year 1 Computer Science 2025-2026",
+        "programme_key": "y1_current",
         "name": "Imperative and Functional Programming",
         "description": "malloc() and memory leaks",
         "colour": "565656",
@@ -94,7 +97,7 @@ UNIT_SEEDS = (
     },
     {
         "key": "se25",
-        "programme_name": "Year 2 Computer Science 2025-2026",
+        "programme_key": "y2_current",
         "name": "Software Engineering Project",
         "description": "Agile agile agile",
         "colour": "112233",
@@ -102,7 +105,7 @@ UNIT_SEEDS = (
     },
     {
         "key": "plc25",
-        "programme_name": "Year 2 Computer Science 2025-2026",
+        "programme_key": "y2_current",
         "name": "Programming Languages and Computation",
         "description": "Very hard unit",
         "colour": "454545",
@@ -110,7 +113,7 @@ UNIT_SEEDS = (
     },
     {
         "key": "systems25",
-        "programme_name": "Year 2 Computer Science 2025-2026",
+        "programme_key": "y2_current",
         "name": "Computer Systems A",
         "description": "Go go go go go & Game of Life",
         "colour": "676767",
@@ -124,42 +127,42 @@ COURSEWORK_SEEDS = (
         "name": "Power to the People in 2024",
         "description": "Easy Haskell 1",
         "colour": "676767",
-        "due_date": "2024-12-15 23:59:00",
+        "due_in_days": -100,
     },
     {
         "unit_key": "impfunc24",
         "name": "Double Linked List 2024",
         "description": "literally the title",
         "colour": "b01c2e",
-        "due_date": "2024-10-30 23:59:00",
+        "due_in_days": -200,
     },
     {
         "unit_key": "arch24",
         "name": "Encrypt",
         "description": "Did you know you can encrypt with binary? Includes v1 v2 v3",
         "colour": "1a2b3c",
-        "due_date": "2024-11-10 14:00:00",
+        "due_in_days": -150,
     },
     {
         "unit_key": "impfunc25",
         "name": "Power to the People in 2025",
         "description": "Easy Haskell 1",
         "colour": "abcdef",
-        "due_date": "2025-12-15 23:59:00",
+        "due_in_days": 50,
     },
     {
         "unit_key": "se25",
         "name": "AI Bill Splitter",
         "description": "Splitvise but with Vibes, should have been called splitvibes",
         "colour": "f1d2c3",
-        "due_date": "2026-04-20 17:00:00",
+        "due_in_days": 20,
     },
     {
         "unit_key": "arch25",
         "name": "Encrypt",
         "description": "Did you know you can encrypt with binary?",
         "colour": "1a2b3c",
-        "due_date": "2026-05-10 14:00:00",
+        "due_in_days": 30,
     },
 )
 
@@ -178,6 +181,10 @@ _verification_table = Table("verification", _auth_metadata)
 FULL_RESET_TABLES = (
     _account_table,
     _session_table,
+    TestRunResult.__table__,
+    TestRun.__table__,
+    StudentRepo.__table__,
+    BaseImage.__table__,
     Coursework.__table__,
     Notification.__table__,
     UnitEnrollment.__table__,
@@ -188,6 +195,10 @@ FULL_RESET_TABLES = (
     _user_table,
 )
 APP_RESET_TABLES = (
+    TestRunResult.__table__,
+    TestRun.__table__,
+    StudentRepo.__table__,
+    BaseImage.__table__,
     Notification.__table__,
     Coursework.__table__,
     UnitEnrollment.__table__,
@@ -246,12 +257,51 @@ def _fetch_user_ids_by_role(session: Session, role: str) -> list[str]:
     return [str(row[0]) for row in session.exec(statement).all()]
 
 
-def _build_programmes() -> dict[str, Programme]:
+def _current_academic_year_start(today: date | None = None) -> int:
+    today = today or date.today()
+
+    # academic year start day (today is before this will be "previs year-this year" i.e. "2025-2026")
+    if (today.month, today.day) >= (9, 10):
+        return today.year
+
+    return today.year - 1
+
+
+def _programme_seed_years(
+    seed: dict[str, str | int],
+    today: date | None = None,
+) -> tuple[int, int]:
+    start_year = _current_academic_year_start(today) + int(seed["academic_year_offset"])
+    return start_year, start_year + 1
+
+
+def _programme_seed_name(seed: dict[str, str | int], today: date | None = None) -> str:
+    start_year, end_year = _programme_seed_years(seed, today)
+    return f"Year {seed['study_year']} Computer Science {start_year}-{end_year}"
+
+
+def _programme_seed_start_date(
+    seed: dict[str, str | int],
+    today: date | None = None,
+) -> date:
+    start_year, _end_year = _programme_seed_years(seed, today)
+    return date(start_year, 9, 10)
+
+
+def _programme_seed_end_date(
+    seed: dict[str, str | int],
+    today: date | None = None,
+) -> date:
+    _start_year, end_year = _programme_seed_years(seed, today)
+    return date(end_year, 5, 30)
+
+
+def _build_programmes(today: date | None = None) -> dict[str, Programme]:
     return {
-        seed["name"]: Programme(
-            name=seed["name"],
-            start_date=date.fromisoformat(seed["start_date"]),
-            end_date=date.fromisoformat(seed["end_date"]),
+        str(seed["key"]): Programme(
+            name=_programme_seed_name(seed, today),
+            start_date=_programme_seed_start_date(seed, today),
+            end_date=_programme_seed_end_date(seed, today),
             gitlab_id=GITLAB_ID_DEFAULT,
         )
         for seed in PROGRAMME_SEEDS
@@ -267,7 +317,7 @@ def _build_units(programmes: dict[str, Programme]) -> dict[str, Unit]:
             description=seed["description"],
             unit_code=seed["unit_code"],
             colour=seed["colour"],
-            programme_id=programmes[seed["programme_name"]].id,
+            programme_id=programmes[str(seed["programme_key"])].id,
             gitlab_id=GITLAB_ID_DEFAULT,
             creation_date=datetime.now(),
         )
@@ -295,13 +345,18 @@ def _build_unit_enrollments(
     return enrollments
 
 
+def _coursework_due_date(seed: dict[str, str | int]) -> datetime:
+    due_date = date.today() + timedelta(days=int(seed["due_in_days"]))
+    return datetime.combine(due_date, time(hour=17, minute=0, second=0))
+
+
 def _build_courseworks(units: dict[str, Unit]) -> list[Coursework]:
     return [
         Coursework(
             name=seed["name"],
             description=seed["description"],
             unit_id=units[seed["unit_key"]].id,
-            due_date=datetime.strptime(seed["due_date"], "%Y-%m-%d %H:%M:%S"),
+            due_date=_coursework_due_date(seed),
             creation_date=datetime.now(),
             colour=seed["colour"],
             gitlab_id=GITLAB_ID_DEFAULT,
@@ -331,6 +386,7 @@ def reset_database(
         engine.dispose()
         drop_tables()
         exec_sql_file(seed_sql_path)
+        SQLModel.metadata.create_all(engine)
 
         with Session(engine) as session:
             try:

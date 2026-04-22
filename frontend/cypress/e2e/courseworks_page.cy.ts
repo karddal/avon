@@ -14,7 +14,7 @@ describe("Coursework listing page", () => {
 
   it("has tabs", () => {
     cy.visit("/coursework");
-    cy.get('[data-slot="tabs"]').should("be.visible");
+    cy.getByCy("coursework-tabs").should("be.visible");
   });
 
   // Ongoing coursework stuff
@@ -27,24 +27,29 @@ describe("Coursework listing page", () => {
   // Finsihed coursework stuff
   it("has default finished unit", () => {
     cy.visit("/coursework");
-    cy.contains("button", "Finished").click();
-    cy.get("span").should("contain", "Imperative and Functional Programming");
+    cy.getByCy("coursework-tab-finished").click();
+    cy.getByCy(
+      "coursework-unit-tab-imperative-and-functional-programming-2024-2025",
+    ).should("be.visible");
   });
 
   it("has default finished coursework", () => {
     cy.visit("/coursework");
-    cy.contains("button", "Finished").click();
-    cy.contains(
-      '[role="tab"]',
-      "Imperative and Functional Programming 2024-2025",
+    cy.getByCy("coursework-tab-finished").click();
+    cy.getByCy(
+      "coursework-unit-tab-imperative-and-functional-programming-2024-2025",
     ).click();
-    cy.get("p").should("contain", "Power to the People in 2024");
+    cy.getByCy(
+      "coursework-link-imperative-and-functional-programming-2024-2025-power-to-the-people-in-2024",
+    ).should("be.visible");
   });
 
   it("Allows navigation through the finsihed coursework tabslist", () => {
     cy.visit("/coursework");
-    cy.contains("button", "Finished").click();
-    cy.contains('[role="tab"]', "Computer Architecture 2024-2025").click();
-    cy.get("p").should("contain", "Encrypt");
+    cy.getByCy("coursework-tab-finished").click();
+    cy.getByCy("coursework-unit-tab-computer-architecture-2024-2025").click();
+    cy.getByCy(
+      "coursework-link-computer-architecture-2024-2025-encrypt",
+    ).should("be.visible");
   });
 });

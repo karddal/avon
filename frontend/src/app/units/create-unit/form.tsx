@@ -2,9 +2,11 @@
 
 import type { UUID } from "node:crypto";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Editor from "@monaco-editor/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Send, Terminal } from "lucide-react";
 import { easeIn, easeOut } from "motion";
+import { useTheme } from "next-themes";
 import { useCallback, useEffect, useState } from "react";
 import { HexColorInput, HexColorPicker } from "react-colorful";
 import { Controller, useForm } from "react-hook-form";
@@ -43,10 +45,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
-import { Textarea } from "@/components/ui/textarea";
 import UserCard from "@/components/user-card";
-import { create_unit } from "@/lib/actions/create_unit";
-import { getProgrammes } from "@/lib/actions/get_all_programmes";
+import { getProgrammes } from "@/lib/actions/programme/get_all_programmes";
+import { create_unit } from "@/lib/actions/unit/create_unit";
 import { multistep_unit_flow } from "./multistep_unit_flow";
 
 interface FormProps {
@@ -69,7 +70,8 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
   const [programmeName, setProgrammeName] = useState<string>("");
   const [selectedOwner, setSelectedOwner] = useState<string>("");
   const [ownerName, setOwnerName] = useState<string>("");
-
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
   const loadProgrammes = useCallback(async () => {
     const programmesReq = await getProgrammes();
     if (programmesReq.success) {
@@ -236,14 +238,30 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                             <FieldLabel htmlFor={"form-flow-description"}>
                               Give Your Unit a Description
                             </FieldLabel>
-                            <Textarea
-                              {...field}
-                              id={"form-flow-description"}
-                              aria-invalid={fieldState.invalid}
-                              placeholder={"A great description"}
-                              autoComplete={"off"}
-                              maxLength={2000}
-                            />
+                            <div
+                              data-cy="markdown-editor"
+                              className="overflow-hidden rounded-md border"
+                            >
+                              <Editor
+                                height="15vh"
+                                defaultLanguage="markdown"
+                                value={field.value}
+                                onChange={(v) => field.onChange(v ?? "")}
+                                theme={isDark ? "vs-dark" : "vs-light"}
+                                options={{
+                                  minimap: { enabled: false },
+                                  wordWrap: "on",
+                                  lineNumbers: "off",
+                                  folding: false,
+                                  scrollBeyondLastLine: false,
+                                  fontSize: 14,
+                                  quickSuggestions: false,
+                                  suggestOnTriggerCharacters: false,
+                                  wordBasedSuggestions: "off",
+                                  parameterHints: { enabled: false },
+                                }}
+                              />
+                            </div>
                             {fieldState.invalid && (
                               <FieldError errors={[fieldState.error]} />
                             )}

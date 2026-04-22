@@ -11,7 +11,7 @@ export async function delete_unit_members(req: DeleteUnitMembersRequest) {
   "use server";
   const token = await getRequestJWT();
   console.log("current request");
-  console.log(req);
+  // console.log(req);
 
   const data = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/unit_enrollment/batch`,

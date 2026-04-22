@@ -87,6 +87,8 @@ CREATE TABLE coursework (
                             colour VARCHAR NOT NULL,
                             gitlab_id VARCHAR NOT NULL,
                             template_id INTEGER,
+                            base_image_id UUID,
+                            tester_command VARCHAR,
                             PRIMARY KEY (id),
                             CONSTRAINT unit_id
                                 FOREIGN KEY (unit_id) REFERENCES unit (id)
