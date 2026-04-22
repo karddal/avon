@@ -11,7 +11,7 @@ type Response = {
 type Lecturer = {
   id: string;
   name: string;
-  image: string;
+  image?: string;
   role: boolean;
 };
 

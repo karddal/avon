@@ -1,31 +1,22 @@
 "use client";
 
-import {
-  Copy,
-  ExternalLink,
-  FolderGit,
-  FolderGit2,
-  GitBranch,
-  Users,
-} from "lucide-react";
-import { toast } from "sonner";
+import { ExternalLink, FolderGit2, Users } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
 import type { StudentNameAndRepo } from "@/lib/actions/coursework/get_student_repos";
 
 export default function CourseworkRepoOverview({
   repos,
+  totalStudentGroups,
 }: {
   repos: StudentNameAndRepo[];
+  totalStudentGroups: number;
 }) {
-  const sorted = repos.sort((a, b) => a.student.localeCompare(b.student));
+  const _sorted = [...repos].sort((a, b) => a.student.localeCompare(b.student));
+  const unprovisionedRepos = Math.max(totalStudentGroups - repos.length, 0);
+  const gitlabGroupUrl =
+    repos.length > 0 ? getGitLabGroupUrl(repos[0].repo_url) : undefined;
 
   return (
     <Card className="h-full">
@@ -40,112 +31,98 @@ export default function CourseworkRepoOverview({
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex min-h-0 flex-1 flex-col space-y-4">
-        <>
-          <div className="grid gap-3 md:grid-cols-2">
-            <div className="rounded-md border bg-accent/40 p-3">
-              <div className="mb-1 flex items-center gap-2 text-xs text-muted-foreground">
-                <FolderGit className="h-4 w-4" />
-                Provisioned Repos
-              </div>
-              <div className="text-2xl font-semibold">{repos.length}</div>
+      <CardContent className="flex h-full min-h-0 flex-col justify-center">
+        <div
+          className={`flex min-h-32 flex-col justify-center rounded-xl border p-5 shadow-sm ${
+            repos.length > 0
+              ? "border-emerald-300 bg-emerald-50 text-emerald-950 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-100"
+              : "border-red-300 bg-red-50 text-red-950 dark:border-red-800 dark:bg-red-950/40 dark:text-red-100"
+          }`}
+        >
+          <div
+            className={`mb-1 flex items-center gap-2 text-xs ${
+              repos.length > 0
+                ? "text-emerald-700 dark:text-emerald-300"
+                : "text-red-700 dark:text-red-300"
+            }`}
+          >
+            <Users className="h-4 w-4" />
+            Current State
+          </div>
+          <div className="text-base font-semibold">
+            {repos.length > 0
+              ? `${repos.length} repos available`
+              : "Not provisioned yet"}
+          </div>
+          <p
+            className={`mt-1 text-xs ${
+              repos.length > 0
+                ? "text-emerald-800 dark:text-emerald-200"
+                : "text-red-800 dark:text-red-200"
+            }`}
+          >
+            {repos.length > 0
+              ? "Manage student repos from the coursework actions menu."
+              : "Provision the coursework on GitLab to generate student repositories."}
+          </p>
+        </div>
+        <div className="mt-3 grid gap-2 rounded-md border bg-accent/30 px-3 py-2 md:grid-cols-[1fr_1fr_auto] md:items-center">
+          <div className="min-w-0">
+            <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+              Provisioned
             </div>
-            <div
-              className={`rounded-md border p-3 ${
-                repos.length > 0
-                  ? "border-emerald-300 bg-emerald-50 text-emerald-950 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-100"
-                  : "border-red-300 bg-red-50 text-red-950 dark:border-red-800 dark:bg-red-950/40 dark:text-red-100"
-              }`}
+            <div className="text-lg font-semibold text-foreground">
+              {repos.length}
+            </div>
+          </div>
+          <div className="min-w-0">
+            <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+              Unprovisioned
+            </div>
+            <div className="text-lg font-semibold text-foreground">
+              {unprovisionedRepos}
+            </div>
+          </div>
+          {gitlabGroupUrl ? (
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="justify-self-start md:justify-self-end"
             >
-              <div
-                className={`mb-1 flex items-center gap-2 text-xs ${
-                  repos.length > 0
-                    ? "text-emerald-700 dark:text-emerald-300"
-                    : "text-red-700 dark:text-red-300"
-                }`}
+              <Link
+                href={gitlabGroupUrl}
+                target="_blank"
+                rel="noreferrer"
+                prefetch={false}
               >
-                <Users className="h-4 w-4" />
-                Current State
-              </div>
-              <div className="text-base font-semibold">
-                {repos.length > 0 ? "Repos available" : "Not provisioned yet"}
-              </div>
-              <p
-                className={`mt-1 text-xs ${
-                  repos.length > 0
-                    ? "text-emerald-800 dark:text-emerald-200"
-                    : "text-red-800 dark:text-red-200"
-                }`}
-              >
-                {repos.length > 0
-                  ? "Sample student repos are listed below."
-                  : "Provision the coursework on GitLab to generate student repositories."}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex min-h-0 flex-1 flex-col space-y-2">
-            <div className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-              Student repositories
-            </div>
-            {sorted.length > 0 ? (
-              <div className="min-h-0 flex-1 space-y-2 overflow-y-auto pr-1">
-                {sorted.map((repo) => (
-                  <div
-                    key={`${repo.student}-${repo.repo_url}`}
-                    className="flex items-center justify-between gap-3 rounded-md border px-3 py-2"
-                  >
-                    <div className="min-w-0">
-                      <div className="truncate text-sm font-medium">
-                        {repo.student}
-                      </div>
-                      <div className="truncate text-xs text-muted-foreground">
-                        {repo.repo_url}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          navigator.clipboard.writeText(repo.repo_url);
-                          toast.success("Repo URL copied");
-                        }}
-                      >
-                        <Copy className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" asChild>
-                        <a
-                          href={repo.repo_url}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          <ExternalLink className="h-4 w-4" />
-                        </a>
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="rounded-md border border-dashed p-6 text-sm h-full">
-                <Empty>
-                  <EmptyHeader>
-                    <EmptyMedia variant={"icon"}>
-                      <GitBranch />
-                    </EmptyMedia>
-                    <EmptyTitle>No student repositories.</EmptyTitle>
-                    <EmptyDescription>
-                      There are no student repositories yet. Have you tried
-                      provisioning them?
-                    </EmptyDescription>
-                  </EmptyHeader>
-                </Empty>
-              </div>
-            )}
-          </div>
-        </>
+                <ExternalLink />
+                GitLab
+              </Link>
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              className="justify-self-start md:justify-self-end"
+              disabled
+            >
+              <ExternalLink />
+              GitLab
+            </Button>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
+}
+
+function getGitLabGroupUrl(repoUrl: string) {
+  const normalizedUrl = repoUrl.replace(/\.git$/, "");
+  const lastSlashIndex = normalizedUrl.lastIndexOf("/");
+  if (lastSlashIndex === -1) {
+    return normalizedUrl;
+  }
+
+  return normalizedUrl.slice(0, lastSlashIndex);
 }

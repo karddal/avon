@@ -1,3 +1,4 @@
+import type { RowSelectionState } from "@tanstack/react-table";
 import {
   flexRender,
   getExpandedRowModel,
@@ -10,7 +11,6 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  type RowSelectionState,
   type SortingState,
   type VisibilityState,
 } from "@tanstack/table-core";
@@ -41,12 +41,10 @@ export function StudentsTableWithMaybeRepos({
   coursework_id,
   rowSelection,
   setRowSelection,
-  refreshTable,
 }: {
   coursework_id: string;
   rowSelection: RowSelectionState;
   setRowSelection: Dispatch<SetStateAction<RowSelectionState>>;
-  refreshTable: number;
 }) {
   const [data, setData] = useState<StudentNameAndPotentiallyRepo[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -81,8 +79,6 @@ export function StudentsTableWithMaybeRepos({
   });
 
   useEffect(() => {
-    // Parent bumps this counter after provisioning to force a refetch.
-    void refreshTable;
     setLoading(true);
     const updateData = async () => {
       // TODO: GET DATA HERE
@@ -91,12 +87,11 @@ export function StudentsTableWithMaybeRepos({
       });
       const filteredData = updatedData.filter((s) => s.repo_url == null);
       setData(filteredData);
-      console.log(updatedData);
     };
     updateData().then(() => {
       setLoading(false);
     });
-  }, [coursework_id, refreshTable]);
+  }, [coursework_id]);
 
   if (loading) {
     return (

@@ -132,7 +132,7 @@ export default async function NotificationsContents() {
       </TabsContent>
     );
   });
-  console.log(entries.length);
+  // console.log(entries.length);
   return (
     <div>
       {groups.length === 0 && data.system_notifications.length === 0 ? (

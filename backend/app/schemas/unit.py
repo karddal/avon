@@ -8,29 +8,25 @@ from pydantic import AfterValidator, BaseModel, ConfigDict
 def name_is_correct_length(name: str) -> str:
     if 1 <= len(name) <= 72:
         return name
-    else:
-        raise ValueError("Name must be between 1 and 72 characters")
+    raise ValueError("Name must be between 1 and 72 characters")
 
 
 def description_is_correct_length(description: str) -> str:
     if 1 <= len(description) <= 2000:
         return description
-    else:
-        raise ValueError("Description must be between 1 and 2000 characters")
+    raise ValueError("Description must be between 1 and 2000 characters")
 
 
 def valid_unit_code(unit_code: str) -> str:
     if 1 <= len(unit_code) <= 100:
         return unit_code
-    else:
-        raise ValueError("Unit code must be between 1 and 100 characters")
+    raise ValueError("Unit code must be between 1 and 100 characters")
 
 
 def valid_colour(colour: str) -> str:
     if len(colour) == 6:
         return colour
-    else:
-        raise ValueError("Colour code is invalid length")
+    raise ValueError("Colour code is invalid length")
 
 
 Name = Annotated[str, AfterValidator(name_is_correct_length)]
@@ -49,7 +45,6 @@ class UnitRead(BaseModel):
     colour: Colour
     programme_id: uuid.UUID
     unlocked: bool
-
 
 
 class UnitReadWithDates(UnitRead):
@@ -90,12 +85,14 @@ class UnitCreateOwner(BaseModel):
     owner: str
     unlocked: bool | None = None
 
+
 class UnitUpdate(BaseModel):
     name: Name
     description: str
     unit_code: str
     colour: str
     programme_id: uuid.UUID
+    unlocked: bool | None = None
 
 
 class UnitAll(BaseModel):
@@ -113,7 +110,6 @@ class UnitWithoutProgramme(BaseModel):
     unlocked: bool
 
 
-
 class ProgrammeWithUnits(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: uuid.UUID
@@ -127,7 +123,6 @@ class UnitAllByGroup(BaseModel):
     programmes: List[ProgrammeWithUnits]
 
 
-## Maybe port the below to Jack's Coursework Schema
 class CourseworkReadWithoutUnit(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: uuid.UUID
@@ -149,4 +144,3 @@ class UnitEventRead(BaseModel):
     unit_code: str
     programme_start_date: str
     programme_end_date: str
-

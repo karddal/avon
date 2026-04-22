@@ -44,21 +44,16 @@ export default function ResetPasswordButtonManage({
   };
 
   return (
-    <div className="h-full">
+    <div>
       {status === 1 && (
-        <Button size="lg" disabled className="w-full">
+        <Button size="lg" disabled>
           <Spinner className="mr-2 h-4 w-4" />
           Reseting ...
         </Button>
       )}
 
       {status === 0 && (
-        <Button
-          size="lg"
-          className="w-full"
-          onClick={handleReset}
-          disabled={disabled}
-        >
+        <Button size="lg" onClick={handleReset} disabled={disabled}>
           <RotateCcwKey />
           Reset Password
         </Button>
@@ -69,7 +64,7 @@ export default function ResetPasswordButtonManage({
           variant="outline"
           size="lg"
           disabled
-          className="w-full border-destructive text-destructive"
+          className="border-destructive text-destructive"
         >
           <XIcon className="mr-2 h-4 w-4" />
           Failed
