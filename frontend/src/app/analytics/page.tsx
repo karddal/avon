@@ -3,7 +3,7 @@ import Loading from "@/app/coursework/loading";
 import {
   getAnalyticsLayoutForCurrentUser,
   saveAnalyticsLayoutForCurrentUser,
-} from "@/lib/actions/anlytics-layout";
+} from "@/lib/actions/analytics-layout";
 import { requireLecturerSession } from "@/lib/auth-utils";
 import { availableAnalyticsModules } from "@/lib/analytics-layout";
 import AnalyticsClient from "@/components/analytics-page/analytics-client";
