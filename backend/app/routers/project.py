@@ -87,38 +87,38 @@ async def run_provision_worker():
 sem = asyncio.Semaphore(1)
 
 async def process_job(job_id: int):
-    # switch = random.randint(0, 10)
+    switch = random.randint(0, 10)
     async with sem:
         with Session(engine) as session:
             job = session.get(ProvisionProject, job_id)
             print("job", job.student_id, "has failed")
-            # if switch == 5:
-            try: 
-                await gl_create_fork(name=job.cw_name, user_id=job.student_id, group_id=job.gitlab_id, template_id=job.template_id)
-                job.status = "success"
-                print(job.student_id, "has been successful")
-            except Exception as e:
-                print("oops", e)
+            if switch == 5:
+                try: 
+                    await gl_create_fork(name=job.cw_name, user_id=job.student_id, group_id=job.gitlab_id, template_id=job.template_id)
+                    job.status = "success"
+                    print(job.student_id, "has been successful")
+                except Exception as e:
+                    print("oops", e)
+                    if job.attempts < job.max_attempts:
+                        job.attempts += 1
+                        backoff = 2 ** job.attempts
+                        job.status = "pending"
+                        job.next_run_at = datetime.now() + timedelta(seconds=backoff)
+                        job.last_error = str(e)
+                    else:
+                        job.status = "failed"
+                        job.last_error = str(e)
+                        print("Failed", job.student_id)    
+            else:    
+                print(job.student_id, "is has failed. On attempt", job.attempts)
                 if job.attempts < job.max_attempts:
                     job.attempts += 1
                     backoff = 2 ** job.attempts
                     job.status = "pending"
                     job.next_run_at = datetime.now() + timedelta(seconds=backoff)
-                    job.last_error = str(e)
                 else:
                     job.status = "failed"
-                    job.last_error = str(e)
-                    print("Failed", job.student_id)    
-            # else:    
-            #     print(job.student_id, "is has failed. On attempt", job.attempts)
-            #     if job.attempts < job.max_attempts:
-            #         job.attempts += 1
-            #         backoff = 2 ** job.attempts
-            #         job.status = "pending"
-            #         job.next_run_at = datetime.now() + timedelta(seconds=backoff)
-            #     else:
-            #         job.status = "failed"
-            #         print("Failed", job.student_id) 
+                    print("Failed", job.student_id) 
             session.commit()
 
 # Creating the fork creates the project. Use this.
