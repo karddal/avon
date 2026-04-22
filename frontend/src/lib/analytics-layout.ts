@@ -10,8 +10,16 @@ export const defaultAnalyticsLayout: GridItem[] = [
     moduleKey: "commits-live-feed",
     x: 0,
     y: 0,
-    w: 1,
-    h: 1,
+    w: 5,
+    h: 10,
+  },
+  {
+    id: "test-runs-live-feed",
+    moduleKey: "test-runs-live-feed",
+    x: 5,
+    y: 0,
+    w: 5,
+    h: 10,
   },
 ];
 

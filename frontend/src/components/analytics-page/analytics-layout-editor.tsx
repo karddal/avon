@@ -39,8 +39,8 @@ type AnalyticsLayoutEditorProps = {
   onChange: Dispatch<SetStateAction<GridItem[]>>;
 };
 
-const GRID_COLUMNS = 3;
-const GRID_ROWS = 3;
+const GRID_COLUMNS = 10;
+const GRID_ROWS = 10;
 
 type GridRect = {
   x: number;
@@ -157,7 +157,7 @@ export default function AnalyticsLayoutEditor({
       const spot = findFirstOpenSpot(prev);
 
       if (!spot) {
-        toast.error("No space left in the 3x3 grid");
+        toast.error("No space left in the 10x10 grid");
         return prev;
       }
 
@@ -345,10 +345,10 @@ export default function AnalyticsLayoutEditor({
           <div className="flex flex-col justify-between bg-background shadow-lg lg:max-h-[82vh] lg:basis-[34%] lg:min-w-[320px]">
             <div className="p-6 pb-0">
               <DialogHeader>
-                <DialogTitle className="text-lg">Dashboard Layout</DialogTitle>
+                <DialogTitle className="text-lg">Analytics Layout</DialogTitle>
                 <DialogDescription className="text-sm">
                   Drag modules on the preview to move them. Drag the corner
-                  handle to resize. Items snap to the 3x3 grid and cannot
+                  handle to resize. Items snap to the 10x10 grid and cannot
                   overlap.
                 </DialogDescription>
               </DialogHeader>
@@ -372,7 +372,7 @@ export default function AnalyticsLayoutEditor({
                         Available Modules
                       </DialogTitle>
                       <p className="text-xs text-muted-foreground">
-                        Add modules into the dashboard layout.
+                        Add modules into the analytics layout.
                       </p>
                     </div>
                   </button>
@@ -427,19 +427,25 @@ export default function AnalyticsLayoutEditor({
                 ref={previewRef}
                 className="grid w-full max-w-[1050px] select-none border border-dashed bg-background p-2"
                 role="application"
-                aria-label="Dashboard layout preview"
+                aria-label="Analytics layout preview"
                 style={{
                   gridTemplateColumns: `repeat(${GRID_COLUMNS}, minmax(0, 1fr))`,
-                  gridTemplateRows: `repeat(${GRID_ROWS}, minmax(120px, 1fr))`,
+                  gridTemplateRows: `repeat(${GRID_ROWS}, minmax(0, 1fr))`,
                   gap: "8px",
-                  minHeight: 420,
+                  height: 420,
                 }}
                 onMouseMove={handlePointerMove}
                 onMouseUp={commitDrag}
                 onMouseLeave={commitDrag}
               >
                 {layout.length === 0 ? (
-                  <div className="col-span-3 row-span-3 flex items-center justify-center text-xs text-muted-foreground">
+                  <div
+                    className="flex items-center justify-center text-xs text-muted-foreground"
+                    style={{
+                      gridColumn: `1 / span ${GRID_COLUMNS}`,
+                      gridRow: `1 / span ${GRID_ROWS}`,
+                    }}
+                  >
                     No modules placed yet.
                   </div>
                 ) : (

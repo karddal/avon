@@ -9,7 +9,8 @@ type AnalyticsRendererProps = {
   layout: GridItem[];
 };
 
-const GRID_ROWS = 3;
+const GRID_COLUMNS = 10;
+const GRID_ROWS = 10;
 const MD_COLUMNS = 2;
 
 function getMdSpans(item: GridItem) {
@@ -139,17 +140,28 @@ export default function AnalyticsRenderer({ layout }: AnalyticsRendererProps) {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div
-        className="grid w-full grid-cols-1 auto-rows-[minmax(140px,auto)] gap-3 border bg-background p-3 sm:gap-4 sm:p-4 md:grid-flow-dense md:grid-cols-2 lg:h-full lg:flex-1 lg:grid-cols-3 lg:auto-rows-auto"
+        className="grid w-full grid-cols-1 auto-rows-[minmax(140px,auto)] gap-3 border bg-background p-3 sm:gap-4 sm:p-4 md:grid-flow-dense md:grid-cols-2 lg:h-full lg:flex-1 lg:auto-rows-auto"
         style={
           isDesktopLayout
             ? {
+                gridTemplateColumns: `repeat(${GRID_COLUMNS}, minmax(0, 1fr))`,
                 gridTemplateRows: `repeat(${GRID_ROWS}, minmax(0, 1fr))`,
               }
             : undefined
         }
       >
         {orderedLayout.length === 0 ? (
-          <div className="col-span-full flex min-h-55 items-center justify-center border border-dashed bg-background px-4 text-center text-sm text-muted-foreground lg:row-span-3">
+          <div
+            className="col-span-full flex min-h-55 items-center justify-center border border-dashed bg-background px-4 text-center text-sm text-muted-foreground"
+            style={
+              isDesktopLayout
+                ? {
+                    gridColumn: `1 / span ${GRID_COLUMNS}`,
+                    gridRow: `1 / span ${GRID_ROWS}`,
+                  }
+                : undefined
+            }
+          >
             No modules placed yet.
           </div>
         ) : null}
