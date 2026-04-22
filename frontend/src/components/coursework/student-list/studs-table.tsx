@@ -196,48 +196,6 @@ export function StudentsTableWithMaybeRepos({
     }
   }, [coursework_id, refreshStudentsInviteStatuses]);
 
-  const table = useReactTable({
-    data,
-    columns: columns({
-      cw_id: coursework_id,
-      refresh,
-      reloadData: loadData,
-      onInviteStudents: handleInviteStudentsByList,
-      onDeleteInvites: handleDeleteInvitesByList,
-      submitLoading,
-      invitingStudentIds,
-      deletingStudentIds,
-    }),
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getGroupedRowModel: getGroupedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getExpandedRowModel: getExpandedRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    onPaginationChange: setPagination,
-    getRowId: (row) => row.id,
-    paginateExpandedRows: false,
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-      pagination,
-    },
-  });
-
-  useEffect(() => {
-    table.setGrouping(["repo_url"]);
-  }, [table]);
-
-  useEffect(() => {
-    void loadData();
-  }, [loadData]);
-
   const eligibleStudentIds = useMemo(
     () =>
       data
@@ -328,109 +286,174 @@ export function StudentsTableWithMaybeRepos({
     await inviteStudents(selectedInviteableIds);
   }
 
-  async function handleInviteStudentsByList(
-    students: StudentNameAndPotentiallyRepo[],
-  ) {
-    const inviteTargets = students.filter(
-      (student) =>
-        student.repo_id &&
-        student.email &&
-        student.invite_status === "not_invited",
-    );
-
-    if (inviteTargets.length === 0) {
-      return;
-    }
-
-    setInvitingStudentIds((current) => [
-      ...current,
-      ...inviteTargets.map((student) => student.id),
-    ]);
-    try {
-      const invitesByProject = new Map<string, string[]>();
-      for (const student of inviteTargets) {
-        const existingEmails =
-          invitesByProject.get(student.repo_id as string) ?? [];
-        invitesByProject.set(student.repo_id as string, [
-          ...existingEmails,
-          student.email as string,
-        ]);
-      }
-
-      const results = await Promise.all(
-        Array.from(invitesByProject.entries()).map(
-          ([project_id, user_emails]) =>
-            batch_invite_users(project_id, user_emails, 30, inviteExpiryDate),
-        ),
+  const handleInviteStudentsByList = useCallback(
+    async (students: StudentNameAndPotentiallyRepo[]) => {
+      const inviteTargets = students.filter(
+        (student) =>
+          student.repo_id &&
+          student.email &&
+          student.invite_status === "not_invited",
       );
 
-      if (!results.every((result) => result.success)) {
+      if (inviteTargets.length === 0) {
+        return;
+      }
+
+      setInvitingStudentIds((current) => [
+        ...current,
+        ...inviteTargets.map((student) => student.id),
+      ]);
+      try {
+        const invitesByProject = new Map<string, string[]>();
+        for (const student of inviteTargets) {
+          const existingEmails =
+            invitesByProject.get(student.repo_id as string) ?? [];
+          invitesByProject.set(student.repo_id as string, [
+            ...existingEmails,
+            student.email as string,
+          ]);
+        }
+
+        const results = await Promise.all(
+          Array.from(invitesByProject.entries()).map(
+            ([project_id, user_emails]) =>
+              batch_invite_users(project_id, user_emails, 30, inviteExpiryDate),
+          ),
+        );
+
+        if (!results.every((result) => result.success)) {
+          toast.error("Failed to send student invitations");
+          return;
+        }
+
+        toast.success(
+          inviteTargets.length === 1
+            ? "Student invitation sent"
+            : "Team invitations sent",
+        );
+        await refreshStudentsInviteStatuses(inviteTargets);
+      } catch {
         toast.error("Failed to send student invitations");
+      } finally {
+        setInvitingStudentIds((current) =>
+          current.filter(
+            (studentId) =>
+              !inviteTargets.some((student) => student.id === studentId),
+          ),
+        );
+      }
+    },
+    [inviteExpiryDate, refreshStudentsInviteStatuses],
+  );
+
+  const handleDeleteInvitesByList = useCallback(
+    async (students: StudentNameAndPotentiallyRepo[]) => {
+      const deleteTargets = students.filter(
+        (student) =>
+          student.repo_id &&
+          student.email &&
+          student.invite_status === "invited",
+      );
+
+      if (deleteTargets.length === 0) {
         return;
       }
 
-      toast.success(
-        inviteTargets.length === 1
-          ? "Student invitation sent"
-          : "Team invitations sent",
-      );
-      await refreshStudentsInviteStatuses(inviteTargets);
-    } catch {
-      toast.error("Failed to send student invitations");
-    } finally {
-      setInvitingStudentIds((current) =>
-        current.filter(
-          (studentId) =>
-            !inviteTargets.some((student) => student.id === studentId),
-        ),
-      );
-    }
-  }
+      setDeletingStudentIds((current) => [
+        ...current,
+        ...deleteTargets.map((student) => student.id),
+      ]);
+      try {
+        const results = await Promise.all(
+          deleteTargets.map((student) =>
+            delete_invite(student.repo_id as string, student.email as string),
+          ),
+        );
+        if (!results.every((result) => result.success)) {
+          toast.error("Failed to delete student invitations");
+          return;
+        }
 
-  async function handleDeleteInvitesByList(
-    students: StudentNameAndPotentiallyRepo[],
-  ) {
-    const deleteTargets = students.filter(
-      (student) =>
-        student.repo_id && student.email && student.invite_status === "invited",
-    );
-
-    if (deleteTargets.length === 0) {
-      return;
-    }
-
-    setDeletingStudentIds((current) => [
-      ...current,
-      ...deleteTargets.map((student) => student.id),
-    ]);
-    try {
-      const results = await Promise.all(
-        deleteTargets.map((student) =>
-          delete_invite(student.repo_id as string, student.email as string),
-        ),
-      );
-      if (!results.every((result) => result.success)) {
+        toast.success(
+          deleteTargets.length === 1
+            ? "Student invitation deleted"
+            : "Team invitations deleted",
+        );
+        await refreshStudentsInviteStatuses(deleteTargets);
+      } catch {
         toast.error("Failed to delete student invitations");
-        return;
+      } finally {
+        setDeletingStudentIds((current) =>
+          current.filter(
+            (studentId) =>
+              !deleteTargets.some((student) => student.id === studentId),
+          ),
+        );
       }
+    },
+    [refreshStudentsInviteStatuses],
+  );
 
-      toast.success(
-        deleteTargets.length === 1
-          ? "Student invitation deleted"
-          : "Team invitations deleted",
-      );
-      await refreshStudentsInviteStatuses(deleteTargets);
-    } catch {
-      toast.error("Failed to delete student invitations");
-    } finally {
-      setDeletingStudentIds((current) =>
-        current.filter(
-          (studentId) =>
-            !deleteTargets.some((student) => student.id === studentId),
-        ),
-      );
-    }
-  }
+  const tableColumns = useMemo(
+    () =>
+      columns({
+        cw_id: coursework_id,
+        refresh,
+        reloadData: loadData,
+        onInviteStudents: handleInviteStudentsByList,
+        onDeleteInvites: handleDeleteInvitesByList,
+        submitLoading,
+        invitingStudentIds,
+        deletingStudentIds,
+      }),
+    [
+      coursework_id,
+      refresh,
+      loadData,
+      handleInviteStudentsByList,
+      handleDeleteInvitesByList,
+      submitLoading,
+      invitingStudentIds,
+      deletingStudentIds,
+    ],
+  );
+
+  const table = useReactTable({
+    data,
+    columns: tableColumns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getGroupedRowModel: getGroupedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    onPaginationChange: setPagination,
+    getRowId: (row) => row.id,
+    paginateExpandedRows: false,
+    autoResetExpanded: false,
+    autoResetPageIndex: false,
+    autoResetSorting: false,
+    autoResetRowSelection: false,
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+      pagination,
+    },
+  });
+
+  useEffect(() => {
+    table.setGrouping(["repo_url"]);
+  }, [table]);
+
+  useEffect(() => {
+    void loadData();
+  }, [loadData]);
 
   if (loading) {
     return (
