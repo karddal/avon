@@ -7,7 +7,6 @@ import uuid
 from sqlalchemy import String
 from sqlmodel import Field, SQLModel
 
-from app.models.coursework import Coursework
 
 
 class ProvisionProject(SQLModel, table=True):

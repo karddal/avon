@@ -1,5 +1,4 @@
 
-import random
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -14,17 +13,6 @@ from app.core.helpers.gitlab import gl_create_fork, gl_create_project, gl_create
 from app.db.session import get_session
 from app.models.coursework import Coursework
 from app.models.projects import ProvisionProject
-from app.core.helpers.gitlab import (
-    gl_create_fork,
-    gl_create_project,
-    gl_create_skeleton_code,
-    gl_create_template_group,
-    gl_create_template_project,
-    gl_delete_project,
-    gl_delete_projects,
-    gl_get_project,
-    gl_get_projects,
-)
 from app.models.student_repo import StudentRepo
 from app.models.unit_enrollment import UnitEnrollment
 from app.schemas.project import (
