@@ -95,7 +95,7 @@ class CourseworkCommitFeedItem(BaseModel):
     repo_id: str
     repo_url: str
     repo_name: str
-    coursework_id: UUID
+    coursework_id: str | None = None
     coursework_name: str
     student_ids: list[str]
     commit: CourseworkRepoCommit

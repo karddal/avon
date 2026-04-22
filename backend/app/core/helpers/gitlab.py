@@ -507,7 +507,7 @@ async def gl_get_project_commits(project_path: str, per_page: int = 5):
                     "Content-Type": "application/json"
                 },
                 params={"per_page": per_page, "with_stats": "true"},
-                timeout=10.0
+                timeout=20.0
             )
             data = response.json()
             if response.status_code != 200:
@@ -516,7 +516,7 @@ async def gl_get_project_commits(project_path: str, per_page: int = 5):
                     "error": data.get("message") or "Failed to fetch project commits"
                 }
         except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+            print(f"Network Error while fetching commits for {project_path}: {err!r}")
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
 
     return data
@@ -635,6 +635,81 @@ async def gl_get_projects(group_id):
     for coursework in data:
         coursework_data.append({"id": coursework["id"], "name": coursework["name"], "path":coursework["path"], "web_url":coursework["web_url"]})
     return coursework_data
+
+
+async def gl_get_group_projects_recursive(group_id: str):
+    if not TOKEN or not BASE_URL:
+        raise HTTPException(status_code=500, detail="Missing GitLab configuration")
+
+    page = 1
+    per_page = 100
+    projects = []
+
+    async with httpx.AsyncClient(base_url=BASE_URL) as client:
+        while True:
+            try:
+                response = await client.get(
+                    f"/groups/{group_id}/projects",
+                    headers={
+                        "PRIVATE-TOKEN": TOKEN,
+                        "Content-Type": "application/json",
+                    },
+                    params={
+                        "include_subgroups": "true",
+                        "per_page": per_page,
+                        "page": page,
+                    },
+                    timeout=10.0,
+                )
+                data = response.json()
+                if response.status_code != 200:
+                    return {
+                        "success": False,
+                        "error": data.get("message") or "Failed to fetch group projects",
+                    }
+            except httpx.RequestError as err:
+                print(f"Network Error: {err}")
+                raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
+
+            if not isinstance(data, list) or len(data) == 0:
+                break
+
+            projects.extend(data)
+
+            next_page = response.headers.get("X-Next-Page")
+            if not next_page:
+                break
+
+            page = int(next_page)
+
+    return projects
+
+
+async def gl_get_group_details(group_id: str):
+    if not TOKEN or not BASE_URL:
+        raise HTTPException(status_code=500, detail="Missing GitLab configuration")
+
+    async with httpx.AsyncClient(base_url=BASE_URL) as client:
+        try:
+            response = await client.get(
+                f"/groups/{group_id}",
+                headers={
+                    "PRIVATE-TOKEN": TOKEN,
+                    "Content-Type": "application/json",
+                },
+                timeout=10.0,
+            )
+            data = response.json()
+            if response.status_code != 200:
+                return {
+                    "success": False,
+                    "error": data.get("message") or "Failed to fetch group details",
+                }
+        except httpx.RequestError as err:
+            print(f"Network Error: {err}")
+            raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
+
+    return data
 
 async def gl_delete_projects(group_id: int):
     status = {"deleted": [], "failed": []}

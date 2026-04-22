@@ -8,7 +8,7 @@ export const analyticsModuleRegistry = {
     minW: 1,
     minH: 1,
     maxW: 3,
-    maxH: 2,
+    maxH: 3,
   },
 } as const;
 

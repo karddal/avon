@@ -84,6 +84,11 @@ router = APIRouter(prefix="/coursework", tags=["coursework"])
 session_dependency = Annotated[Session, Depends(get_session)]
 token_dependency = Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]
 
+_COMMIT_FEED_CACHE: dict[
+    tuple[str, str, int, int], tuple[datetime.datetime, list[CourseworkCommitFeedItem]]
+] = {}
+_COMMIT_FEED_CACHE_TTL_SECONDS = 5
+
 
 def _repo_name_from_url(repo_url: str) -> str:
     trimmed = repo_url.rstrip("/")
@@ -95,64 +100,77 @@ def _repo_name_from_url(repo_url: str) -> str:
 @router.get("/commit_feed", response_model=list[CourseworkCommitFeedItem])
 async def get_commit_feed(
     session: session_dependency,
-    token: token_dependency,
-    current_user: CurrentUser = Depends(get_current_user_with_role),
     per_repo: int = 5,
     limit: int = 40,
+    fresh: bool = False,
+    current_user: CurrentUser = Depends(get_current_user_with_role),
 ):
-    statement = select(StudentRepo, Coursework).join(
-        Coursework, Coursework.id == StudentRepo.cw_id
-    )
-
-    if not current_user.is_admin:
-        statement = statement.where(
-            exists().where(
-                and_(
-                    UnitEnrollment.unit_id == Coursework.unit_id,
-                    UnitEnrollment.user_id == current_user.user_id,
-                )
-            )
-        )
-
-    rows = session.exec(statement).all()
-
-    if settings.testing_mode or not rows:
+    if settings.testing_mode:
         return []
 
-    grouped_repos: dict[str, dict[str, object]] = {}
-    for student_repo, coursework in rows:
-        repo_entry = grouped_repos.get(student_repo.gl_repo_id)
-        if repo_entry is None:
-            grouped_repos[student_repo.gl_repo_id] = {
-                "repo": student_repo,
-                "coursework": coursework,
-                "student_ids": [student_repo.student_id],
-            }
-            continue
+    scope_key = "admin" if current_user.is_admin else "scoped"
+    cache_key = (current_user.user_id, scope_key, per_repo, limit)
+    now = datetime.datetime.now(datetime.timezone.utc)
+    if not fresh:
+        cached = _COMMIT_FEED_CACHE.get(cache_key)
+        if cached is not None:
+            cached_at, cached_items = cached
+            if (now - cached_at).total_seconds() < _COMMIT_FEED_CACHE_TTL_SECONDS:
+                return cached_items
 
-        student_ids = repo_entry.get("student_ids")
-        if isinstance(student_ids, list):
-            student_ids.append(student_repo.student_id)
+    coursework_statement = select(Coursework).options(selectinload(Coursework.student_repos))
 
-    semaphore = asyncio.Semaphore(8)
+    if not current_user.is_admin:
+        coursework_statement = coursework_statement.join(UnitEnrollment).where(
+            UnitEnrollment.unit_id == Coursework.unit_id,
+            UnitEnrollment.user_id == current_user.user_id,
+        )
 
-    async def fetch_repo_commits(repo_info: dict[str, object]):
-        student_repo = repo_info.get("repo")
-        coursework = repo_info.get("coursework")
-        student_ids = repo_info.get("student_ids")
+    coursework_statement = coursework_statement.where(
+        Coursework.due_date >= datetime.datetime.now()
+    )
 
-        if not isinstance(student_repo, StudentRepo) or not isinstance(
-            coursework, Coursework
-        ):
+    accessible_courseworks = session.exec(coursework_statement).unique().all()
+    if not accessible_courseworks:
+        return []
+
+    repo_targets: list[tuple[Coursework, StudentRepo]] = []
+    for coursework in accessible_courseworks:
+        for student_repo in coursework.student_repos:
+            repo_targets.append((coursework, student_repo))
+
+    if not repo_targets:
+        return []
+
+    semaphore = asyncio.Semaphore(4)
+
+    async def fetch_repo_commits(coursework: Coursework, student_repo: StudentRepo):
+        if not student_repo.repo_url:
             return []
 
-        async with semaphore:
-            project_path = gitlab_project_path_from_repo_url(student_repo.repo_url)
-            commit_data = await gl_get_project_commits(project_path, per_page=per_repo)
+        project_path = gitlab_project_path_from_repo_url(student_repo.repo_url)
+        repo_url = student_repo.repo_url
+        repo_name = _repo_name_from_url(repo_url)
+
+        try:
+            async with semaphore:
+                commit_data = await gl_get_project_commits(
+                    project_path,
+                    per_page=per_repo,
+                )
+        except Exception as error:
+            logger.warning(
+                "Skipping commit feed for coursework %s repo %s after request failure: %r",
+                coursework.id,
+                student_repo.gl_repo_id,
+                error,
+            )
+            return []
 
         if isinstance(commit_data, dict) and commit_data.get("success") is False:
             logger.warning(
-                "Skipping commit feed for repo %s: %s",
+                "Skipping commit feed for coursework %s repo %s: %s",
+                coursework.id,
                 student_repo.gl_repo_id,
                 commit_data.get("error"),
             )
@@ -161,11 +179,11 @@ async def get_commit_feed(
         return [
             CourseworkCommitFeedItem(
                 repo_id=student_repo.gl_repo_id,
-                repo_url=student_repo.repo_url,
-                repo_name=_repo_name_from_url(student_repo.repo_url),
-                coursework_id=coursework.id,
+                repo_url=repo_url,
+                repo_name=repo_name,
+                coursework_id=str(coursework.id),
                 coursework_name=coursework.name,
-                student_ids=student_ids if isinstance(student_ids, list) else [],
+                student_ids=[student_repo.student_id],
                 commit=CourseworkRepoCommit(
                     id=commit["id"],
                     short_id=commit["short_id"],
@@ -181,15 +199,16 @@ async def get_commit_feed(
         ]
 
     commit_lists = await asyncio.gather(
-        *(fetch_repo_commits(repo_info) for repo_info in grouped_repos.values())
+        *(fetch_repo_commits(coursework, student_repo) for coursework, student_repo in repo_targets)
     )
     flattened = [item for repo_commits in commit_lists for item in repo_commits]
     flattened.sort(
         key=lambda item: item.commit.authored_date or datetime.datetime.min,
         reverse=True,
     )
-
-    return flattened[:limit]
+    result = flattened[:limit]
+    _COMMIT_FEED_CACHE[cache_key] = (now, result)
+    return result
 
 
 @router.get(

@@ -36,17 +36,24 @@ export function useCommitFeed(perRepo = 5, limit = 40) {
     key,
     fetcher,
     {
-      refreshInterval: 15 * 1000,
-      dedupingInterval: 10 * 1000,
+      refreshInterval: 5 * 1000,
+      dedupingInterval: 2 * 1000,
       keepPreviousData: true,
       revalidateOnFocus: false,
     },
   );
 
+  const refresh = async () => {
+    return await mutate(fetcher(`${key}&fresh=1`), {
+      populateCache: true,
+      revalidate: false,
+    });
+  };
+
   return {
     commits: data ?? [],
     error,
     isLoading,
-    refresh: mutate,
+    refresh,
   };
 }

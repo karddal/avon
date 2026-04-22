@@ -8,12 +8,16 @@ export async function GET(req: NextRequest) {
   const reqURL = new URL(req.url);
   const perRepo = reqURL.searchParams.get("per_repo") ?? "5";
   const limit = reqURL.searchParams.get("limit") ?? "40";
+  const fresh = reqURL.searchParams.get("fresh") === "1";
 
   const backendURL = new URL(
     `${process.env.NEXT_PUBLIC_API_URL}/coursework/commit_feed`,
   );
   backendURL.searchParams.set("per_repo", perRepo);
   backendURL.searchParams.set("limit", limit);
+  if (fresh) {
+    backendURL.searchParams.set("fresh", "1");
+  }
 
   const res = await fetch(backendURL, {
     method: "GET",
