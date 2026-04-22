@@ -13,6 +13,13 @@ function buildCdnUrl(key: string) {
   return cdnBase ? `${cdnBase}/${key}` : `/${key.replace(/^\/+/, "")}`;
 }
 
+const ALLOWED_PROFILE_IMAGE_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+]);
+
 export async function upload_profile_image(
   formData: FormData,
 ): Promise<UploadProfileImageResponse> {
@@ -24,6 +31,13 @@ export async function upload_profile_image(
     return {
       success: false,
       error: "No image file provided",
+    };
+  }
+
+  if (!ALLOWED_PROFILE_IMAGE_TYPES.has(file.type)) {
+    return {
+      success: false,
+      error: "Unsupported image type",
     };
   }
 

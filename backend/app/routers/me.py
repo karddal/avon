@@ -42,6 +42,26 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 FRONTEND_PUBLIC_DIR = REPO_ROOT / "frontend" / "public"
 
 
+def _detect_profile_image_content_type(file_bytes: bytes) -> str | None:
+    if file_bytes.startswith(b"\xff\xd8\xff"):
+        return "image/jpeg"
+
+    if file_bytes.startswith(b"\x89PNG\r\n\x1a\n"):
+        return "image/png"
+
+    if file_bytes.startswith((b"GIF87a", b"GIF89a")):
+        return "image/gif"
+
+    if (
+        len(file_bytes) >= 12
+        and file_bytes.startswith(b"RIFF")
+        and file_bytes[8:12] == b"WEBP"
+    ):
+        return "image/webp"
+
+    return None
+
+
 @router.get("/units", response_model=UnitAll)
 async def me_units(session: session_dependency, me: str = Depends(get_current_user)):
     results = session.exec(
@@ -63,15 +83,6 @@ async def upload_profile_image(
             detail="Only admins can upload profile images",
         )
 
-    content_type = file.content_type or ""
-    extension = ALLOWED_PROFILE_IMAGE_TYPES.get(content_type)
-
-    if extension is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Unsupported image type",
-        )
-
     file_bytes = await file.read()
 
     if len(file_bytes) == 0:
@@ -86,9 +97,14 @@ async def upload_profile_image(
             detail="Image file is too large",
         )
 
-    original_extension = Path(file.filename or "").suffix.lower()
-    if original_extension in {".jpg", ".jpeg", ".png", ".webp", ".gif"}:
-        extension = ".jpg" if original_extension == ".jpeg" else original_extension
+    content_type = _detect_profile_image_content_type(file_bytes)
+    extension = ALLOWED_PROFILE_IMAGE_TYPES.get(content_type or "")
+
+    if content_type is None or extension is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Unsupported image type",
+        )
 
     key = f"profile-pictures/{uuid4().hex}{extension}"
 
