@@ -9,6 +9,7 @@ type Props = {
   open_state: boolean;
   set_open_state: Dispatch<SetStateAction<boolean>>;
   courseworkId: string;
+  due_date: string;
   refresh: () => void;
 };
 
@@ -16,6 +17,7 @@ export default function ReposListDialog({
   open_state,
   set_open_state,
   courseworkId,
+  due_date,
   refresh,
 }: Props) {
   return (
@@ -37,6 +39,7 @@ export default function ReposListDialog({
                     open_state={open_state}
                     set_open_state={set_open_state}
                     courseworkId={courseworkId}
+                    due_date={due_date}
                   />
                 </Suspense>
               </div>

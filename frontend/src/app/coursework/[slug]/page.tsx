@@ -9,6 +9,7 @@ import StudentRepoActivity from "@/components/coursework/student-repo-activity";
 import StudentRepoOverview from "@/components/coursework/student-repo-overview";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { get_all_students_with_maybe_repos } from "@/lib/actions/coursework/get_all_students_on_unit_with_repos";
 import { get_base_images_cw_specific } from "@/lib/actions/coursework/get_base_images_cw_specific";
 import { get_coursework_scopes } from "@/lib/actions/coursework/get_coursework_scopes";
 import { get_cw_update_data } from "@/lib/actions/coursework/get_coursework_update_data";
@@ -29,8 +30,6 @@ async function CourseworkPageContent({
   const slug = p.slug;
   await requireSession();
   const token = await getRequestJWT();
-  // Hardcoded the template id here, when merged, I should be able to get the template id from jack's code
-
   const scopes: Set<string> = await get_coursework_scopes(slug);
   const canViewSetupProgress =
     scopes.has("unit:coursework_manage") ||
@@ -48,6 +47,9 @@ async function CourseworkPageContent({
   const student_repos_data = canViewStudentRepos
     ? await get_student_repos({ coursework_id: slug })
     : undefined;
+  const studentsWithMaybeRepos = canViewStudentRepos
+    ? await get_all_students_with_maybe_repos({ coursework_id: slug })
+    : [];
 
   const images = canGetAvailImages
     ? await get_base_images_cw_specific({ coursework_id: slug })
@@ -58,7 +60,6 @@ async function CourseworkPageContent({
 
   return (
     <>
-      {/* Header */}
       <div className="flex flex-col col-span-3">
         <div className="font-semibold text-5xl text-shadow-2xs mt-2">
           <Suspense
@@ -80,7 +81,7 @@ async function CourseworkPageContent({
                 coursework_update_data={data}
                 avail_images_data={images?.images}
                 cw_engine_data={cw_engine_data}
-              ></CourseworkLectDropdown>
+              />
             </div>
           </Suspense>
         </div>
@@ -128,24 +129,8 @@ async function CourseworkPageContent({
           </Suspense>
         </div>
         <div
-          id="coursework-repos"
-          className="h-full md:col-span-2 xl:col-span-2"
-        >
-          {canViewSetupProgress ? (
-            canViewStudentRepos && student_repos_data ? (
-              <CourseworkRepoOverview repos={student_repos_data?.repos} />
-            ) : (
-              <></>
-            )
-          ) : (
-            <Suspense>
-              <StudentRepoOverview courseworkId={slug} />
-            </Suspense>
-          )}
-        </div>
-        <div
           id="coursework-activity"
-          className="h-full md:col-span-2 xl:col-span-1"
+          className="h-full md:col-span-2 xl:col-span-2"
         >
           {canViewSetupProgress ? (
             <Suspense>
@@ -154,6 +139,25 @@ async function CourseworkPageContent({
           ) : (
             <Suspense>
               <StudentRepoActivity courseworkId={slug} />
+            </Suspense>
+          )}
+        </div>
+        <div
+          id="coursework-repos"
+          className="h-full md:col-span-2 xl:col-span-1"
+        >
+          {canViewSetupProgress ? (
+            canViewStudentRepos && student_repos_data ? (
+              <CourseworkRepoOverview
+                repos={student_repos_data?.repos}
+                totalStudentGroups={studentsWithMaybeRepos.length}
+              />
+            ) : (
+              <></>
+            )
+          ) : (
+            <Suspense>
+              <StudentRepoOverview courseworkId={slug} />
             </Suspense>
           )}
         </div>

@@ -1,3 +1,4 @@
+import type { RowSelectionState } from "@tanstack/react-table";
 import { flexRender, useReactTable } from "@tanstack/react-table";
 import {
   type ColumnFiltersState,
@@ -5,7 +6,6 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  type RowSelectionState,
   type SortingState,
   type VisibilityState,
 } from "@tanstack/table-core";

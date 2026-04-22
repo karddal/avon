@@ -122,12 +122,12 @@ export default function UserSelectionOmittion({
                   />
                   <div
                     className="
-    absolute inset-0 flex items-center justify-center 
-    pointer-events-none 
-    transition-all 
+    absolute inset-0 flex items-center justify-center
+    pointer-events-none
+    transition-all
     duration-400
     ease-in-out
-    peer-data-[state=checked]:opacity-0 
+    peer-data-[state=checked]:opacity-0
     peer-data-[state=checked]:scale-0
     peer-data-[state=checked]:rotate-90
 "
