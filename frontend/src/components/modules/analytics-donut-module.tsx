@@ -1,7 +1,9 @@
 "use client";
 
+import { ChartPie } from "lucide-react";
 import { PieArcSeries, PieChart } from "reaviz";
-import ReavizModuleFrame from "@/components/modules/reaviz-module-frame";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useModuleChartSize } from "@/components/modules/use-module-chart-size";
 
 const chartData = [
   { key: "Passed", data: 62 },
@@ -11,38 +13,59 @@ const chartData = [
 ];
 
 export default function AnalyticsDonutModule() {
+  const { containerRef, width, height } = useModuleChartSize(280, 220, 420, 260);
+
   return (
-    <ReavizModuleFrame
-      eyebrow="Donut"
-      stat="4 states"
-      title="Run Status Split"
-      description="Outcome breakdown across current runs."
-    >
-      {({ width, height }) => (
-        <div className="h-full w-full">
-          <div className="mb-3 flex flex-wrap items-center gap-2 px-1 text-[10px] font-semibold uppercase tracking-[0.12em]">
-            <span className="border border-foreground px-2 py-1">Passed</span>
-            <span className="border border-foreground px-2 py-1">Running</span>
-            <span className="border border-foreground px-2 py-1">Failed</span>
-            <span className="border border-foreground bg-foreground px-2 py-1 text-background">
-              Errored
-            </span>
+    <Card className="h-full">
+      <CardHeader>
+        <CardTitle>
+          <div>
+            <div className="flex flex-row items-center gap-2 text-2xl">
+              <ChartPie />
+              Run Status Split
+            </div>
+            <div className="font-light">
+              Outcome breakdown across current runs.
+            </div>
           </div>
-          <div className="border-2 border-foreground bg-muted/10 p-2">
-        <PieChart
-          width={width}
-          height={Math.max(height - 44, 240)}
-          data={chartData}
-          series={
-            <PieArcSeries
-              doughnut
-              colorScheme={["#e5e5e5", "#a3a3a3", "#525252", "#111111"]}
-            />
-          }
-        />
-          </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="flex min-h-0 flex-1 flex-col space-y-4">
+        <div className="flex flex-wrap items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+          <span className="inline-flex items-center gap-1">
+            <span className="h-2.5 w-2.5 bg-[#4a8e58]" />
+            Passed
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <span className="h-2.5 w-2.5 bg-[#356d97]" />
+            Running
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <span className="h-2.5 w-2.5 bg-[#7a6831]" />
+            Failed
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <span className="h-2.5 w-2.5 bg-[#8e2024]" />
+            Errored
+          </span>
         </div>
-      )}
-    </ReavizModuleFrame>
+        <div
+          ref={containerRef}
+          className="min-h-0 flex-1 rounded-sm bg-muted/15 p-2 [&_path[stroke='#fff']]:stroke-transparent [&_text]:fill-muted-foreground"
+        >
+          <PieChart
+            width={width}
+            height={height}
+            data={chartData}
+            series={
+              <PieArcSeries
+                doughnut
+                colorScheme={["#4a8e58", "#356d97", "#7a6831", "#8e2024"]}
+              />
+            }
+          />
+        </div>
+      </CardContent>
+    </Card>
   );
 }

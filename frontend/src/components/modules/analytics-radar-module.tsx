@@ -2,7 +2,8 @@
 
 import { ScanSearch } from "lucide-react";
 import { RadarChart, RadialAreaSeries } from "reaviz";
-import ReavizModuleFrame from "@/components/modules/reaviz-module-frame";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useModuleChartSize } from "@/components/modules/use-module-chart-size";
 
 const chartData = [
   {
@@ -30,40 +31,50 @@ const chartData = [
 ];
 
 export default function AnalyticsRadarModule() {
+  const { containerRef, width, height } = useModuleChartSize(280, 220, 420, 260);
+
   return (
-    <ReavizModuleFrame
-      eyebrow="Radar"
-      stat="2 cohorts"
-      title="Cohort Signal"
-      description="Benchmark spread across six tracked dimensions."
-    >
-      {({ width, height }) => (
-        <div className="h-full w-full">
-          <div className="mb-3 flex items-center gap-2 border-b px-1 pb-2 text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
-            <ScanSearch className="h-4 w-4" />
-            Comparison
+    <Card className="h-full">
+      <CardHeader>
+        <CardTitle>
+          <div>
+            <div className="flex flex-row items-center gap-2 text-2xl">
+              <ScanSearch />
+              Cohort Signal
+            </div>
+            <div className="font-light">
+              Benchmark spread across six tracked dimensions.
+            </div>
           </div>
-          <div className="mb-3 flex items-center gap-2 px-1 text-[10px] font-semibold uppercase tracking-[0.12em]">
-            <span className="border border-foreground px-2 py-1">Cohort A</span>
-            <span className="border border-foreground bg-foreground px-2 py-1 text-background">
-              Cohort B
-            </span>
-          </div>
-          <div className="border-2 border-foreground bg-muted/10 p-2 [&_text]:fill-muted-foreground">
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="flex min-h-0 flex-1 flex-col space-y-4">
+        <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+          <span className="inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[#8e2024] dark:text-[#c86366]">
+            <span className="h-2 w-2 rounded-full bg-[#8e2024]" />
+            Cohort A
+          </span>
+          <span className="inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[#4a8e58] dark:text-[#78b486]">
+            <span className="h-2 w-2 rounded-full bg-[#4a8e58]" />
+            Cohort B
+          </span>
+        </div>
+        <div
+          ref={containerRef}
+          className="min-h-0 flex-1 rounded-sm bg-muted/15 p-2 [&_text]:fill-muted-foreground [&_.reaviz-radial-axis-line]:stroke-border/70 [&_.reaviz-radial-grid-line]:stroke-border/60 [&_path]:outline-hidden"
+        >
           <RadarChart
             width={width}
-            height={Math.max(height - 72, 240)}
+            height={height}
             data={chartData}
             series={
               <RadialAreaSeries
-                colorScheme={["#d4d4d4", "#111111"]}
-                area={null}
+                colorScheme={["#8e2024", "#4a8e58"]}
               />
             }
           />
-          </div>
         </div>
-      )}
-    </ReavizModuleFrame>
+      </CardContent>
+    </Card>
   );
 }
