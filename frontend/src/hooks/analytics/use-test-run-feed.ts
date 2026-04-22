@@ -26,8 +26,23 @@ const fetcher = async (url: string) => {
   return (await res.json()) as TestRunFeedItem[];
 };
 
-export function useTestRunFeed(limit = 30) {
-  const key = `/api/analytics/test-runs?limit=${limit}`;
+export function useTestRunFeed(
+  limit = 30,
+  filters?: { unitId?: string; courseworkId?: string },
+) {
+  const params = new URLSearchParams({
+    limit: String(limit),
+  });
+
+  if (filters?.unitId) {
+    params.set("unit_id", filters.unitId);
+  }
+
+  if (filters?.courseworkId) {
+    params.set("coursework_id", filters.courseworkId);
+  }
+
+  const key = `/api/analytics/test-runs?${params.toString()}`;
   const { data, error, isLoading, mutate } = useSWR<TestRunFeedItem[]>(
     key,
     fetcher,

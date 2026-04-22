@@ -30,8 +30,25 @@ const fetcher = async (url: string) => {
   return (await res.json()) as CommitFeedItem[];
 };
 
-export function useCommitFeed(perRepo = 5, limit = 40) {
-  const key = `/api/analytics/commit-feed?per_repo=${perRepo}&limit=${limit}`;
+export function useCommitFeed(
+  perRepo = 5,
+  limit = 40,
+  filters?: { unitId?: string; courseworkId?: string },
+) {
+  const params = new URLSearchParams({
+    per_repo: String(perRepo),
+    limit: String(limit),
+  });
+
+  if (filters?.unitId) {
+    params.set("unit_id", filters.unitId);
+  }
+
+  if (filters?.courseworkId) {
+    params.set("coursework_id", filters.courseworkId);
+  }
+
+  const key = `/api/analytics/commit-feed?${params.toString()}`;
   const { data, error, isLoading, mutate } = useSWR<CommitFeedItem[]>(
     key,
     fetcher,

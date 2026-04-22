@@ -86,11 +86,11 @@ session_dependency = Annotated[Session, Depends(get_session)]
 token_dependency = Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]
 
 _COMMIT_FEED_CACHE: dict[
-    tuple[str, str, int, int], tuple[datetime.datetime, list[CourseworkCommitFeedItem]]
+    tuple[str, str, int, int, str | None, str | None], tuple[datetime.datetime, list[CourseworkCommitFeedItem]]
 ] = {}
 _COMMIT_FEED_CACHE_TTL_SECONDS = 2
 _TEST_RUN_FEED_CACHE: dict[
-    tuple[str, str, int], tuple[datetime.datetime, list[CourseworkTestRunFeedItem]]
+    tuple[str, str, int, str | None, str | None], tuple[datetime.datetime, list[CourseworkTestRunFeedItem]]
 ] = {}
 _TEST_RUN_FEED_CACHE_TTL_SECONDS = 2
 
@@ -120,13 +120,22 @@ async def get_commit_feed(
     per_repo: int = 5,
     limit: int = 40,
     fresh: bool = False,
+    unit_id: UUID | None = None,
+    coursework_id: UUID | None = None,
     current_user: CurrentUser = Depends(get_current_user_with_role),
 ):
     if settings.testing_mode:
         return []
 
     scope_key = "admin" if current_user.is_admin else "scoped"
-    cache_key = (current_user.user_id, scope_key, per_repo, limit)
+    cache_key = (
+        current_user.user_id,
+        scope_key,
+        per_repo,
+        limit,
+        str(unit_id) if unit_id else None,
+        str(coursework_id) if coursework_id else None,
+    )
     now = datetime.datetime.now(datetime.timezone.utc)
     recent_cutoff = now - datetime.timedelta(days=1)
     recent_cutoff_iso = recent_cutoff.isoformat().replace("+00:00", "Z")
@@ -143,6 +152,10 @@ async def get_commit_feed(
     coursework_statement = coursework_statement.where(
         Coursework.due_date >= datetime.datetime.now()
     )
+    if unit_id is not None:
+        coursework_statement = coursework_statement.where(Coursework.unit_id == unit_id)
+    if coursework_id is not None:
+        coursework_statement = coursework_statement.where(Coursework.id == coursework_id)
 
     accessible_courseworks = session.exec(coursework_statement).unique().all()
     if not accessible_courseworks:
@@ -231,10 +244,18 @@ async def get_test_run_feed(
     session: session_dependency,
     limit: int = 40,
     fresh: bool = False,
+    unit_id: UUID | None = None,
+    coursework_id: UUID | None = None,
     current_user: CurrentUser = Depends(get_current_user_with_role),
 ):
     scope_key = "admin" if current_user.is_admin else "scoped"
-    cache_key = (current_user.user_id, scope_key, limit)
+    cache_key = (
+        current_user.user_id,
+        scope_key,
+        limit,
+        str(unit_id) if unit_id else None,
+        str(coursework_id) if coursework_id else None,
+    )
     now = datetime.datetime.now(datetime.timezone.utc)
     if not fresh:
         cached = _TEST_RUN_FEED_CACHE.get(cache_key)
@@ -243,9 +264,13 @@ async def get_test_run_feed(
             if (now - cached_at).total_seconds() < _TEST_RUN_FEED_CACHE_TTL_SECONDS:
                 return cached_items
 
-    accessible_courseworks = session.exec(
-        _accessible_coursework_statement_for_user(current_user)
-    ).unique().all()
+    coursework_statement = _accessible_coursework_statement_for_user(current_user)
+    if unit_id is not None:
+        coursework_statement = coursework_statement.where(Coursework.unit_id == unit_id)
+    if coursework_id is not None:
+        coursework_statement = coursework_statement.where(Coursework.id == coursework_id)
+
+    accessible_courseworks = session.exec(coursework_statement).unique().all()
     if not accessible_courseworks:
         return []
 

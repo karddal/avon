@@ -1,6 +1,7 @@
 "use client";
 
-import { Activity, FolderGit, RefreshCcw } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { FolderGit, GitCommitHorizontal, RefreshCcw } from "lucide-react";
 import CourseworkCommitListItem from "@/components/coursework/coursework-commit-list-item";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,7 +12,15 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useActivityFilterOptions } from "@/hooks/analytics/use-activity-filter-options";
 import { useCommitFeed } from "@/hooks/analytics/use-commit-feed";
 import { formatIsoDateTime } from "@/lib/date-format";
 
@@ -24,7 +33,37 @@ function formatCommitDate(date: string | null) {
 }
 
 export default function AnalyticsActivityModule() {
-  const { commits, error, isLoading, refresh } = useCommitFeed(5, 40);
+  const [unitId, setUnitId] = useState<string>("all");
+  const [courseworkId, setCourseworkId] = useState<string>("all");
+
+  const { units, courseworks } = useActivityFilterOptions();
+
+  const filteredCourseworks = useMemo(() => {
+    if (unitId === "all") {
+      return courseworks;
+    }
+
+    return courseworks.filter((coursework) => coursework.unit_id === unitId);
+  }, [courseworks, unitId]);
+
+  useEffect(() => {
+    if (
+      courseworkId !== "all" &&
+      !filteredCourseworks.some((coursework) => coursework.id === courseworkId)
+    ) {
+      setCourseworkId("all");
+    }
+  }, [courseworkId, filteredCourseworks]);
+
+  const filters = useMemo(
+    () => ({
+      unitId: unitId === "all" ? undefined : unitId,
+      courseworkId: courseworkId === "all" ? undefined : courseworkId,
+    }),
+    [courseworkId, unitId],
+  );
+
+  const { commits, error, isLoading, refresh } = useCommitFeed(5, 40, filters);
 
   return (
     <Card className="h-full">
@@ -33,7 +72,7 @@ export default function AnalyticsActivityModule() {
           <div className="flex flex-row items-center justify-between gap-3">
             <div>
               <div className="flex flex-row items-center gap-2 text-2xl">
-                <Activity />
+                <GitCommitHorizontal />
                 Commits Activity
               </div>
               <div className="font-light">
@@ -54,6 +93,36 @@ export default function AnalyticsActivityModule() {
         </CardTitle>
       </CardHeader>
       <CardContent className="flex min-h-0 flex-1 flex-col space-y-4">
+        <div className="flex flex-col gap-2 md:flex-row">
+          <Select value={unitId} onValueChange={setUnitId}>
+            <SelectTrigger className="w-full md:w-56">
+              <SelectValue placeholder="All units" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All units</SelectItem>
+              {units.map((unit) => (
+                <SelectItem key={unit.id} value={unit.id}>
+                  {unit.unit_code} | {unit.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={courseworkId} onValueChange={setCourseworkId}>
+            <SelectTrigger className="w-full md:w-56">
+              <SelectValue placeholder="All courseworks" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All courseworks</SelectItem>
+              {filteredCourseworks.map((coursework) => (
+                <SelectItem key={coursework.id} value={coursework.id}>
+                  {coursework.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
         {isLoading ? (
           <div className="space-y-2">
             <Skeleton className="h-14 w-full" />
@@ -85,10 +154,9 @@ export default function AnalyticsActivityModule() {
                 <EmptyMedia variant="icon">
                   <FolderGit />
                 </EmptyMedia>
-                <EmptyTitle>No commits yet.</EmptyTitle>
+                <EmptyTitle>No commits found.</EmptyTitle>
                 <EmptyDescription>
-                  New commits will appear here as students push to coursework
-                  repositories.
+                  Try a broader unit or coursework filter.
                 </EmptyDescription>
               </EmptyHeader>
             </Empty>

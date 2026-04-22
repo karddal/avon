@@ -1,5 +1,6 @@
 import AnalyticsActivityModule from "@/components/modules/commits-activity-module";
 import AnalyticsDonutModule from "@/components/modules/analytics-donut-module";
+import AnalyticsLineGraphModule from "@/components/modules/analytics-line-graph-module";
 import AnalyticsRadarModule from "@/components/modules/analytics-radar-module";
 import TestRunsActivityModule from "@/components/modules/test-runs-activity-module";
 
@@ -32,6 +33,14 @@ export const analyticsModuleRegistry = {
   "run-status-donut": {
     title: "Run status donut",
     component: AnalyticsDonutModule,
+    minW: 3,
+    minH: 3,
+    maxW: 10,
+    maxH: 10,
+  },
+  "activity-trend-line": {
+    title: "Activity trend line",
+    component: AnalyticsLineGraphModule,
     minW: 3,
     minH: 3,
     maxW: 10,

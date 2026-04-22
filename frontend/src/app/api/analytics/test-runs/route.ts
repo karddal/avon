@@ -8,11 +8,19 @@ export async function GET(req: NextRequest) {
   const reqURL = new URL(req.url);
   const limit = reqURL.searchParams.get("limit") ?? "40";
   const fresh = reqURL.searchParams.get("fresh") === "1";
+  const unitId = reqURL.searchParams.get("unit_id");
+  const courseworkId = reqURL.searchParams.get("coursework_id");
 
   const backendURL = new URL(
     `${process.env.NEXT_PUBLIC_API_URL}/coursework/test_run_feed`,
   );
   backendURL.searchParams.set("limit", limit);
+  if (unitId) {
+    backendURL.searchParams.set("unit_id", unitId);
+  }
+  if (courseworkId) {
+    backendURL.searchParams.set("coursework_id", courseworkId);
+  }
   if (fresh) {
     backendURL.searchParams.set("fresh", "1");
   }
