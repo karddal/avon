@@ -36,8 +36,8 @@ export function useCommitFeed(perRepo = 5, limit = 40) {
     key,
     fetcher,
     {
-      refreshInterval: 5 * 1000,
-      dedupingInterval: 2 * 1000,
+      refreshInterval: 3 * 1000,
+      dedupingInterval: 1 * 1000,
       keepPreviousData: true,
       revalidateOnFocus: false,
     },

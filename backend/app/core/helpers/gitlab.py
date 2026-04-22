@@ -491,7 +491,11 @@ def gitlab_project_path_from_repo_url(repo_url: str) -> str:
         project_path = project_path[:-4]
     return project_path
 
-async def gl_get_project_commits(project_path: str, per_page: int = 5):
+async def gl_get_project_commits(
+    project_path: str,
+    per_page: int = 5,
+    since: str | None = None,
+):
     """This function returns commits to MAIN!!!/default branch because it doesn't specify ref_name"""
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
@@ -500,13 +504,17 @@ async def gl_get_project_commits(project_path: str, per_page: int = 5):
 
     async with httpx.AsyncClient(base_url=BASE_URL) as client:
         try:
+            params = {"per_page": per_page, "with_stats": "true"}
+            if since:
+                params["since"] = since
+
             response = await client.get(
                 f"/projects/{encoded_project_path}/repository/commits",
                 headers={
                     "PRIVATE-TOKEN": TOKEN,
                     "Content-Type": "application/json"
                 },
-                params={"per_page": per_page, "with_stats": "true"},
+                params=params,
                 timeout=20.0
             )
             data = response.json()

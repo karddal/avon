@@ -87,7 +87,7 @@ token_dependency = Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]
 _COMMIT_FEED_CACHE: dict[
     tuple[str, str, int, int], tuple[datetime.datetime, list[CourseworkCommitFeedItem]]
 ] = {}
-_COMMIT_FEED_CACHE_TTL_SECONDS = 5
+_COMMIT_FEED_CACHE_TTL_SECONDS = 2
 
 
 def _repo_name_from_url(repo_url: str) -> str:
@@ -111,6 +111,8 @@ async def get_commit_feed(
     scope_key = "admin" if current_user.is_admin else "scoped"
     cache_key = (current_user.user_id, scope_key, per_repo, limit)
     now = datetime.datetime.now(datetime.timezone.utc)
+    recent_cutoff = now - datetime.timedelta(days=1)
+    recent_cutoff_iso = recent_cutoff.isoformat().replace("+00:00", "Z")
     if not fresh:
         cached = _COMMIT_FEED_CACHE.get(cache_key)
         if cached is not None:
@@ -142,7 +144,7 @@ async def get_commit_feed(
     if not repo_targets:
         return []
 
-    semaphore = asyncio.Semaphore(4)
+    semaphore = asyncio.Semaphore(8)
 
     async def fetch_repo_commits(coursework: Coursework, student_repo: StudentRepo):
         if not student_repo.repo_url:
@@ -157,6 +159,7 @@ async def get_commit_feed(
                 commit_data = await gl_get_project_commits(
                     project_path,
                     per_page=per_repo,
+                    since=recent_cutoff_iso,
                 )
         except Exception as error:
             logger.warning(

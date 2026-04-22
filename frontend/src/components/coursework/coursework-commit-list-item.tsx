@@ -15,7 +15,7 @@ type CourseworkCommitListItemProps = {
 };
 
 function getCommitTone(additions: number, deletions: number) {
-  if (additions > deletions && additions > 0) {
+  if (deletions == 0) {
     return {
       hover: "hover:border-emerald-300 dark:hover:border-emerald-800",
       icon:
@@ -25,7 +25,7 @@ function getCommitTone(additions: number, deletions: number) {
     };
   }
 
-  if (deletions > additions && deletions > 0) {
+  if (additions == 0) {
     return {
       hover: "hover:border-red-300 dark:hover:border-red-800",
       icon:
@@ -63,12 +63,14 @@ export default function CourseworkCommitListItem({
       href={href}
       target="_blank"
       rel="noreferrer"
-      className={`group block rounded-xl border px-3 py-3 transition-all ${tone.hover} ${
+      className={`group relative block rounded-xl border px-3 py-3 transition-all ${tone.hover} ${
         highlighted
           ? "bg-background shadow-sm hover:bg-accent/30"
           : "bg-background hover:bg-accent/30"
       }`}
     >
+      <ArrowUpRight className="pointer-events-none absolute right-3 top-3 h-4 w-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+
       <div className="flex items-start gap-3">
         <div
           className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border ${tone.icon}`}
@@ -79,7 +81,7 @@ export default function CourseworkCommitListItem({
         <div className="min-w-0 flex-1 space-y-2">
           {eyebrow ? <div>{eyebrow}</div> : null}
 
-          <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start gap-3">
             <div className="min-w-0">
               <div className="truncate text-sm font-semibold leading-5">
                 {title}
@@ -99,8 +101,6 @@ export default function CourseworkCommitListItem({
                 </div>
               ) : null}
             </div>
-
-            <ArrowUpRight className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
           </div>
         </div>
 
