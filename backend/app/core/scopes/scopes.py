@@ -177,7 +177,7 @@ async def authenticate_user(
     if settings.ignore_auth:
         logger.debug("ignore auth mode set, so authenticating as admin")
         user = AuthenticatedUser(
-            user_id="aaaa", scopes=set([s for s in Scopes]), fe_role="testing"
+            user_id="aaaa", scopes=set([s for s in Scopes]), fe_role="admin"
         )
         logger.debug(user)
         return user
@@ -265,7 +265,7 @@ async def require_role(
         session=session,
     )
 
-    if user.fe_role == role:
+    if user.fe_role != role.value:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"Authentication error. Not correct role: {role}",

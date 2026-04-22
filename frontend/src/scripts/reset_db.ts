@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 
 async function seed() {
-  console.log(process.env);
+  // console.log(process.env);
 
   // run seeding
   const db = new DatabaseSync("../sqlite.db");

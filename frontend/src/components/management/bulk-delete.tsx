@@ -65,7 +65,7 @@ export default function BulkDelete() {
   const loadProgrammes = useCallback(async () => {
     const programmesReq = await getProgrammes();
     if (programmesReq.success) {
-      console.log("Programmes array:", programmesReq.data.programmes);
+      // console.log("Programmes array:", programmesReq.data.programmes);
       setProgrammes(programmesReq.data.programmes);
     } else {
       toast.error("Failed to load programmes");

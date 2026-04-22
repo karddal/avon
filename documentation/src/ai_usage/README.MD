@@ -75,6 +75,43 @@ I also used GH Copilot for autocompletion sometimes to save time.
 #### Used to design and set up the test running system
 
 I used it to write the dockerfile and script for the test running system, then customised the result. I used it because I am not very familiar with how docker works, and best practices for untrusted code. Me and Josh also used it initially with earlier attempts with Kubernetes, and also to try and architect a better design. We found it helpful because we don't have much experience with this.
+Once I had a working script, I was able to modify it for our own purpose. I also used it to help debug and iterate.
+
+Example prompts:
+- ```Sure! What's the cleaner way to do this? It doesn't look like with this setup there is a clean way to git clone the code and then run the lecturer's dockerfile.```
+- ```Okay, so how about this, maybe we can just install uv, pip, all 'python' things into a single container, and then this is just a limitation of the system. Then the lecturer can define a series of commands to run in that container, and then we handle logging etc from this. Can you set up the container for this? This sounds clean.```
+- ```Yes that sounds important, clean it up, make sure it is as clean and simple and easy to maintain as possible, and prevent exploits. Make no mistakes, you are an expert aws engineer.```
+- ```Can i set the ecs task to have a timeout rather than having to do it manually in the python script?```
+- ```Can I test this locally @ChatGPT ?```
+- ```how can I give perms for the runner to be able to download the projects? Do I use an API key in gitlab?```
+- ```How can I use service accounts for this? I can generate a service account and pass it in in the git clone url with the service account token, to authenticate https git clones. Update the script.```
+- ```How will s3 and sqs auth work when deployed? How can it log in?```
+- ```how do I get the runner.py into the dockerifle? it says it cant find it```
+- ```how will I know whether it worked? nothing gets printed out```
+- ```How can I troubleshoot aws login etc errors? Can you add code to do that?```
+- ```I have an architecture on a VLE where lecturers can pick a base task definition and a tester command, and we have multiple task defs (python, c etc) with different dependencies installed. The runner script in each case git clones student work and runs the tester command. This all runs in an ecs task. What would be a clean db schema for storing test runs? The ecs task updates the backend by sending a sqs notification on finish with the exit code and the s3 url where logs were uploaded, and the fastapi backend consumes this and updates the db. I worked really hard to have this architecture be fault tolerant - so we can handle multiple backends, eg if one dies etc, and data doesn’t get lost.```
+- ```Why do we need the sqs table? won’t the unique constraint on test run id be sufficient?```
+- ```How do we handle submissions? Right now, we just have a system where lecturers can click 'grade', and we just take the repo url, and git clone from the default branch. Do we need to formalise this? I see you made some submission table - can you explain the logic here?```
+- ```Yeah - we have help text on our UI telling students to ensure that when the submission deadline passes, just make sure that the code on their default branch is the code that they want to submit. When this all gets fully set up, we will use GitLab invites, and their access will have an expiration equal to the cw due date. So they lose access to the remote and their submission is set in stone.```
+- ```I'd like to use a linux epoch timestamp because I find dealing with different timezones etc difficult. I'm using fastapi - can I just use an int field and use datetime to get the linux epoch?```
+- ```okay, so would I just use an sqlmodel datetime type field? What method do I use to get the current time, and then get it back later on? There's so many different ones (now, utcnow etc) and numerous footguns```
+- ```don't we need to store things like the task definition used to run the tests, and the tester command?```
+- ```yes - the idea is that the admins can define runner images with different dependencies installed, docker build, upload to ecr, and define aws task definition. Then we have a way in our frontend for admins to register them as a BaseImage which a lecturer can select when setting up the test running. I think that we need the task_definition name when running ecs tasks so is that what we should save?```
+- ```When it comes to api responses, is it standard to return a HTTPException (error code, detail) or do we have a custom json type with status: error, detail: str?```
+- ```Why isn't this formatting properly? Also, how can I display this nicely? This is a start date for a test run to be displayed in a data table. The formatting is just doing iso format which is ugly, not taking effect. CODE HERE```
+- ```CODE HERE this just prints DATE HERE in the row field.```
+
+#### Used to design and build the specific test run page
+I used AI to build the specific test run page, once I had already built the test runs list, start tests component etc. - it was given a popup set up with the data, and I asked it to build a layout to
+display the data nicely. I also asked it to add features like auto refreshing and fix some bugs. This was useful because
+it allowed me to quickly iterate the design, and get something that I can build on top of. Helped to overcome the 'blank page' problem.
+
+See the transcript in `transcript.md` in this folder.
+
+
+#### Used to design and set up the test running system
+
+I used it to write the dockerfile and script for the test running system, then customised the result. I used it because I am not very familiar with how docker works, and best practices for untrusted code. Me and Josh also used it initially with earlier attempts with Kubernetes, and also to try and architect a better design. We found it helpful because we don't have much experience with this.
 Once I had a working script, I was able to modify it for our own purpose. I also used it to help debug and iterate. 
 
 Example prompts:
@@ -113,6 +150,7 @@ See the transcript in `transcript.md` in this folder.
 **Tools used**
 
 - ChatGPT
+- Codex
 - Claude
 - Gemini
 
@@ -124,7 +162,54 @@ Frontend - TailwindCSS issues and more complex Typescript functions or methods w
 
 Backend - I have used AI in the backend to produce repeatable pieces of code, saving me time rewriting similar schemas or methods with slightly different variable names and inputs. I also used it to learn more about the frameworks we were using, such as Spring Boot (before switching), and now FastAPI. FastAPI is simple enough, but some features have multiple ways of being implemented, and sometimes the docs aren't helpful. Since my focus on this project has been mainly on the frontend, my AI use in the backend has been lower than the rest of the project.
 
+### Specific Uses
+
+#### Invite System
+For the invitation system that links student's with their own provisioned GitLab repository, I used AI to create the majority of the logic and UI. I wrote the first `gl_inv_*` helper function, similarly to how the `gl_*` project API helper functions were written, and then I asked Codex to create the functions for the rest of the API, such as updating, deleting, and listing. For the frontend server actions, I followed a similar pattern, writing the first one that would connect to the backend and then asking AI to write the rest. I could've done this myself, as especially the frontend functions are not too hard, and are just repeated code, but Codex made it easier to do this. The UI was majority coded alongside Codex, I would change smaller things that were easy to edit, but Codex wired up the logic. I told Codex to look into our existing project to use Dialog components and UI design like we already have for other modals to keep the UI consistent. This ended up getting moved anyway. Example prompts:
+`Look at @invitations.py, and write functions like the one written for the other API functions. View GitLab's invitations API before starting.`
+`Look at the create student invite server action in the frontend and write the rest of the actions that correspond to the backend invitations.py`
+`Create an invite-students dialog that will pop up when pressing a button inside the lecturer dropdown, that will list statuses of invites, as well as being able to add or delete the invites.`
+`Add pagination to the list of users to speed up the invites`
+`Invites are causing the website to load slowly, find the error and devise a plan to fix it.`
+
+
+#### Smaller fixes that take time to do
+Examples of this are where you have an updated schema or slight change to UI that has to span across multiple files. Here is where a large part of my AI usage was done. Example prompts are:
+`Move the invites logic from the standalone component into the table, and integrate it so that there is a badge inside the user's row.`
+`Look into how the invite statuses are being resolved/fetched from the backend, and make it so that the table does not refresh once the data is loaded.`
+`Change the Coursework status component to have a carousel card like structure intead of a stacked linear scale, as the new way to create and release a coursework is different and non-linear.`
+`Remove margins/padding to line up X component to Y component as they are unaligned.`
+`Restructure the component's parts to be in a format of X:Y being 50:50, and then Z being w-full underneath them.`
+`Add a button to go back to the unit linked to the coursework, so that users can easily go back and not have to go through the units/ listing page again.`
+
+#### Profile Picture system
+The profile picture system was already kind of inplace, but we needed a way to upload images to the cdn so that the link could be stored inside the db. For this, I first prompted Codex to find a way to upload the images to S3 via the backend, as we are already logged into AWS there. It created a route that we can send the image across and use. Then, some of the logic behind displaying the images was cleaned up also.
+Example prompts are:
+`Create an image upload for admins/lecturers. Allow admins to add an image when creating a lecturer/student, but DO NOT ALLOW a student to upload their own image. Use S3 via the AWS_CDN_BUCKET variable, and store it in the betterauth database`
+`Resize the image to be correctly displayed, and move the user's information to the right of it.`
+`Rewrite the logic behind uploading an image to check not about filetypes in terms of extensions, but rather with MIME types, ensuring that people cannot upload exe's disguised as pngs for example.`
+`Add edit buttons to the management profile section for email, name, and role.`
+
+#### Bug fixes / Security
+Another big part of my AI usage has been scanning the database for security concerns/issues, as well as looking for bugs. AI can save so much time when looking for bugs and so I can work on the more important tasks instead of looking for a one-line fix for hours.
+Example prompts used:
+`Scan this project and find any security concerns or bugs that could cause critical issues. Be vigilant`
+`This feature does not work, error message: X. My thoughts are that it is caused by Y. Please check if I am right, or if I am wrong and there is a different problem here.`
+`Fix the problem of the table rows counting as 2 rows when expanded, causing data to be hidden underneath the expansion.`
+`Fix the alignment problem with the student's name being to the left of where the column's title is.`
+`The button's text is overlapping with it's actual button in file X. Please just use the icon and move the button down.`
+`The student repositories component's content does not scale correctly on mobile, please instead move X here and then allow it to grow in width as the component does.`
+
+#### UI design
+UI design is a helpful feature that AI is normally pretty good at, because I can create the feature but then polish it and see how different visual looks will affect the app. It's like AB testing but I can create multiple versions/layouts easily and see which one looks the best for the end users.
+Example prompts are:
+`Add icons to this title, and add some colour to the statistic components`
+`Add transitions to these buttons/UI when changes occur.`
+`Swap the widths of X and Y, so that the Y is smaller on the left and the X is larger on the right.`
+
 Added: Have now used Claude to tell me a better way to refactor the Dockerfile creator, and Claude then helped me rewrite some of the code to use this pattern (see `frontend/src/lib/docker`). An example of a prompt I used was: `Is there a better way to find out if the tool/language is a script or package, and can you architect it please.` Also, I have used it for help with the drag and drop style dashboard page - GPT 5.4 was really helpful in coding with me to create a good base/structure of code that allows users to add modules to their dashboard - allowing me to create dashboard modules and have a working prototype that I can style correctly.
+
+Mostly, I used Codex nearer to the end of the project, as the CLI tools are just becoming so much better and faster to use. However, this doesnt stop me and the rest of my team from actually designing and thinking about these features, as well as planning the database connections and routes, because these system design areas are where AI is still slightly behind/can hallucinate and overcomplicate.
 
 Overall, the use of AI for me has been majority frontend, and has been mostly for time-saving reasons, allowing me to focus more on the actual features that require human insight and reasoning, such as the UI flow and accessibility, as well as the actual codebase looking professional and easy to extend.
 
@@ -167,9 +252,8 @@ Overall, I mainly use AI as a tool for faster, more specific searches for my sce
 
 **Tools used**
 
-- ChatGPT
-- Claude
-- Gemini
+- ChatGPT(through codex and website)
+- Gemini(website)
 
 **Where did you use AI tools and why**
 
@@ -180,3 +264,9 @@ Translation - As a student whose first language is not English, sometimes I have
 Research framework usage - Some technical framework documents are not easy to understand, while others break down the usage of a method into the more basic and advanced usage. If I miss some content, or sometimes I use search to find the content I need in the document, I will find some more simple introductions to the method I want to use. At those situations, AI can help me understand and use these frameworks more correctly.
 
 Bug fix - Sometimes the error message output by the framework we use is not only lengthy but also difficult to understand. At this time, I will use AI to help me analyze the error information, to better locate the cause and location cause the error. At the times without AI, I found difficult to find the specific location cause the error, and the emergence of AI really help me to faster locate bugs.
+
+Merging branch - when package.json in our FE broke in my branch, it is nearly impossible for me to fix by hand so I use Codex to fixit, also when there is complex i.e. two branch change same code that I am not sure how to merge to lose feature from one of the branch
+
+Windows environment - in the run-test-stack part about windows specific environment is suggested by AI as windows use some weird command
+
+Library usage - when I want to find a function from some library that I never used before I will use AI to see the usage of that function. Also when I want a specific function that our current library can not find I will ask AI to suggest some library. 

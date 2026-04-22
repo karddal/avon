@@ -15,7 +15,7 @@ type _CreateProgrammeResponse = {
 
 export async function create_programme(req: CreateProgrammeRequest) {
   "use server";
-  console.log(req);
+  // console.log(req);
   const token = await getRequestJWT();
   const data = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/programmes/create`,

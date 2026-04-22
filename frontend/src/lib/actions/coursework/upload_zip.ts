@@ -34,7 +34,7 @@ export async function upload_zip(
     },
   );
   if (!data.ok) {
-    console.log("Overwrite ZIP upload failed", data);
+    // console.log("Overwrite ZIP upload failed", data);
     if (data.status === 453) {
       return {
         templateId: -1,

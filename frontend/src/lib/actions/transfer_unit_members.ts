@@ -12,7 +12,7 @@ export async function transfer_unit_members(req: TransferUnitMembersRequest) {
   "use server";
   const token = await getRequestJWT();
   console.log("current request");
-  console.log(req);
+  // console.log(req);
 
   const data = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/unit_enrollment/batch/transfer`,
@@ -27,7 +27,7 @@ export async function transfer_unit_members(req: TransferUnitMembersRequest) {
     },
   );
   console.log("response:");
-  console.log(data);
+  // console.log(data);
   if (!data.ok) {
     const json = await data.json();
     return {

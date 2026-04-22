@@ -28,44 +28,42 @@ function CreateUnit({ userRole }: UserRole) {
 
 function PageContent({ userRole }: UserRole) {
   return (
-    <div className="">
-      <div className="space-y-6">
-        <Tabs defaultValue="ongoing">
-          <div className="flex flex-row align-middle items-center justify-between">
-            <TabsList className="flex flex-row gap-4 bg-background my-4">
-              <div className="bg-accent p-1">
-                <TabsTrigger
-                  value="ongoing"
-                  className="bg-accent px-4 py-2"
-                  id="tabs-ongoing"
-                >
-                  Ongoing
-                </TabsTrigger>
-                <TabsTrigger
-                  value="finished"
-                  className="bg-accent px-4 py-2"
-                  id="tabs-finished"
-                >
-                  Finished
-                </TabsTrigger>
-              </div>
-            </TabsList>
-            <CreateUnit userRole={userRole} />
-          </div>
+    <div className="space-y-6">
+      <Tabs defaultValue="ongoing">
+        <div className="flex flex-row align-middle items-center justify-between">
+          <TabsList className="flex flex-row gap-4 bg-background my-4">
+            <div className="bg-accent p-1">
+              <TabsTrigger
+                value="ongoing"
+                className="bg-accent px-4 py-2"
+                id="tabs-ongoing"
+              >
+                Ongoing
+              </TabsTrigger>
+              <TabsTrigger
+                value="finished"
+                className="bg-accent px-4 py-2"
+                id="tabs-finished"
+              >
+                Finished
+              </TabsTrigger>
+            </div>
+          </TabsList>
+          <CreateUnit userRole={userRole} />
+        </div>
 
-          <TabsContent value="ongoing">
-            <Suspense fallback={<Loading />}>
-              <UnitList finished={false} />
-            </Suspense>
-          </TabsContent>
+        <TabsContent value="ongoing">
+          <Suspense fallback={<Loading />}>
+            <UnitList finished={false} />
+          </Suspense>
+        </TabsContent>
 
-          <TabsContent value="finished">
-            <Suspense fallback={<Loading />}>
-              <UnitList finished={true} />
-            </Suspense>
-          </TabsContent>
-        </Tabs>
-      </div>
+        <TabsContent value="finished">
+          <Suspense fallback={<Loading />}>
+            <UnitList finished={true} />
+          </Suspense>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
@@ -76,11 +74,7 @@ async function AdminPage() {
   if (!userRole) {
     userRole = "user";
   }
-  return (
-    <div>
-      <PageContent userRole={userRole} />
-    </div>
-  );
+  return <PageContent userRole={userRole} />;
 }
 
 export default async function UnitPage() {
