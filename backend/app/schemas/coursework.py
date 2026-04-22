@@ -91,6 +91,16 @@ class CourseworkRepoCommit(BaseModel):
     deletions: int
 
 
+class CourseworkCommitFeedItem(BaseModel):
+    repo_id: str
+    repo_url: str
+    repo_name: str
+    coursework_id: UUID
+    coursework_name: str
+    student_ids: list[str]
+    commit: CourseworkRepoCommit
+
+
 class CourseworkStudentRepoRead(BaseModel):
     repo_url: str
     commits: list[CourseworkRepoCommit]

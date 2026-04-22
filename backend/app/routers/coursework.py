@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 import logging
 import uuid
@@ -49,6 +50,7 @@ from app.models.unit_enrollment import UnitEnrollment
 from app.schemas.base_image import BaseImageList
 from app.schemas.coursework import (
     CourseworkChangeStudentsRepo,
+    CourseworkCommitFeedItem,
     CourseworkCreate,
     CourseworkDelete,
     CourseworkEngineData,
@@ -81,6 +83,113 @@ logger = logging.getLogger("coursework")
 router = APIRouter(prefix="/coursework", tags=["coursework"])
 session_dependency = Annotated[Session, Depends(get_session)]
 token_dependency = Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]
+
+
+def _repo_name_from_url(repo_url: str) -> str:
+    trimmed = repo_url.rstrip("/")
+    if trimmed.endswith(".git"):
+        trimmed = trimmed[:-4]
+    return trimmed.split("/")[-1] if trimmed else repo_url
+
+
+@router.get("/commit_feed", response_model=list[CourseworkCommitFeedItem])
+async def get_commit_feed(
+    session: session_dependency,
+    token: token_dependency,
+    current_user: CurrentUser = Depends(get_current_user_with_role),
+    per_repo: int = 5,
+    limit: int = 40,
+):
+    statement = select(StudentRepo, Coursework).join(
+        Coursework, Coursework.id == StudentRepo.cw_id
+    )
+
+    if not current_user.is_admin:
+        statement = statement.where(
+            exists().where(
+                and_(
+                    UnitEnrollment.unit_id == Coursework.unit_id,
+                    UnitEnrollment.user_id == current_user.user_id,
+                )
+            )
+        )
+
+    rows = session.exec(statement).all()
+
+    if settings.testing_mode or not rows:
+        return []
+
+    grouped_repos: dict[str, dict[str, object]] = {}
+    for student_repo, coursework in rows:
+        repo_entry = grouped_repos.get(student_repo.gl_repo_id)
+        if repo_entry is None:
+            grouped_repos[student_repo.gl_repo_id] = {
+                "repo": student_repo,
+                "coursework": coursework,
+                "student_ids": [student_repo.student_id],
+            }
+            continue
+
+        student_ids = repo_entry.get("student_ids")
+        if isinstance(student_ids, list):
+            student_ids.append(student_repo.student_id)
+
+    semaphore = asyncio.Semaphore(8)
+
+    async def fetch_repo_commits(repo_info: dict[str, object]):
+        student_repo = repo_info.get("repo")
+        coursework = repo_info.get("coursework")
+        student_ids = repo_info.get("student_ids")
+
+        if not isinstance(student_repo, StudentRepo) or not isinstance(
+            coursework, Coursework
+        ):
+            return []
+
+        async with semaphore:
+            project_path = gitlab_project_path_from_repo_url(student_repo.repo_url)
+            commit_data = await gl_get_project_commits(project_path, per_page=per_repo)
+
+        if isinstance(commit_data, dict) and commit_data.get("success") is False:
+            logger.warning(
+                "Skipping commit feed for repo %s: %s",
+                student_repo.gl_repo_id,
+                commit_data.get("error"),
+            )
+            return []
+
+        return [
+            CourseworkCommitFeedItem(
+                repo_id=student_repo.gl_repo_id,
+                repo_url=student_repo.repo_url,
+                repo_name=_repo_name_from_url(student_repo.repo_url),
+                coursework_id=coursework.id,
+                coursework_name=coursework.name,
+                student_ids=student_ids if isinstance(student_ids, list) else [],
+                commit=CourseworkRepoCommit(
+                    id=commit["id"],
+                    short_id=commit["short_id"],
+                    title=commit["title"],
+                    author_name=commit.get("author_name"),
+                    authored_date=commit.get("authored_date"),
+                    web_url=commit.get("web_url"),
+                    additions=commit.get("stats", {}).get("additions", 0),
+                    deletions=commit.get("stats", {}).get("deletions", 0),
+                ),
+            )
+            for commit in commit_data
+        ]
+
+    commit_lists = await asyncio.gather(
+        *(fetch_repo_commits(repo_info) for repo_info in grouped_repos.values())
+    )
+    flattened = [item for repo_commits in commit_lists for item in repo_commits]
+    flattened.sort(
+        key=lambda item: item.commit.authored_date or datetime.datetime.min,
+        reverse=True,
+    )
+
+    return flattened[:limit]
 
 
 @router.get(
