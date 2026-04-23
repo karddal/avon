@@ -163,6 +163,8 @@ Setup - Certain libraries and tools I'm not familiar with, in these cases I have
 
 Added: Have now used Claude for help with the drag and drop style courseowkr page - it was really helpful to refactor the async components to use the props fed in instaed of calling teh api themselves. It has also helped me do teh editor that allows teh lecturer / admin to edit both student and lecturer views as it came up with a good prototype that I could easily adapt.
 
+Further added: I also used ChatGPT to make the analytics page, it was extremely helpful to complete repetative tasks such as converting the page and it's components to an adjustable layout using the pattern I had previously used in the unit and coursework page. This saved me a huge amount of time and reduced the numner of syntax bugs present in teh ocde. Furthermore I used it to get examples and inspiration for the design of multiple components much faster than searching online, and it of course showed the compoennts i the settings they would be in. Finally, it helped me adapt the reaviz graphing libary into a style that was consistent with our UI. Example prompts I used was: - "Please convert the current analytics page I have done into an adjustable layout using the pattern used in the unit page", - "Please provide me with example components for my analytics page, so I can get inspiartion to decide on the correct components to use".
+
 Overall, I mainly use AI as a tool for faster, more specific searches for my scenario as opposed to google. I also use it as a tool to do repetitive tasks that would take me an unnecessarily long time to complete.
 
 ### Yuxuan

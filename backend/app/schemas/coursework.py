@@ -91,6 +91,31 @@ class CourseworkRepoCommit(BaseModel):
     deletions: int
 
 
+class CourseworkCommitFeedItem(BaseModel):
+    repo_id: str
+    repo_url: str
+    repo_name: str
+    coursework_id: str | None = None
+    coursework_name: str
+    student_ids: list[str]
+    commit: CourseworkRepoCommit
+
+
+class CourseworkTestRunFeedItem(BaseModel):
+    id: UUID
+    coursework_id: UUID
+    coursework_name: str
+    gitlab_repo_id: str
+    gitlab_repo_url: str
+    student_ids: list[str]
+    status: status_type
+    trigger: trigger_type
+    started_by: str
+    created_at: datetime.datetime
+    completed_at: datetime.datetime | None
+    batch_id: UUID
+
+
 class CourseworkStudentRepoRead(BaseModel):
     repo_url: str
     commits: list[CourseworkRepoCommit]
