@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import CourseworkLayoutEditor from "@/components/modules/coursework_layout/coursework-layout-editor";
 import CourseworkRenderer from "@/components/modules/coursework_layout/coursework-renderer";
+import type { SetupProgressData } from "@/components/coursework/setup-progress";
 import type { GridItem } from "@/components/modules/coursework_layout/coursework-types";
 import type { StudentNameAndRepo } from "@/lib/actions/coursework/get_student_repos";
 import {
@@ -22,8 +23,9 @@ type CourseworkClientProps = {
   ) => Promise<void>;
   slug: string;
   repos: StudentNameAndRepo[];
+  totalStudentGroups: number;
   myRepo: StudentRepoData | null;
-  setupProgressData: SetupProgressItem[];
+  setupProgressData: SetupProgressData | null;
   courseworkData: CourseworkData | null;
   canEditLayouts: boolean;
 };
@@ -43,11 +45,6 @@ type StudentRepoData = {
   commits: CourseworkCommit[];
   repo_url: string;
   total_commits: number;
-};
-
-type SetupProgressItem = {
-  title: string;
-  completed: boolean;
 };
 
 type CourseworkData = {
@@ -70,6 +67,7 @@ export default function CourseworkClient({
   saveLayout,
   slug,
   repos,
+  totalStudentGroups,
   myRepo,
   setupProgressData,
   courseworkData,
@@ -147,6 +145,7 @@ export default function CourseworkClient({
         layout={currentLayout}
         slug={slug}
         repos={repos}
+        totalStudentGroups={totalStudentGroups}
         myRepo={myRepo}
         setupProgressData={setupProgressData}
         courseworkData={courseworkData}

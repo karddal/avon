@@ -1301,14 +1301,6 @@ async def template_exists(
 async def activate_template(
     cw_id: UUID, gitLabId: str, session: session_dependency, token: token_dependency
 ):
-    try:
-        templateActivation = await gl_activate_template_project(gitLabId)
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="GitLab request failed",
-        )
-
     coursework = session.get(Coursework, cw_id)
     if coursework is None:
         raise HTTPException(
@@ -1321,6 +1313,13 @@ async def activate_template(
         token=token,
         session=session,
     )
+    try:
+        templateActivation = await gl_activate_template_project(gitLabId)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="GitLab request failed",
+        )
 
     coursework.template_id = templateActivation["templateGitLabId"]
     session.add(coursework)

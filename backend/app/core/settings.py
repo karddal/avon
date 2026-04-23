@@ -33,6 +33,7 @@ class Settings(BaseSettings):
     aws_ecs_cluster: str | None = None
     aws_results_queue_url: str | None = None
     aws_bucket: str | None = None
+    aws_cdn_bucket: str | None = None
 
     @field_validator("app_env", mode="before")
     @classmethod

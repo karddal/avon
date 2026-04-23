@@ -77,7 +77,6 @@ export function TestBatchesTable({
       // TODO: GET DATA HERE
       const updatedData = await fetch_test_runs(coursework_id);
       setData(updatedData);
-      console.log(updatedData);
     };
     updateData().then(() => {
       table.setGrouping(["batch_id"]);

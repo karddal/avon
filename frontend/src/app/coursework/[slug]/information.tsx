@@ -23,7 +23,7 @@ type CourseworkData = {
   totalTests: number;
 };
 
-export default async function CourseworkInformation({
+export default function CourseworkInformation({
   slug,
   courseworkData,
 }: {

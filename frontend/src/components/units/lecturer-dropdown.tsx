@@ -231,7 +231,7 @@ export default function LecturerDropdown({
         </DropDrawerContent>
       </DropDrawer>
 
-      {hasReadScope && (
+      {showMembers && hasReadScope && (
         <ListMembers
           canManageEnrollment={hasEnrollScope}
           openState={showMembers}
@@ -241,7 +241,7 @@ export default function LecturerDropdown({
         />
       )}
 
-      {hasManageScope && (
+      {showEdit && hasManageScope && (
         <EditUnit
           unit_update_data={unit_update_data}
           open_state={showEdit}
@@ -249,7 +249,7 @@ export default function LecturerDropdown({
         />
       )}
 
-      {hasNotificationScope && (
+      {showSendNotif && hasNotificationScope && (
         <SendNotification
           unit_id={slug}
           openState={showSendNotif}
@@ -257,7 +257,7 @@ export default function LecturerDropdown({
         />
       )}
 
-      {hasDeleteScope && (
+      {showDelete && hasDeleteScope && (
         <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
           <AlertDialogContent className="flex flex-col gap-4">
             <AlertDialogHeader>
@@ -277,7 +277,7 @@ export default function LecturerDropdown({
         </AlertDialog>
       )}
 
-      {hasManageScope && (
+      {showUnlock && hasManageScope && (
         <AlertDialog open={showUnlock} onOpenChange={setShowUnlock}>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -304,7 +304,7 @@ export default function LecturerDropdown({
           </AlertDialogContent>
         </AlertDialog>
       )}
-      {hasManageScope && (
+      {showLock && hasManageScope && (
         <AlertDialog open={showLock} onOpenChange={setShowLock}>
           <AlertDialogContent>
             <AlertDialogHeader>

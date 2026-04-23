@@ -1,10 +1,17 @@
 "use server";
 
-import { LockKeyhole } from "lucide-react";
+import { BookDashed, LockKeyhole } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Unit from "@/components/units/unit";
 import { getRequestJWT, requireSession } from "@/lib/auth-utils";
 import { Card } from "../ui/card";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "../ui/empty";
 
 export type UnitData = {
   id: string;
@@ -64,6 +71,23 @@ export default async function UnitList({ finished }: { finished: boolean }) {
   // console.log(unitData);
   // const filtered = await getData(currentYear, finished)
   const d = programmes.at(0)?.id ?? "0";
+
+  if (programmes.length === 0) {
+    return (
+      <Empty className="border-dashed border-2 bg-muted/20 py-12">
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <BookDashed className="text-muted-foreground/50" />
+          </EmptyMedia>
+          <EmptyTitle>No units found</EmptyTitle>
+          <EmptyDescription>
+            We couldn&apos;t find any units that you are connected to.
+          </EmptyDescription>
+        </EmptyHeader>
+      </Empty>
+    );
+  }
+
   return (
     <Tabs
       defaultValue={d}
@@ -134,17 +158,4 @@ export default async function UnitList({ finished }: { finished: boolean }) {
       </div>
     </Tabs>
   );
-  // return (
-  //   <Empty>
-  //     <EmptyHeader>
-  //       <EmptyMedia variant="icon">
-  //         <BookDashed />
-  //       </EmptyMedia>
-  //       <EmptyTitle>No units.</EmptyTitle>
-  //       <EmptyDescription>
-  //         No units were found that you are connected to.
-  //       </EmptyDescription>
-  //     </EmptyHeader>
-  //   </Empty>
-  // );
 }

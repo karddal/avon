@@ -3,7 +3,7 @@ import UserCard from "@/components/user-card";
 type Lecturer = {
   id: string;
   name: string;
-  image: string;
+  image?: string;
   role: boolean;
 };
 

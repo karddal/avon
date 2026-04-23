@@ -1,6 +1,8 @@
 "use client";
 
+import type { ComponentType } from "react";
 import { useEffect, useState } from "react";
+import type { SetupProgressData } from "@/components/coursework/setup-progress";
 import type { CourseworkModuleKey } from "@/components/modules/coursework_layout/coursework-module-registry";
 import { courseworkModuleRegistry } from "@/components/modules/coursework_layout/coursework-module-registry";
 import type { GridItem } from "@/components/modules/coursework_layout/coursework-types";
@@ -24,11 +26,6 @@ type StudentRepoData = {
   total_commits: number;
 };
 
-type SetupProgressItem = {
-  title: string;
-  completed: boolean;
-};
-
 type CourseworkData = {
   id: string;
   name: string;
@@ -47,8 +44,9 @@ type CourseworkRendererProps = {
   layout: GridItem[];
   slug: string;
   repos: StudentNameAndRepo[];
+  totalStudentGroups: number;
   myRepo: StudentRepoData | null;
-  setupProgressData: SetupProgressItem[];
+  setupProgressData: SetupProgressData | null;
   courseworkData: CourseworkData | null;
   editableModules: CourseworkModuleKey[];
 };
@@ -156,6 +154,7 @@ export default function CourseworkRenderer({
   layout,
   slug,
   repos,
+  totalStudentGroups,
   myRepo,
   setupProgressData,
   courseworkData,
@@ -216,7 +215,28 @@ export default function CourseworkRenderer({
 
             if (!moduleDef) return null;
 
-            const Component = moduleDef.component;
+            const moduleProps = (() => {
+              switch (item.moduleKey) {
+                case "description":
+                case "information":
+                case "information2":
+                  return { slug, courseworkData };
+                case "repo_overview":
+                  return { repos, totalStudentGroups };
+                case "student_repo_overview":
+                case "student_repo_activity":
+                  return { slug, myRepo };
+                case "setup_progress":
+                  return setupProgressData ?? { areas: [], defaultIndex: 0 };
+                case "student_panel":
+                  return {};
+                default:
+                  return {};
+              }
+            })();
+            const Component = moduleDef.component as ComponentType<
+              typeof moduleProps
+            >;
 
             return (
               <div
@@ -236,13 +256,7 @@ export default function CourseworkRenderer({
                 }
               >
                 <div className="h-full min-h-0 overflow-visible lg:overflow-auto">
-                  <Component
-                    slug={slug}
-                    repos={repos}
-                    myRepo={myRepo}
-                    setupProgressData={setupProgressData}
-                    courseworkData={courseworkData}
-                  />
+                  <Component {...moduleProps} />
                 </div>
               </div>
             );

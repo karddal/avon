@@ -94,7 +94,6 @@ export function StudentsTableWithMaybeRepos({
       });
       const filteredData = updatedData.filter((s) => s.repo_url == null);
       setData(filteredData);
-      console.log(updatedData);
     };
     updateData().then(() => {
       setLoading(false);

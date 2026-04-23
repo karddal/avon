@@ -53,9 +53,12 @@ class TransferOwnerResponse(BaseModel):
     message: str
     previous_owner: str
     new_owner: str
+
+
 class UnitEnrollmentBatchDelete(BaseModel):
     unit_id: UUID
     omitted_user_ids: List[str]
+
 
 class UnitEnrollmentBatchTransfer(BaseModel):
     unitIdFrom: UUID

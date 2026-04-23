@@ -3,19 +3,18 @@
 import {
   BookDashed,
   BookPlus,
-  CircleDashed,
-  Container,
   Gitlab,
   Menu,
-  ServerCog,
   SquarePen,
   SquareX,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import ConfigureCWTesting from "@/components/coursework/configure-c-w-testing";
+import CreateTemplate from "@/components/coursework/create-templates";
 import DeleteCourseworkButton from "@/components/coursework/delete_coursework_button";
 import EditCoursework from "@/components/coursework/edit-coursework";
+import ProvisionCoursework from "@/components/coursework/provision-coursework";
 import ReposListDialog from "@/components/coursework/repos-list-dialog";
 import StartTestBatchPopup from "@/components/coursework/start_test_batch";
 import TestBatchesDialog from "@/components/coursework/test-batches-list/test-batches-dialog";
@@ -43,8 +42,6 @@ import type { BaseImage } from "@/lib/actions/coursework/get_base_images_cw_spec
 import type { CourseworkUpdateData } from "@/lib/actions/coursework/get_coursework_update_data";
 import type { GetCWEngineDataResponse } from "@/lib/actions/coursework/get_cw_engine_data";
 import { Item, ItemContent, ItemMedia, ItemTitle } from "../ui/item";
-import CreateTemplate from "./create-templates";
-import ProvisionCoursework from "./provision-coursework";
 
 export default function CourseworkLectDropdown({
   slug,
@@ -63,10 +60,12 @@ export default function CourseworkLectDropdown({
   const [showEdit, setShowEdit] = useState(false);
   const [showDocker, setShowDocker] = useState(false);
   const [showTemplates, setShowTemplate] = useState(false);
-  const [showStartTests, setShowStartTests] = useState<boolean>(false);
-  const [showTestBatches, setShowTestBatches] = useState<boolean>(false);
-  const [viewRepos, setViewRepos] = useState<boolean>(false);
+  const [showStartTests, setShowStartTests] = useState(false);
+  const [showTestBatches, setShowTestBatches] = useState(false);
+  const [viewRepos, setViewRepos] = useState(false);
   const [showProvision, setShowProvision] = useState(false);
+  const [_hasProvisionedLocally, setHasProvisionedLocally] = useState(false);
+
   const router = useRouter();
   const refresh = useCallback(() => {
     router.refresh();
@@ -112,7 +111,7 @@ export default function CourseworkLectDropdown({
                 <>
                   <Item variant={"outline"} className={"m-2 p-2"}>
                     <ItemMedia variant={"icon"}>
-                      <Container />
+                      <BookPlus />
                     </ItemMedia>
                     <ItemContent>
                       <ItemTitle>Engine Setup</ItemTitle>
@@ -129,18 +128,10 @@ export default function CourseworkLectDropdown({
                       </FieldContent>
                     </Field>
                   </Item>
-                  <DropDrawerItem
-                    key={"Engine"}
-                    disabled={true}
-                    icon={<ServerCog />}
-                  >
+                  <DropDrawerItem key={"Engine"} disabled icon={<BookPlus />}>
                     Start test batch
                   </DropDrawerItem>
-                  <DropDrawerItem
-                    key={"TestRuns"}
-                    disabled={true}
-                    icon={<CircleDashed />}
-                  >
+                  <DropDrawerItem key={"TestRuns"} disabled icon={<Gitlab />}>
                     Test batches
                   </DropDrawerItem>
                 </>
@@ -149,16 +140,14 @@ export default function CourseworkLectDropdown({
                 <>
                   <DropDrawerItem
                     key={"Engine"}
-                    icon={<ServerCog />}
-                    disabled={false}
+                    icon={<BookPlus />}
                     onSelect={() => setShowStartTests(true)}
                   >
                     Start test batch
                   </DropDrawerItem>
                   <DropDrawerItem
                     key={"TestRuns"}
-                    disabled={false}
-                    icon={<CircleDashed />}
+                    icon={<Gitlab />}
                     onSelect={() => setShowTestBatches(true)}
                   >
                     Test batches
@@ -167,7 +156,7 @@ export default function CourseworkLectDropdown({
               )}
               <DropDrawerItem
                 key={"Dockerfiles"}
-                icon={<Container />}
+                icon={<BookPlus />}
                 onSelect={() => setShowDocker(true)}
               >
                 Configure engine
@@ -184,6 +173,7 @@ export default function CourseworkLectDropdown({
                   key={"Templates"}
                   onSelect={() => setShowTemplate(true)}
                   disabled={!canManageTemplates}
+                  className="[&>div>div:first-child]:pr-3 [&>div>div:first-child]:min-w-0 [&>div>div:first-child]:whitespace-normal"
                   icon={<BookDashed />}
                 >
                   Repo template configuration
@@ -264,7 +254,8 @@ export default function CourseworkLectDropdown({
           />
         </>
       )}
-      {avail_images_data && cw_engine_data && (
+
+      {showDocker && avail_images_data && cw_engine_data && (
         <ConfigureCWTesting
           open_state={showDocker}
           set_open_state={setShowDocker}
@@ -274,7 +265,7 @@ export default function CourseworkLectDropdown({
         />
       )}
 
-      {coursework_update_data && (
+      {showEdit && coursework_update_data && (
         <EditCoursework
           coursework_update_data={coursework_update_data}
           open_state={showEdit}
@@ -282,7 +273,7 @@ export default function CourseworkLectDropdown({
         />
       )}
 
-      {coursework_update_data && (
+      {showTemplates && coursework_update_data && (
         <CreateTemplate
           open_state={showTemplates}
           set_open_state={setShowTemplate}
@@ -292,16 +283,17 @@ export default function CourseworkLectDropdown({
         />
       )}
 
-      {hasGitlabScope && (
+      {viewRepos && hasGitlabScope && (
         <ReposListDialog
           open_state={viewRepos}
           set_open_state={setViewRepos}
           courseworkId={slug}
+          due_date={coursework_update_data?.due_date ?? ""}
           refresh={refresh}
         />
       )}
 
-      {coursework_update_data && (
+      {showProvision && coursework_update_data && (
         <ProvisionCoursework
           open_state={showProvision}
           set_open_state={setShowProvision}
@@ -311,24 +303,29 @@ export default function CourseworkLectDropdown({
             template_id: String(coursework_update_data.templateId),
           }}
           refresh={refresh}
+          set_has_provisioned={setHasProvisionedLocally}
         />
       )}
 
-      <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              coursework and all of its data.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="sm:h-full">Cancel</AlertDialogCancel>
-            <DeleteCourseworkButton courseworkId={slug} />
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {showDelete && (
+        <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the
+                coursework and all of its data.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="sm:h-full">
+                Cancel
+              </AlertDialogCancel>
+              <DeleteCourseworkButton courseworkId={slug} />
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
     </div>
   );
 }
