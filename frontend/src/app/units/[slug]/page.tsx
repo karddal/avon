@@ -117,7 +117,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
     results.push({
       id: lecturer,
       name: await get_username_from_id(lecturer),
-      image: await get_user_image_from_id(lecturer),
+      image: (await get_user_image_from_id(lecturer)) ?? "",
       role: lecturer === owner,
     });
   }

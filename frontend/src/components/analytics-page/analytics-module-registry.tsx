@@ -1,9 +1,8 @@
-import AnalyticsActivityModule from "@/components/modules/commits-activity-module";
 import AnalyticsDonutModule from "@/components/modules/analytics-donut-module";
 import AnalyticsLineGraphModule from "@/components/modules/analytics-line-graph-module";
 import AnalyticsRadarModule from "@/components/modules/analytics-radar-module";
+import AnalyticsActivityModule from "@/components/modules/commits-activity-module";
 import TestRunsActivityModule from "@/components/modules/test-runs-activity-module";
-
 
 export const analyticsModuleRegistry = {
   "commits-live-feed": {

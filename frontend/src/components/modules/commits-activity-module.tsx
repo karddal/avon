@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import { FolderGit, GitCommitHorizontal, RefreshCcw } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import CourseworkCommitListItem from "@/components/coursework/coursework-commit-list-item";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

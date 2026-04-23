@@ -2,8 +2,8 @@
 
 import { ScanSearch } from "lucide-react";
 import { RadarChart, RadialAreaSeries } from "reaviz";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useModuleChartSize } from "@/components/modules/use-module-chart-size";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const chartData = [
   {
@@ -31,7 +31,12 @@ const chartData = [
 ];
 
 export default function AnalyticsRadarModule() {
-  const { containerRef, width, height } = useModuleChartSize(280, 220, 420, 260);
+  const { containerRef, width, height } = useModuleChartSize(
+    280,
+    220,
+    420,
+    260,
+  );
 
   return (
     <Card className="h-full">
@@ -67,11 +72,7 @@ export default function AnalyticsRadarModule() {
             width={width}
             height={height}
             data={chartData}
-            series={
-              <RadialAreaSeries
-                colorScheme={["#8e2024", "#4a8e58"]}
-              />
-            }
+            series={<RadialAreaSeries colorScheme={["#8e2024", "#4a8e58"]} />}
           />
         </div>
       </CardContent>

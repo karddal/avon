@@ -3,11 +3,11 @@
 import { DatabaseSync } from "node:sqlite";
 import type { GridItem } from "@/components/analytics-page/analytics-types";
 import { pool } from "@/lib/actions/auth/db_pool";
-import { requireSession } from "@/lib/auth-utils";
 import {
   defaultAnalyticsLayout,
   parseAnalyticsLayout,
 } from "@/lib/analytics-layout";
+import { requireSession } from "@/lib/auth-utils";
 import {
   getSqliteDbPath,
   shouldUseExternalDatabase,

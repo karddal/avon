@@ -2,8 +2,8 @@
 
 import { ChartPie } from "lucide-react";
 import { PieArcSeries, PieChart } from "reaviz";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useModuleChartSize } from "@/components/modules/use-module-chart-size";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const chartData = [
   { key: "Passed", data: 62 },
@@ -13,7 +13,12 @@ const chartData = [
 ];
 
 export default function AnalyticsDonutModule() {
-  const { containerRef, width, height } = useModuleChartSize(280, 220, 420, 260);
+  const { containerRef, width, height } = useModuleChartSize(
+    280,
+    220,
+    420,
+    260,
+  );
 
   return (
     <Card className="h-full">

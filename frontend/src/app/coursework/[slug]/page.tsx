@@ -4,6 +4,7 @@ import CourseworkLectDropdown from "@/components/coursework/coursework-lect-drop
 import type { SetupProgressArea } from "@/components/coursework/setup-progress-carousel";
 import CourseworkClient from "@/components/modules/coursework_layout/coursework-client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { fetch_test_runs } from "@/lib/actions/coursework/coursework-fetch-test-runs";
 import { get_all_students_with_maybe_repos } from "@/lib/actions/coursework/get_all_students_on_unit_with_repos";
 import { get_base_images_cw_specific } from "@/lib/actions/coursework/get_base_images_cw_specific";
 import { get_coursework_scopes } from "@/lib/actions/coursework/get_coursework_scopes";
@@ -11,7 +12,6 @@ import { get_cw_update_data } from "@/lib/actions/coursework/get_coursework_upda
 import { get_cw_engine_data } from "@/lib/actions/coursework/get_cw_engine_data";
 import { get_my_coursework_repo } from "@/lib/actions/coursework/get_my_coursework_repo";
 import { get_student_repos } from "@/lib/actions/coursework/get_student_repos";
-import { fetch_test_runs } from "@/lib/actions/coursework/coursework-fetch-test-runs";
 import {
   getCourseworkLayoutForCurrentCoursework,
   saveCourseworkLayoutForCurrentCoursework,

@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { SetupProgressData } from "@/components/coursework/setup-progress";
 import CourseworkLayoutEditor from "@/components/modules/coursework_layout/coursework-layout-editor";
 import CourseworkRenderer from "@/components/modules/coursework_layout/coursework-renderer";
-import type { SetupProgressData } from "@/components/coursework/setup-progress";
 import type { GridItem } from "@/components/modules/coursework_layout/coursework-types";
 import type { StudentNameAndRepo } from "@/lib/actions/coursework/get_student_repos";
 import {

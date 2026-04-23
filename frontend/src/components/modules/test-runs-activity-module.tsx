@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import { FlaskConical, RefreshCcw } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import CourseworkTestRunFeedItem from "@/components/coursework/coursework-test-run-feed-item";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,7 +30,10 @@ function formatRunDate(date: string) {
 
 function formatRepoLabel(repoUrl: string) {
   const trimmed = repoUrl.replace(/\/+$/, "");
-  const projectName = trimmed.split("/").pop()?.replace(/\.git$/, "");
+  const projectName = trimmed
+    .split("/")
+    .pop()
+    ?.replace(/\.git$/, "");
 
   if (!projectName) {
     return repoUrl;

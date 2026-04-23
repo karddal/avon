@@ -15,21 +15,19 @@ type CourseworkCommitListItemProps = {
 };
 
 function getCommitTone(additions: number, deletions: number) {
-  if (deletions == 0) {
+  if (deletions === 0) {
     return {
       hover: "hover:border-emerald-300 dark:hover:border-emerald-800",
-      icon:
-        "border-emerald-300 bg-emerald-100 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300",
+      icon: "border-emerald-300 bg-emerald-100 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300",
       badge:
         "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300",
     };
   }
 
-  if (additions == 0) {
+  if (additions === 0) {
     return {
       hover: "hover:border-red-300 dark:hover:border-red-800",
-      icon:
-        "border-red-300 bg-red-100 text-red-700 dark:border-red-800 dark:bg-red-900/50 dark:text-red-300",
+      icon: "border-red-300 bg-red-100 text-red-700 dark:border-red-800 dark:bg-red-900/50 dark:text-red-300",
       badge:
         "border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300",
     };
@@ -37,8 +35,7 @@ function getCommitTone(additions: number, deletions: number) {
 
   return {
     hover: "hover:border-sky-300 dark:hover:border-sky-800",
-    icon:
-      "border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-900 dark:bg-sky-950/40 dark:text-sky-300",
+    icon: "border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-900 dark:bg-sky-950/40 dark:text-sky-300",
     badge:
       "border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-900 dark:bg-sky-950/40 dark:text-sky-300",
   };

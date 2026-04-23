@@ -36,39 +36,30 @@ function getStatusTone(status: CourseworkTestRunFeedItemProps["status"]) {
     case "succeeded":
       return {
         hover: "hover:border-emerald-300 dark:hover:border-emerald-800",
-        icon:
-          "border-emerald-300 bg-emerald-100 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300",
-        pill:
-          "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300",
+        icon: "border-emerald-300 bg-emerald-100 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300",
+        pill: "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300",
         text: "text-emerald-600 dark:text-emerald-400",
       };
     case "failed":
     case "error":
       return {
         hover: "hover:border-red-300 dark:hover:border-red-800",
-        icon:
-          "border-red-300 bg-red-100 text-red-700 dark:border-red-800 dark:bg-red-900/50 dark:text-red-300",
-        pill:
-          "border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300",
+        icon: "border-red-300 bg-red-100 text-red-700 dark:border-red-800 dark:bg-red-900/50 dark:text-red-300",
+        pill: "border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300",
         text: "text-red-600 dark:text-red-400",
       };
     case "running":
       return {
         hover: "hover:border-zinc-300 dark:hover:border-zinc-700",
-        icon:
-          "border-zinc-300 bg-zinc-100 text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-300",
-        pill:
-          "border-zinc-200 bg-zinc-50 text-zinc-700 dark:border-zinc-900 dark:bg-zinc-950/40 dark:text-zinc-300",
+        icon: "border-zinc-300 bg-zinc-100 text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-zinc-300",
+        pill: "border-zinc-200 bg-zinc-50 text-zinc-700 dark:border-zinc-900 dark:bg-zinc-950/40 dark:text-zinc-300",
         text: "text-zinc-700 dark:text-zinc-300",
       };
-    case "pending":
     default:
       return {
         hover: "hover:border-slate-300 dark:hover:border-slate-700",
-        icon:
-          "border-slate-300 bg-slate-100 text-slate-700 dark:border-slate-800 dark:bg-slate-900/50 dark:text-slate-300",
-        pill:
-          "border-slate-200 bg-slate-50 text-slate-700 dark:border-slate-900 dark:bg-slate-950/40 dark:text-slate-300",
+        icon: "border-slate-300 bg-slate-100 text-slate-700 dark:border-slate-800 dark:bg-slate-900/50 dark:text-slate-300",
+        pill: "border-slate-200 bg-slate-50 text-slate-700 dark:border-slate-900 dark:bg-slate-950/40 dark:text-slate-300",
         text: "text-slate-700 dark:text-slate-300",
       };
   }
@@ -83,7 +74,6 @@ function getStatusIcon(status: CourseworkTestRunFeedItemProps["status"]) {
       return XCircle;
     case "running":
       return CircleDotDashed;
-    case "pending":
     default:
       return Clock3;
   }
@@ -145,7 +135,7 @@ export default function CourseworkTestRunFeedItem({
                       {courseworkName}
                     </span>{" "}
                     {repoLabel}
-                    {/* {studentLabel ? <span> | {studentLabel}</span> : null} */}
+                    {studentLabel ? <span> | {studentLabel}</span> : null}
                   </div>
                 </div>
               </div>
@@ -160,7 +150,7 @@ export default function CourseworkTestRunFeedItem({
         </button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-full! lg:max-w-[75%]! w-full max-h-[90vh] xs:max-h-screen overflow-hidden flex flex-col">
+      <DialogContent className="!max-w-full w-full max-h-[90vh] xs:max-h-screen overflow-hidden flex flex-col lg:!max-w-[75%]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FlaskConical className="h-4 w-4" />
