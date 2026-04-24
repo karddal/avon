@@ -8,7 +8,7 @@ import {
 import { availableAnalyticsModules } from "@/lib/analytics-layout";
 import { requireLecturerSession } from "@/lib/auth-utils";
 
-async function DashboardPageContent() {
+async function AnalyticsPageContent() {
   await requireLecturerSession();
   const savedLayout = await getAnalyticsLayoutForCurrentUser();
 
@@ -23,10 +23,10 @@ async function DashboardPageContent() {
   );
 }
 
-export default function DashboardPage() {
+export default function AnalyticsPage() {
   return (
     <Suspense fallback={<Loading />}>
-      <DashboardPageContent />
+      <AnalyticsPageContent />
     </Suspense>
   );
 }

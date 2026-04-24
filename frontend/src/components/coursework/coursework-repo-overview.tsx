@@ -23,7 +23,7 @@ export default function CourseworkRepoOverview({
       : undefined;
 
   return (
-    <Card className="h-full">
+    <Card className="h-full min-h-0">
       <CardHeader>
         <CardTitle>
           <div className="text-2xl flex flex-row items-center gap-2">
@@ -35,7 +35,7 @@ export default function CourseworkRepoOverview({
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex h-full min-h-0 flex-col justify-center">
+      <CardContent className="flex min-h-0 flex-1 flex-col justify-between">
         <div
           className={`flex min-h-32 flex-col justify-center rounded-xl border p-5 shadow-sm ${
             repos.length > 0

@@ -12,7 +12,7 @@ type UnitData = {
 
 export default function UnitDescription({ unit }: { unit: UnitData }) {
   return (
-    <div className="flex flex-col overflow-y-auto wrap-break-word h-32 border bg-accent p-2">
+    <div className="h-full min-h-0 overflow-y-auto wrap-break-word border bg-accent p-3">
       {unit.description ? (
         <div className="prose prose-sm max-w-none dark:prose-invert">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>

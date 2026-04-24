@@ -164,7 +164,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
         </div>
         <div className="w-full bg-accent-foreground"></div>
       </div>
-      <div className="flex min-h-0 mt-4 md:mt-0 mb-0 flex-1 flex-col space-y-4 md:space-y-6">
+      <section className="mb-8 mt-4 flex min-h-0 flex-1 flex-col space-y-4 md:mt-0 md:space-y-6">
         <UnitClient
           initialLayout={savedLayout}
           availableModules={availableUnitModules}
@@ -175,7 +175,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
           lecturers={results}
           courseworks={courseworkResponse}
         />
-      </div>
+      </section>
     </>
   );
 }

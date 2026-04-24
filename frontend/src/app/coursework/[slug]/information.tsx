@@ -40,7 +40,10 @@ export default function CourseworkInformation({
     : { time: "", day: "" };
 
   return (
-    <Card data-cy="coursework-information-section" className="h-full">
+    <Card
+      data-cy="coursework-information-section"
+      className="h-full min-h-0 overflow-hidden"
+    >
       <CardHeader className="flex flex-col">
         <CardTitle>
           <div className="text-2xl flex flex-row items-center gap-2">
@@ -52,7 +55,7 @@ export default function CourseworkInformation({
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="min-h-0 flex-1 overflow-y-auto">
         <div className="flex flex-row items-center justify-evenly gap-8 py-4">
           <div className="flex flex-col gap-2">
             <span className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">

@@ -92,7 +92,7 @@ export default function AnalyticsLineGraphModule() {
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="flex min-h-0 flex-1 flex-col space-y-4">
+      <CardContent className="flex min-h-0 flex-1 flex-col space-y-4 overflow-y-auto">
         <div className="grid grid-cols-2 gap-2 text-[10px] font-semibold uppercase tracking-[0.12em] md:grid-cols-4">
           <div className="border border-border bg-muted/20 px-3 py-2">
             <div className="text-muted-foreground">Commit Volume</div>
@@ -140,7 +140,7 @@ export default function AnalyticsLineGraphModule() {
         ) : (
           <ChartContainer
             config={chartConfig}
-            className="min-h-0 flex-1 border border-border bg-muted/15 p-3"
+            className="min-h-[16rem] flex-1 border border-border bg-muted/15 p-3"
           >
             <LineChart
               data={chartData}

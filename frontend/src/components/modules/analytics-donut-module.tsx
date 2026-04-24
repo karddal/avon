@@ -69,7 +69,7 @@ export default function AnalyticsDonutModule() {
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex min-h-0 flex-1 flex-col space-y-4">
+      <CardContent className="flex min-h-0 flex-1 flex-col space-y-4 overflow-y-auto">
         <div className="flex flex-wrap items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground lg:flex-nowrap lg:justify-between">
           <div className="flex flex-wrap items-center gap-3">
             <span className="inline-flex items-center gap-1">
@@ -111,7 +111,7 @@ export default function AnalyticsDonutModule() {
             Could not load run status data.
           </div>
         ) : (
-          <div className="flex min-h-0 flex-1 items-center justify-center rounded-sm bg-muted/15 p-2">
+          <div className="flex min-h-[18rem] flex-1 items-center justify-center rounded-sm bg-muted/15 p-2">
             {hasRunData ? (
               <ChartContainer
                 config={chartConfig}

@@ -13,6 +13,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -66,7 +67,7 @@ export default function AnalyticsActivityModule() {
   const { commits, error, isLoading, refresh } = useCommitFeed(5, 40, filters);
 
   return (
-    <Card className="flex h-full min-h-0 flex-col overflow-hidden">
+    <Card className="flex h-full min-h-0 max-h-[34rem] flex-col overflow-hidden md:max-h-[36rem] 2xl:max-h-none">
       <CardHeader>
         <CardTitle>
           <div className="flex flex-row items-center justify-between gap-3">
@@ -127,62 +128,63 @@ export default function AnalyticsActivityModule() {
           <AnalyticsLoadingState description="Crunching the latest commit activity from coursework repositories." />
         ) : null}
 
-        {!isLoading && error ? (
-          <div className="h-full rounded-md border border-dashed p-4 text-sm">
-            <Empty>
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <FolderGit />
-                </EmptyMedia>
-                <EmptyTitle>Could not load commits.</EmptyTitle>
-                <EmptyDescription>
-                  We could not fetch the latest GitLab commit feed right now.
-                </EmptyDescription>
-              </EmptyHeader>
-            </Empty>
-          </div>
-        ) : null}
-
-        {!isLoading && !error && commits.length === 0 ? (
-          <div className="h-full rounded-md border border-dashed p-4 text-sm">
-            <Empty>
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <FolderGit />
-                </EmptyMedia>
-                <EmptyTitle>No commits found.</EmptyTitle>
-                <EmptyDescription>
-                  Try a broader unit or coursework filter.
-                </EmptyDescription>
-              </EmptyHeader>
-            </Empty>
-          </div>
-        ) : null}
-
-        {!isLoading && !error && commits.length > 0 ? (
-          <div className="flex min-h-0 flex-1 flex-col space-y-2 overflow-auto">
-            {commits.map((item, index) => (
-              <CourseworkCommitListItem
-                key={`${item.repo_id}-${item.commit.id}`}
-                href={item.commit.web_url ?? item.repo_url}
-                title={item.commit.title}
-                shortId={item.commit.short_id}
-                authorName={item.commit.author_name ?? "Unknown"}
-                authoredLabel={formatCommitDate(item.commit.authored_date)}
-                secondaryMeta={
-                  <>
-                    <span className="font-medium text-foreground">
-                      {item.coursework_name}
-                    </span>{" "}
-                    / {item.repo_name}
-                  </>
-                }
-                additions={item.commit.additions}
-                deletions={item.commit.deletions}
-                highlighted={index === 0}
-              />
-            ))}
-          </div>
+        {!isLoading ? (
+          <ScrollArea className="min-h-0 flex-1 rounded-md border border-border/60 bg-muted/10">
+            {error ? (
+              <div className="flex min-h-full items-center justify-center p-4 text-sm">
+                <Empty>
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <FolderGit />
+                    </EmptyMedia>
+                    <EmptyTitle>Could not load commits.</EmptyTitle>
+                    <EmptyDescription>
+                      We could not fetch the latest GitLab commit feed right
+                      now.
+                    </EmptyDescription>
+                  </EmptyHeader>
+                </Empty>
+              </div>
+            ) : commits.length === 0 ? (
+              <div className="flex min-h-full items-center justify-center p-4 text-sm">
+                <Empty>
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <FolderGit />
+                    </EmptyMedia>
+                    <EmptyTitle>No commits found.</EmptyTitle>
+                    <EmptyDescription>
+                      Try a broader unit or coursework filter.
+                    </EmptyDescription>
+                  </EmptyHeader>
+                </Empty>
+              </div>
+            ) : (
+              <div className="flex flex-col space-y-2 p-1">
+                {commits.map((item, index) => (
+                  <CourseworkCommitListItem
+                    key={`${item.repo_id}-${item.commit.id}`}
+                    href={item.commit.web_url ?? item.repo_url}
+                    title={item.commit.title}
+                    shortId={item.commit.short_id}
+                    authorName={item.commit.author_name ?? "Unknown"}
+                    authoredLabel={formatCommitDate(item.commit.authored_date)}
+                    secondaryMeta={
+                      <>
+                        <span className="font-medium text-foreground">
+                          {item.coursework_name}
+                        </span>{" "}
+                        / {item.repo_name}
+                      </>
+                    }
+                    additions={item.commit.additions}
+                    deletions={item.commit.deletions}
+                    highlighted={index === 0}
+                  />
+                ))}
+              </div>
+            )}
+          </ScrollArea>
         ) : null}
       </CardContent>
     </Card>

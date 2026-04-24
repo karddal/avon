@@ -32,7 +32,7 @@ export default function UnitCourseworksModule({
   courseworks,
 }: UnitCourseworksModuleProps) {
   return (
-    <div className="flex h-[18rem] min-h-0 flex-col lg:h-full">
+    <div className="flex h-[16rem] min-h-0 max-h-[19rem] flex-col md:h-[18rem] md:max-h-[22rem] 2xl:h-full 2xl:max-h-none">
       <div className="flex flex-col space-y-1.5 p-6">
         <div>
           <div className="text-2xl font-semibold">Coursework</div>

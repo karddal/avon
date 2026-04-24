@@ -28,11 +28,11 @@ export default function CourseworkDescription({
   const coursework = courseworkData;
 
   return (
-    <div className="flex h-full flex-col gap-4">
+    <div className="flex h-full min-h-0 flex-col gap-4">
       <Card
         data-cy="coursework-description-section"
         id="coursework-description"
-        className="h-full min-h-0"
+        className="h-full min-h-0 overflow-hidden"
       >
         <CardHeader>
           <CardTitle>
@@ -43,10 +43,10 @@ export default function CourseworkDescription({
             <div className="font-light">Information about the coursework.</div>
           </CardTitle>
         </CardHeader>
-        <CardContent className="min-h-0 flex-1">
+        <CardContent className="flex min-h-0 flex-1 flex-col">
           <div
             data-cy="coursework-description-content"
-            className="h-full overflow-y-auto whitespace-pre-wrap wrap-break-word rounded-md border bg-accent p-3"
+            className="flex-1 min-h-0 overflow-y-auto whitespace-pre-wrap wrap-break-word rounded-md border bg-accent p-3"
           >
             {coursework?.description ? (
               <div className="prose prose-sm max-w-none dark:prose-invert">

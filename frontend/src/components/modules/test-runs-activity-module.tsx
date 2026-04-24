@@ -13,6 +13,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -85,7 +86,7 @@ export default function TestRunsActivityModule() {
   const { testRuns, error, isLoading, refresh } = useTestRunFeed(30, filters);
 
   return (
-    <Card className="flex h-full min-h-0 flex-col overflow-hidden">
+    <Card className="flex h-full min-h-0 max-h-[34rem] flex-col overflow-hidden md:max-h-[36rem] 2xl:max-h-none">
       <CardHeader>
         <CardTitle>
           <div className="flex flex-row items-center justify-between gap-3">
@@ -146,61 +147,61 @@ export default function TestRunsActivityModule() {
           <AnalyticsLoadingState description="Crunching the latest coursework test run activity." />
         ) : null}
 
-        {!isLoading && error ? (
-          <div className="h-full rounded-md border border-dashed p-4 text-sm">
-            <Empty>
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <FlaskConical />
-                </EmptyMedia>
-                <EmptyTitle>Could not load test runs.</EmptyTitle>
-                <EmptyDescription>
-                  We could not fetch the latest coursework test run feed right
-                  now.
-                </EmptyDescription>
-              </EmptyHeader>
-            </Empty>
-          </div>
-        ) : null}
-
-        {!isLoading && !error && testRuns.length === 0 ? (
-          <div className="h-full rounded-md border border-dashed p-4 text-sm">
-            <Empty>
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <FlaskConical />
-                </EmptyMedia>
-                <EmptyTitle>No test runs found.</EmptyTitle>
-                <EmptyDescription>
-                  Try a broader unit or coursework filter.
-                </EmptyDescription>
-              </EmptyHeader>
-            </Empty>
-          </div>
-        ) : null}
-
-        {!isLoading && !error && testRuns.length > 0 ? (
-          <div className="flex min-h-0 flex-1 flex-col space-y-2 overflow-auto">
-            {testRuns.map((item) => (
-              <CourseworkTestRunFeedItem
-                key={item.id}
-                courseworkId={item.coursework_id}
-                testRunId={item.id}
-                title={item.coursework_name}
-                courseworkName={item.coursework_name}
-                repoLabel={formatRepoLabel(item.gitlab_repo_url)}
-                startedLabel={formatRunDate(item.created_at)}
-                status={item.status}
-                triggerLabel={formatTriggerLabel(item.trigger)}
-                studentCount={item.student_ids.length}
-                studentLabel={
-                  item.student_ids.length > 0
-                    ? item.student_ids.join(", ")
-                    : undefined
-                }
-              />
-            ))}
-          </div>
+        {!isLoading ? (
+          <ScrollArea className="min-h-0 flex-1 rounded-md border border-border/60 bg-muted/10">
+            {error ? (
+              <div className="flex min-h-full items-center justify-center p-4 text-sm">
+                <Empty>
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <FlaskConical />
+                    </EmptyMedia>
+                    <EmptyTitle>Could not load test runs.</EmptyTitle>
+                    <EmptyDescription>
+                      We could not fetch the latest coursework test run feed
+                      right now.
+                    </EmptyDescription>
+                  </EmptyHeader>
+                </Empty>
+              </div>
+            ) : testRuns.length === 0 ? (
+              <div className="flex min-h-full items-center justify-center p-4 text-sm">
+                <Empty>
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <FlaskConical />
+                    </EmptyMedia>
+                    <EmptyTitle>No test runs found.</EmptyTitle>
+                    <EmptyDescription>
+                      Try a broader unit or coursework filter.
+                    </EmptyDescription>
+                  </EmptyHeader>
+                </Empty>
+              </div>
+            ) : (
+              <div className="flex flex-col space-y-2 p-1">
+                {testRuns.map((item) => (
+                  <CourseworkTestRunFeedItem
+                    key={item.id}
+                    courseworkId={item.coursework_id}
+                    testRunId={item.id}
+                    title={item.coursework_name}
+                    courseworkName={item.coursework_name}
+                    repoLabel={formatRepoLabel(item.gitlab_repo_url)}
+                    startedLabel={formatRunDate(item.created_at)}
+                    status={item.status}
+                    triggerLabel={formatTriggerLabel(item.trigger)}
+                    studentCount={item.student_ids.length}
+                    studentLabel={
+                      item.student_ids.length > 0
+                        ? item.student_ids.join(", ")
+                        : undefined
+                    }
+                  />
+                ))}
+              </div>
+            )}
+          </ScrollArea>
         ) : null}
       </CardContent>
     </Card>

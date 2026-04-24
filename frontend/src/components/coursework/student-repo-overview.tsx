@@ -180,7 +180,7 @@ export default function StudentRepoOverview({
 }) {
   void slug;
   return (
-    <Card className="h-full">
+    <Card className="h-full min-h-0">
       <CardHeader>
         <CardTitle>
           <div className="text-2xl flex flex-row items-center gap-2">
@@ -192,7 +192,7 @@ export default function StudentRepoOverview({
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className="min-h-0 flex-1">
+      <CardContent className="flex min-h-0 flex-1 flex-col">
         <Suspense fallback={<StudentRepoOverviewFallback />}>
           <StudentRepoOverviewContent myRepo={myRepo} />
         </Suspense>

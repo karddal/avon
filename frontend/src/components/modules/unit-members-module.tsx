@@ -14,7 +14,7 @@ export default function UnitMembersModule({
   lecturers: Lecturer[];
 }) {
   return (
-    <div className="flex h-[18rem] min-h-0 flex-col p-4 sm:h-[20rem] sm:p-5 md:h-[22rem] lg:h-full">
+    <div className="flex h-[15rem] min-h-0 max-h-[18rem] flex-col p-4 sm:h-[16rem] sm:max-h-[20rem] sm:p-5 md:h-[18rem] md:max-h-[22rem] 2xl:h-full 2xl:max-h-none">
       <div className="mb-3 shrink-0">
         <div className="text-2xl font-semibold">Unit Staff</div>
         <div className="font-light">Lecturers and teachers appear here</div>

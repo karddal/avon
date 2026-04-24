@@ -48,8 +48,10 @@ def _accessible_coursework_statement_for_user(current_user: CurrentUser):
     coursework_statement = select(Coursework)
 
     if not current_user.is_admin:
-        coursework_statement = coursework_statement.join(UnitEnrollment).where(
+        coursework_statement = coursework_statement.join(
+            UnitEnrollment,
             UnitEnrollment.unit_id == Coursework.unit_id,
+        ).where(
             UnitEnrollment.user_id == current_user.user_id,
         )
 

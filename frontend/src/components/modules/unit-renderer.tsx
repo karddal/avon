@@ -48,7 +48,7 @@ const MD_COLUMNS = 2;
 function getMdSpans(item: GridItem) {
   return {
     colSpan: Math.min(Math.max(item.w, 1), MD_COLUMNS),
-    rowSpan: Math.min(Math.max(item.h, 1), 2),
+    rowSpan: 1,
   };
 }
 
@@ -149,19 +149,24 @@ export default function UnitRenderer({
   courseworks,
 }: UnitRendererProps) {
   const [isDesktopLayout, setIsDesktopLayout] = useState(false);
+  const [isShortViewport, setIsShortViewport] = useState(false);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(min-width: 1024px)");
+    const desktopMediaQuery = window.matchMedia("(min-width: 1536px)");
+    const shortViewportQuery = window.matchMedia("(max-height: 999px)");
 
     const updateLayoutMode = () => {
-      setIsDesktopLayout(mediaQuery.matches);
+      setIsDesktopLayout(desktopMediaQuery.matches);
+      setIsShortViewport(shortViewportQuery.matches);
     };
 
     updateLayoutMode();
-    mediaQuery.addEventListener("change", updateLayoutMode);
+    desktopMediaQuery.addEventListener("change", updateLayoutMode);
+    shortViewportQuery.addEventListener("change", updateLayoutMode);
 
     return () => {
-      mediaQuery.removeEventListener("change", updateLayoutMode);
+      desktopMediaQuery.removeEventListener("change", updateLayoutMode);
+      shortViewportQuery.removeEventListener("change", updateLayoutMode);
     };
   }, []);
 
@@ -176,9 +181,14 @@ export default function UnitRenderer({
   const mdLayout = getResponsiveMdLayout(orderedLayout);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    <div
+      className={cn(
+        "flex min-h-0 flex-1 flex-col",
+        isShortViewport ? "overflow-y-auto" : "",
+      )}
+    >
       <div
-        className="grid w-full grid-cols-1 auto-rows-[minmax(140px,auto)] gap-3 sm:gap-4 sm:p-4 md:grid-flow-dense md:grid-cols-2 lg:h-full lg:flex-1 lg:grid-cols-10 lg:auto-rows-auto"
+        className="grid w-full grid-cols-1 auto-rows-[minmax(140px,auto)] gap-3 sm:gap-4 sm:p-4 md:grid-flow-dense md:grid-cols-2 2xl:h-full 2xl:flex-1 2xl:grid-cols-10 2xl:auto-rows-auto"
         style={
           isDesktopLayout
             ? {
@@ -188,7 +198,7 @@ export default function UnitRenderer({
         }
       >
         {orderedLayout.length === 0 ? (
-          <div className="col-span-full flex min-h-55 items-center justify-center border border-dashed bg-background px-4 text-center text-sm text-muted-foreground lg:row-span-3">
+          <div className="col-span-full flex min-h-55 items-center justify-center border border-dashed bg-background px-4 text-center text-sm text-muted-foreground 2xl:row-span-3">
             No modules placed yet.
           </div>
         ) : null}
@@ -205,7 +215,7 @@ export default function UnitRenderer({
             <div
               key={item.id}
               className={cn(
-                "min-h-35 overflow-hidden border bg-background md:min-h-45 lg:min-h-0",
+                "min-h-35 overflow-hidden border bg-background md:min-h-45 2xl:min-h-0",
                 mdItem?.colSpan === 2 ? "md:col-span-2" : "md:col-span-1",
                 mdItem?.rowSpan === 2 ? "md:row-span-2" : "md:row-span-1",
               )}
@@ -218,7 +228,7 @@ export default function UnitRenderer({
                   : undefined
               }
             >
-              <div className="h-full min-h-0 overflow-visible lg:overflow-auto">
+              <div className="h-full min-h-0 overflow-visible 2xl:overflow-auto">
                 <Component
                   unit={unit}
                   lecturers={lecturers}

@@ -113,7 +113,7 @@ export default function AnalyticsRenderer({ layout }: AnalyticsRendererProps) {
   const [isDesktopLayout, setIsDesktopLayout] = useState(false);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(min-width: 1400px)");
+    const mediaQuery = window.matchMedia("(min-width: 1536px)");
 
     const updateLayoutMode = () => {
       setIsDesktopLayout(mediaQuery.matches);
@@ -178,7 +178,7 @@ export default function AnalyticsRenderer({ layout }: AnalyticsRendererProps) {
             <div
               key={item.id}
               className={cn(
-                "min-h-35 overflow-hidden border bg-background md:min-h-45 lg:min-h-0",
+                "min-h-35 overflow-hidden border bg-background md:min-h-45 2xl:min-h-0",
                 mdItem?.colSpan === 2 ? "md:col-span-2" : "md:col-span-1",
                 mdItem?.rowSpan === 2 ? "md:row-span-2" : "md:row-span-1",
               )}

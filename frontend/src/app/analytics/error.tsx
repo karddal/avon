@@ -32,7 +32,7 @@ export default function Error({
           </EmptyMedia>
           <EmptyTitle>Whoops, something went wrong.</EmptyTitle>
           <EmptyDescription>
-            We couldn't fetch the dashboard page. Please check the server status
+            We couldn't fetch the analytics page. Please check the server status
             page.
           </EmptyDescription>
         </EmptyHeader>

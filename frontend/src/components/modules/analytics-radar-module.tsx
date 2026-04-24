@@ -102,7 +102,7 @@ export default function AnalyticsRadarModule() {
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex min-h-0 flex-1 flex-col space-y-4">
+      <CardContent className="flex min-h-0 flex-1 flex-col space-y-4 overflow-y-auto">
         <div className="grid gap-2 md:grid-cols-2">
           <Select value={courseworkAId} onValueChange={setCourseworkAId}>
             <SelectTrigger className="w-full">
@@ -144,7 +144,7 @@ export default function AnalyticsRadarModule() {
             </span>
           ) : null}
         </div>
-        <div className="min-h-0 flex-1 rounded-sm bg-muted/15 p-2">
+        <div className="min-h-[18rem] flex-1 rounded-sm bg-muted/15 p-2">
           {isLoading ? (
             <AnalyticsLoadingState
               className="h-full border-0 bg-transparent p-0"
