@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
   const courseworkId = reqURL.searchParams.get("coursework_id");
 
   const backendURL = new URL(
-    `${process.env.NEXT_PUBLIC_API_URL}/coursework/commit_feed`,
+    `${process.env.NEXT_PUBLIC_API_URL}/analytics/commit_feed`,
   );
   backendURL.searchParams.set("per_repo", perRepo);
   backendURL.searchParams.set("limit", limit);

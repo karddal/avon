@@ -1,6 +1,7 @@
 "use client";
 
 import { Activity } from "lucide-react";
+import { useMemo, useState } from "react";
 import {
   CartesianGrid,
   Line,
@@ -15,21 +16,9 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-
-const chartData = [
-  { slot: "00:00", commits: 8, runs: 5 },
-  { slot: "02:00", commits: 10, runs: 7 },
-  { slot: "04:00", commits: 7, runs: 6 },
-  { slot: "06:00", commits: 12, runs: 9 },
-  { slot: "08:00", commits: 18, runs: 13 },
-  { slot: "10:00", commits: 24, runs: 19 },
-  { slot: "12:00", commits: 31, runs: 22 },
-  { slot: "14:00", commits: 29, runs: 24 },
-  { slot: "16:00", commits: 36, runs: 27 },
-  { slot: "18:00", commits: 33, runs: 25 },
-  { slot: "20:00", commits: 21, runs: 17 },
-  { slot: "22:00", commits: 15, runs: 11 },
-];
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useActivityTrend } from "@/hooks/analytics/use-activity-trend";
 
 const chartConfig = {
   commits: {
@@ -42,12 +31,49 @@ const chartConfig = {
   },
 } as const;
 
-const totalCommits = chartData.reduce((sum, entry) => sum + entry.commits, 0);
-const totalRuns = chartData.reduce((sum, entry) => sum + entry.runs, 0);
-const peakCommits = Math.max(...chartData.map((entry) => entry.commits));
-const peakRuns = Math.max(...chartData.map((entry) => entry.runs));
+function getDateDaysAgo(days: number) {
+  const date = new Date();
+  date.setDate(date.getDate() - days);
+  return date.toISOString().slice(0, 10);
+}
+
+function formatBucketLabel(bucketHours: number | undefined) {
+  if (!bucketHours) {
+    return "Sampling: 16 buckets";
+  }
+
+  if (bucketHours < 1) {
+    const minutes = Math.round(bucketHours * 60);
+    return `Sampling: ~${minutes} minute blocks`;
+  }
+
+  const roundedHours = Number(bucketHours.toFixed(1));
+  return `Sampling: ~${roundedHours} hour blocks`;
+}
 
 export default function AnalyticsLineGraphModule() {
+  const [fromDate, setFromDate] = useState<string>(getDateDaysAgo(1));
+  const [toDate, setToDate] = useState<string>(new Date().toISOString().slice(0, 10));
+  const { trend, error, isLoading } = useActivityTrend({ fromDate, toDate });
+
+  const chartData = trend?.points ?? [];
+  const totalCommits = useMemo(
+    () => chartData.reduce((sum, entry) => sum + entry.commits, 0),
+    [chartData],
+  );
+  const totalRuns = useMemo(
+    () => chartData.reduce((sum, entry) => sum + entry.runs, 0),
+    [chartData],
+  );
+  const peakCommits = useMemo(
+    () => Math.max(0, ...chartData.map((entry) => entry.commits)),
+    [chartData],
+  );
+  const peakRuns = useMemo(
+    () => Math.max(0, ...chartData.map((entry) => entry.runs)),
+    [chartData],
+  );
+
   return (
     <Card className="h-full">
       <CardHeader>
@@ -58,7 +84,7 @@ export default function AnalyticsLineGraphModule() {
               Activity Trend
             </div>
             <div className="font-light">
-              24-hour Activity trace across commits and test execution.
+              Commit and test activity across the selected date range.
             </div>
           </div>
         </CardTitle>
@@ -103,61 +129,92 @@ export default function AnalyticsLineGraphModule() {
           </span>
         </div>
 
-        <ChartContainer
-          config={chartConfig}
-          className="min-h-0 flex-1 border border-border bg-muted/15 p-3"
-        >
-          <LineChart
-            data={chartData}
-            margin={{ top: 12, right: 12, bottom: 4, left: -18 }}
+        {isLoading ? (
+          <Skeleton className="min-h-0 flex-1 border border-border bg-muted/15 p-3" />
+        ) : error ? (
+          <div className="flex min-h-0 flex-1 items-center justify-center border border-dashed bg-muted/15 p-3 text-sm text-muted-foreground">
+            Could not load activity trend data.
+          </div>
+        ) : (
+          <ChartContainer
+            config={chartConfig}
+            className="min-h-0 flex-1 border border-border bg-muted/15 p-3"
           >
-            <CartesianGrid strokeDasharray="3 3" vertical={true} />
-            <XAxis
-              dataKey="slot"
-              axisLine={false}
-              tickLine={false}
-              tickMargin={10}
-            />
-            <YAxis axisLine={false} tickLine={false} tickMargin={10} />
-            <ReferenceLine
-              y={24}
-              stroke="rgba(145,115,6,0.45)"
-              strokeDasharray="6 4"
-            />
-            <ChartTooltip
-              content={<ChartTooltipContent />}
-              cursor={{ stroke: "var(--border)", strokeDasharray: "3 3" }}
-            />
-            <Line
-              type="monotone"
-              dataKey="commits"
-              stroke="var(--color-commits)"
-              strokeWidth={2.75}
-              dot={{ r: 2, fill: "var(--color-commits)" }}
-              activeDot={{
-                r: 5,
-                fill: "var(--color-commits)",
-                stroke: "var(--background)",
-              }}
-            />
-            <Line
-              type="monotone"
-              dataKey="runs"
-              stroke="var(--color-runs)"
-              strokeWidth={2.75}
-              dot={{ r: 2, fill: "var(--color-runs)" }}
-              activeDot={{
-                r: 5,
-                fill: "var(--color-runs)",
-                stroke: "var(--background)",
-              }}
-            />
-          </LineChart>
-        </ChartContainer>
+            <LineChart
+              data={chartData}
+              margin={{ top: 12, right: 12, bottom: 4, left: -18 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" vertical={true} />
+              <XAxis
+                dataKey="slot"
+                axisLine={false}
+                tickLine={false}
+                tickMargin={10}
+                minTickGap={24}
+              />
+              <YAxis axisLine={false} tickLine={false} tickMargin={10} />
+              <ReferenceLine
+                y={peakRuns}
+                stroke="rgba(145,115,6,0.45)"
+                strokeDasharray="6 4"
+              />
+              <ChartTooltip
+                content={<ChartTooltipContent />}
+                cursor={{ stroke: "var(--border)", strokeDasharray: "3 3" }}
+              />
+              <Line
+                type="monotone"
+                dataKey="commits"
+                stroke="var(--color-commits)"
+                strokeWidth={2.75}
+                dot={{ r: 2, fill: "var(--color-commits)" }}
+                activeDot={{
+                  r: 5,
+                  fill: "var(--color-commits)",
+                  stroke: "var(--background)",
+                }}
+              />
+              <Line
+                type="monotone"
+                dataKey="runs"
+                stroke="var(--color-runs)"
+                strokeWidth={2.75}
+                dot={{ r: 2, fill: "var(--color-runs)" }}
+                activeDot={{
+                  r: 5,
+                  fill: "var(--color-runs)",
+                  stroke: "var(--background)",
+                }}
+              />
+            </LineChart>
+          </ChartContainer>
+        )}
 
-        <div className="flex items-center justify-between border border-border bg-muted/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-          <span>Window: Last 24 hours</span>
-          <span>Sampling: 2-hour blocks</span>
+        <div className="flex flex-col gap-2 border border-border bg-muted/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground md:flex-row md:items-center md:justify-between">
+          <div className="grid gap-2 md:grid-cols-2">
+            <label className="flex items-center gap-2">
+              <span>From</span>
+              <Input
+                type="date"
+                value={fromDate}
+                max={toDate}
+                className="h-8 w-auto min-w-36 text-[11px]"
+                onChange={(event) => setFromDate(event.target.value)}
+              />
+            </label>
+            <label className="flex items-center gap-2">
+              <span>To</span>
+              <Input
+                type="date"
+                value={toDate}
+                min={fromDate}
+                max={new Date().toISOString().slice(0, 10)}
+                className="h-8 w-auto min-w-36 text-[11px]"
+                onChange={(event) => setToDate(event.target.value)}
+              />
+            </label>
+          </div>
+          <span>{formatBucketLabel(trend?.bucket_hours)}</span>
         </div>
       </CardContent>
     </Card>

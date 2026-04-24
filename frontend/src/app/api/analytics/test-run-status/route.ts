@@ -6,23 +6,22 @@ import { getRequestJWT } from "@/lib/auth-utils";
 export async function GET(req: NextRequest) {
   const token = await getRequestJWT();
   const reqURL = new URL(req.url);
-  const limit = reqURL.searchParams.get("limit") ?? "40";
-  const fresh = reqURL.searchParams.get("fresh") === "1";
+  const fromDate = reqURL.searchParams.get("from_date");
   const unitId = reqURL.searchParams.get("unit_id");
   const courseworkId = reqURL.searchParams.get("coursework_id");
 
   const backendURL = new URL(
-    `${process.env.NEXT_PUBLIC_API_URL}/analytics/test_run_feed`,
+    `${process.env.NEXT_PUBLIC_API_URL}/analytics/test_run_status_summary`,
   );
-  backendURL.searchParams.set("limit", limit);
+
+  if (fromDate) {
+    backendURL.searchParams.set("from_date", fromDate);
+  }
   if (unitId) {
     backendURL.searchParams.set("unit_id", unitId);
   }
   if (courseworkId) {
     backendURL.searchParams.set("coursework_id", courseworkId);
-  }
-  if (fresh) {
-    backendURL.searchParams.set("fresh", "1");
   }
 
   const res = await fetch(backendURL, {
@@ -38,10 +37,10 @@ export async function GET(req: NextRequest) {
   let data: unknown;
 
   try {
-    data = bodyText ? JSON.parse(bodyText) : [];
+    data = bodyText ? JSON.parse(bodyText) : null;
   } catch {
     data = {
-      detail: bodyText || "Failed to fetch analytics test run feed",
+      detail: bodyText || "Failed to fetch analytics test run status summary",
     };
   }
 

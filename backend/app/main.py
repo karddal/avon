@@ -10,6 +10,7 @@ from app.models.coursework import Coursework
 from app.models.student_repo import StudentRepo
 from app.models.unit import UnitWithCourseworks
 from app.routers import (
+    analytics,
     base_image,
     check,
     coursework,
@@ -38,6 +39,7 @@ app.add_middleware(
 )
 app.include_router(unit.router)
 app.include_router(check.router)
+app.include_router(analytics.router)
 app.include_router(coursework.router)
 app.include_router(me.router)
 app.include_router(programme.router)

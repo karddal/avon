@@ -116,6 +116,43 @@ class CourseworkTestRunFeedItem(BaseModel):
     batch_id: UUID
 
 
+class CourseworkTestRunStatusSummary(BaseModel):
+    from_date: datetime.datetime
+    total_runs: int
+    passed: int
+    running: int
+    failed: int
+    errored: int
+
+
+class CourseworkActivityTrendPoint(BaseModel):
+    slot: str
+    commits: int
+    runs: int
+
+
+class CourseworkActivityTrendSummary(BaseModel):
+    from_date: datetime.datetime
+    to_date: datetime.datetime
+    bucket_hours: float
+    points: list[CourseworkActivityTrendPoint]
+
+
+class CourseworkComparisonMetric(BaseModel):
+    key: str
+    data: float
+
+
+class CourseworkComparisonSeries(BaseModel):
+    key: str
+    data: list[CourseworkComparisonMetric]
+
+
+class CourseworkComparisonSummary(BaseModel):
+    from_date: datetime.datetime
+    series: list[CourseworkComparisonSeries]
+
+
 class CourseworkStudentRepoRead(BaseModel):
     repo_url: str
     commits: list[CourseworkRepoCommit]
