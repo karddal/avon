@@ -124,7 +124,9 @@ export default function AnalyticsDonutModule() {
               <div className="flex flex-col items-center justify-center text-center">
                 <div className="flex h-44 w-44 items-center justify-center rounded-full border-[22px] border-muted-foreground/20">
                   <div>
-                    <div className="text-3xl font-semibold text-foreground">0</div>
+                    <div className="text-3xl font-semibold text-foreground">
+                      0
+                    </div>
                     <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                       Test runs
                     </div>
