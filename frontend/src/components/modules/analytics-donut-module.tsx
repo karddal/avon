@@ -45,6 +45,7 @@ export default function AnalyticsDonutModule() {
     ],
     [summary],
   );
+  const hasRunData = (summary?.total_runs ?? 0) > 0;
 
   return (
     <Card className="h-full">
@@ -107,17 +108,33 @@ export default function AnalyticsDonutModule() {
             ref={containerRef}
             className="flex min-h-0 flex-1 items-center justify-center rounded-sm bg-muted/15 p-2 [&_path[stroke='#fff']]:stroke-transparent [&_text]:fill-muted-foreground"
           >
-            <PieChart
-              width={width}
-              height={height}
-              data={chartData}
-              series={
-                <PieArcSeries
-                  doughnut
-                  colorScheme={["#4a8e58", "#356d97", "#7a6831", "#8e2024"]}
-                />
-              }
-            />
+            {hasRunData ? (
+              <PieChart
+                width={width}
+                height={height}
+                data={chartData}
+                series={
+                  <PieArcSeries
+                    doughnut
+                    colorScheme={["#4a8e58", "#356d97", "#7a6831", "#8e2024"]}
+                  />
+                }
+              />
+            ) : (
+              <div className="flex flex-col items-center justify-center text-center">
+                <div className="flex h-44 w-44 items-center justify-center rounded-full border-[22px] border-muted-foreground/20">
+                  <div>
+                    <div className="text-3xl font-semibold text-foreground">0</div>
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                      Test runs
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-4 text-sm text-muted-foreground">
+                  No test runs in this window yet.
+                </div>
+              </div>
+            )}
           </div>
         )}
       </CardContent>
