@@ -2,6 +2,7 @@
 
 import { FolderGit, GitCommitHorizontal, RefreshCcw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { AnalyticsLoadingState } from "@/components/analytics-page/analytics-loading-state";
 import CourseworkCommitListItem from "@/components/coursework/coursework-commit-list-item";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,7 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useActivityFilterOptions } from "@/hooks/analytics/use-activity-filter-options";
 import { useCommitFeed } from "@/hooks/analytics/use-commit-feed";
 import { formatIsoDateTime } from "@/lib/date-format";
@@ -124,11 +124,7 @@ export default function AnalyticsActivityModule() {
         </div>
 
         {isLoading ? (
-          <div className="space-y-2">
-            <Skeleton className="h-14 w-full" />
-            <Skeleton className="h-14 w-full" />
-            <Skeleton className="h-14 w-full" />
-          </div>
+          <AnalyticsLoadingState description="Crunching the latest commit activity from coursework repositories." />
         ) : null}
 
         {!isLoading && error ? (

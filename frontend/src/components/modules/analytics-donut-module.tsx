@@ -3,6 +3,7 @@
 import { ChartPie } from "lucide-react";
 import { useMemo, useState } from "react";
 import { PieArcSeries, PieChart } from "reaviz";
+import { AnalyticsLoadingState } from "@/components/analytics-page/analytics-loading-state";
 import { useModuleChartSize } from "@/components/modules/use-module-chart-size";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,7 +32,7 @@ export default function AnalyticsDonutModule() {
     420,
     260,
   );
-  const { summary } = useTestRunStatusSummary({
+  const { error, isLoading, summary } = useTestRunStatusSummary({
     fromDate: getDateDaysAgo(selectedDays),
   });
 
@@ -95,22 +96,30 @@ export default function AnalyticsDonutModule() {
             ))}
           </div>
         </div>
-        <div
-          ref={containerRef}
-          className="min-h-0 flex-1 rounded-sm bg-muted/15 p-2 [&_path[stroke='#fff']]:stroke-transparent [&_text]:fill-muted-foreground"
-        >
-          <PieChart
-            width={width}
-            height={height}
-            data={chartData}
-            series={
-              <PieArcSeries
-                doughnut
-                colorScheme={["#4a8e58", "#356d97", "#7a6831", "#8e2024"]}
-              />
-            }
-          />
-        </div>
+        {isLoading ? (
+          <AnalyticsLoadingState description="Crunching recent run outcomes for the selected window." />
+        ) : error ? (
+          <div className="flex min-h-0 flex-1 items-center justify-center rounded-sm border border-dashed border-border/70 bg-muted/15 p-5 text-sm text-muted-foreground">
+            Could not load run status data.
+          </div>
+        ) : (
+          <div
+            ref={containerRef}
+            className="flex min-h-0 flex-1 items-center justify-center rounded-sm bg-muted/15 p-2 [&_path[stroke='#fff']]:stroke-transparent [&_text]:fill-muted-foreground"
+          >
+            <PieChart
+              width={width}
+              height={height}
+              data={chartData}
+              series={
+                <PieArcSeries
+                  doughnut
+                  colorScheme={["#4a8e58", "#356d97", "#7a6831", "#8e2024"]}
+                />
+              }
+            />
+          </div>
+        )}
       </CardContent>
     </Card>
   );

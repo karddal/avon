@@ -24,19 +24,26 @@ const fetcher = async (url: string) => {
   return (await res.json()) as ActivityTrendSummary;
 };
 
-export function useActivityTrend(filters: { fromDate: string; toDate: string }) {
+export function useActivityTrend(filters: {
+  fromDate: string;
+  toDate: string;
+}) {
   const params = new URLSearchParams({
     from_date: filters.fromDate,
     to_date: filters.toDate,
   });
 
   const key = `/api/analytics/activity-trend?${params.toString()}`;
-  const { data, error, isLoading } = useSWR<ActivityTrendSummary>(key, fetcher, {
-    refreshInterval: 30 * 1000,
-    dedupingInterval: 5 * 1000,
-    keepPreviousData: true,
-    revalidateOnFocus: false,
-  });
+  const { data, error, isLoading } = useSWR<ActivityTrendSummary>(
+    key,
+    fetcher,
+    {
+      refreshInterval: 30 * 1000,
+      dedupingInterval: 5 * 1000,
+      keepPreviousData: true,
+      revalidateOnFocus: false,
+    },
+  );
 
   return {
     trend: data,

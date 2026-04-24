@@ -41,12 +41,16 @@ export function useTestRunStatusSummary(filters?: {
 
   const key = `/api/analytics/test-run-status?${params.toString()}`;
 
-  const { data, error, isLoading } = useSWR<TestRunStatusSummary>(key, fetcher, {
-    refreshInterval: 30 * 1000,
-    dedupingInterval: 5 * 1000,
-    keepPreviousData: true,
-    revalidateOnFocus: false,
-  });
+  const { data, error, isLoading } = useSWR<TestRunStatusSummary>(
+    key,
+    fetcher,
+    {
+      refreshInterval: 30 * 1000,
+      dedupingInterval: 5 * 1000,
+      keepPreviousData: true,
+      revalidateOnFocus: false,
+    },
+  );
 
   return {
     summary: data,

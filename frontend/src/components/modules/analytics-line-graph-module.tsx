@@ -10,6 +10,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { AnalyticsLoadingState } from "@/components/analytics-page/analytics-loading-state";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ChartContainer,
@@ -17,7 +18,6 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useActivityTrend } from "@/hooks/analytics/use-activity-trend";
 
 const chartConfig = {
@@ -53,7 +53,9 @@ function formatBucketLabel(bucketHours: number | undefined) {
 
 export default function AnalyticsLineGraphModule() {
   const [fromDate, setFromDate] = useState<string>(getDateDaysAgo(1));
-  const [toDate, setToDate] = useState<string>(new Date().toISOString().slice(0, 10));
+  const [toDate, setToDate] = useState<string>(
+    new Date().toISOString().slice(0, 10),
+  );
   const { trend, error, isLoading } = useActivityTrend({ fromDate, toDate });
 
   const chartData = trend?.points ?? [];
@@ -130,7 +132,7 @@ export default function AnalyticsLineGraphModule() {
         </div>
 
         {isLoading ? (
-          <Skeleton className="min-h-0 flex-1 border border-border bg-muted/15 p-3" />
+          <AnalyticsLoadingState description="Crunching commit and test activity across your selected date range." />
         ) : error ? (
           <div className="flex min-h-0 flex-1 items-center justify-center border border-dashed bg-muted/15 p-3 text-sm text-muted-foreground">
             Could not load activity trend data.
@@ -192,9 +194,13 @@ export default function AnalyticsLineGraphModule() {
 
         <div className="flex flex-col gap-2 border border-border bg-muted/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground md:flex-row md:items-center md:justify-between">
           <div className="grid gap-2 md:grid-cols-2">
-            <label className="flex items-center gap-2">
+            <label
+              htmlFor="activity-trend-from"
+              className="flex items-center gap-2"
+            >
               <span>From</span>
               <Input
+                id="activity-trend-from"
                 type="date"
                 value={fromDate}
                 max={toDate}
@@ -202,9 +208,13 @@ export default function AnalyticsLineGraphModule() {
                 onChange={(event) => setFromDate(event.target.value)}
               />
             </label>
-            <label className="flex items-center gap-2">
+            <label
+              htmlFor="activity-trend-to"
+              className="flex items-center gap-2"
+            >
               <span>To</span>
               <Input
+                id="activity-trend-to"
                 type="date"
                 value={toDate}
                 min={fromDate}

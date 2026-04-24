@@ -2,6 +2,7 @@
 
 import { FlaskConical, RefreshCcw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { AnalyticsLoadingState } from "@/components/analytics-page/analytics-loading-state";
 import CourseworkTestRunFeedItem from "@/components/coursework/coursework-test-run-feed-item";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,7 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useActivityFilterOptions } from "@/hooks/analytics/use-activity-filter-options";
 import { useTestRunFeed } from "@/hooks/analytics/use-test-run-feed";
 import { formatIsoDateTime } from "@/lib/date-format";
@@ -143,11 +143,7 @@ export default function TestRunsActivityModule() {
         </div>
 
         {isLoading ? (
-          <div className="space-y-2">
-            <Skeleton className="h-14 w-full" />
-            <Skeleton className="h-14 w-full" />
-            <Skeleton className="h-14 w-full" />
-          </div>
+          <AnalyticsLoadingState description="Crunching the latest coursework test run activity." />
         ) : null}
 
         {!isLoading && error ? (

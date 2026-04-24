@@ -3,6 +3,7 @@
 import { ScanSearch } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { RadarChart, RadialAreaSeries } from "reaviz";
+import { AnalyticsLoadingState } from "@/components/analytics-page/analytics-loading-state";
 import { useModuleChartSize } from "@/components/modules/use-module-chart-size";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -12,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useActivityFilterOptions } from "@/hooks/analytics/use-activity-filter-options";
 import { useCourseworkComparison } from "@/hooks/analytics/use-coursework-comparison";
 
@@ -123,7 +123,10 @@ export default function AnalyticsRadarModule() {
           className="min-h-0 flex-1 rounded-sm bg-muted/15 p-2 [&_text]:fill-muted-foreground [&_.reaviz-radial-axis-line]:stroke-border/70 [&_.reaviz-radial-grid-line]:stroke-border/60 [&_path]:outline-hidden"
         >
           {isLoading ? (
-            <Skeleton className="h-full w-full rounded-sm" />
+            <AnalyticsLoadingState
+              className="h-full border-0 bg-transparent p-0"
+              description="Crunching live coursework metrics for this comparison."
+            />
           ) : error ? (
             <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
               Could not load coursework comparison.
