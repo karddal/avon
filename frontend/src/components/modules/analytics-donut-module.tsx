@@ -2,11 +2,16 @@
 
 import { ChartPie } from "lucide-react";
 import { useMemo, useState } from "react";
-import { PieArcSeries, PieChart } from "reaviz";
+import { Cell, Label, Pie, PieChart } from "recharts";
 import { AnalyticsLoadingState } from "@/components/analytics-page/analytics-loading-state";
-import { useModuleChartSize } from "@/components/modules/use-module-chart-size";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 import { useTestRunStatusSummary } from "@/hooks/analytics/use-test-run-status-summary";
 
 function getDateDaysAgo(days: number) {
@@ -22,33 +27,35 @@ const PRESET_OPTIONS = [
   { key: "90d", label: "90d", days: 90 },
 ] as const;
 
+const DONUT_COLORS = ["#4a8e58", "#356d97", "#7a6831", "#8e2024"] as const;
+const chartConfig = {
+  passed: { label: "Passed", color: DONUT_COLORS[0] },
+  running: { label: "Running", color: DONUT_COLORS[1] },
+  failed: { label: "Failed", color: DONUT_COLORS[2] },
+  errored: { label: "Errored", color: DONUT_COLORS[3] },
+} satisfies ChartConfig;
+
 export default function AnalyticsDonutModule() {
   const [selectedPreset, setSelectedPreset] = useState<string>("7d");
   const selectedDays =
     PRESET_OPTIONS.find((option) => option.key === selectedPreset)?.days ?? 7;
-  const { containerRef, width, height } = useModuleChartSize(
-    280,
-    220,
-    420,
-    260,
-  );
   const { error, isLoading, summary } = useTestRunStatusSummary({
     fromDate: getDateDaysAgo(selectedDays),
   });
 
   const chartData = useMemo(
     () => [
-      { key: "Passed", data: summary?.passed ?? 0 },
-      { key: "Running", data: summary?.running ?? 0 },
-      { key: "Failed", data: summary?.failed ?? 0 },
-      { key: "Errored", data: summary?.errored ?? 0 },
+      { key: "passed", label: "Passed", value: summary?.passed ?? 0 },
+      { key: "running", label: "Running", value: summary?.running ?? 0 },
+      { key: "failed", label: "Failed", value: summary?.failed ?? 0 },
+      { key: "errored", label: "Errored", value: summary?.errored ?? 0 },
     ],
     [summary],
   );
   const hasRunData = (summary?.total_runs ?? 0) > 0;
 
   return (
-    <Card className="h-full">
+    <Card className="flex h-full min-h-0 flex-col overflow-hidden">
       <CardHeader>
         <CardTitle>
           <div>
@@ -104,22 +111,69 @@ export default function AnalyticsDonutModule() {
             Could not load run status data.
           </div>
         ) : (
-          <div
-            ref={containerRef}
-            className="flex min-h-0 flex-1 items-center justify-center rounded-sm bg-muted/15 p-2 [&_path[stroke='#fff']]:stroke-transparent [&_text]:fill-muted-foreground"
-          >
+          <div className="flex min-h-0 flex-1 items-center justify-center rounded-sm bg-muted/15 p-2">
             {hasRunData ? (
-              <PieChart
-                width={width}
-                height={height}
-                data={chartData}
-                series={
-                  <PieArcSeries
-                    doughnut
-                    colorScheme={["#4a8e58", "#356d97", "#7a6831", "#8e2024"]}
+              <ChartContainer
+                config={chartConfig}
+                className="mx-auto h-full min-h-0 w-full max-w-[22rem] flex-1"
+              >
+                <PieChart>
+                  <ChartTooltip
+                    content={<ChartTooltipContent hideLabel nameKey="label" />}
                   />
-                }
-              />
+                  <Pie
+                    data={chartData}
+                    dataKey="value"
+                    nameKey="label"
+                    innerRadius={58}
+                    outerRadius={86}
+                    strokeWidth={0}
+                  >
+                    {chartData.map((entry, index) => (
+                      <Cell
+                        key={entry.key}
+                        fill={DONUT_COLORS[index]}
+                        className="stroke-transparent"
+                      />
+                    ))}
+                    <Label
+                      content={({ viewBox }) => {
+                        if (
+                          !viewBox ||
+                          !("cx" in viewBox) ||
+                          !("cy" in viewBox)
+                        ) {
+                          return null;
+                        }
+
+                        return (
+                          <text
+                            x={viewBox.cx}
+                            y={viewBox.cy}
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                          >
+                            <tspan
+                              x={viewBox.cx}
+                              y={viewBox.cy}
+                              className="fill-foreground text-2xl font-semibold"
+                            >
+                              {summary?.total_runs ?? 0}
+                            </tspan>
+                            <tspan
+                              x={viewBox.cx}
+                              y={viewBox.cy + 20}
+                              className="fill-muted-foreground text-[10px] font-semibold uppercase tracking-[0.16em]"
+                            >
+                              Runs
+                            </tspan>
+                          </text>
+                        );
+                      }}
+                    />
+                  </Pie>
+                </PieChart>
+              </ChartContainer>
             ) : (
               <div className="flex flex-col items-center justify-center text-center">
                 <div className="flex h-44 w-44 items-center justify-center rounded-full border-[22px] border-muted-foreground/20">

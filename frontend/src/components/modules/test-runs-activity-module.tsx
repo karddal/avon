@@ -85,7 +85,7 @@ export default function TestRunsActivityModule() {
   const { testRuns, error, isLoading, refresh } = useTestRunFeed(30, filters);
 
   return (
-    <Card className="h-full">
+    <Card className="flex h-full min-h-0 flex-col overflow-hidden">
       <CardHeader>
         <CardTitle>
           <div className="flex flex-row items-center justify-between gap-3">

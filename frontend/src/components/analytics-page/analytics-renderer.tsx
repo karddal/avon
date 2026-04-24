@@ -113,7 +113,7 @@ export default function AnalyticsRenderer({ layout }: AnalyticsRendererProps) {
   const [isDesktopLayout, setIsDesktopLayout] = useState(false);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(min-width: 1024px)");
+    const mediaQuery = window.matchMedia("(min-width: 1400px)");
 
     const updateLayoutMode = () => {
       setIsDesktopLayout(mediaQuery.matches);
@@ -140,7 +140,7 @@ export default function AnalyticsRenderer({ layout }: AnalyticsRendererProps) {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div
-        className="grid w-full grid-cols-1 auto-rows-[minmax(140px,auto)] gap-3 border bg-background p-3 sm:gap-4 sm:p-4 md:grid-flow-dense md:grid-cols-2 lg:h-full lg:flex-1 lg:auto-rows-auto"
+        className="grid w-full grid-cols-1 auto-rows-[minmax(140px,auto)] gap-3 border bg-background p-3 sm:gap-4 sm:p-4 md:grid-flow-dense md:grid-cols-2 2xl:h-full 2xl:flex-1 2xl:auto-rows-auto"
         style={
           isDesktopLayout
             ? {
@@ -191,7 +191,7 @@ export default function AnalyticsRenderer({ layout }: AnalyticsRendererProps) {
                   : undefined
               }
             >
-              <div className="h-full min-h-0 overflow-visible lg:overflow-auto">
+              <div className="h-full min-h-0 overflow-y-auto overflow-x-hidden">
                 <Component />
               </div>
             </div>

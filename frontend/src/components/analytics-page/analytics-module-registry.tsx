@@ -1,5 +1,4 @@
 import AnalyticsDonutModule from "@/components/modules/analytics-donut-module";
-import AnalyticsHeatmapExampleModule from "@/components/modules/analytics-heatmap-example-module";
 import AnalyticsLineGraphModule from "@/components/modules/analytics-line-graph-module";
 import AnalyticsRadarModule from "@/components/modules/analytics-radar-module";
 import AnalyticsActivityModule from "@/components/modules/commits-activity-module";
@@ -41,14 +40,6 @@ export const analyticsModuleRegistry = {
   "activity-trend-line": {
     title: "Activity trend line",
     component: AnalyticsLineGraphModule,
-    minW: 3,
-    minH: 3,
-    maxW: 10,
-    maxH: 10,
-  },
-  "activity-heatmap": {
-    title: "Activity heatmap",
-    component: AnalyticsHeatmapExampleModule,
     minW: 3,
     minH: 3,
     maxW: 10,

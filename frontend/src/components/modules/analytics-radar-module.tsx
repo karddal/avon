@@ -2,10 +2,15 @@
 
 import { ScanSearch } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { RadarChart, RadialAreaSeries } from "reaviz";
+import { PolarAngleAxis, PolarGrid, Radar, RadarChart } from "recharts";
 import { AnalyticsLoadingState } from "@/components/analytics-page/analytics-loading-state";
-import { useModuleChartSize } from "@/components/modules/use-module-chart-size";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 import {
   Select,
   SelectContent,
@@ -20,12 +25,6 @@ export default function AnalyticsRadarModule() {
   const { courseworks } = useActivityFilterOptions();
   const [courseworkAId, setCourseworkAId] = useState<string>("all");
   const [courseworkBId, setCourseworkBId] = useState<string>("all");
-  const { containerRef, width, height } = useModuleChartSize(
-    280,
-    220,
-    420,
-    260,
-  );
   useEffect(() => {
     if (courseworks.length < 2) {
       return;
@@ -59,10 +58,37 @@ export default function AnalyticsRadarModule() {
     courseworkAId: courseworkAId === "all" ? undefined : courseworkAId,
     courseworkBId: courseworkBId === "all" ? undefined : courseworkBId,
   });
-  const chartData = comparison?.series ?? [];
+  const chartSeries = comparison?.series ?? [];
+  const radarData = useMemo(() => {
+    const first = chartSeries[0];
+    const second = chartSeries[1];
+    if (!first || !second) {
+      return [];
+    }
+
+    return first.data.map((metric, index) => ({
+      metric: metric.key,
+      first: metric.data,
+      second: second.data[index]?.data ?? 0,
+    }));
+  }, [chartSeries]);
+  const chartConfig = useMemo(
+    () =>
+      ({
+        first: {
+          label: chartSeries[0]?.key ?? "Coursework A",
+          color: "#8e2024",
+        },
+        second: {
+          label: chartSeries[1]?.key ?? "Coursework B",
+          color: "#4a8e58",
+        },
+      }) satisfies ChartConfig,
+    [chartSeries],
+  );
 
   return (
-    <Card className="h-full">
+    <Card className="flex h-full min-h-0 flex-col overflow-hidden">
       <CardHeader>
         <CardTitle>
           <div>
@@ -105,23 +131,20 @@ export default function AnalyticsRadarModule() {
           </Select>
         </div>
         <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-          {chartData[0] ? (
+          {chartSeries[0] ? (
             <span className="inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[#8e2024] dark:text-[#c86366]">
               <span className="h-2 w-2 rounded-full bg-[#8e2024]" />
-              {chartData[0].key}
+              {chartSeries[0].key}
             </span>
           ) : null}
-          {chartData[1] ? (
+          {chartSeries[1] ? (
             <span className="inline-flex items-center gap-1 rounded-full border px-2 py-1 text-[#4a8e58] dark:text-[#78b486]">
               <span className="h-2 w-2 rounded-full bg-[#4a8e58]" />
-              {chartData[1].key}
+              {chartSeries[1].key}
             </span>
           ) : null}
         </div>
-        <div
-          ref={containerRef}
-          className="min-h-0 flex-1 rounded-sm bg-muted/15 p-2 [&_text]:fill-muted-foreground [&_.reaviz-radial-axis-line]:stroke-border/70 [&_.reaviz-radial-grid-line]:stroke-border/60 [&_path]:outline-hidden"
-        >
+        <div className="min-h-0 flex-1 rounded-sm bg-muted/15 p-2">
           {isLoading ? (
             <AnalyticsLoadingState
               className="h-full border-0 bg-transparent p-0"
@@ -131,13 +154,41 @@ export default function AnalyticsRadarModule() {
             <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
               Could not load coursework comparison.
             </div>
-          ) : chartData.length === 2 ? (
-            <RadarChart
-              width={width}
-              height={height}
-              data={chartData}
-              series={<RadialAreaSeries colorScheme={["#8e2024", "#4a8e58"]} />}
-            />
+          ) : radarData.length > 0 ? (
+            <ChartContainer
+              config={chartConfig}
+              className="mx-auto h-full min-h-0 w-full max-w-[26rem] flex-1"
+            >
+              <RadarChart data={radarData} outerRadius="68%">
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent indicator="line" />}
+                />
+                <PolarGrid />
+                <PolarAngleAxis
+                  dataKey="metric"
+                  tick={{
+                    fill: "hsl(var(--muted-foreground))",
+                    fontSize: 11,
+                    fontWeight: 600,
+                  }}
+                />
+                <Radar
+                  dataKey="first"
+                  fill="var(--color-first)"
+                  fillOpacity={0.22}
+                  stroke="var(--color-first)"
+                  strokeWidth={2}
+                />
+                <Radar
+                  dataKey="second"
+                  fill="var(--color-second)"
+                  fillOpacity={0.18}
+                  stroke="var(--color-second)"
+                  strokeWidth={2}
+                />
+              </RadarChart>
+            </ChartContainer>
           ) : (
             <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
               Pick two courseworks to compare.

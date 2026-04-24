@@ -77,7 +77,7 @@ export default function AnalyticsLineGraphModule() {
   );
 
   return (
-    <Card className="h-full">
+    <Card className="flex h-full min-h-0 flex-col overflow-hidden">
       <CardHeader>
         <CardTitle>
           <div>
@@ -192,11 +192,11 @@ export default function AnalyticsLineGraphModule() {
           </ChartContainer>
         )}
 
-        <div className="flex flex-col gap-2 border border-border bg-muted/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground md:flex-row md:items-center md:justify-between">
+        <div className="grid gap-3 border border-border bg-muted/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground xl:grid-cols-[minmax(0,1fr)_auto] xl:items-center">
           <div className="grid gap-2 md:grid-cols-2">
             <label
               htmlFor="activity-trend-from"
-              className="flex items-center gap-2"
+              className="grid gap-1 sm:min-w-0"
             >
               <span>From</span>
               <Input
@@ -204,13 +204,13 @@ export default function AnalyticsLineGraphModule() {
                 type="date"
                 value={fromDate}
                 max={toDate}
-                className="h-8 w-auto min-w-36 text-[11px]"
+                className="h-8 w-full min-w-0 text-[11px]"
                 onChange={(event) => setFromDate(event.target.value)}
               />
             </label>
             <label
               htmlFor="activity-trend-to"
-              className="flex items-center gap-2"
+              className="grid gap-1 sm:min-w-0"
             >
               <span>To</span>
               <Input
@@ -219,12 +219,14 @@ export default function AnalyticsLineGraphModule() {
                 value={toDate}
                 min={fromDate}
                 max={new Date().toISOString().slice(0, 10)}
-                className="h-8 w-auto min-w-36 text-[11px]"
+                className="h-8 w-full min-w-0 text-[11px]"
                 onChange={(event) => setToDate(event.target.value)}
               />
             </label>
           </div>
-          <span>{formatBucketLabel(trend?.bucket_hours)}</span>
+          <div className="min-w-0 text-left leading-relaxed xl:max-w-[10rem] xl:text-right">
+            {formatBucketLabel(trend?.bucket_hours)}
+          </div>
         </div>
       </CardContent>
     </Card>

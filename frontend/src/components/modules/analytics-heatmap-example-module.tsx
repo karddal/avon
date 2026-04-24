@@ -34,7 +34,7 @@ function getHeatTone(value: number) {
 
 export default function AnalyticsHeatmapExampleModule() {
   return (
-    <Card className="h-full">
+    <Card className="flex h-full min-h-0 flex-col overflow-hidden">
       <CardHeader>
         <CardTitle>
           <div>
