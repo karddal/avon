@@ -140,29 +140,32 @@ export default function AnalyticsDonutModule() {
                       content={({ viewBox }) => {
                         if (
                           !viewBox ||
-                          !("cx" in viewBox) ||
-                          !("cy" in viewBox)
+                          typeof viewBox.cx !== "number" ||
+                          typeof viewBox.cy !== "number"
                         ) {
                           return null;
                         }
 
+                        const centerX = viewBox.cx;
+                        const centerY = viewBox.cy;
+
                         return (
                           <text
-                            x={viewBox.cx}
-                            y={viewBox.cy}
+                            x={centerX}
+                            y={centerY}
                             textAnchor="middle"
                             dominantBaseline="middle"
                           >
                             <tspan
-                              x={viewBox.cx}
-                              y={viewBox.cy}
+                              x={centerX}
+                              y={centerY}
                               className="fill-foreground text-2xl font-semibold"
                             >
                               {summary?.total_runs ?? 0}
                             </tspan>
                             <tspan
-                              x={viewBox.cx}
-                              y={viewBox.cy + 20}
+                              x={centerX}
+                              y={centerY + 20}
                               className="fill-muted-foreground text-[10px] font-semibold uppercase tracking-[0.16em]"
                             >
                               Runs
