@@ -265,7 +265,7 @@ async function CourseworkPageContent({
           warningThreshold={7}
         />
       )}
-      <section className="mb-8 min-h-0">
+      <section className="mb-8 mt-4 flex min-h-0 flex-1 flex-col space-y-4 md:mt-0 md:space-y-6">
         <CourseworkClient
           staffLayout={staffLayout}
           studentLayout={studentLayout}

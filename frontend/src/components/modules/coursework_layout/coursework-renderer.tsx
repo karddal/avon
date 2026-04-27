@@ -7,10 +7,6 @@ import type { CourseworkModuleKey } from "@/components/modules/coursework_layout
 import { courseworkModuleRegistry } from "@/components/modules/coursework_layout/coursework-module-registry";
 import type { GridItem } from "@/components/modules/coursework_layout/coursework-types";
 import type { StudentNameAndRepo } from "@/lib/actions/coursework/get_student_repos";
-import {
-  staffAvailableModules,
-  studentAvailableModules,
-} from "@/lib/coursework-layout";
 import { cn } from "@/lib/utils";
 
 type CourseworkCommit = {
@@ -55,13 +51,14 @@ type CourseworkRendererProps = {
   editableModules: CourseworkModuleKey[];
 };
 
-const GRID_ROWS = 4;
+const GRID_ROWS = 3;
 const MD_COLUMNS = 2;
+const DESKTOP_GRID_ROW_SIZE = `max(11rem, calc((100dvh - 14rem) / ${GRID_ROWS}))`;
 
 function getMdSpans(item: GridItem) {
   return {
     colSpan: Math.min(Math.max(item.w, 1), MD_COLUMNS),
-    rowSpan: 1,
+    rowSpan: Math.min(Math.max(item.h, 1), 2),
   };
 }
 
@@ -167,7 +164,7 @@ export default function CourseworkRenderer({
   const [isDesktopLayout, setIsDesktopLayout] = useState(false);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(min-width: 1536px)");
+    const mediaQuery = window.matchMedia("(min-width: 1024px)");
 
     const updateLayoutMode = () => {
       setIsDesktopLayout(mediaQuery.matches);
@@ -190,35 +187,20 @@ export default function CourseworkRenderer({
   });
 
   const mdLayout = getResponsiveMdLayout(orderedLayout);
-  const isStaffLayout =
-    editableModules.length === staffAvailableModules.length &&
-    editableModules.every((moduleKey) =>
-      staffAvailableModules.includes(moduleKey),
-    );
-  const isStudentLayout =
-    editableModules.length === studentAvailableModules.length &&
-    editableModules.every((moduleKey) =>
-      studentAvailableModules.includes(moduleKey),
-    );
-
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div
-        className="grid w-full grid-cols-1 auto-rows-[minmax(140px,auto)] gap-3 sm:gap-4 sm:p-4 md:grid-flow-dense md:grid-cols-2 2xl:h-full 2xl:flex-1 2xl:grid-cols-10 2xl:auto-rows-auto"
+        className="grid w-full grid-cols-1 auto-rows-[minmax(140px,auto)] gap-3 p-3 sm:gap-4 sm:p-4 md:grid-flow-dense md:grid-cols-2 lg:h-full lg:flex-1 lg:grid-cols-3 lg:auto-rows-auto"
         style={
           isDesktopLayout
             ? {
-                ...(isStudentLayout
-                  ? {}
-                  : {
-                      gridTemplateRows: `repeat(${GRID_ROWS}, minmax(0, 1fr))`,
-                    }),
+                gridTemplateRows: `repeat(${GRID_ROWS}, minmax(0, ${DESKTOP_GRID_ROW_SIZE}))`,
               }
             : undefined
         }
       >
         {orderedLayout.length === 0 ? (
-          <div className="col-span-full flex min-h-55 items-center justify-center border border-dashed bg-background px-4 text-center text-sm text-muted-foreground 2xl:row-span-3">
+          <div className="col-span-full flex min-h-55 items-center justify-center border border-dashed bg-background px-4 text-center text-sm text-muted-foreground lg:row-span-3">
             No modules placed yet.
           </div>
         ) : null}
@@ -260,7 +242,7 @@ export default function CourseworkRenderer({
               <div
                 key={item.id}
                 className={cn(
-                  "min-h-35 overflow-hidden border bg-background md:min-h-45 2xl:min-h-0",
+                  "min-h-35 overflow-hidden md:min-h-45 lg:min-h-0",
                   mdItem?.colSpan === 2 ? "md:col-span-2" : "md:col-span-1",
                   mdItem?.rowSpan === 2 ? "md:row-span-2" : "md:row-span-1",
                 )}
@@ -268,15 +250,12 @@ export default function CourseworkRenderer({
                   isDesktopLayout
                     ? {
                         gridColumn: `${item.x + 1} / span ${item.w}`,
-                        gridRow:
-                          isStudentLayout || isStaffLayout
-                            ? `${item.y + 1} / span 1`
-                            : `${item.y + 1} / span ${item.h}`,
+                        gridRow: `${item.y + 1} / span ${item.h}`,
                       }
                     : undefined
                 }
               >
-                <div className="h-full min-h-0 overflow-visible 2xl:overflow-auto">
+                <div className="h-full min-h-0 overflow-hidden">
                   <Component {...moduleProps} />
                 </div>
               </div>

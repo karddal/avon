@@ -132,7 +132,7 @@ export default function CourseworkClient({
     : studentAvailableModules;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    <div className="flex min-h-0 flex-1 flex-col gap-4 md:gap-6">
       <CourseworkLayoutEditor
         canEditLayouts={canEditLayouts}
         staffLayout={staffLayoutState}

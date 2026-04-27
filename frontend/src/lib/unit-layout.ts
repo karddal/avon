@@ -4,21 +4,24 @@ import {
 } from "@/components/modules/unit-module-registry";
 import type { GridItem } from "@/components/modules/unit-types";
 
+const UNIT_GRID_COLUMNS = 3;
+const UNIT_GRID_ROWS = 3;
+
 export const defaultUnitLayout: GridItem[] = [
   {
     id: "description",
     moduleKey: "description",
     x: 0,
     y: 0,
-    w: 7,
+    w: 2,
     h: 1,
   },
   {
     id: "unit_members",
     moduleKey: "unit_members",
-    x: 7,
+    x: 2,
     y: 0,
-    w: 3,
+    w: 1,
     h: 1,
   },
   {
@@ -26,15 +29,15 @@ export const defaultUnitLayout: GridItem[] = [
     moduleKey: "courseworks",
     x: 0,
     y: 1,
-    w: 7,
+    w: 2,
     h: 2,
   },
   {
     id: "announcements",
     moduleKey: "announcements",
-    x: 7,
+    x: 2,
     y: 1,
-    w: 3,
+    w: 1,
     h: 2,
   },
 ];
@@ -55,7 +58,13 @@ export function isValidGridItem(value: unknown): value is GridItem {
     typeof item.x === "number" &&
     typeof item.y === "number" &&
     typeof item.w === "number" &&
-    typeof item.h === "number"
+    typeof item.h === "number" &&
+    item.x >= 0 &&
+    item.y >= 0 &&
+    item.w >= 1 &&
+    item.h >= 1 &&
+    item.x + item.w <= UNIT_GRID_COLUMNS &&
+    item.y + item.h <= UNIT_GRID_ROWS
   );
 }
 

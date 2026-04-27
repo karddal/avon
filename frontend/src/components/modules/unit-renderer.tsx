@@ -188,7 +188,7 @@ export default function UnitRenderer({
       )}
     >
       <div
-        className="grid w-full grid-cols-1 auto-rows-[minmax(140px,auto)] gap-3 sm:gap-4 sm:p-4 md:grid-flow-dense md:grid-cols-2 2xl:h-full 2xl:flex-1 2xl:grid-cols-10 2xl:auto-rows-auto"
+        className="grid w-full grid-cols-1 auto-rows-[minmax(140px,auto)] gap-3 sm:gap-4 sm:p-4 md:grid-flow-dense md:grid-cols-2 2xl:h-full 2xl:flex-1 2xl:grid-cols-3 2xl:auto-rows-auto"
         style={
           isDesktopLayout
             ? {

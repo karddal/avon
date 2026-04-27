@@ -60,7 +60,7 @@ function StudentRepoActivityContent({
 
   if (!repo) {
     return (
-      <div className="border border-dashed p-4 text-sm h-full">
+      <div className="flex min-h-full min-w-80 flex-1 items-center justify-center rounded-md border border-dashed p-4 text-sm">
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant={"icon"}>
@@ -79,7 +79,7 @@ function StudentRepoActivityContent({
 
   return (
     <>
-      <div className="flex min-h-0 flex-1 flex-col justify-center space-y-2">
+      <div className="flex min-h-full min-w-80 flex-1 flex-col justify-center space-y-2">
         {repo.commits.length > 0 ? (
           <div className="space-y-2">
             {repo.commits
@@ -142,7 +142,7 @@ function StudentRepoActivityContent({
               ))}
           </div>
         ) : (
-          <div className="rounded-md border border-dashed p-4 text-sm h-full">
+          <div className="flex min-h-full flex-1 items-center justify-center rounded-md border border-dashed p-4 text-sm">
             <Empty>
               <EmptyHeader>
                 <EmptyMedia variant={"icon"}>
@@ -182,8 +182,8 @@ export default function StudentRepoActivity({
 }) {
   void slug;
   return (
-    <Card className="h-full">
-      <CardHeader>
+    <Card className="h-full min-h-0 overflow-hidden">
+      <CardHeader className="shrink-0">
         <CardTitle>
           <div className="text-2xl flex flex-row items-center gap-2">
             <GitGraph />
@@ -195,7 +195,7 @@ export default function StudentRepoActivity({
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex min-h-0 flex-1 flex-col space-y-4">
+      <CardContent className="flex h-auto min-h-0 flex-1 flex-col space-y-4 overflow-auto">
         <Suspense fallback={<StudentRepoActivityFallback />}>
           <StudentRepoActivityContent myRepo={myRepo} />
         </Suspense>

@@ -4,6 +4,7 @@ import {
   BookDashed,
   BookPlus,
   Gitlab,
+  LayoutDashboard,
   Menu,
   SquarePen,
   SquareX,
@@ -43,6 +44,8 @@ import type { CourseworkUpdateData } from "@/lib/actions/coursework/get_coursewo
 import type { GetCWEngineDataResponse } from "@/lib/actions/coursework/get_cw_engine_data";
 import { Item, ItemContent, ItemMedia, ItemTitle } from "../ui/item";
 
+const OPEN_COURSEWORK_LAYOUT_EDITOR_EVENT = "coursework-layout-editor:open";
+
 export default function CourseworkLectDropdown({
   slug,
   scopes,
@@ -75,6 +78,7 @@ export default function CourseworkLectDropdown({
   const hasGitlabScope = scopes.has("unit:coursework_gitlab");
   const hasEngineScope = scopes.has("unit:coursework_engine");
   const hasDeleteScope = scopes.has("unit:coursework_delete");
+  const canEditLayouts = hasManageScope || hasGitlabScope || hasDeleteScope;
   const canEdit = hasManageScope && coursework_update_data;
   const canManageTemplates = hasGitlabScope && coursework_update_data;
   const canProvision =
@@ -197,19 +201,33 @@ export default function CourseworkLectDropdown({
             </>
           )}
 
-          {hasManageScope && (
+          {canEditLayouts && (
             <>
-              {hasEngineScope && <DropDrawerSeparator />}
+              {(hasEngineScope || hasGitlabScope) && <DropDrawerSeparator />}
               <DropDrawerGroup>
                 <DropDrawerLabel>Manage</DropDrawerLabel>
+                {hasManageScope && (
+                  <DropDrawerItem
+                    key={"Edit"}
+                    data-cy="coursework-edit-menu-item"
+                    onSelect={() => setShowEdit(true)}
+                    disabled={!canEdit}
+                    icon={<SquarePen />}
+                  >
+                    Edit coursework
+                  </DropDrawerItem>
+                )}
                 <DropDrawerItem
-                  key={"Edit"}
-                  data-cy="coursework-edit-menu-item"
-                  onSelect={() => setShowEdit(true)}
-                  disabled={!canEdit}
-                  icon={<SquarePen />}
+                  key={"Edit-Layout"}
+                  data-cy="coursework-edit-layout-menu-item"
+                  onSelect={() => {
+                    window.dispatchEvent(
+                      new CustomEvent(OPEN_COURSEWORK_LAYOUT_EDITOR_EVENT),
+                    );
+                  }}
+                  icon={<LayoutDashboard />}
                 >
-                  Edit coursework
+                  Edit layout
                 </DropDrawerItem>
               </DropDrawerGroup>
             </>

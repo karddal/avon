@@ -59,7 +59,7 @@ function StudentRepoOverviewContent({
 
   if (!repo) {
     return (
-      <div className="border border-dashed p-4 text-sm h-full">
+      <div className="flex min-h-full min-w-80 flex-1 items-center justify-center rounded-md border border-dashed p-4 text-sm">
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant={"icon"}>
@@ -85,7 +85,7 @@ function StudentRepoOverviewContent({
   const latestCommit = repo.commits[0];
 
   return (
-    <div className="space-y-3">
+    <div className="min-h-full min-w-80 space-y-3">
       <a
         href={repo.repo_url}
         target="_blank"
@@ -180,8 +180,8 @@ export default function StudentRepoOverview({
 }) {
   void slug;
   return (
-    <Card className="h-full min-h-0">
-      <CardHeader>
+    <Card className="h-full min-h-0 overflow-hidden">
+      <CardHeader className="shrink-0">
         <CardTitle>
           <div className="text-2xl flex flex-row items-center gap-2">
             <Activity />
@@ -192,7 +192,7 @@ export default function StudentRepoOverview({
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex min-h-0 flex-1 flex-col">
+      <CardContent className="flex h-auto min-h-0 flex-1 flex-col overflow-auto">
         <Suspense fallback={<StudentRepoOverviewFallback />}>
           <StudentRepoOverviewContent myRepo={myRepo} />
         </Suspense>

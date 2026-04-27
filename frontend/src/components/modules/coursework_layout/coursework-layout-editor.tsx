@@ -1,9 +1,10 @@
 "use client";
 
-import { Edit, GripVertical, Plus, Trash2 } from "lucide-react";
+import { GripVertical, Plus, Trash2 } from "lucide-react";
 import {
   type Dispatch,
   type SetStateAction,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -12,7 +13,6 @@ import { toast } from "sonner";
 import type { CourseworkModuleKey } from "@/components/modules/coursework_layout/coursework-module-registry";
 import { courseworkModuleRegistry } from "@/components/modules/coursework_layout/coursework-module-registry";
 import type { GridItem } from "@/components/modules/coursework_layout/coursework-types";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
   Dialog,
@@ -20,7 +20,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   staffAvailableModules,
@@ -36,8 +35,10 @@ type CourseworkLayoutEditorProps = {
   onStudentLayoutChange: Dispatch<SetStateAction<GridItem[]>>;
 };
 
-const GRID_COLUMNS = 10;
-const GRID_ROWS = 4;
+const OPEN_COURSEWORK_LAYOUT_EDITOR_EVENT = "coursework-layout-editor:open";
+
+const GRID_COLUMNS = 3;
+const GRID_ROWS = 3;
 
 type GridRect = {
   x: number;
@@ -139,12 +140,35 @@ export default function CourseworkLayoutEditor({
       : studentAvailableModules;
 
   const [_showPlacedModules, _setShowPlacedModules] = useState(true);
+  const [open, setOpen] = useState(false);
   const [dragState, setDragState] = useState<DragState>(null);
   const [hoverPreviewRect, setHoverPreviewRect] = useState<
     (GridRect & { valid: boolean }) | null
   >(null);
 
   const previewRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!canEditLayouts) {
+      return;
+    }
+
+    function openLayoutEditor() {
+      setOpen(true);
+    }
+
+    window.addEventListener(
+      OPEN_COURSEWORK_LAYOUT_EDITOR_EVENT,
+      openLayoutEditor,
+    );
+
+    return () => {
+      window.removeEventListener(
+        OPEN_COURSEWORK_LAYOUT_EDITOR_EVENT,
+        openLayoutEditor,
+      );
+    };
+  }, [canEditLayouts]);
 
   const placedModuleKeys = useMemo(
     () => new Set(layout.map((item) => item.moduleKey)),
@@ -342,19 +366,7 @@ export default function CourseworkLayoutEditor({
   return (
     <>
       {canEditLayouts && (
-        <Dialog>
-          <div className="flex w-full justify-end">
-            <DialogTrigger asChild>
-              <Button
-                variant="outline"
-                className="h-9 rounded-xl border px-4 text-sm shadow-sm"
-              >
-                <Edit className="mr-2 h-4 w-4" />
-                Edit Layout
-              </Button>
-            </DialogTrigger>
-          </div>
-
+        <Dialog open={open} onOpenChange={setOpen}>
           <DialogContent className="max-w-full! w-full max-h-full! overflow-y-auto border-none bg-transparent p-0 shadow-none lg:max-h-[82vh]! lg:max-w-[86%]! xl:max-w-[80%]!">
             <div className="flex w-full flex-col-reverse items-stretch justify-center gap-4 lg:flex-row">
               <div className="flex flex-col justify-between bg-background shadow-lg lg:max-h-[82vh] lg:basis-[34%] lg:min-w-[320px]">
@@ -463,14 +475,14 @@ export default function CourseworkLayoutEditor({
                       gridTemplateColumns: `repeat(${GRID_COLUMNS}, minmax(0, 1fr))`,
                       gridTemplateRows: `repeat(${GRID_ROWS}, minmax(120px, 1fr))`,
                       gap: "8px",
-                      minHeight: 420,
+                      minHeight: 360,
                     }}
                     onMouseMove={handlePointerMove}
                     onMouseUp={commitDrag}
                     onMouseLeave={commitDrag}
                   >
                     {layout.length === 0 ? (
-                      <div className="col-span-3 row-span-3 flex items-center justify-center text-xs text-muted-foreground">
+                      <div className="col-span-full row-span-3 flex items-center justify-center text-xs text-muted-foreground">
                         No modules placed yet.
                       </div>
                     ) : (

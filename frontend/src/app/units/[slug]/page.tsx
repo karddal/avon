@@ -157,6 +157,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
                   me={me}
                   slug={slug}
                   scopes={scopes}
+                  canEditLayouts={canEditLayouts}
                 ></LecturerDropdown>
               )}
             </div>

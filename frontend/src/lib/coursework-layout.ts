@@ -4,6 +4,9 @@ import {
 } from "@/components/modules/coursework_layout/coursework-module-registry";
 import type { GridItem } from "@/components/modules/coursework_layout/coursework-types";
 
+const COURSEWORK_GRID_COLUMNS = 3;
+const COURSEWORK_GRID_ROWS = 3;
+
 // Staff/Admin layout - includes description, information, repo overview, setup progress
 export const defaultStaffCourseworkLayout: GridItem[] = [
   {
@@ -11,15 +14,15 @@ export const defaultStaffCourseworkLayout: GridItem[] = [
     moduleKey: "description",
     x: 0,
     y: 0,
-    w: 7,
+    w: 2,
     h: 1,
   },
   {
     id: "information",
     moduleKey: "information",
-    x: 7,
+    x: 2,
     y: 0,
-    w: 3,
+    w: 1,
     h: 1,
   },
   {
@@ -27,15 +30,15 @@ export const defaultStaffCourseworkLayout: GridItem[] = [
     moduleKey: "repo_overview",
     x: 0,
     y: 1,
-    w: 7,
+    w: 2,
     h: 2,
   },
   {
     id: "setup_progress",
     moduleKey: "setup_progress",
-    x: 7,
+    x: 2,
     y: 1,
-    w: 3,
+    w: 1,
     h: 2,
   },
 ];
@@ -47,23 +50,23 @@ export const defaultStudentCourseworkLayout: GridItem[] = [
     moduleKey: "description",
     x: 0,
     y: 0,
-    w: 7,
+    w: 2,
     h: 1,
   },
   {
     id: "information",
     moduleKey: "information",
-    x: 7,
+    x: 2,
     y: 0,
-    w: 3,
+    w: 1,
     h: 1,
   },
   {
     id: "student_repo_overview",
     moduleKey: "student_repo_overview",
-    x: 7,
+    x: 2,
     y: 1,
-    w: 3,
+    w: 1,
     h: 2,
   },
   {
@@ -71,16 +74,8 @@ export const defaultStudentCourseworkLayout: GridItem[] = [
     moduleKey: "student_repo_activity",
     x: 0,
     y: 1,
-    w: 7,
+    w: 2,
     h: 2,
-  },
-  {
-    id: "student_panel",
-    moduleKey: "student_panel",
-    x: 0,
-    y: 3,
-    w: 10,
-    h: 1,
   },
 ];
 
@@ -120,7 +115,13 @@ export function isValidGridItem(value: unknown): value is GridItem {
     typeof item.x === "number" &&
     typeof item.y === "number" &&
     typeof item.w === "number" &&
-    typeof item.h === "number"
+    typeof item.h === "number" &&
+    item.x >= 0 &&
+    item.y >= 0 &&
+    item.w >= 1 &&
+    item.h >= 1 &&
+    item.x + item.w <= COURSEWORK_GRID_COLUMNS &&
+    item.y + item.h <= COURSEWORK_GRID_ROWS
   );
 }
 
