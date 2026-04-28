@@ -24,6 +24,7 @@ class Unit(SQLModel, table=True):
     programme_id: uuid.UUID = Field(foreign_key="programme.id", ondelete="CASCADE")
     gitlab_id: str = Field(nullable=False)
     unlocked: bool = Field(default=False)
+    unit_layout: str | None = Field(nullable=True)
     programme: "Programme" = Relationship(back_populates="units")
     enrollments: List["UnitEnrollment"] = Relationship(
         back_populates="unit", sa_relationship_kwargs={"cascade": "all, delete-orphan"}

@@ -18,7 +18,6 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { Skeleton } from "@/components/ui/skeleton";
-import { get_my_coursework_repo } from "@/lib/actions/coursework/get_my_coursework_repo";
 
 function formatCommitDate(date: string | null) {
   if (!date) {
@@ -34,16 +33,33 @@ function formatCommitDate(date: string | null) {
   });
 }
 
-async function StudentRepoOverviewContent({
-  courseworkId,
+type CourseworkCommit = {
+  id: string;
+  web_url: string | null;
+  title: string;
+  short_id: string;
+  author_name: string | null;
+  authored_date: string | null;
+  additions: number;
+  deletions: number;
+};
+
+type StudentRepoDataType = {
+  commits: CourseworkCommit[];
+  repo_url: string;
+  total_commits: number;
+};
+
+function StudentRepoOverviewContent({
+  myRepo,
 }: {
-  courseworkId: string;
+  myRepo: StudentRepoDataType | null;
 }) {
-  const repo = await get_my_coursework_repo(courseworkId);
+  const repo = myRepo;
 
   if (!repo) {
     return (
-      <div className="border border-dashed p-4 text-sm h-full">
+      <div className="flex min-h-full min-w-80 flex-1 items-center justify-center rounded-md border border-dashed p-4 text-sm">
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant={"icon"}>
@@ -62,13 +78,14 @@ async function StudentRepoOverviewContent({
 
   const commitCount = repo.total_commits;
   const linesChanged = repo.commits.reduce(
-    (total, commit) => total + commit.additions + commit.deletions,
+    (total: number, commit: CourseworkCommit) =>
+      total + commit.additions + commit.deletions,
     0,
   );
   const latestCommit = repo.commits[0];
 
   return (
-    <div className="space-y-3">
+    <div className="min-h-full min-w-80 space-y-3">
       <a
         href={repo.repo_url}
         target="_blank"
@@ -155,13 +172,16 @@ function StudentRepoOverviewFallback() {
 }
 
 export default function StudentRepoOverview({
-  courseworkId,
+  slug,
+  myRepo,
 }: {
-  courseworkId: string;
+  slug: string;
+  myRepo: StudentRepoDataType | null;
 }) {
+  void slug;
   return (
-    <Card className="h-full">
-      <CardHeader>
+    <Card className="h-full min-h-0 overflow-hidden">
+      <CardHeader className="shrink-0">
         <CardTitle>
           <div className="text-2xl flex flex-row items-center gap-2">
             <Activity />
@@ -172,9 +192,9 @@ export default function StudentRepoOverview({
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className="min-h-0 flex-1">
+      <CardContent className="flex h-auto min-h-0 flex-1 flex-col overflow-auto">
         <Suspense fallback={<StudentRepoOverviewFallback />}>
-          <StudentRepoOverviewContent courseworkId={courseworkId} />
+          <StudentRepoOverviewContent myRepo={myRepo} />
         </Suspense>
       </CardContent>
     </Card>

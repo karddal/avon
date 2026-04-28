@@ -155,8 +155,11 @@ export default function SetupProgressCarousel({
   }
 
   return (
-    <Card className="h-full" data-cy="coursework-setup-progress">
-      <CardHeader>
+    <Card
+      className="h-full min-h-0 overflow-hidden"
+      data-cy="coursework-setup-progress"
+    >
+      <CardHeader className="shrink-0">
         <CardTitle>
           <div className="flex flex-row items-center gap-2 text-2xl">
             <CircleDashed />
@@ -168,10 +171,10 @@ export default function SetupProgressCarousel({
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex h-full min-h-0 flex-col justify-center gap-4">
+      <CardContent className="flex h-auto min-h-0 flex-1 flex-col justify-center gap-4 overflow-auto">
         {activeArea && statusMeta ? (
           <>
-            <div className="flex items-stretch gap-2 sm:gap-3">
+            <div className="flex min-w-80 items-stretch gap-2 sm:gap-3">
               <Button
                 type="button"
                 variant="outline"
@@ -186,7 +189,7 @@ export default function SetupProgressCarousel({
 
               <div
                 className={cn(
-                  "touch-pan-y flex min-h-32 flex-1 flex-col justify-between rounded-xl border p-5 shadow-sm transition-all",
+                  "touch-pan-y flex min-h-32 min-w-0 flex-1 flex-col justify-between rounded-xl border p-5 shadow-sm transition-all",
                   statusMeta.panelClass,
                 )}
                 onPointerDown={handlePointerDown}
