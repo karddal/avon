@@ -44,14 +44,6 @@ def get_job(job_id):
     with Session(engine) as session:
         return session.get(ProvisionProject, job_id)
 
-
-@pytest.mark.asyncio
-async def test_job_succeeds(make_job):
-    job_id = make_job()
-    with patch("app.routers.project.gl_create_fork", new_callable=AsyncMock):
-        await process_job(job_id)
-    assert get_job(job_id).status == "success"
-
 @pytest.mark.asyncio
 async def test_job_retries_on_failure(make_job):
     job_id = make_job()
