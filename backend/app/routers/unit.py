@@ -240,7 +240,6 @@ async def get_unit_with_dates(
         unlocked=unit.unlocked,
         start_date=start,
         end_date=end,
-        unlocked=unit.unlocked
     )
 
 

@@ -27,8 +27,6 @@ import { get_students } from "@/lib/actions/unit/get_students";
 import {
   type SearchResponse,
   search_by_name,
-} from "@/lib/actions/search_by_name";
-import { fail } from "node:assert";
 } from "@/lib/actions/unit/search_by_name";
 
 function _getInitials(name: string) {
