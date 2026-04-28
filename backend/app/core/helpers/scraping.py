@@ -111,7 +111,7 @@ async def scrape_full_programme(payload: PreviewPayload) -> List[ProgrammePrevie
                         end_year=end_year,
                         units=year_units
                     ))
-            except Exception as e:
+            except Exception:
                 continue
 
     return all_years

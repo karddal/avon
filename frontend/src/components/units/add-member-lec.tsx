@@ -75,7 +75,7 @@ export default function AddMemberLecturer({ unit_id }: { unit_id: string }) {
       const disabledU = [...(disabledL?.lecturers || [])];
 
       setDisabledUsers(disabledU);
-    } catch (_error) { }
+    } catch (_error) {}
   }, [unit_id]);
 
   useEffect(() => {

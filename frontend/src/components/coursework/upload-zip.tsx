@@ -173,7 +173,12 @@ export default function ZipUploadPage({
       )}
 
       {status === "Overwriting ZIP..." && uploadStatus === 2 && (
-        <Button size="lg" disabled className="w-full bg-accent" variant="destructive">
+        <Button
+          size="lg"
+          disabled
+          className="w-full bg-accent"
+          variant="destructive"
+        >
           <Spinner className="mr-2 h-4 w-4" />
           Overwriting...
         </Button>

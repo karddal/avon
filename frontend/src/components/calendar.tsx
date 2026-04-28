@@ -38,8 +38,6 @@ export function Calendar29({ props }: { props: calendarProps }) {
   const [openOne, setOpenOne] = React.useState(false);
   const [value, setValue] = React.useState("");
 
-  const currentYear = new Date().getFullYear();
-
   return (
     <div className="flex flex-col gap-3">
       <Label htmlFor="date" className="px-1">
@@ -59,10 +57,10 @@ export function Calendar29({ props }: { props: calendarProps }) {
                 >
                   {props.date
                     ? props.date.toLocaleDateString("en-GB", {
-                      day: "2-digit",
-                      month: "long",
-                      year: "numeric",
-                    })
+                        day: "2-digit",
+                        month: "long",
+                        year: "numeric",
+                      })
                     : "Select date"}
                   <ChevronDownIcon />
                 </Button>
