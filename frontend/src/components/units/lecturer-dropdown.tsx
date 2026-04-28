@@ -114,7 +114,7 @@ export default function LecturerDropdown({
     hasNotificationScope ||
     hasLockingScope ||
     hasDeleteScope;
-    hasDeleteScope ||
+  hasDeleteScope ||
     canEditLayouts;
 
   if (!hasEntries) {
@@ -194,46 +194,47 @@ export default function LecturerDropdown({
             (hasReadScope ||
               hasEnrollScope ||
               canEditLayouts ||
-              hasNotificationScope) && <DropdownMenuSeparator />}
-          {hasManageScope && (
-            <DropdownMenuItem
-              onSelect={() =>
-                unit_update_data.unlocked
-                  ? setShowLock(true)
-                  : setShowUnlock(true)
-              }
-              className="group flex cursor-pointer items-center"
-            >
-              {unit_update_data.unlocked ? (
-                // This is to take an unlocked unit and lock it
-                hasLockingScope ? (
-                  <>
-                    <LockOpen className="mr-2 h-4 w-4 text-green-700 group-data-highlighted:hidden" />
-                    <Lock className="mr-2 hidden h-4 w-4 text-red-600 group-data-highlighted:block" />
+              hasNotificationScope ||
+              hasManageScope
+            ) && <DropdownMenuSeparator />}
+          <DropdownMenuItem
+            onSelect={() =>
+              unit_update_data.unlocked
+                ? setShowLock(true)
+                : setShowUnlock(true)
+            }
+            className="group flex cursor-pointer items-center"
+          >
+            {unit_update_data.unlocked ? (
+              // This is to take an unlocked unit and lock it
+              hasLockingScope ? (
+                <>
+                  <LockOpen className="mr-2 h-4 w-4 text-green-700 group-data-highlighted:hidden" />
+                  <Lock className="mr-2 hidden h-4 w-4 text-red-600 group-data-highlighted:block" />
 
-                    <span className="text-green-700 group-data-highlighted:hidden">
-                      Unlocked
-                    </span>
-                    <span className="hidden text-red-600 group-data-highlighted:inline">
-                      Lock Unit
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className="flex flex-row">
-                          <Lock className="mr-4 h-4 w-4 text-green-700" />
-                          <span className="text-green-700">Unlock</span>
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Only Unit Owner can lock units</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </>
-                )
-              ) : // This is to take a locked unit and unlock it
+                  <span className="text-green-700 group-data-highlighted:hidden">
+                    Unlocked
+                  </span>
+                  <span className="hidden text-red-600 group-data-highlighted:inline">
+                    Lock Unit
+                  </span>
+                </>
+              ) : (
+                <>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex flex-row">
+                        <Lock className="mr-4 h-4 w-4 text-green-700" />
+                        <span className="text-green-700">Unlock</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Only Unit Owner can lock units</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </>
+              )
+            ) : // This is to take a locked unit and unlock it
               hasLockingScope ? (
                 <>
                   <Lock className="mr-2 h-4 w-4 text-red-600 group-data-highlighted:hidden" />
@@ -261,14 +262,7 @@ export default function LecturerDropdown({
                   </Tooltip>
                 </>
               )}
-            </DropdownMenuItem>
-          }
-
-          {hasDeleteScope &&
-            (hasReadScope ||
-              hasEnrollScope ||
-              canEditLayouts ||
-              hasNotificationScope) && <DropdownMenuSeparator />}
+          </DropdownMenuItem>
 
           {hasDeleteScope && (
             <>
