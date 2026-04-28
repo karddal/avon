@@ -9,17 +9,6 @@ import asyncio
 from app.db.session import engine
 
 from app.core.helpers.gitlab import gl_create_fork, gl_create_project, gl_create_skeleton_code, gl_create_template_group, gl_create_template_project, gl_delete_project, gl_delete_projects, gl_get_project, gl_get_projects
-from app.core.helpers.gitlab import (
-    gl_create_fork,
-    gl_create_project,
-    gl_create_skeleton_code,
-    gl_create_template_group,
-    gl_create_template_project,
-    gl_delete_project,
-    gl_delete_projects,
-    gl_get_project,
-    gl_get_projects,
-)
 from app.core.helpers.invitations import (
     gl_inv_add_user,
     gl_inv_batch_get_statuses,
@@ -81,34 +70,6 @@ async def create_templates(template: TemplateCreate, session: session_dependency
         )
 
     return {"success": "i think"}
-
-
-@router.post("/create", status_code=status.HTTP_201_CREATED)
-async def create_projects(project: ProjectCreate, session: session_dependency):
-    statement = select(
-        Coursework.unit_id, Coursework.name, Coursework.gitlab_id
-    ).where(Coursework.id == project.coursework_id)
-    cw_object = session.exec(statement).first()
-    unit_id, name, gitlab_id = cw_object
-
-    statement = select(UnitEnrollment.user_id).where(
-        (UnitEnrollment.unit_id == unit_id) & (UnitEnrollment.type == "student")
-    )
-    students_enrolled = session.exec(statement).all()
-
-    for student in students_enrolled:
-        try:
-            await gl_create_project(
-                name, student, gitlab_id, project.template_group_id, project.template_id
-            )
-        except Exception:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Project for the student: " + student + " could not be created.",
-            )
-
-    return {"unit id": students_enrolled}
-
 
 @router.post("/skeleton-code", status_code=status.HTTP_201_CREATED)
 async def create_skeleton_code(details: ProjectSkeleton):
