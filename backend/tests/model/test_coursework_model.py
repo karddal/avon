@@ -153,3 +153,26 @@ def test_coursework_field_types(session):
     assert isinstance(cw.unit_id, UUID)
     assert isinstance(cw.due_date, datetime)
     assert isinstance(cw.colour, str)
+
+
+def test_coursework_layout_fields_nullable_and_persisted(session):
+    unit_id = create_unit(session).id
+
+    due = datetime.now()
+    cw = Coursework(
+        name="Haskell 2",
+        description="Coursework Description",
+        unit_id=unit_id,
+        due_date=due,
+        colour="abcdef",
+        gitlab_id="12345",
+        coursework_layout_staff='[{"id":"description"}]',
+        coursework_layout_student=None,
+    )
+
+    session.add(cw)
+    session.commit()
+    session.refresh(cw)
+
+    assert cw.coursework_layout_staff == '[{"id":"description"}]'
+    assert cw.coursework_layout_student is None

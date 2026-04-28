@@ -20,7 +20,7 @@ export default async function Layout({
       <Suspense>
         <SidebarCloser></SidebarCloser>
       </Suspense>
-      <SidebarInset>
+      <SidebarInset className="min-h-screen lg:h-screen">
         <header className="flex h-16 shrink-0 items-center justify-between gap-2 px-4 bg-sidebar md:bg-transparent border-b md:border-0">
           <div className="flex flex-row gap-2 items-center">
             <SidebarTrigger className="-ml-1" />
@@ -32,7 +32,9 @@ export default async function Layout({
           </div>
         </header>
 
-        <div className="flex flex-1 flex-col gap-4 px-4 mt-4">{children}</div>
+        <div className="flex flex-1 flex-col gap-4 min-h-0 px-4 mt-4">
+          {children}
+        </div>
       </SidebarInset>
     </SidebarProvider>
   );

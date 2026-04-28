@@ -52,3 +52,23 @@ def test_unit_saving(session):
     assert retrieved.name == "My Unit"
     assert retrieved.description == "Test description"
     assert retrieved.programme_id == pid.id
+
+
+def test_unit_layout_nullable_and_persisted(session):
+    pid = create_programme(session)
+    my_unit = Unit(
+        name="My Unit",
+        description="Test description",
+        unit_code="ABCDEF",
+        colour="ffffff",
+        programme_id=pid.id,
+        gitlab_id="12345",
+        unit_layout='[{"id":"courseworks"}]',
+    )
+
+    session.add(my_unit)
+    session.commit()
+    session.refresh(my_unit)
+
+    retrieved = session.get(Unit, my_unit.id)
+    assert retrieved.unit_layout == '[{"id":"courseworks"}]'

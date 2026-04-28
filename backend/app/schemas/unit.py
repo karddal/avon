@@ -85,7 +85,6 @@ class UnitCreateOwner(BaseModel):
     owner: str
     unlocked: bool | None = None
 
-
 class UnitUpdate(BaseModel):
     name: Name
     description: str
