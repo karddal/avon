@@ -33,7 +33,14 @@ import {
 import { cn } from "@/lib/utils";
 import { columns } from "./columns";
 
-export function TestBatchesTable({ coursework_id }: { coursework_id: string }) {
+export function TestBatchesTable({
+  coursework_id,
+  refreshTable,
+}: {
+  coursework_id: string;
+  refreshTable: () => void;
+}) {
+  void refreshTable;
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -70,7 +77,6 @@ export function TestBatchesTable({ coursework_id }: { coursework_id: string }) {
       // TODO: GET DATA HERE
       const updatedData = await fetch_test_runs(coursework_id);
       setData(updatedData);
-      console.log(updatedData);
     };
     updateData().then(() => {
       table.setGrouping(["batch_id"]);

@@ -42,11 +42,13 @@ export function StudentsTableWithMaybeRepos({
   rowSelection,
   setRowSelection,
   refreshTable,
+  setRefreshTable,
 }: {
   coursework_id: string;
   rowSelection: RowSelectionState;
   setRowSelection: Dispatch<SetStateAction<RowSelectionState>>;
   refreshTable: number;
+  setRefreshTable: Dispatch<SetStateAction<number>>;
 }) {
   const [data, setData] = useState<StudentNameAndPotentiallyRepo[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -56,6 +58,7 @@ export function StudentsTableWithMaybeRepos({
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+  void setRefreshTable;
   // const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
@@ -91,7 +94,6 @@ export function StudentsTableWithMaybeRepos({
       });
       const filteredData = updatedData.filter((s) => s.repo_url == null);
       setData(filteredData);
-      console.log(updatedData);
     };
     updateData().then(() => {
       setLoading(false);

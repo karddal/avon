@@ -16,6 +16,7 @@ os.environ["RUN_BACKGROUND_WORKER"] = "False"
 os.environ["AWS_ECS_CLUSTER"] = "test-cluster"
 os.environ["AWS_RESULTS_QUEUE_URL"] = "https://example.invalid/test-queue"
 os.environ["AWS_BUCKET"] = "test-bucket"
+os.environ["AWS_CDN_BUCKET"] = "test-bucket"
 
 from app.core.security import get_bearer
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer

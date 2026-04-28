@@ -11,7 +11,7 @@ from gitlab.exceptions import GitlabDeleteError, GitlabGetError
 from sqlalchemy import and_, exists
 
 # Adding this back in
-from sqlalchemy.orm import selectinload, load_only
+from sqlalchemy.orm import load_only, selectinload
 from sqlmodel import Session, select
 from starlette.status import HTTP_404_NOT_FOUND
 from types_aiobotocore_ecs.type_defs import RunTaskResponseTypeDef
@@ -64,12 +64,12 @@ from app.schemas.coursework import (
     CourseworkTemplateFile,
     CourseworkTemplateUploadZip,
     CourseworkTemplateUrl,
+    CourseworkTestRuns,
     CourseworkUnitIdRead,
     CourseworkUpdate,
     CourseworkUpdateEngineData,
     CourseworkUpdateFormData,
     StudentWithMaybeRepo,
-    CourseworkTestRuns,
     TestRunBasicInfo,
     TestRunFullInfo,
 )
@@ -81,7 +81,6 @@ logger = logging.getLogger("coursework")
 router = APIRouter(prefix="/coursework", tags=["coursework"])
 session_dependency = Annotated[Session, Depends(get_session)]
 token_dependency = Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]
-
 
 @router.get(
     "/{id}/test_run/{tid}",
@@ -1062,14 +1061,6 @@ async def template_exists(
 async def activate_template(
     cw_id: UUID, gitLabId: str, session: session_dependency, token: token_dependency
 ):
-    try:
-        templateActivation = await gl_activate_template_project(gitLabId)
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="GitLab request failed",
-        )
-
     coursework = session.get(Coursework, cw_id)
     if coursework is None:
         raise HTTPException(
@@ -1082,6 +1073,13 @@ async def activate_template(
         token=token,
         session=session,
     )
+    try:
+        templateActivation = await gl_activate_template_project(gitLabId)
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="GitLab request failed",
+        )
 
     coursework.template_id = templateActivation["templateGitLabId"]
     session.add(coursework)

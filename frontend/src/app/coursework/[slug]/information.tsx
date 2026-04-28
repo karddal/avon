@@ -2,7 +2,14 @@ import { BellElectric, CalendarDays, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatIsoShortDate, formatIsoTime } from "@/lib/date-format";
 
-type courseworkData = {
+// Helper to separate Time and Date for the "Ticker" look
+function parseDateTime(dateStr: string) {
+  const time = formatIsoTime(dateStr);
+  const day = formatIsoShortDate(dateStr);
+  return { time, day };
+}
+
+type CourseworkData = {
   id: string;
   name: string;
   description: string;
@@ -16,37 +23,27 @@ type courseworkData = {
   totalTests: number;
 };
 
-function parseDateTime(dateStr: string) {
-  const time = formatIsoTime(dateStr);
-  const day = formatIsoShortDate(dateStr);
-  return { time, day };
-}
-
-export default async function CourseworkInformation({
+export default function CourseworkInformation({
   slug,
-  token,
+  courseworkData,
 }: {
   slug: string;
-  token?: string;
+  courseworkData?: CourseworkData | null;
 }) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/coursework/${slug}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    },
-  );
-
-  if (!res.ok) throw new Error("Failed to fetch coursework");
-
-  const coursework: courseworkData = await res.json();
-  const start = parseDateTime(coursework.creation_date);
-  const end = parseDateTime(coursework.due_date);
+  void slug;
+  const coursework = courseworkData;
+  const start = coursework
+    ? parseDateTime(coursework.creation_date)
+    : { time: "", day: "" };
+  const end = coursework
+    ? parseDateTime(coursework.due_date)
+    : { time: "", day: "" };
 
   return (
-    <Card data-cy="coursework-information-section" className="h-full">
+    <Card
+      data-cy="coursework-information-section"
+      className="h-full min-h-0 overflow-hidden"
+    >
       <CardHeader className="flex flex-col">
         <CardTitle>
           <div className="text-2xl flex flex-row items-center gap-2">
@@ -58,7 +55,7 @@ export default async function CourseworkInformation({
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="min-h-0 flex-1 overflow-y-auto">
         <div className="flex flex-row items-center justify-evenly gap-8 py-4">
           <div className="flex flex-col gap-2">
             <span className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">

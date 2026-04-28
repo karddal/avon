@@ -94,6 +94,7 @@ export default function StudsListDialogForProvision({
                       setRowSelection={setRowSelection}
                       rowSelection={rowSelection}
                       refreshTable={refreshTable}
+                      setRefreshTable={setRefreshTable}
                     />
                   </Suspense>
                 </div>

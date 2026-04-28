@@ -29,6 +29,7 @@ type DockerProps = {
   set_open_state: Dispatch<SetStateAction<boolean>>;
   gitlab_data: GitlabData;
   refresh: () => void;
+  set_has_provisioned: Dispatch<SetStateAction<boolean>>;
 };
 
 export default function ProvisionCoursework({
@@ -36,16 +37,17 @@ export default function ProvisionCoursework({
   set_open_state,
   gitlab_data,
   refresh,
+  set_has_provisioned,
 }: DockerProps) {
   const [loadingState, setLoadingState] = useState<boolean>(false);
   const [status, setStatus] = useState<number>(0);
   const [showStudsList, setShowStudsList] = useState<boolean>(false);
 
-  const provisionForIndividuals = async (gitlab_data: GitlabData) => {
+  const provisionForIndividuals = async (data: GitlabData) => {
     const req = {
-      name: gitlab_data.name,
-      coursework_id: gitlab_data.coursework_id,
-      template_id: gitlab_data.template_id,
+      name: data.name,
+      coursework_id: data.coursework_id,
+      template_id: data.template_id,
     };
     try {
       setLoadingState(true);
@@ -54,6 +56,7 @@ export default function ProvisionCoursework({
       setLoadingState(false);
       if (result.success) {
         setStatus(2);
+        set_has_provisioned(true);
         toast.success("Projects successfully provisioned");
         refresh();
       } else {

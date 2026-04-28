@@ -1,0 +1,267 @@
+"use client";
+
+import type { ComponentType } from "react";
+import { useEffect, useState } from "react";
+import type { SetupProgressData } from "@/components/coursework/setup-progress";
+import type { CourseworkModuleKey } from "@/components/modules/coursework_layout/coursework-module-registry";
+import { courseworkModuleRegistry } from "@/components/modules/coursework_layout/coursework-module-registry";
+import type { GridItem } from "@/components/modules/coursework_layout/coursework-types";
+import type { StudentNameAndRepo } from "@/lib/actions/coursework/get_student_repos";
+import { cn } from "@/lib/utils";
+
+type CourseworkCommit = {
+  id: string;
+  web_url: string | null;
+  title: string;
+  short_id: string;
+  author_name: string | null;
+  authored_date: string | null;
+  additions: number;
+  deletions: number;
+};
+
+type StudentRepoData = {
+  commits: CourseworkCommit[];
+  repo_url: string;
+  total_commits: number;
+};
+
+type CourseworkData = {
+  id: string;
+  name: string;
+  description: string;
+  code: string;
+  year: number;
+  finished: boolean;
+  color: string;
+  creation_date: string;
+  due_date: string;
+  testsPassed: number;
+  totalTests: number;
+};
+
+type CourseworkRendererProps = {
+  layout: GridItem[];
+  slug: string;
+  repos: StudentNameAndRepo[];
+  totalStudentGroups: number;
+  myRepo: StudentRepoData | null;
+  setupProgressData: SetupProgressData | null;
+  courseworkData: CourseworkData | null;
+  editableModules: CourseworkModuleKey[];
+};
+
+const GRID_ROWS = 3;
+const MD_COLUMNS = 2;
+const DESKTOP_GRID_ROW_SIZE = `max(11rem, calc((100dvh - 14rem) / ${GRID_ROWS}))`;
+
+function getMdSpans(item: GridItem) {
+  return {
+    colSpan: Math.min(Math.max(item.w, 1), MD_COLUMNS),
+    rowSpan: Math.min(Math.max(item.h, 1), 2),
+  };
+}
+
+function canPlaceMdItem(
+  occupied: boolean[][],
+  row: number,
+  col: number,
+  colSpan: number,
+  rowSpan: number,
+) {
+  if (col + colSpan > MD_COLUMNS) return false;
+
+  for (let rowIndex = row; rowIndex < row + rowSpan; rowIndex += 1) {
+    const occupiedRow =
+      occupied[rowIndex] ?? Array.from({ length: MD_COLUMNS }, () => false);
+
+    for (let colIndex = col; colIndex < col + colSpan; colIndex += 1) {
+      if (occupiedRow[colIndex]) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+function markMdItem(
+  occupied: boolean[][],
+  row: number,
+  col: number,
+  colSpan: number,
+  rowSpan: number,
+) {
+  for (let rowIndex = row; rowIndex < row + rowSpan; rowIndex += 1) {
+    occupied[rowIndex] ??= Array.from({ length: MD_COLUMNS }, () => false);
+
+    for (let colIndex = col; colIndex < col + colSpan; colIndex += 1) {
+      occupied[rowIndex][colIndex] = true;
+    }
+  }
+}
+
+function getResponsiveMdLayout(layout: GridItem[]) {
+  const occupied: boolean[][] = [];
+
+  return layout.map((item, index) => {
+    const preferred = getMdSpans(item);
+    let row = 0;
+
+    while (true) {
+      for (let candidateCol = 0; candidateCol < MD_COLUMNS; candidateCol += 1) {
+        if (
+          canPlaceMdItem(
+            occupied,
+            row,
+            candidateCol,
+            preferred.colSpan,
+            preferred.rowSpan,
+          )
+        ) {
+          let colSpan = preferred.colSpan;
+
+          if (
+            candidateCol === 0 &&
+            preferred.colSpan === 1 &&
+            canPlaceMdItem(occupied, row, 0, MD_COLUMNS, preferred.rowSpan)
+          ) {
+            const nextItem = layout[index + 1];
+            const nextColSpan = nextItem ? getMdSpans(nextItem).colSpan : null;
+
+            if (!nextItem || nextColSpan === MD_COLUMNS) {
+              colSpan = MD_COLUMNS;
+            }
+          }
+
+          markMdItem(occupied, row, candidateCol, colSpan, preferred.rowSpan);
+
+          return {
+            ...item,
+            colSpan,
+            rowSpan: preferred.rowSpan,
+          };
+        }
+      }
+
+      row += 1;
+    }
+
+    throw new Error("Failed to place dashboard module in medium layout");
+  });
+}
+
+export default function CourseworkRenderer({
+  layout,
+  slug,
+  repos,
+  totalStudentGroups,
+  myRepo,
+  setupProgressData,
+  courseworkData,
+  editableModules,
+}: CourseworkRendererProps) {
+  const [isDesktopLayout, setIsDesktopLayout] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 1024px)");
+
+    const updateLayoutMode = () => {
+      setIsDesktopLayout(mediaQuery.matches);
+    };
+
+    updateLayoutMode();
+    mediaQuery.addEventListener("change", updateLayoutMode);
+
+    return () => {
+      mediaQuery.removeEventListener("change", updateLayoutMode);
+    };
+  }, []);
+
+  const orderedLayout = [...layout].sort((left, right) => {
+    if (left.y !== right.y) {
+      return left.y - right.y;
+    }
+
+    return left.x - right.x;
+  });
+
+  const mdLayout = getResponsiveMdLayout(orderedLayout);
+  return (
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div
+        className="grid w-full grid-cols-1 auto-rows-[minmax(140px,auto)] gap-3 p-3 sm:gap-4 sm:p-4 md:grid-flow-dense md:grid-cols-2 lg:h-full lg:flex-1 lg:grid-cols-3 lg:auto-rows-auto"
+        style={
+          isDesktopLayout
+            ? {
+                gridTemplateRows: `repeat(${GRID_ROWS}, minmax(0, ${DESKTOP_GRID_ROW_SIZE}))`,
+              }
+            : undefined
+        }
+      >
+        {orderedLayout.length === 0 ? (
+          <div className="col-span-full flex min-h-55 items-center justify-center border border-dashed bg-background px-4 text-center text-sm text-muted-foreground lg:row-span-3">
+            No modules placed yet.
+          </div>
+        ) : null}
+
+        {orderedLayout
+          .filter((item) =>
+            editableModules.includes(item.moduleKey as CourseworkModuleKey),
+          )
+          .map((item) => {
+            const moduleDef = courseworkModuleRegistry[item.moduleKey];
+            const mdItem = mdLayout.find((entry) => entry.id === item.id);
+
+            if (!moduleDef) return null;
+
+            const moduleProps = (() => {
+              switch (item.moduleKey) {
+                case "description":
+                case "information":
+                case "information2":
+                  return { slug, courseworkData };
+                case "repo_overview":
+                  return { repos, totalStudentGroups };
+                case "student_repo_overview":
+                case "student_repo_activity":
+                  return { slug, myRepo };
+                case "setup_progress":
+                  return setupProgressData ?? { areas: [], defaultIndex: 0 };
+                case "student_panel":
+                  return {};
+                default:
+                  return {};
+              }
+            })();
+            const Component = moduleDef.component as ComponentType<
+              typeof moduleProps
+            >;
+
+            return (
+              <div
+                key={item.id}
+                className={cn(
+                  "min-h-35 overflow-hidden md:min-h-45 lg:min-h-0",
+                  mdItem?.colSpan === 2 ? "md:col-span-2" : "md:col-span-1",
+                  mdItem?.rowSpan === 2 ? "md:row-span-2" : "md:row-span-1",
+                )}
+                style={
+                  isDesktopLayout
+                    ? {
+                        gridColumn: `${item.x + 1} / span ${item.w}`,
+                        gridRow: `${item.y + 1} / span ${item.h}`,
+                      }
+                    : undefined
+                }
+              >
+                <div className="h-full min-h-0 overflow-hidden">
+                  <Component {...moduleProps} />
+                </div>
+              </div>
+            );
+          })}
+      </div>
+    </div>
+  );
+}

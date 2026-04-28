@@ -8,8 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function CourseworkStudentPanel() {
   return (
-    <Card className="h-full">
-      <CardHeader>
+    <Card className="h-full min-h-0 overflow-hidden">
+      <CardHeader className="shrink-0">
         <CardTitle>
           <div className="text-2xl flex flex-row items-center gap-2">
             <HeartHandshake />
@@ -20,7 +20,7 @@ export default function CourseworkStudentPanel() {
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className="grid gap-3 md:grid-cols-3">
+      <CardContent className="grid h-auto min-h-0 flex-1 min-w-80 gap-3 overflow-auto md:grid-cols-3">
         <div className="rounded-md border bg-accent/40 p-4">
           <div className="mb-2 flex items-center gap-2 text-sm text-muted-foreground">
             <GitFork className="h-4 w-4" />

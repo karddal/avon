@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  LayoutDashboard,
   Lock,
   LockOpen,
   Menu,
@@ -51,16 +52,20 @@ type UnitUpdateData = {
   unlocked: boolean;
 };
 
+const OPEN_UNIT_LAYOUT_EDITOR_EVENT = "unit-layout-editor:open";
+
 export default function LecturerDropdown({
   slug,
   me,
   unit_update_data,
   scopes,
+  canEditLayouts,
 }: {
   slug: string;
   me: string;
   unit_update_data: UnitUpdateData;
   scopes: Set<string>;
+  canEditLayouts: boolean;
 }) {
   const [showMembers, setShowMembers] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
@@ -100,7 +105,8 @@ export default function LecturerDropdown({
     hasEnrollScope ||
     hasManageScope ||
     hasNotificationScope ||
-    hasDeleteScope;
+    hasDeleteScope ||
+    canEditLayouts;
 
   if (!hasEntries) {
     return null;
@@ -130,17 +136,30 @@ export default function LecturerDropdown({
             </DropDrawerGroup>
           )}
 
-          {hasManageScope && (
+          {canEditLayouts && (
             <>
               {hasReadScope && <DropDrawerSeparator />}
               <DropDrawerGroup>
                 <DropDrawerLabel>Manage</DropDrawerLabel>
+                {hasManageScope && (
+                  <DropDrawerItem
+                    onSelect={() => setShowEdit(true)}
+                    data-cy="unit-edit-menu-item"
+                    icon={<SquarePen />}
+                  >
+                    Edit unit
+                  </DropDrawerItem>
+                )}
                 <DropDrawerItem
-                  onSelect={() => setShowEdit(true)}
-                  data-cy="unit-edit-menu-item"
-                  icon={<SquarePen />}
+                  onSelect={() => {
+                    window.dispatchEvent(
+                      new CustomEvent(OPEN_UNIT_LAYOUT_EDITOR_EVENT),
+                    );
+                  }}
+                  data-cy="unit-edit-layout-menu-item"
+                  icon={<LayoutDashboard />}
                 >
-                  Edit unit
+                  Edit layout
                 </DropDrawerItem>
               </DropDrawerGroup>
             </>
@@ -148,7 +167,7 @@ export default function LecturerDropdown({
 
           {hasNotificationScope && (
             <>
-              {(hasReadScope || hasManageScope) && <DropDrawerSeparator />}
+              {(hasReadScope || canEditLayouts) && <DropDrawerSeparator />}
               <DropDrawerGroup>
                 <DropDrawerLabel>Notifications</DropDrawerLabel>
                 <DropDrawerItem
@@ -165,7 +184,7 @@ export default function LecturerDropdown({
           {hasDeleteScope &&
             (hasReadScope ||
               hasEnrollScope ||
-              hasManageScope ||
+              canEditLayouts ||
               hasNotificationScope) && <DropdownMenuSeparator />}
           {hasManageScope && (
             <DropdownMenuItem
@@ -207,12 +226,12 @@ export default function LecturerDropdown({
           {hasDeleteScope &&
             (hasReadScope ||
               hasEnrollScope ||
-              hasManageScope ||
+              canEditLayouts ||
               hasNotificationScope) && <DropdownMenuSeparator />}
 
           {hasDeleteScope && (
             <>
-              {(hasReadScope || hasManageScope || hasNotificationScope) && (
+              {(hasReadScope || canEditLayouts || hasNotificationScope) && (
                 <DropDrawerSeparator />
               )}
               <DropDrawerGroup>
@@ -231,7 +250,7 @@ export default function LecturerDropdown({
         </DropDrawerContent>
       </DropDrawer>
 
-      {hasReadScope && (
+      {showMembers && hasReadScope && (
         <ListMembers
           canManageEnrollment={hasEnrollScope}
           openState={showMembers}
@@ -241,7 +260,7 @@ export default function LecturerDropdown({
         />
       )}
 
-      {hasManageScope && (
+      {showEdit && hasManageScope && (
         <EditUnit
           unit_update_data={unit_update_data}
           open_state={showEdit}
@@ -249,7 +268,7 @@ export default function LecturerDropdown({
         />
       )}
 
-      {hasNotificationScope && (
+      {showSendNotif && hasNotificationScope && (
         <SendNotification
           unit_id={slug}
           openState={showSendNotif}
@@ -257,7 +276,7 @@ export default function LecturerDropdown({
         />
       )}
 
-      {hasDeleteScope && (
+      {showDelete && hasDeleteScope && (
         <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
           <AlertDialogContent className="flex flex-col gap-4">
             <AlertDialogHeader>
@@ -277,7 +296,7 @@ export default function LecturerDropdown({
         </AlertDialog>
       )}
 
-      {hasManageScope && (
+      {showUnlock && hasManageScope && (
         <AlertDialog open={showUnlock} onOpenChange={setShowUnlock}>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -304,7 +323,7 @@ export default function LecturerDropdown({
           </AlertDialogContent>
         </AlertDialog>
       )}
-      {hasManageScope && (
+      {showLock && hasManageScope && (
         <AlertDialog open={showLock} onOpenChange={setShowLock}>
           <AlertDialogContent>
             <AlertDialogHeader>
