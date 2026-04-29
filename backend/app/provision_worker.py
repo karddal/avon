@@ -1,5 +1,6 @@
 import asyncio
 from datetime import datetime, timedelta
+import random
 from sqlmodel import Session, select
 
 from app.db.session import engine
@@ -12,15 +13,19 @@ from app.core.helpers.gitlab import gl_create_fork
 
 async def run_provision_worker():
     # print("Began")
-    while True:
-        # print("inside me")
-        job = fetch_next_job()
+    try: 
+        while True:
+            # print("inside me")
+            job = fetch_next_job()
 
-        if not job:
-            await asyncio.sleep(1)
-            continue
+            if not job:
+                await asyncio.sleep(1)
+                continue
 
-        await process_job(job)
+            await process_job(job)
+    except asyncio.CancelledError:
+        print("worker shutting down cleanly")
+        return
 
 
 def fetch_next_job():
@@ -30,7 +35,7 @@ def fetch_next_job():
             select(ProvisionProject)
             .where(
                 ProvisionProject.status == "pending",
-                # ProvisionProject.next_run_at <= datetime.utcnow(),
+                ProvisionProject.next_run_at <= datetime.now(),
                 ProvisionProject.attempts <= ProvisionProject.max_attempts
             )
             .limit(1)
@@ -47,9 +52,10 @@ def fetch_next_job():
 
 async def process_job(job_id: int):
     # print("job", job, "is being processed")
+    # switch = random.randint(0, 10)
     with Session(engine) as session:
         job = session.get(ProvisionProject, job_id)
-
+        # if switch == 5:
         try:
             data = await gl_create_fork(
                 name=job.cw_name,
@@ -84,10 +90,20 @@ async def process_job(job_id: int):
             if job.attempts < job.max_attempts:
                 job.attempts += 1
                 job.status = "pending"
-                job.next_run_at = datetime.utcnow() + timedelta(seconds=2 ** job.attempts)
+                job.next_run_at = datetime.now() + timedelta(seconds=2 ** job.attempts)
                 job.last_error = str(e)
             else:
                 job.status = "failed"
                 job.last_error = str(e)
 
         session.commit()
+        # else:
+        #     print("inside here")
+        #     if job.attempts < job.max_attempts:
+        #         job.attempts += 1
+        #         job.status = "pending"
+        #         job.next_run_at = datetime.now() + timedelta(seconds=2 ** job.attempts)
+        #         print("done all of this")
+        #     else:
+        #         job.status = "failed"
+        #     session.commit()
