@@ -70,6 +70,13 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
   const [programmeName, setProgrammeName] = useState<string>("");
   const [selectedOwner, setSelectedOwner] = useState<string>("");
   const [ownerName, setOwnerName] = useState<string>("");
+
+  const [mounted, setMounted] = useState(true);
+
+  useEffect(() => {
+    return () => setMounted(false);
+  }, []);
+
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
   const loadProgrammes = useCallback(async () => {
@@ -201,7 +208,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
           </CardHeader>
           <CardContent className={"flex flex-col content-between"}>
             <form id={"form-flow"} onSubmit={form.handleSubmit(onSubmit)}>
-              <AnimatePresence mode={"wait"}>
+              <AnimatePresence mode={"wait"} initial={false}>
                 {step === 0 && (
                   <motion.div
                     key="step-0"
@@ -246,10 +253,14 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                               className="overflow-hidden rounded-md border"
                             >
                               <Editor
+                                key={step}
                                 height="15vh"
                                 defaultLanguage="markdown"
                                 value={field.value}
-                                onChange={(v) => field.onChange(v ?? "")}
+                                onChange={(v) => {
+                                  if (!mounted) return;
+                                  field.onChange(v ?? "");
+                                }}
                                 theme={isDark ? "vs-dark" : "vs-light"}
                                 options={{
                                   minimap: { enabled: false },
