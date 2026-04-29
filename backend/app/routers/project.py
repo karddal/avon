@@ -17,7 +17,7 @@ from app.core.helpers.invitations import (
 )
 from app.db.session import get_session
 from app.models.coursework import Coursework
-from app.models.projects import ProvisionProject
+from app.models.projects import ProvisionProject, ProvisionBatch
 from app.models.student_repo import StudentRepo
 from app.models.unit_enrollment import UnitEnrollment
 from app.schemas.project import (
@@ -37,6 +37,7 @@ from app.schemas.project import (
     TemplateCreate,
 )
 
+from uuid import UUID
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 session_dependency = Annotated[Session, Depends(get_session)]
@@ -88,9 +89,19 @@ async def create_fork(project: ProjectFork, session: session_dependency):
     statement = select(UnitEnrollment.user_id).where((UnitEnrollment.unit_id == unit_id) & (UnitEnrollment.type == "student"))
     students_enrolled = session.exec(statement).all()
 
+    batch = ProvisionBatch(
+        cw_id=project.coursework_id,
+        total_jobs=len(students_enrolled),
+        completed=0,
+        failed=0,
+        status="running"
+    )
+    session.add(batch)
+    session.commit()
     # Add them to the queue
     for student in students_enrolled:
         job = ProvisionProject(
+            batch_id=batch.id,
             student_id=student,
             cw_id=project.coursework_id,
             cw_name=cw_name,
@@ -99,19 +110,41 @@ async def create_fork(project: ProjectFork, session: session_dependency):
             status="pending"
         )
         session.add(job)
-        
+    
+    session.add(batch)
     session.commit()
-    return {"queued": len(students_enrolled)}
+    
+    # session.commit()
+    print("batch_id", batch.id)
+    return {"batch_id": batch.id}
 
-@router.delete("/clear-queue")
+@router.get("/batch-status/{batch_id}")
+def get_batch_status(batch_id: UUID, session: session_dependency):
+    batch = session.get(ProvisionBatch, batch_id)
+    print("I have been called")
+    return {
+        "total": batch.total_jobs,
+        "completed": batch.completed,
+        "failed": batch.failed,
+        "status": batch.status
+    }
+
+@router.delete("/clear-queue-and-batch")
 async def clear_queue(session: session_dependency):
     statement = select(ProvisionProject)
     jobs = session.exec(statement).all()
     for job in jobs:
         session.delete(job)
     session.commit()
-    statement = select(ProvisionProject)
-    jobs = session.exec(statement).all()
+    
+    # For batch
+    statement = select(ProvisionBatch)
+    batches = session.exec(statement).all()
+    for batch in batches:
+        session.delete(batch)
+    session.commit() 
+    # statement = select(ProvisionBatch)
+    # j = session.exec(statement).all()
     return {"all gone"}
   
 @router.post("/create-fork-for-student", status_code=status.HTTP_201_CREATED)

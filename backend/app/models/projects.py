@@ -8,10 +8,18 @@ from sqlalchemy import String
 from sqlmodel import Field, SQLModel
 
 
+class ProvisionBatch(SQLModel, table=True):
+    id: UUID = Field(primary_key=True, default_factory=uuid.uuid4) 
+    cw_id: UUID
+    total_jobs: int
+    completed: int
+    failed: int
+    status: Literal["pending", "running", "done"] = Field(default="pending", sa_type=String)
 
 class ProvisionProject(SQLModel, table=True):
     id: UUID = Field(primary_key=True, default_factory=uuid.uuid4)
     # str because thats how the uuid is stored
+    batch_id: UUID = Field(nullable=False)
     student_id: str = Field(nullable=False) 
     cw_id: UUID = Field(nullable=False)
     # better to denormalise

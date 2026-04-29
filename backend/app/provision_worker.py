@@ -6,7 +6,7 @@ from sqlmodel import Session, select
 from app.db.session import engine
 
 from sqlmodel import Session, select
-from app.models.projects import ProvisionProject
+from app.models.projects import ProvisionProject, ProvisionBatch
 from app.models.student_repo import StudentRepo
 from app.core.helpers.gitlab import gl_create_fork
 
@@ -14,14 +14,15 @@ from app.core.helpers.gitlab import gl_create_fork
 async def run_provision_worker():
     try: 
         while True:
-            # print("inside me")
             job = fetch_next_job()
 
             if not job:
                 await asyncio.sleep(1)
                 continue
+            
+            job_id, batch_id = job
 
-            await process_job(job)
+            await process_job(job_id, batch_id)
     except asyncio.CancelledError:
         print("worker shutting down cleanly")
         return
@@ -38,19 +39,18 @@ def fetch_next_job():
             )
             .limit(1)
         ).first()
-        # print(job)
         if not job:
-            # print("no job found")
             return None
 
         job.status = "in_progress"
         session.commit()
-        return job.id
+        return job.id, job.batch_id
 
 
-async def process_job(job_id: int):
+async def process_job(job_id: int, batch_id: int):
     with Session(engine) as session:
         job = session.get(ProvisionProject, job_id)
+        batch = session.get(ProvisionBatch, batch_id)
         # if switch == 5:
         try:
             data = await gl_create_fork(
@@ -81,6 +81,7 @@ async def process_job(job_id: int):
             ))
 
             job.status = "success"
+            batch.completed += 1
 
         except Exception as e:
             if job.attempts < job.max_attempts:
@@ -90,6 +91,7 @@ async def process_job(job_id: int):
                 job.last_error = str(e)
             else:
                 job.status = "failed"
+                batch.failed += 1
                 job.last_error = str(e)
 
         session.commit()
@@ -101,5 +103,6 @@ async def process_job(job_id: int):
         #         job.next_run_at = datetime.now() + timedelta(seconds=2 ** job.attempts)
         #         print("done all of this")
         #     else:
+        #         batch.failed += 1  
         #         job.status = "failed"
         #     session.commit()
