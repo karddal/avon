@@ -27,13 +27,10 @@ export async function provision_individual_projects(req: ProjectCreate) {
   );
 
   if (data.ok) {
-    console.log("1");
     const sleep = (ms: number) =>
       new Promise((resolve) => setTimeout(resolve, ms));
     const json = await data.json();
-    console.log("json", json);
     const batchId = json.batch_id;
-    console.log("batch id", batchId);
     while (true) {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/projects/batch-status/${batchId}`,
@@ -47,7 +44,6 @@ export async function provision_individual_projects(req: ProjectCreate) {
         },
       );
       const data = await res.json();
-      console.log("the data from the req", data);
       if (data.total === data.completed + data.failed) {
         break;
       }
