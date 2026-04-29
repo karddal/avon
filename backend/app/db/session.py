@@ -45,12 +45,13 @@ def create_db_and_tables():
 
 SessionDep = Annotated[Session, Depends(get_session)]
 
-from app.provision_worker import run_provision_worker
+# from app.provision_worker import run_provision_worker
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("lifespan started")
     from app.core.settings import settings
+    from app.provision_worker import run_provision_worker
 
     create_db_and_tables()
     app.state.task_group = asyncio.TaskGroup()

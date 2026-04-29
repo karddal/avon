@@ -1,11 +1,9 @@
 import asyncio
 from datetime import datetime, timedelta
-import random
 from sqlmodel import Session, select
 
 from app.db.session import engine
 
-from sqlmodel import Session, select
 from app.models.projects import ProvisionProject, ProvisionBatch
 from app.models.student_repo import StudentRepo
 from app.core.helpers.gitlab import gl_create_fork

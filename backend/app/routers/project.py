@@ -3,10 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlmodel import Session, select
 
-from datetime import datetime, timedelta
-import asyncio
 
-from app.db.session import engine
 
 from app.core.helpers.gitlab import gl_create_fork, gl_create_project, gl_create_skeleton_code, gl_create_template_group, gl_create_template_project, gl_delete_project, gl_delete_projects, gl_get_project, gl_get_projects
 from app.core.helpers.invitations import (
@@ -112,19 +109,16 @@ async def create_fork(project: ProjectFork, session: session_dependency):
 
     # Add them to the queue
     for student in to_insert:
-        try:
-            job = ProvisionProject(
-                batch_id=batch.id,
-                student_id=student,
-                cw_id=project.coursework_id,
-                cw_name=cw_name,
-                gitlab_id=gitlab_id,
-                template_id=project.template_id,
-                status="pending"
-            )
-            session.add(job)
-        except:
-            print("Its' already in")
+        job = ProvisionProject(
+            batch_id=batch.id,
+            student_id=student,
+            cw_id=project.coursework_id,
+            cw_name=cw_name,
+            gitlab_id=gitlab_id,
+            template_id=project.template_id,
+            status="pending"
+        )
+        session.add(job)
     
     session.add(batch)
     session.commit()
