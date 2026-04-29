@@ -5,7 +5,7 @@ on:
       - "frontend/**"
 
 jobs:
-  lint-and-format-check:
+  lint-build-vitest:
     runs-on: ubuntu-latest
     env:
       APP_ENV: development
@@ -24,6 +24,9 @@ jobs:
 
       - name: Run lints
         run: npx biome ci
+      - name: Build Frontend
+        run: npm run build
+        
       - name: Run unit tests with coverage
         run: npm run test:unit:coverage
       - name: Upload unit coverage report
@@ -32,9 +35,6 @@ jobs:
         with:
           name: frontend-unit-coverage
           path: frontend/coverage/unit
-          
-      - name: Build Frontend
-        run: npm run build
       # - name: Run tests
       #   run: bun test
       # - name: Publish Test Report
