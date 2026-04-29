@@ -8,6 +8,7 @@ from sqlalchemy.pool import NullPool
 
 from app.core.env import get_database_url, is_test_app_env, load_backend_env
 from app.sqs_worker import sqs_worker
+# from app.provision_worker import run_provision_worker
 
 load_backend_env()
 
@@ -44,20 +45,29 @@ def create_db_and_tables():
 
 SessionDep = Annotated[Session, Depends(get_session)]
 
+from app.provision_worker import run_provision_worker
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    print("lifespan started")
     from app.core.settings import settings
 
     create_db_and_tables()
     app.state.task_group = asyncio.TaskGroup()
     await app.state.task_group.__aenter__()
-
-    if settings.run_background_worker and not settings.testing_mode:
+    # print("run_background_worker:", settings.run_background_worker)
+    # print("testing_mode:", settings.testing_mode)
+    app.state.task_group.create_task(run_provision_worker()) 
+    if settings.run_background_worker and not settings.testing_mode: 
+        # print("run_background_worker:", settings.run_background_worker)
+        # print("testing_mode:", settings.testing_mode)
         worker_engine = create_engine(db_url, **engine_kwargs)
         worker_session = Session(worker_engine)
         app.state.task_group.create_task(
             sqs_worker(worker_session, settings.aws_results_queue_url)
         )
+        # app.state.task_group.create_task(
+        #    run_provision_worker() 
+        # )
 
     yield
