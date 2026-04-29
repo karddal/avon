@@ -151,7 +151,7 @@ export default function ZipUploadPage({
       {uploadStatus === 0 && status !== "Uploading ZIP..." && (
         <Button
           size="lg"
-          className="w-full bg-accent text-accent-foreground"
+          className="w-full bg-accent text-accent-foreground hover:bg-accent-foreground hover:text-accent hover:cursor-pointer"
           onClick={handleUpload}
           disabled={!file || uploading}
         >
