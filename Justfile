@@ -56,6 +56,11 @@ test-fe:
     @echo "Testing frontend..."
     npm test
 
+unit-fe:
+    @echo "Running frontend unit tests..."
+    npm run test:unit
+
+
 test:
     just fe test
     just be test

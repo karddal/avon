@@ -298,7 +298,16 @@ async def get_unit_students(
 @router.get(
     "/{unit_id}/users", response_model=UnitUsers, status_code=status.HTTP_200_OK
 )
-async def get_unit_users(unit_id: UUID, session: session_dependency):
+async def get_unit_users(
+    unit_id: UUID, session: session_dependency, token: token_dependency
+):
+    await require_scopes(
+        ResourceInformation(Unit, unit_id),
+        Scopes.UNIT_READ,
+        token=token,
+        session=session,
+    )
+
     users = session.exec(
         select(UnitEnrollment.user_id)
         .join(Unit)

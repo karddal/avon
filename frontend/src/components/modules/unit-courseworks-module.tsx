@@ -17,7 +17,9 @@ type UnitCoursework = {
 };
 
 type UnitCourseworksModuleProps = {
-  role: string;
+  role?: string;
+  canCreateCoursework?: boolean;
+  canDeleteCoursework?: boolean;
   unit: {
     id: string;
   };
@@ -27,7 +29,8 @@ type UnitCourseworksModuleProps = {
 };
 
 export default function UnitCourseworksModule({
-  role,
+  canCreateCoursework = false,
+  canDeleteCoursework = false,
   unit,
   courseworks,
 }: UnitCourseworksModuleProps) {
@@ -48,7 +51,7 @@ export default function UnitCourseworksModule({
               <TabsTrigger value="finished">Finished</TabsTrigger>
             </TabsList>
 
-            {(role === "lecturer" || role === "admin") && (
+            {canCreateCoursework && (
               <Button asChild variant="outline" size="sm">
                 <Link href={`/units/${unit.id}/create-coursework`}>
                   <ClipboardPlus />
@@ -64,7 +67,7 @@ export default function UnitCourseworksModule({
                 <UnitsCourseworkList
                   courseworks={courseworks}
                   finished={false}
-                  role={role}
+                  canDeleteCoursework={canDeleteCoursework}
                 />
               </Suspense>
             </ScrollArea>
@@ -76,7 +79,7 @@ export default function UnitCourseworksModule({
                 <UnitsCourseworkList
                   courseworks={courseworks}
                   finished={true}
-                  role={role}
+                  canDeleteCoursework={canDeleteCoursework}
                 />
               </Suspense>
             </ScrollArea>

@@ -1,7 +1,14 @@
 from uuid import uuid4
+from unittest.mock import patch
+
+from fastapi.security import HTTPAuthorizationCredentials
+
+from app.core.settings import settings
 from app.models.programme import Programme
 from sqlmodel import select
 from app.models.unit import Unit
+from app.models.unit_enrollment import UnitEnrollment
+from app.schemas.security import CurrentUser
 from tests.helpers.factories import (
     create_coursework,
     create_lecturers,
@@ -213,3 +220,86 @@ def test_get_all_units(client, session):
     data = response.json()
 
     assert data["units"][0]["id"] == str(unit.id)
+
+
+def test_get_unit_users_requires_unit_read_scope(client, session):
+    previous_ignore_auth = settings.ignore_auth
+    settings.ignore_auth = False
+
+    try:
+        unit = create_unit(session)
+        requesting_user = "not-enrolled-user"
+        session.add(UnitEnrollment(unit_id=unit.id, user_id="student-user", type="student"))
+        session.commit()
+
+        fake_token = HTTPAuthorizationCredentials(
+            scheme="Bearer",
+            credentials="fake.jwt.token",
+        )
+
+        def override_get_bearer():
+            yield fake_token
+
+        from app.core.security import get_bearer
+        from app.main import app
+
+        app.dependency_overrides[get_bearer] = override_get_bearer
+
+        with patch(
+            "app.core.scopes.scopes.verify_token_and_get_user",
+            return_value=CurrentUser(user_id=requesting_user, role="user"),
+        ):
+            response = client.get(f"/units/{unit.id}/users")
+
+        assert response.status_code == 401
+        assert "Missing scopes" in response.json()["detail"]
+    finally:
+        settings.ignore_auth = previous_ignore_auth
+        from app.core.security import get_bearer
+        from app.main import app
+
+        app.dependency_overrides.pop(get_bearer, None)
+
+
+def test_locked_unit_rejects_student_detail_access(client, session):
+    previous_ignore_auth = settings.ignore_auth
+    settings.ignore_auth = False
+
+    try:
+        unit = create_unit(session)
+        unit.unlocked = False
+        requesting_user = "student-user"
+        session.add(unit)
+        session.add(UnitEnrollment(unit_id=unit.id, user_id=requesting_user, type="student"))
+        session.commit()
+
+        fake_token = HTTPAuthorizationCredentials(
+            scheme="Bearer",
+            credentials="fake.jwt.token",
+        )
+
+        def override_get_bearer():
+            yield fake_token
+
+        from app.core.security import get_bearer
+        from app.main import app
+
+        app.dependency_overrides[get_bearer] = override_get_bearer
+
+        with patch(
+            "app.core.scopes.scopes.verify_token_and_get_user",
+            return_value=CurrentUser(user_id=requesting_user, role="user"),
+        ):
+            scopes_response = client.get(f"/units/{unit.id}/scopes")
+            detail_response = client.get(f"/units/{unit.id}")
+
+        assert scopes_response.status_code == 200
+        assert "unit:read" not in scopes_response.json()["scopes"]
+        assert detail_response.status_code == 401
+        assert "Missing scopes" in detail_response.json()["detail"]
+    finally:
+        settings.ignore_auth = previous_ignore_auth
+        from app.core.security import get_bearer
+        from app.main import app
+
+        app.dependency_overrides.pop(get_bearer, None)

@@ -51,6 +51,7 @@ export default function ActiveCourseworkModule() {
         ...coursework,
         unit_id: unit.id,
         unit_code: unit.unit_code,
+        locked: !unit.unlocked && !state.hasPermissions,
       })),
     );
   }, [state]);

@@ -24,13 +24,12 @@ type courseworkResponse = {
 export default function UnitsCourseworkList({
   finished,
   courseworks,
-  role,
+  canDeleteCoursework = false,
 }: {
   finished: boolean;
   courseworks: courseworkResponse;
-  role: string;
+  canDeleteCoursework?: boolean;
 }) {
-  const hasPermissions = role === "lecturer" || role === "admin";
   const now = new Date();
   const courseworkListData = courseworks.courseworks;
   var filtered: courseworkData[] = [];
@@ -70,7 +69,7 @@ export default function UnitsCourseworkList({
             <Coursework
               key={coursework.id}
               props={coursework}
-              hasPermissions={hasPermissions}
+              hasPermissions={canDeleteCoursework}
             />
           ))}
         </div>

@@ -15,6 +15,7 @@ export type ActiveCourseworkUnit = {
   id: string;
   unit_code: string;
   name: string;
+  unlocked: boolean;
   programme_start_date: string;
   programme_end_date: string;
   courseworks: ActiveCoursework[];

@@ -16,6 +16,8 @@ type UnitRendererProps = {
   layout: GridItem[];
   unit: UnitDataProps;
   role: string;
+  canCreateCoursework: boolean;
+  canDeleteCoursework: boolean;
   lecturers: Lecturer[];
   courseworks: courseworkResponse;
 };
@@ -145,6 +147,8 @@ export default function UnitRenderer({
   layout,
   unit,
   role,
+  canCreateCoursework,
+  canDeleteCoursework,
   lecturers,
   courseworks,
 }: UnitRendererProps) {
@@ -233,6 +237,8 @@ export default function UnitRenderer({
                   unit={unit}
                   lecturers={lecturers}
                   role={role}
+                  canCreateCoursework={canCreateCoursework}
+                  canDeleteCoursework={canDeleteCoursework}
                   courseworks={courseworks}
                 />
               </div>

@@ -1,16 +1,17 @@
 "use server";
 
+import { getRequestJWT } from "@/lib/auth-utils";
+
 export async function getProgrammes() {
   "use server";
-  //   const token = await getRequestJWT();
+  const token = await getRequestJWT();
   const r = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/programmes/`, {
     method: "GET",
-    credentials: "include",
     headers: {
+      Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
   });
-  // const data = await r.json();
   if (!r.ok) {
     const json = await r.json();
     return {

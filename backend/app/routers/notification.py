@@ -1,11 +1,14 @@
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from starlette import status
 
+from app.core.scopes.scopes import ResourceInformation, Scopes, require_scopes
 from app.core.security import get_current_user
+from app.core.security import get_bearer
 from app.db.session import get_session
 from app.models.notification import Notification
 from app.models.unit import Unit
@@ -13,10 +16,19 @@ from app.schemas.notification import NotificationAllInfo, CreateNotification, Un
 
 router = APIRouter(prefix="/notification", tags=["notification"])
 session_dependency = Annotated[Session, Depends(get_session)]
+token_dependency = Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]
 
 @router.get("/{id}", response_model=NotificationAllInfo)
-async def get_notification(id: str, session: session_dependency):
-    notif = session.get(Notification, id)
+async def get_notification(
+    id: str,
+    session: session_dependency,
+    me: str = Depends(get_current_user),
+):
+    notif = session.get(Notification, uuid.UUID(id))
+    if notif is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Notification not found")
+    if notif.recipient_id != me:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
     return NotificationAllInfo(
 
     id=notif.id, unit=UnitInfo(
@@ -26,6 +38,10 @@ async def get_notification(id: str, session: session_dependency):
 @router.get("/{id}/mark_read", status_code=status.HTTP_200_OK)
 async def mark_as_read(id: str, session: session_dependency, me: str = Depends(get_current_user)):
     notification = session.get(Notification, uuid.UUID(id))
+    if notification is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Notification not found")
+    if notification.recipient_id != me:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
     notification.viewed = True
     session.add(notification)
     session.commit()
@@ -33,8 +49,21 @@ async def mark_as_read(id: str, session: session_dependency, me: str = Depends(g
     return status.HTTP_200_OK
 
 @router.post("/create", status_code=status.HTTP_201_CREATED)
-async def create_notification(notification: CreateNotification, session: session_dependency, me: str = Depends(get_current_user)):
+async def create_notification(
+    notification: CreateNotification,
+    session: session_dependency,
+    token: token_dependency,
+    me: str = Depends(get_current_user),
+):
     unit = session.get(Unit, uuid.UUID(notification.unit_id))
+    if unit is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Unit not found")
+    await require_scopes(
+        ResourceInformation(Unit, unit.id),
+        Scopes.UNIT_SEND_NOTIFICATION,
+        token=token,
+        session=session,
+    )
     for user in unit.enrollments:
         if user.type == "student":
             to_add = Notification(

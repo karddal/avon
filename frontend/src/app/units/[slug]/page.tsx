@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
 import UnitName from "@/app/units/[slug]/name";
@@ -67,13 +68,18 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
   const s = await requireSession();
   const token = await getRequestJWT();
   const scopes: Set<string> = await get_unit_scopes(slug);
+  if (!scopes.has("unit:read")) {
+    redirect("/units");
+  }
 
   let userRole = s.user.role;
   const me = s.user.id;
   if (!userRole) {
     userRole = "user";
   }
-  const canEditLayouts = userRole === "lecturer" || userRole === "admin";
+  const canEditLayouts = scopes.has("unit:manage");
+  const canCreateCoursework = scopes.has("unit:coursework_create");
+  const canDeleteCoursework = scopes.has("unit:coursework_delete");
 
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/units/${slug}/`,
@@ -151,7 +157,7 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
           >
             <div className="flex flex-row gap-4 justify-between items-center">
               <UnitName slug={slug} token={token} />
-              {(userRole === "lecturer" || userRole === "admin") && (
+              {scopes.size > 0 && (
                 <LecturerDropdown
                   unit_update_data={data}
                   me={me}
@@ -173,6 +179,8 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
           unit={data}
           role={userRole}
           canEditLayouts={canEditLayouts}
+          canCreateCoursework={canCreateCoursework}
+          canDeleteCoursework={canDeleteCoursework}
           lecturers={results}
           courseworks={courseworkResponse}
         />

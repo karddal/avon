@@ -66,6 +66,9 @@ async def test_owner_enrollment_gets_lecturer_scopes(session):
 @pytest.mark.asyncio
 async def test_authenticate_user_resolves_scopes_from_id_claim(session):
     unit = create_unit(session)
+    unit.unlocked = True
+    session.add(unit)
+    session.commit()
     user_id = "user-from-id-claim"
     session.add(UnitEnrollment(unit_id=unit.id, user_id=user_id, type="student"))
     session.commit()
@@ -93,6 +96,9 @@ async def test_authenticate_user_resolves_scopes_from_id_claim(session):
 @pytest.mark.asyncio
 async def test_authenticate_user_resolves_scopes_when_resource_information_uses_model_class(session):
     unit = create_unit(session)
+    unit.unlocked = True
+    session.add(unit)
+    session.commit()
     user_id = "user-from-model-class"
     session.add(UnitEnrollment(unit_id=unit.id, user_id=user_id, type="student"))
     session.commit()
@@ -112,3 +118,17 @@ async def test_authenticate_user_resolves_scopes_when_resource_information_uses_
         )
 
     assert Scopes.UNIT_READ in authenticated.scopes
+
+
+@pytest.mark.asyncio
+async def test_locked_unit_student_enrollment_gets_no_read_scope(session):
+    unit = create_unit(session)
+    unit.unlocked = False
+    user_id = "locked-student"
+    session.add(unit)
+    session.add(UnitEnrollment(unit_id=unit.id, user_id=user_id, type="student"))
+    session.commit()
+
+    scopes = await resolve_unit_scopes(user_id, unit.id, session)
+
+    assert Scopes.UNIT_READ not in scopes

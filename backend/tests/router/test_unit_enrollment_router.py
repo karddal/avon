@@ -192,3 +192,46 @@ def test_transfer_owner_rejects_non_owner_without_enroll_scope(client, session: 
         from app.main import app
 
         app.dependency_overrides.pop(get_bearer, None)
+
+
+def test_batch_enroll_students_rejects_lecturer_without_enroll_scope(client, session: Session):
+    previous_ignore_auth = settings.ignore_auth
+    settings.ignore_auth = False
+
+    try:
+        unit_id = create_unit(session).id
+        requesting_user = "lecturer-user"
+        session.add(UnitEnrollment(unit_id=unit_id, user_id=requesting_user, type="lecturer"))
+        session.commit()
+
+        fake_token = HTTPAuthorizationCredentials(
+            scheme="Bearer",
+            credentials="fake.jwt.token",
+        )
+
+        def override_get_bearer():
+            yield fake_token
+
+        from app.core.security import get_bearer
+        from app.main import app
+
+        app.dependency_overrides[get_bearer] = override_get_bearer
+
+        with patch(
+            "app.core.scopes.scopes.verify_token_and_get_user",
+            return_value=CurrentUser(user_id=requesting_user, role="lecturer"),
+        ):
+            response = client.post(
+                "/unit_enrollment/batch",
+                json={"unit_id": str(unit_id), "user_ids": [test_user]},
+            )
+
+        assert response.status_code == 401
+        assert "Missing scopes" in response.json()["detail"]
+        assert session.get(UnitEnrollment, (unit_id, test_user)) is None
+    finally:
+        settings.ignore_auth = previous_ignore_auth
+        from app.core.security import get_bearer
+        from app.main import app
+
+        app.dependency_overrides.pop(get_bearer, None)
