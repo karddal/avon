@@ -26,7 +26,7 @@ jobs:
         run: npx biome ci
       - name: Build Frontend
         run: npm run build
-        
+
       - name: Run unit tests with coverage
         run: npm run test:unit:coverage
       - name: Upload unit coverage report
@@ -44,6 +44,7 @@ jobs:
       #     report_paths: '**/ci/*.xml'
 
   run-frontend-tests:
+    needs: lint-build-vitest
     runs-on: ubuntu-latest
     env:
       APP_ENV: test
