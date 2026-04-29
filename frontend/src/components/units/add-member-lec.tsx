@@ -62,7 +62,7 @@ export default function AddMemberLecturer({ unit_id }: { unit_id: string }) {
     if (response.success) {
       toast.success("Added lecturer(s) to unit!");
     } else {
-      toast.error("Adding failed! ");
+      toast.error("Lecturer(s) has already been added!");
     }
   }
 

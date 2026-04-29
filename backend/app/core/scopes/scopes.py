@@ -48,6 +48,7 @@ class Scopes(Enum):
     UNIT_COURSEWORK_DELETE = "unit:coursework_delete"  # Delete coursework for a unit
     UNIT_COURSEWORK_GITLAB = "unit:coursework_gitlab"  # Manage coursework GitLab
     UNIT_COURSEWORK_ENGINE = "unit:coursework_engine"  # Manage Engine for coursework
+    UNIT_LOCKING = "unit:locking"
 
     COURSEWORK_ALL = "coursework:all"  # Read all courseworks
 
@@ -80,6 +81,7 @@ ENROLLMENT_TYPE_SCOPES: dict[str, list[Scopes]] = {
         Scopes.UNIT_COURSEWORK_DELETE,
         Scopes.UNIT_COURSEWORK_GITLAB,
         Scopes.UNIT_COURSEWORK_ENGINE,
+        Scopes.UNIT_LOCKING
     ],
 }
 

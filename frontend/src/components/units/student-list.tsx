@@ -35,6 +35,7 @@ export default function StudentList({
 
   async function handleDelete(id: string) {
     const result = await remove_user_enrollment(unit_id, id);
+    console.log(result);
     if (result) {
       toast.success("Student unenrolled successfully");
     } else {
@@ -51,6 +52,9 @@ export default function StudentList({
       if (studentIds && studentIds.length > 0) {
         const enrichedStudents = await get_batch_user_info(studentIds);
         setStudents(enrichedStudents);
+      } else {
+        // when the last student is removed, setStudents should be empty
+        setStudents([]);
       }
     } finally {
       setLoading(false);

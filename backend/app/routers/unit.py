@@ -203,8 +203,6 @@ async def get_unit_details(
             status_code=status.HTTP_404_NOT_FOUND, detail="Unit not found"
         )
 
-    print("[BACKEND] UNIT:", unit)
-
     return unit
 
 
@@ -451,7 +449,7 @@ async def unlockUnit(
 ):
     await require_scopes(
         ResourceInformation(type=Unit, id=unit_id),
-        Scopes.UNIT_MANAGE,
+        Scopes.UNIT_LOCKING,
         token=token,
         session=session,
     )
@@ -473,7 +471,7 @@ async def unlockUnit(
 async def lockUnit(unit_id: UUID, token: token_dependency, session: session_dependency):
     await require_scopes(
         ResourceInformation(type=Unit, id=unit_id),
-        Scopes.UNIT_MANAGE,
+        Scopes.UNIT_LOCKING,
         token=token,
         session=session,
     )

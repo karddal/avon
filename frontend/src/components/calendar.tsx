@@ -38,8 +38,6 @@ export function Calendar29({ props }: { props: calendarProps }) {
   const [openOne, setOpenOne] = React.useState(false);
   const [value, setValue] = React.useState("");
 
-  const currentYear = new Date().getFullYear();
-
   return (
     <div className="flex flex-col gap-3">
       <Label htmlFor="date" className="px-1">
@@ -75,8 +73,8 @@ export function Calendar29({ props }: { props: calendarProps }) {
                   mode="single"
                   selected={props.date}
                   captionLayout="dropdown"
-                  fromYear={currentYear - 10}
-                  toYear={currentYear + 20}
+                  fromYear={props.date.getFullYear()}
+                  toYear={props.date.getFullYear() + 2}
                   onSelect={(d) => {
                     if (d) {
                       const nextDate = new Date(props.date);

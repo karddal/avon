@@ -17,9 +17,8 @@ const Calendar29 = dynamic(
   { ssr: false },
 );
 
-import Editor from "@monaco-editor/react";
 import Link from "next/link";
-import { useTheme } from "next-themes";
+import { MarkdownEditor } from "@/components/markdown-editor";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
@@ -82,15 +81,18 @@ export const IntForm = ({
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [alertText, setAlertText] = useState<string>("");
   const [step, setStep] = useState<number>(0);
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
   const today = new Date();
   const _router = useRouter();
   const s = slug;
   const formSchema = z.object({
-    name: z.string().min(2, {
-      message: "Name must be at least 2 characters.",
-    }),
+    name: z
+      .string()
+      .regex(/^[A-Za-z0-9](?:[A-Za-z0-9]|[ \-(][A-Za-z0-9])*(?:\))?$/, {
+        message: "Only alphanumeric characters and hyphens are allowed",
+      })
+      .min(2, {
+        message: "Name must be at least 2 characters.",
+      }),
     description: z.string().min(2, {
       message: "Description must be at least 2 characters.",
     }),
@@ -171,7 +173,7 @@ export const IntForm = ({
   const due_date = form.watch("due_date");
   return (
     <div className="flex flex-1 flex-row gap-4 px-4 sm:justify-center sm:align-center sm:items-center">
-      <div className="flex sm:flex-row w-full lg:w-[70%] gap-4 mb-2 h-fit mb-2">
+      <div className="flex sm:flex-row w-full lg:w-[70%] gap-4 h-fit mb-2">
         <Card className={"flex-1"}>
           <Progress value={step * 50} className={"rounded-none"}></Progress>
           <CardHeader>
@@ -194,7 +196,7 @@ export const IntForm = ({
             className={"flex h-full flex-col content-between justify-between"}
           >
             <form id={"form-flow"} onSubmit={form.handleSubmit(onSubmit)}>
-              <AnimatePresence mode={"wait"}>
+              <AnimatePresence mode={"wait"} initial={false}>
                 {step === 0 && (
                   <motion.div
                     key="step-0"
@@ -233,30 +235,10 @@ export const IntForm = ({
                             <FieldLabel htmlFor={"form-flow-description"}>
                               Give your coursework a description
                             </FieldLabel>
-                            <div
-                              data-cy="markdown-editor"
-                              className="overflow-hidden rounded-md border"
-                            >
-                              <Editor
-                                height="15vh"
-                                defaultLanguage="markdown"
-                                value={field.value}
-                                onChange={(v) => field.onChange(v ?? "")}
-                                theme={isDark ? "vs-dark" : "vs-light"}
-                                options={{
-                                  minimap: { enabled: false },
-                                  wordWrap: "on",
-                                  lineNumbers: "off",
-                                  folding: false,
-                                  scrollBeyondLastLine: false,
-                                  fontSize: 14,
-                                  quickSuggestions: false,
-                                  suggestOnTriggerCharacters: false,
-                                  wordBasedSuggestions: "off",
-                                  parameterHints: { enabled: false },
-                                }}
-                              />
-                            </div>
+                            <MarkdownEditor
+                              value={field.value}
+                              onChange={field.onChange}
+                            />
                             {fieldState.invalid && (
                               <FieldError errors={[fieldState.error]} />
                             )}
@@ -288,8 +270,8 @@ export const IntForm = ({
                         onClick={() => {
                           form
                             .trigger(["name", "description", "due_date"])
-                            .then((_result) => {
-                              if (form.formState.isValid) {
+                            .then((isValid) => {
+                              if (isValid) {
                                 nextStep(step, setStep);
                               }
                             });
@@ -444,8 +426,8 @@ export const IntForm = ({
                         <Button
                           type={"button"}
                           onClick={() => {
-                            form.trigger(["color"]).then((_result) => {
-                              if (form.formState.isValid) {
+                            form.trigger(["color"]).then((isValid) => {
+                              if (isValid) {
                                 nextStep(step, setStep);
                               }
                             });

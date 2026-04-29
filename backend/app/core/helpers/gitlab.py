@@ -54,8 +54,7 @@ async def gl_create_programme(name):
                     "error": data.get("message") or "Failed to create GitLab group"
                 }
 
-        except httpx.RequestError as err:
-            print(f"[BACKEND] Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
 
     return {
@@ -87,8 +86,7 @@ async def gl_delete_programme(gitlab_group_id):
                         "error": data.get("message") or "Failed to delete GitLab group"
                     }
 
-            except httpx.RequestError as err:
-                print(f"Network Error: {err}")
+            except httpx.RequestError:
                 raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
     return {
         "success": True
@@ -117,8 +115,7 @@ async def gl_update_programme(gitlab_group_id, name):
                     "success": False,
                     "error": data.get("message") or "Failed to update GitLab group"
                 }
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
     return {
         "success": True,
@@ -161,8 +158,7 @@ async def gl_create_unit(name, programme_id):
                     "error": data.get("message") or "Failed to create GitLab group"
                 }
 
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
 
     return {
@@ -193,8 +189,7 @@ async def gl_delete_unit(gitlab_group_id):
                         "error": data.get("message") or "Failed to delete GitLab group"
                     }
 
-            except httpx.RequestError as err:
-                print(f"Network Error: {err}")
+            except httpx.RequestError:
                 raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
     return {
         "success": True
@@ -223,8 +218,7 @@ async def gl_update_unit(gitlab_group_id, name):
                     "success": False,
                     "error": data.get("message") or "Failed to update GitLab group"
                 }
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
     return {
         "success": True,
@@ -266,8 +260,7 @@ async def gl_create_coursework(name, unit_id):
                     "error": data.get("message") or "Failed to create GitLab group"
                 }
 
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
 
     return {
@@ -307,8 +300,7 @@ async def gl_create_template_group(coursework_id):
                     "error": data.get("message") or "Failed to create GitLab group"
                 }
 
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
 
     return {
@@ -345,8 +337,7 @@ async def gl_create_template_project(group_id):
                     "error": data.get("message") or "Failed to create GitLab group"
                 }
 
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
 
     return data
@@ -379,8 +370,7 @@ async def gl_create_skeleton_code(group_id, coursework_name):
                     "error": data.get("message") or "Failed to create GitLab group"
                 }
 
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
 
     return response
@@ -416,8 +406,7 @@ async def gl_create_fork(name, user_id, group_id, template_id):
                     "error": data.get("message") or "Failed to create GitLab group"
                 }
 
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
 
     print("CREATE FORK DATA: ", data)
@@ -438,8 +427,7 @@ async def gl_get_project(project_id):
                 timeout=10.0
             )
             data = response.json()
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
 
     project_data = {"id": data["id"], "name": data["name"], "path": data["path"], "web_url": data["web_url"]}
@@ -568,8 +556,7 @@ async def gl_delete_project(project_id):
                 timeout=10.0
             )
 
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
 
     return response
@@ -596,8 +583,7 @@ async def gl_get_projects(group_id):
                     "error": "Failed to find "
                 }
 
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
 
     coursework_data = []
@@ -714,8 +700,7 @@ async def gl_delete_coursework(gitlab_group_id):
                         "error": data.get("message") or "Failed to delete GitLab group"
                     }
 
-            except httpx.RequestError as err:
-                print(f"Network Error: {err}")
+            except httpx.RequestError:
                 raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
 
     return {
@@ -745,8 +730,7 @@ async def gl_update_coursework(gitlab_group_id, name):
                     "success": False,
                     "error": data.get("message") or "Failed to update GitLab group"
                 }
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
     return {
         "success": True,
@@ -786,8 +770,7 @@ async def gl_activate_template_project(coursework_id):
 
             data = response.json()
 
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(
                 status_code=500,
                 detail="Internal Server Error when connecting to GitLab",
@@ -823,8 +806,7 @@ async def gl_template_files(template_id):
                 )
 
             data = response.json()
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(
                 status_code=500,
                 detail="Internal Server Error when connecting to GitLab",
@@ -854,8 +836,7 @@ async def gl_template_urls(template_id):
 
             data = response.json()
 
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(
                 status_code=500,
                 detail="Internal Server Error when connecting to GitLab",

@@ -56,7 +56,6 @@ async def scrape_full_programme(payload: PreviewPayload) -> List[ProgrammePrevie
     ayr_code = params.get('ayrCode', [""])[0]
 
     if not prog_code or not ayr_code:
-        print(f"DEBUG: Failed to parse URL. Prog: {prog_code}, Ayr: {ayr_code}")
         return []
 
     raw_year = ayr_code.replace("/", "-")
@@ -112,8 +111,7 @@ async def scrape_full_programme(payload: PreviewPayload) -> List[ProgrammePrevie
                         end_year=end_year,
                         units=year_units
                     ))
-            except Exception as e:
-                print(f"DEBUG: Error fetching Year {level}: {e}")
+            except Exception:
                 continue
 
     return all_years

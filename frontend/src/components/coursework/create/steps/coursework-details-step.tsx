@@ -1,9 +1,7 @@
 "use client";
 
-import Editor from "@monaco-editor/react";
 import { ArrowRight, OctagonAlert } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useTheme } from "next-themes";
 import { Controller, type UseFormReturn } from "react-hook-form";
 import type {
   UnitData,
@@ -14,6 +12,7 @@ import {
   validateDueDateAgainstUnitEnd,
 } from "@/components/coursework/create/utils/courseowrk-form-helpers";
 import type { CourseworkFormValues } from "@/components/coursework/create/utils/coursework-form-schema";
+import { MarkdownEditor } from "@/components/markdown-editor";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -53,8 +52,6 @@ export function CourseworkDetailsStep({
   selectedUnitError,
   onNext,
 }: Props) {
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
   return (
     <FieldGroup>
       <Controller
@@ -144,32 +141,9 @@ export function CourseworkDetailsStep({
         render={({ field, fieldState }) => (
           <Field data-invalid={fieldState.invalid}>
             <FieldLabel htmlFor="form-flow-description">
-              coursework description
+              Coursework Description
             </FieldLabel>
-            <div
-              data-cy="markdown-editor"
-              className="overflow-hidden rounded-md border"
-            >
-              <Editor
-                height="15vh"
-                defaultLanguage="markdown"
-                value={field.value}
-                onChange={(v) => field.onChange(v ?? "")}
-                theme={isDark ? "vs-dark" : "vs-light"}
-                options={{
-                  minimap: { enabled: false },
-                  wordWrap: "on",
-                  lineNumbers: "off",
-                  folding: false,
-                  scrollBeyondLastLine: false,
-                  fontSize: 14,
-                  quickSuggestions: false,
-                  suggestOnTriggerCharacters: false,
-                  wordBasedSuggestions: "off",
-                  parameterHints: { enabled: false },
-                }}
-              />
-            </div>
+            <MarkdownEditor value={field.value} onChange={field.onChange} />
             {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
           </Field>
         )}

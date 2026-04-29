@@ -13,6 +13,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -36,6 +37,11 @@ import {
   DropDrawerSeparator,
   DropDrawerTrigger,
 } from "@/components/ui/dropdrawer";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import DeleteUnitButton from "@/components/units/delete-unit-button";
 import EditUnit from "@/components/units/edit-unit";
 import ListMembers from "@/components/units/list-members";
@@ -98,6 +104,7 @@ export default function LecturerDropdown({
   const hasReadScope = scopes.has("unit:read");
   const hasEnrollScope = scopes.has("unit:enroll");
   const hasManageScope = scopes.has("unit:manage");
+  const hasLockingScope = scopes.has("unit:locking");
   const hasNotificationScope = scopes.has("unit:send_notification");
   const hasDeleteScope = scopes.has("unit:delete");
   const hasEntries =
@@ -105,8 +112,9 @@ export default function LecturerDropdown({
     hasEnrollScope ||
     hasManageScope ||
     hasNotificationScope ||
-    hasDeleteScope ||
-    canEditLayouts;
+    hasLockingScope ||
+    hasDeleteScope;
+  hasDeleteScope || canEditLayouts;
 
   if (!hasEntries) {
     return null;
@@ -185,17 +193,19 @@ export default function LecturerDropdown({
             (hasReadScope ||
               hasEnrollScope ||
               canEditLayouts ||
-              hasNotificationScope) && <DropdownMenuSeparator />}
-          {hasManageScope && (
-            <DropdownMenuItem
-              onSelect={() =>
-                unit_update_data.unlocked
-                  ? setShowLock(true)
-                  : setShowUnlock(true)
-              }
-              className="group flex cursor-pointer items-center"
-            >
-              {unit_update_data.unlocked ? (
+              hasNotificationScope ||
+              hasManageScope) && <DropdownMenuSeparator />}
+          <DropdownMenuItem
+            onSelect={() =>
+              unit_update_data.unlocked
+                ? setShowLock(true)
+                : setShowUnlock(true)
+            }
+            className="group flex cursor-pointer items-center"
+          >
+            {unit_update_data.unlocked ? (
+              // This is to take an unlocked unit and lock it
+              hasLockingScope ? (
                 <>
                   <LockOpen className="mr-2 h-4 w-4 text-green-700 group-data-highlighted:hidden" />
                   <Lock className="mr-2 hidden h-4 w-4 text-red-600 group-data-highlighted:block" />
@@ -209,25 +219,48 @@ export default function LecturerDropdown({
                 </>
               ) : (
                 <>
-                  <Lock className="mr-2 h-4 w-4 text-red-600 group-data-highlighted:hidden" />
-                  <LockOpen className="mr-2 hidden h-4 w-4 text-green-700 group-data-highlighted:block" />
-
-                  <span className="text-red-600 group-data-highlighted:hidden">
-                    Locked
-                  </span>
-                  <span className="hidden text-green-700 group-data-highlighted:inline">
-                    Unlock Unit
-                  </span>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex flex-row">
+                        <Lock className="mr-4 h-4 w-4 text-green-700" />
+                        <span className="text-green-700">Unlock</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Only Unit Owner can lock units</p>
+                    </TooltipContent>
+                  </Tooltip>
                 </>
-              )}
-            </DropdownMenuItem>
-          )}
+              )
+            ) : // This is to take a locked unit and unlock it
+            hasLockingScope ? (
+              <>
+                <Lock className="mr-2 h-4 w-4 text-red-600 group-data-highlighted:hidden" />
+                <LockOpen className="mr-2 hidden h-4 w-4 text-green-700 group-data-highlighted:block" />
 
-          {hasDeleteScope &&
-            (hasReadScope ||
-              hasEnrollScope ||
-              canEditLayouts ||
-              hasNotificationScope) && <DropdownMenuSeparator />}
+                <span className="text-red-600 group-data-highlighted:hidden">
+                  Locked
+                </span>
+                <span className="hidden text-green-700 group-data-highlighted:inline">
+                  Unlock Unit
+                </span>
+              </>
+            ) : (
+              <>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex flex-row">
+                      <Lock className="mr-4 h-4 w-4 text-red-600" />
+                      <span className="text-red-600">Locked</span>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Only Unit Owner can unlock units</p>
+                  </TooltipContent>
+                </Tooltip>
+              </>
+            )}
+          </DropdownMenuItem>
 
           {hasDeleteScope && (
             <>
@@ -250,7 +283,7 @@ export default function LecturerDropdown({
         </DropDrawerContent>
       </DropDrawer>
 
-      {showMembers && hasReadScope && (
+      {hasReadScope && (
         <ListMembers
           canManageEnrollment={hasEnrollScope}
           openState={showMembers}
@@ -260,7 +293,7 @@ export default function LecturerDropdown({
         />
       )}
 
-      {showEdit && hasManageScope && (
+      {hasManageScope && (
         <EditUnit
           unit_update_data={unit_update_data}
           open_state={showEdit}
@@ -268,7 +301,7 @@ export default function LecturerDropdown({
         />
       )}
 
-      {showSendNotif && hasNotificationScope && (
+      {hasNotificationScope && (
         <SendNotification
           unit_id={slug}
           openState={showSendNotif}
@@ -276,9 +309,9 @@ export default function LecturerDropdown({
         />
       )}
 
-      {showDelete && hasDeleteScope && (
+      {hasDeleteScope && (
         <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
-          <AlertDialogContent className="flex flex-col gap-4">
+          <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
               <AlertDialogDescription>
@@ -287,16 +320,14 @@ export default function LecturerDropdown({
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="h-10 w-full sm:w-auto">
-                Cancel
-              </AlertDialogCancel>
-              <DeleteUnitButton className="w-full sm:w-auto" unitId={slug} />
+              <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
+              <DeleteUnitButton unitId={slug} />
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
       )}
 
-      {showUnlock && hasManageScope && (
+      {hasLockingScope && (
         <AlertDialog open={showUnlock} onOpenChange={setShowUnlock}>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -307,7 +338,7 @@ export default function LecturerDropdown({
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
               <Button
                 size="lg"
                 className="bg-green-700 text-white hover:bg-green-800 focus:bg-green-700"
@@ -323,7 +354,7 @@ export default function LecturerDropdown({
           </AlertDialogContent>
         </AlertDialog>
       )}
-      {showLock && hasManageScope && (
+      {hasLockingScope && (
         <AlertDialog open={showLock} onOpenChange={setShowLock}>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -334,7 +365,7 @@ export default function LecturerDropdown({
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="h-full">Cancel</AlertDialogCancel>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
               <Button
                 size="lg"
                 className="bg-red-600 text-white hover:bg-red-700 focus:bg-red-600"
