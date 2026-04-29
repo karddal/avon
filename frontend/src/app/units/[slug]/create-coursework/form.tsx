@@ -6,7 +6,7 @@ import { ArrowLeft, ArrowRight, OctagonAlert, Send } from "lucide-react";
 import { easeIn, easeOut } from "motion";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { type Dispatch, type SetStateAction, useState } from "react";
+import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { HexColorInput, HexColorPicker } from "react-colorful";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -82,6 +82,12 @@ export const IntForm = ({
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [alertText, setAlertText] = useState<string>("");
   const [step, setStep] = useState<number>(0);
+
+  const [mounted, setMounted] = useState(true);
+  useEffect(() => {
+    return () => setMounted(false);
+  }, []);
+
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
   const today = new Date();
@@ -199,7 +205,7 @@ export const IntForm = ({
             className={"flex h-full flex-col content-between justify-between"}
           >
             <form id={"form-flow"} onSubmit={form.handleSubmit(onSubmit)}>
-              <AnimatePresence mode={"wait"}>
+              <AnimatePresence mode={"wait"} initial={false}>
                 {step === 0 && (
                   <motion.div
                     key="step-0"
@@ -243,10 +249,14 @@ export const IntForm = ({
                               className="overflow-hidden rounded-md border"
                             >
                               <Editor
+                                key={step}
                                 height="15vh"
                                 defaultLanguage="markdown"
-                                value={field.value}
-                                onChange={(v) => field.onChange(v ?? "")}
+                                defaultValue={field.value}
+                                onChange={(v) => {
+                                  if (!mounted) return;
+                                  field.onChange(v ?? "");
+                                }}
                                 theme={isDark ? "vs-dark" : "vs-light"}
                                 options={{
                                   minimap: { enabled: false },
