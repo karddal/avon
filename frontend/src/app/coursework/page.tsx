@@ -34,7 +34,7 @@ async function PageContent() {
                 value="ongoing"
                 className="bg-accent px-4 py-2"
               >
-                Ongoing lol
+                Ongoing
               </TabsTrigger>
               <TabsTrigger
                 data-cy="coursework-tab-finished"
