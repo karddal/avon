@@ -3,17 +3,9 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlmodel import Session, select
 
-from app.core.helpers.gitlab import (
-    gl_create_fork,
-    gl_create_project,
-    gl_create_skeleton_code,
-    gl_create_template_group,
-    gl_create_template_project,
-    gl_delete_project,
-    gl_delete_projects,
-    gl_get_project,
-    gl_get_projects,
-)
+
+
+from app.core.helpers.gitlab import gl_create_fork, gl_create_project, gl_create_skeleton_code, gl_create_template_group, gl_create_template_project, gl_delete_project, gl_delete_projects, gl_get_project, gl_get_projects
 from app.core.helpers.invitations import (
     gl_inv_add_user,
     gl_inv_batch_get_statuses,
@@ -22,6 +14,7 @@ from app.core.helpers.invitations import (
 )
 from app.db.session import get_session
 from app.models.coursework import Coursework
+from app.models.projects import ProvisionProject, ProvisionBatch
 from app.models.student_repo import StudentRepo
 from app.models.unit_enrollment import UnitEnrollment
 from app.schemas.project import (
@@ -40,6 +33,8 @@ from app.schemas.project import (
     ProjectSkeleton,
     TemplateCreate,
 )
+
+from uuid import UUID
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 session_dependency = Annotated[Session, Depends(get_session)]
@@ -72,99 +67,95 @@ async def create_templates(template: TemplateCreate, session: session_dependency
             detail="Template could not be created",
         )
 
-    return {"success": "i think"}
-
-
-@router.post("/create", status_code=status.HTTP_201_CREATED)
-async def create_projects(project: ProjectCreate, session: session_dependency):
-    statement = select(
-        Coursework.unit_id, Coursework.name, Coursework.gitlab_id
-    ).where(Coursework.id == project.coursework_id)
-    cw_object = session.exec(statement).first()
-    unit_id, name, gitlab_id = cw_object
-
-    statement = select(UnitEnrollment.user_id).where(
-        (UnitEnrollment.unit_id == unit_id) & (UnitEnrollment.type == "student")
-    )
-    students_enrolled = session.exec(statement).all()
-
-    for student in students_enrolled:
-        try:
-            await gl_create_project(
-                name, student, gitlab_id, project.template_group_id, project.template_id
-            )
-        except Exception:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Project for the student: " + student + " could not be created.",
-            )
-
-    return {"unit id": students_enrolled}
-
+    return {"success": True}
 
 @router.post("/skeleton-code", status_code=status.HTTP_201_CREATED)
 async def create_skeleton_code(details: ProjectSkeleton):
     return await gl_create_skeleton_code(details.group_id, details.coursework_name)
 
-
+# Creating the fork creates the project. Use this.
 @router.post("/create-fork", status_code=status.HTTP_201_CREATED)
 async def create_fork(project: ProjectFork, session: session_dependency):
-    statement = select(
-        Coursework.unit_id, Coursework.name, Coursework.gitlab_id
-    ).where(Coursework.id == project.coursework_id)
+    # Add projects to be provisioned to the queue (yes the queue is a table)
+    # This is essentially the producer
+    statement = select(Coursework.unit_id, Coursework.name, Coursework.gitlab_id).where(Coursework.id == project.coursework_id)
     cw_object = session.exec(statement).first()
-    unit_id, name, gitlab_id = cw_object
+    unit_id, cw_name, gitlab_id = cw_object
 
-    statement = select(UnitEnrollment.user_id).where(
-        (UnitEnrollment.unit_id == unit_id) & (UnitEnrollment.type == "student")
+    # Get the students enrolled
+    statement = select(UnitEnrollment.user_id).where((UnitEnrollment.unit_id == unit_id) & (UnitEnrollment.type == "student"))
+    students_enrolled = set(session.exec(statement).all())
+
+    already_in_queue = set(session.exec(
+    select(ProvisionProject.student_id).where(
+        ProvisionProject.cw_id == project.coursework_id
     )
-    students_enrolled = session.exec(statement).all()
+    ).all())
 
-    if session.exec(
-        select(StudentRepo).where(StudentRepo.cw_id == project.coursework_id)
-    ).first():
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Some student repos have alrady been provisioned.",
-        )
+    to_insert = [
+        s for s in students_enrolled
+        if s not in already_in_queue
+    ]
 
-    for student in students_enrolled:
-        try:
-            data = await gl_create_fork(
-                name,
-                user_id=student,
-                group_id=gitlab_id,
-                template_id=project.template_id,
-            )
-            http_url_to_repo = data["http_url_to_repo"]
-
-            db_exists = session.exec(
-                select(StudentRepo).where(
-                    (StudentRepo.student_id == student)
-                    & (StudentRepo.cw_id == project.coursework_id)
-                )
-            ).first()
-            if db_exists:
-                session.delete(db_exists)
-                session.flush()
-
-            db_student_repo = StudentRepo(
-                student_id=student,
-                repo_url=http_url_to_repo,
-                cw_id=project.coursework_id,
-                gl_repo_id=data["id"],
-            )
-            session.add(db_student_repo)
-
-        except Exception:
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Project for the student: " + student + " could not be created.",
-            )
+    batch = ProvisionBatch(
+        cw_id=project.coursework_id,
+        total_jobs=len(to_insert),
+        completed=0,
+        failed=0,
+        status="running"
+    )
+    session.add(batch)
     session.commit()
-    return {"unit id": students_enrolled}
 
+    # Add them to the queue
+    for student in to_insert:
+        job = ProvisionProject(
+            batch_id=batch.id,
+            student_id=student,
+            cw_id=project.coursework_id,
+            cw_name=cw_name,
+            gitlab_id=gitlab_id,
+            template_id=project.template_id,
+            status="pending"
+        )
+        session.add(job)
+    
+    session.add(batch)
+    session.commit()
+    
+    # session.commit()
+    print("batch_id", batch.id)
+    return {"batch_id": batch.id}
 
+@router.get("/batch-status/{batch_id}")
+def get_batch_status(batch_id: UUID, session: session_dependency):
+    batch = session.get(ProvisionBatch, batch_id)
+    print("I have been called")
+    return {
+        "total": batch.total_jobs,
+        "completed": batch.completed,
+        "failed": batch.failed,
+        "status": batch.status
+    }
+
+@router.delete("/clear-queue-and-batch")
+async def clear_queue(session: session_dependency):
+    statement = select(ProvisionProject)
+    jobs = session.exec(statement).all()
+    for job in jobs:
+        session.delete(job)
+    session.commit()
+    
+    # For batch
+    statement = select(ProvisionBatch)
+    batches = session.exec(statement).all()
+    for batch in batches:
+        session.delete(batch)
+    session.commit() 
+    # statement = select(ProvisionBatch)
+    # j = session.exec(statement).all()
+    return {"all gone"}
+  
 @router.post("/create-fork-for-student", status_code=status.HTTP_201_CREATED)
 async def create_fork_specific_student(
     project: CreateProjectForkForSpecificStudent, session: session_dependency
@@ -230,8 +221,7 @@ async def get_specific_project(project_id: int):
     project = await gl_get_project(project_id)
     return project
 
-
-@router.delete("{project_id}", status_code=201)
+@router.delete("/{project_id}", status_code=201)
 async def delete_specific_project(project_id: int):
     return await gl_delete_project(project_id)
 
@@ -247,6 +237,69 @@ async def delete_projects(group_id: int):
     response = await gl_delete_projects(group_id)
     return response
 
+# Do not use this route, use fork instead
+@router.post("/create", status_code=status.HTTP_201_CREATED)
+async def create_projects(project: ProjectCreate, session: session_dependency):
+    # Figure out how many projects you need to make
+    # Get the unit the coursework is in
+    statement = select(Coursework.unit_id, Coursework.name, Coursework.gitlab_id).where(Coursework.id == project.coursework_id)
+    cw_object = session.exec(statement).first()
+    unit_id, name, gitlab_id = cw_object
+
+    # Get the student enrollment
+    statement = select(UnitEnrollment.user_id).where((UnitEnrollment.unit_id == unit_id) & (UnitEnrollment.type == "student"))
+    students_enrolled = session.exec(statement).all()
+
+    for student in students_enrolled:
+        try:
+            await gl_create_project(name, student, gitlab_id, project.template_group_id, project.template_id)
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+                detail="Project for the student: " + student + " could not be created."
+            )
+    # Get the number of students enrolled onto a unit, by the courseworkid courseworkid -> unit -> unit_enrollement
+    # Make an API call to gitlab to create a project using a helper function for those many students
+    return {"unit id": students_enrolled}
+
+## Misi deleted section of /create-fork
+
+# # check whether any student repos already exist. if so bail out early
+#     if session.exec(select(StudentRepo).where(StudentRepo.cw_id == project.coursework_id)).first():
+#         raise HTTPException(
+#             status_code=status.HTTP_409_CONFLICT,
+#             detail="Some student repos have alrady been provisioned."
+#         )
+
+#     for student in students_enrolled:
+#         try:
+#             # Call helper function to create project
+#             # create student_repo entry for each
+
+#             data = await gl_create_fork(name, user_id=student, group_id=gitlab_id, template_id=project.template_id)
+#             http_url_to_repo = data["http_url_to_repo"]
+
+#             # we first check whether there is already a student repo db entry for this student
+#             # if there is we delete it first
+
+#             db_exists = session.exec(select(StudentRepo).where((StudentRepo.student_id == student) & (StudentRepo.cw_id == project.coursework_id))).first()
+#             if db_exists:
+#                 session.delete(db_exists)
+#                 session.flush()
+
+#             db_student_repo = StudentRepo(student_id=student, repo_url=http_url_to_repo, cw_id=project.coursework_id, gl_repo_id=data["id"])
+#             session.add(db_student_repo)
+
+#         except Exception:
+
+#             raise HTTPException(
+#                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#                 detail="Project for the student: " + student + " could not be created."
+#             )
+#     session.commit()
+#     # Get the number of students enrolled onto a unit, by the courseworkid courseworkid -> unit -> unit_enrollement
+#     # Make an API call to gitlab to create a project using a helper function for those many students
+#     return {"unit id": students_enrolled}
 
 @router.post(
     "/{project_id}/invites",

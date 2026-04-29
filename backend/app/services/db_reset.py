@@ -15,6 +15,7 @@ from app.models.student_repo import StudentRepo
 from app.models.test_run import TestRun, TestRunResult
 from app.models.unit import Unit
 from app.models.unit_enrollment import UnitEnrollment
+from app.models.projects import ProvisionBatch, ProvisionProject
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 SQL_DIR = BASE_DIR / "sql"
@@ -190,6 +191,8 @@ FULL_RESET_TABLES = (
     UnitEnrollment.__table__,
     Unit.__table__,
     Programme.__table__,
+    ProvisionProject.__table__,
+    ProvisionBatch.__table__,
     _verification_table,
     _jwks_table,
     _user_table,
@@ -204,6 +207,8 @@ APP_RESET_TABLES = (
     UnitEnrollment.__table__,
     Unit.__table__,
     Programme.__table__,
+    ProvisionProject.__table__,
+    ProvisionBatch.__table__,
 )
 
 
