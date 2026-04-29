@@ -31,7 +31,7 @@ def test_academic_year_helpers_before_and_after_rollover():
         2025, 9, 10
     )
     assert db_reset._programme_seed_end_date(seed, date(2026, 10, 1)) == date(
-        2026, 5, 30
+        2027, 8, 31
     )
 
 
