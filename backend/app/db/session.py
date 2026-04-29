@@ -56,7 +56,6 @@ async def lifespan(app: FastAPI):
     app.state.task_group = asyncio.TaskGroup()
     await app.state.task_group.__aenter__()
 
-    # app.state.task_group.create_task(run_provision_worker()) 
     if settings.run_background_worker and not settings.testing_mode: 
 
         worker_engine = create_engine(db_url, **engine_kwargs)
@@ -64,7 +63,6 @@ async def lifespan(app: FastAPI):
         app.state.task_group.create_task(
             sqs_worker(worker_session, settings.aws_results_queue_url)
         )
-        app.state.task_group.create_task(run_provision_worker())
 
     if not settings.testing_mode:
         app.state.task_group.create_task(run_provision_worker())

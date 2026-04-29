@@ -12,7 +12,6 @@ from app.core.helpers.gitlab import gl_create_fork
 
 
 async def run_provision_worker():
-    # print("Began")
     try: 
         while True:
             # print("inside me")
@@ -29,7 +28,6 @@ async def run_provision_worker():
 
 
 def fetch_next_job():
-    # print("fetching a job")
     with Session(engine) as session:
         job = session.exec(
             select(ProvisionProject)
@@ -51,8 +49,6 @@ def fetch_next_job():
 
 
 async def process_job(job_id: int):
-    # print("job", job, "is being processed")
-    # switch = random.randint(0, 10)
     with Session(engine) as session:
         job = session.get(ProvisionProject, job_id)
         # if switch == 5:

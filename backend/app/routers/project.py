@@ -69,7 +69,7 @@ async def create_templates(template: TemplateCreate, session: session_dependency
             detail="Template could not be created",
         )
 
-    return {"success": "i think"}
+    return {"success": True}
 
 @router.post("/skeleton-code", status_code=status.HTTP_201_CREATED)
 async def create_skeleton_code(details: ProjectSkeleton):
@@ -101,23 +101,17 @@ async def create_fork(project: ProjectFork, session: session_dependency):
         session.add(job)
         
     session.commit()
-    print("done")
- 
-    print("done 1234")
     return {"queued": len(students_enrolled)}
 
 @router.delete("/clear-queue")
 async def clear_queue(session: session_dependency):
     statement = select(ProvisionProject)
     jobs = session.exec(statement).all()
-    print(jobs)
     for job in jobs:
         session.delete(job)
     session.commit()
     statement = select(ProvisionProject)
     jobs = session.exec(statement).all()
-    print("should be empty:")
-    print(jobs)
     return {"all gone"}
   
 @router.post("/create-fork-for-student", status_code=status.HTTP_201_CREATED)
