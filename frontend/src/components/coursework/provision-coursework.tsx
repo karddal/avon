@@ -1,7 +1,7 @@
 "use client";
 
 import { Component, UserIcon, Users } from "lucide-react";
-import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
+import { type Dispatch, type SetStateAction, useState } from "react";
 import { toast } from "sonner";
 import StudsListDialogForProvision from "@/components/coursework/stud_list_for_provisioning/studs-table-dialog";
 import { Button } from "@/components/ui/button";
