@@ -1,10 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import Editor from "@monaco-editor/react";
 import { OctagonAlert, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useTheme } from "next-themes";
 import {
   type Dispatch,
   type SetStateAction,
@@ -16,6 +14,7 @@ import { HexColorInput, HexColorPicker } from "react-colorful";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
+import { MarkdownEditor } from "@/components/markdown-editor";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   AlertDialog,
@@ -74,8 +73,6 @@ export default function EditUnit({
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [alertText, setAlertText] = useState<string>("");
   const [confirmDiscardOpen, setConfirmDiscardOpen] = useState(false);
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
 
   const router = useRouter();
   const formSchema = z.object({
@@ -267,30 +264,10 @@ export default function EditUnit({
                       <FieldLabel htmlFor={"form-flow-description"}>
                         Unit description
                       </FieldLabel>
-                      <div
-                        data-cy="markdown-editor"
-                        className="overflow-hidden rounded-md border"
-                      >
-                        <Editor
-                          height="15vh"
-                          defaultLanguage="markdown"
-                          value={field.value}
-                          onChange={(v) => field.onChange(v ?? "")}
-                          theme={isDark ? "vs-dark" : "vs-light"}
-                          options={{
-                            minimap: { enabled: false },
-                            wordWrap: "on",
-                            lineNumbers: "off",
-                            folding: false,
-                            scrollBeyondLastLine: false,
-                            fontSize: 14,
-                            quickSuggestions: false,
-                            suggestOnTriggerCharacters: false,
-                            wordBasedSuggestions: "off",
-                            parameterHints: { enabled: false },
-                          }}
-                        />
-                      </div>
+                      <MarkdownEditor
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
                       {fieldState.invalid && (
                         <FieldError errors={[fieldState.error]} />
                       )}

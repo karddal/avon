@@ -2,17 +2,16 @@
 
 import type { UUID } from "node:crypto";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Editor from "@monaco-editor/react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Send, Terminal } from "lucide-react";
 import { easeIn, easeOut } from "motion";
-import { useTheme } from "next-themes";
 import { useCallback, useEffect, useState } from "react";
 import { HexColorInput, HexColorPicker } from "react-colorful";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 import AddMemberLecturerAll from "@/app/units/create-unit/add-member-lec";
+import { MarkdownEditor } from "@/components/markdown-editor";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -70,15 +69,6 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
   const [programmeName, setProgrammeName] = useState<string>("");
   const [selectedOwner, setSelectedOwner] = useState<string>("");
   const [ownerName, setOwnerName] = useState<string>("");
-
-  const [mounted, setMounted] = useState(true);
-
-  useEffect(() => {
-    return () => setMounted(false);
-  }, []);
-
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
   const loadProgrammes = useCallback(async () => {
     const programmesReq = await getProgrammes();
     if (programmesReq.success) {
@@ -248,34 +238,10 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                             <FieldLabel htmlFor={"form-flow-description"}>
                               Give Your Unit a Description
                             </FieldLabel>
-                            <div
-                              data-cy="markdown-editor"
-                              className="overflow-hidden rounded-md border"
-                            >
-                              <Editor
-                                key={step}
-                                height="15vh"
-                                defaultLanguage="markdown"
-                                value={field.value}
-                                onChange={(v) => {
-                                  if (!mounted) return;
-                                  field.onChange(v ?? "");
-                                }}
-                                theme={isDark ? "vs-dark" : "vs-light"}
-                                options={{
-                                  minimap: { enabled: false },
-                                  wordWrap: "on",
-                                  lineNumbers: "off",
-                                  folding: false,
-                                  scrollBeyondLastLine: false,
-                                  fontSize: 14,
-                                  quickSuggestions: false,
-                                  suggestOnTriggerCharacters: false,
-                                  wordBasedSuggestions: "off",
-                                  parameterHints: { enabled: false },
-                                }}
-                              />
-                            </div>
+                            <MarkdownEditor
+                              value={field.value}
+                              onChange={field.onChange}
+                            />
                             {fieldState.invalid && (
                               <FieldError errors={[fieldState.error]} />
                             )}

@@ -6,7 +6,7 @@ import { ArrowLeft, ArrowRight, OctagonAlert, Send } from "lucide-react";
 import { easeIn, easeOut } from "motion";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
+import { type Dispatch, type SetStateAction, useState } from "react";
 import { HexColorInput, HexColorPicker } from "react-colorful";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -17,9 +17,8 @@ const Calendar29 = dynamic(
   { ssr: false },
 );
 
-import Editor from "@monaco-editor/react";
 import Link from "next/link";
-import { useTheme } from "next-themes";
+import { MarkdownEditor } from "@/components/markdown-editor";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
@@ -82,14 +81,6 @@ export const IntForm = ({
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [alertText, setAlertText] = useState<string>("");
   const [step, setStep] = useState<number>(0);
-
-  const [mounted, setMounted] = useState(true);
-  useEffect(() => {
-    return () => setMounted(false);
-  }, []);
-
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
   const today = new Date();
   const _router = useRouter();
   const s = slug;
@@ -244,34 +235,10 @@ export const IntForm = ({
                             <FieldLabel htmlFor={"form-flow-description"}>
                               Give your coursework a description
                             </FieldLabel>
-                            <div
-                              data-cy="markdown-editor"
-                              className="overflow-hidden rounded-md border"
-                            >
-                              <Editor
-                                key={step}
-                                height="15vh"
-                                defaultLanguage="markdown"
-                                defaultValue={field.value}
-                                onChange={(v) => {
-                                  if (!mounted) return;
-                                  field.onChange(v ?? "");
-                                }}
-                                theme={isDark ? "vs-dark" : "vs-light"}
-                                options={{
-                                  minimap: { enabled: false },
-                                  wordWrap: "on",
-                                  lineNumbers: "off",
-                                  folding: false,
-                                  scrollBeyondLastLine: false,
-                                  fontSize: 14,
-                                  quickSuggestions: false,
-                                  suggestOnTriggerCharacters: false,
-                                  wordBasedSuggestions: "off",
-                                  parameterHints: { enabled: false },
-                                }}
-                              />
-                            </div>
+                            <MarkdownEditor
+                              value={field.value}
+                              onChange={field.onChange}
+                            />
                             {fieldState.invalid && (
                               <FieldError errors={[fieldState.error]} />
                             )}
