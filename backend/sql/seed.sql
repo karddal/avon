@@ -28,6 +28,33 @@ CREATE TABLE "verification" ("id" text not null primary key, "identifier" text n
 
 CREATE INDEX "verification_identifier_idx" on "verification" ("identifier");
 
+CREATE TABLE "provisionbatch" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "cw_id" TEXT NOT NULL,
+    "total_jobs" INTEGER NOT NULL,
+    "completed" INTEGER NOT NULL,
+    "failed" INTEGER NOT NULL,
+    "status" TEXT NOT NULL
+);
+
+CREATE TABLE "provisionproject" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "batch_id" TEXT NOT NULL,
+    "student_id" TEXT NOT NULL,
+    "cw_id" TEXT NOT NULL,
+    "cw_name" TEXT NOT NULL,
+    "template_id" INTEGER NOT NULL,
+    "gitlab_id" INTEGER NOT NULL,
+    "status" TEXT NOT NULL,
+    "attempts" INTEGER NOT NULL DEFAULT 0,
+    "max_attempts" INTEGER NOT NULL DEFAULT 4,
+    "last_error" TEXT,
+    "next_run_at" DATETIME NOT NULL,
+    "created_at" DATETIME NOT NULL,
+    "updated_at" DATETIME NOT NULL,
+
+    UNIQUE ("student_id", "cw_id")
+);
 
 -- account definition
 
