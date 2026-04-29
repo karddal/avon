@@ -298,7 +298,7 @@ def _programme_seed_end_date(
     today: date | None = None,
 ) -> date:
     _start_year, end_year = _programme_seed_years(seed, today)
-    return date(end_year, 5, 30)
+    return date(end_year, 8, 31)
 
 
 def _build_programmes(today: date | None = None) -> dict[str, Programme]:
@@ -325,6 +325,7 @@ def _build_units(programmes: dict[str, Programme]) -> dict[str, Unit]:
             programme_id=programmes[str(seed["programme_key"])].id,
             gitlab_id=GITLAB_ID_DEFAULT,
             creation_date=datetime.now(),
+            unlocked=True
         )
 
     return units
