@@ -87,29 +87,44 @@ async def create_fork(project: ProjectFork, session: session_dependency):
 
     # Get the students enrolled
     statement = select(UnitEnrollment.user_id).where((UnitEnrollment.unit_id == unit_id) & (UnitEnrollment.type == "student"))
-    students_enrolled = session.exec(statement).all()
+    students_enrolled = set(session.exec(statement).all())
+
+    already_in_queue = set(session.exec(
+    select(ProvisionProject.student_id).where(
+        ProvisionProject.cw_id == project.coursework_id
+    )
+    ).all())
+
+    to_insert = [
+        s for s in students_enrolled
+        if s not in already_in_queue
+    ]
 
     batch = ProvisionBatch(
         cw_id=project.coursework_id,
-        total_jobs=len(students_enrolled),
+        total_jobs=len(to_insert),
         completed=0,
         failed=0,
         status="running"
     )
     session.add(batch)
     session.commit()
+
     # Add them to the queue
-    for student in students_enrolled:
-        job = ProvisionProject(
-            batch_id=batch.id,
-            student_id=student,
-            cw_id=project.coursework_id,
-            cw_name=cw_name,
-            gitlab_id=gitlab_id,
-            template_id=project.template_id,
-            status="pending"
-        )
-        session.add(job)
+    for student in to_insert:
+        try:
+            job = ProvisionProject(
+                batch_id=batch.id,
+                student_id=student,
+                cw_id=project.coursework_id,
+                cw_name=cw_name,
+                gitlab_id=gitlab_id,
+                template_id=project.template_id,
+                status="pending"
+            )
+            session.add(job)
+        except:
+            print("Its' already in")
     
     session.add(batch)
     session.commit()

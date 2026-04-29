@@ -5,10 +5,11 @@ from uuid import UUID
 import uuid
 
 from sqlalchemy import String
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, SQLModel, UniqueConstraint
 
 
 class ProvisionBatch(SQLModel, table=True):
+   
     id: UUID = Field(primary_key=True, default_factory=uuid.uuid4) 
     cw_id: UUID
     total_jobs: int
@@ -17,6 +18,9 @@ class ProvisionBatch(SQLModel, table=True):
     status: Literal["pending", "running", "done"] = Field(default="pending", sa_type=String)
 
 class ProvisionProject(SQLModel, table=True):
+    __table_args__ = (
+        UniqueConstraint("student_id", "cw_id"),
+    )
     id: UUID = Field(primary_key=True, default_factory=uuid.uuid4)
     # str because thats how the uuid is stored
     batch_id: UUID = Field(nullable=False)
