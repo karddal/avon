@@ -75,86 +75,6 @@ async def create_templates(template: TemplateCreate, session: session_dependency
 async def create_skeleton_code(details: ProjectSkeleton):
     return await gl_create_skeleton_code(details.group_id, details.coursework_name)
 
-# # A module-level flag to prevent duplicate workers
-# _worker_running = False
-
-# async def run_provision_worker():
-#     global _worker_running
-#     _worker_running = True
-#     try:
-#         while True:
-#             job_ids = []
-#             with Session(engine) as session:
-#                 statement = select(ProvisionProject).where(
-#                     (ProvisionProject.status== "pending") &
-#                     (ProvisionProject.next_run_at <= datetime.now()) &
-#                     (ProvisionProject.attempts <= ProvisionProject.max_attempts)
-#                     ).limit(10)
-#                 jobs = session.exec(statement).all()
-#                 if not jobs:
-
-#                     # print("Nothing found in the jobs")
-#                     # return
-#                     await asyncio.sleep(1)
-#                     continue
-                
-#                 for job in jobs:
-#                     job.status = "in_progress"
-#                     job_ids.append(job.id)
-                
-#                 session.commit()
-
-#             await asyncio.gather(*(process_job(job_id) for job_id in job_ids))  
-    
-#     finally:
-#         _worker_running = False
-
-# sem = asyncio.Semaphore(1)
-
-# async def process_job(job_id: int):
-#     # switch = random.randint(0, 10)
-#     async with sem:
-#         with Session(engine) as session:
-#             job = session.get(ProvisionProject, job_id)
-#             print("job", job.student_id, "has failed")
-#             # if switch == 5:
-#             try: 
-#                 data = await gl_create_fork(name=job.cw_name, user_id=job.student_id, group_id=job.gitlab_id, template_id=job.template_id)
-#                 http_url_to_repo = data["http_url_to_repo"]
-
-#                 db_exists = session.exec(select(StudentRepo).where((StudentRepo.student_id == job.student_id) & (StudentRepo.cw_id == job.cw_id))).first()
-#                 if db_exists:
-#                     session.delete(db_exists)
-#                     session.flush()
-
-#                 db_student_repo = StudentRepo(student_id=job.student_id, repo_url=http_url_to_repo, cw_id=job.cw_id, gl_repo_id=data["id"])
-#                 session.add(db_student_repo)
-#                 job.status = "success"
-#                 print(job.student_id, "has been successful")
-#             except Exception as e:
-#                 print("oops", e)
-#                 if job.attempts < job.max_attempts:
-#                     job.attempts += 1
-#                     backoff = 2 ** job.attempts
-#                     job.status = "pending"
-#                     job.next_run_at = datetime.now() + timedelta(seconds=backoff)
-#                     job.last_error = str(e)
-#                 else:
-#                     job.status = "failed"
-#                     job.last_error = str(e)
-#                     print("Failed", job.student_id)    
-#             # else:    
-#                 # print(job.student_id, "is has failed. On attempt", job.attempts)
-#                 # if job.attempts < job.max_attempts:
-#                 #     job.attempts += 1
-#                 #     backoff = 2 ** job.attempts
-#                 #     job.status = "pending"
-#                 #     job.next_run_at = datetime.now() + timedelta(seconds=backoff)
-#                 # else:
-#                 #     job.status = "failed"
-#                 #     print("Failed", job.student_id) 
-#             session.commit()
-
 # Creating the fork creates the project. Use this.
 @router.post("/create-fork", status_code=status.HTTP_201_CREATED)
 async def create_fork(project: ProjectFork, session: session_dependency):
@@ -180,14 +100,9 @@ async def create_fork(project: ProjectFork, session: session_dependency):
         )
         session.add(job)
         
-        ## Part of Misi Code
-        ## SEE end of file for deleted section.
-
     session.commit()
     print("done")
-
-    # if not _worker_running: 
-    #     asyncio.create_task(run_provision_worker())
+ 
     print("done 1234")
     return {"queued": len(students_enrolled)}
 
