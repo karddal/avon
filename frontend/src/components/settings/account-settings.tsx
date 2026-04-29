@@ -80,13 +80,8 @@ export default function AccountSettings({
     NewPasswordInpStudent.length >= 8 &&
     NewPasswordInpStudent.length <= 128;
   const roleLabel =
-    role === "admin"
-      ? "Admin"
-      : role === "lecturer"
-        ? "Lecturer"
-        : role === "user"
-          ? "Student"
-          : "Unknown";
+    role === "admin" ? "Admin" : role === "lecturer" ? "Lecturer" : "Student";
+
   const ROLES = [
     { value: "lecturer", label: "Lecturer" },
     { value: "user", label: "Student" },
