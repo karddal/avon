@@ -10,12 +10,12 @@ import {
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { stop_impersonating } from "@/lib/actions/auth/impersonation";
 import { logout } from "@/lib/actions/auth/login";
-import { authClient } from "@/lib/auth-client";
 
 export default function LogoutButton() {
   const router = useRouter();
-  const { data: session } = authClient.useSession();
-  const isImpersonating = Boolean(session?.session.impersonatedBy);
+  const isImpersonating = Boolean(
+    sessionStorage.getItem("impersonation-active"),
+  );
   // const router = useRouter();
 
   async function stopImpersonating() {
