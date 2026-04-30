@@ -43,11 +43,12 @@ export default function LogoutButton() {
           <Undo2 />
           Return to admin
         </DropdownMenuItem>
-      ) : null}
-      <DropdownMenuItem onClick={lo}>
-        <DoorOpen />
-        Logout
-      </DropdownMenuItem>
+      ) : (
+        <DropdownMenuItem onClick={lo}>
+          <DoorOpen />
+          Logout
+        </DropdownMenuItem>
+      )}
     </>
   );
 }

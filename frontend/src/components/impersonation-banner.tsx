@@ -30,6 +30,7 @@ const impersonationColours: Record<
     chromeDark: string;
     chromeBorder: string;
     chromeBorderDark: string;
+    chromeText: string;
     chromeTextDark: string;
     chromeShadow: string;
     chromeShadowDark: string;
@@ -44,19 +45,20 @@ const impersonationColours: Record<
   blue: {
     label: "Blue",
     swatch: "bg-sky-500",
-    frame: "bg-sky-500 dark:bg-sky-950",
+    frame: "bg-sky-300 dark:bg-sky-950",
     ring: "ring-sky-950/25",
     ringDark: "dark:ring-sky-200/20",
-    chrome: "bg-sky-500",
+    chrome: "bg-sky-300",
     chromeDark: "dark:bg-sky-950",
     chromeBorder: "border-sky-800/30",
     chromeBorderDark: "dark:border-sky-400/20",
+    chromeText: "text-sky-950",
     chromeTextDark: "dark:text-sky-50",
     chromeShadow:
       "shadow-[0_1px_0_rgba(255,255,255,0.35)_inset,0_8px_20px_rgba(2,132,199,0.24)]",
     chromeShadowDark:
       "dark:shadow-[0_1px_0_rgba(255,255,255,0.12)_inset,0_8px_20px_rgba(0,0,0,0.25)]",
-    contentBorder: "border-sky-500",
+    contentBorder: "border-sky-300",
     contentBorderDark: "dark:border-sky-950",
     contentShadow:
       "shadow-[0_0_0_1px_rgba(255,255,255,0.3)_inset,0_18px_45px_rgba(2,132,199,0.22)]",
@@ -68,19 +70,20 @@ const impersonationColours: Record<
   red: {
     label: "Red",
     swatch: "bg-red-500",
-    frame: "bg-red-500 dark:bg-red-950",
+    frame: "bg-red-300 dark:bg-red-950",
     ring: "ring-red-950/25",
     ringDark: "dark:ring-red-200/20",
-    chrome: "bg-red-500",
+    chrome: "bg-red-300",
     chromeDark: "dark:bg-red-950",
     chromeBorder: "border-red-800/30",
     chromeBorderDark: "dark:border-red-400/20",
+    chromeText: "text-red-950",
     chromeTextDark: "dark:text-red-50",
     chromeShadow:
       "shadow-[0_1px_0_rgba(255,255,255,0.35)_inset,0_8px_20px_rgba(239,68,68,0.24)]",
     chromeShadowDark:
       "dark:shadow-[0_1px_0_rgba(255,255,255,0.12)_inset,0_8px_20px_rgba(0,0,0,0.25)]",
-    contentBorder: "border-red-500",
+    contentBorder: "border-red-300",
     contentBorderDark: "dark:border-red-950",
     contentShadow:
       "shadow-[0_0_0_1px_rgba(255,255,255,0.3)_inset,0_18px_45px_rgba(239,68,68,0.22)]",
@@ -92,19 +95,20 @@ const impersonationColours: Record<
   green: {
     label: "Green",
     swatch: "bg-green-500",
-    frame: "bg-green-500 dark:bg-green-950",
+    frame: "bg-green-300 dark:bg-green-950",
     ring: "ring-green-950/25",
     ringDark: "dark:ring-green-200/20",
-    chrome: "bg-green-500",
+    chrome: "bg-green-300",
     chromeDark: "dark:bg-green-950",
     chromeBorder: "border-green-800/30",
     chromeBorderDark: "dark:border-green-400/20",
+    chromeText: "text-green-950",
     chromeTextDark: "dark:text-green-50",
     chromeShadow:
       "shadow-[0_1px_0_rgba(255,255,255,0.35)_inset,0_8px_20px_rgba(34,197,94,0.24)]",
     chromeShadowDark:
       "dark:shadow-[0_1px_0_rgba(255,255,255,0.12)_inset,0_8px_20px_rgba(0,0,0,0.25)]",
-    contentBorder: "border-green-500",
+    contentBorder: "border-green-300",
     contentBorderDark: "dark:border-green-950",
     contentShadow:
       "shadow-[0_0_0_1px_rgba(255,255,255,0.3)_inset,0_18px_45px_rgba(34,197,94,0.22)]",
@@ -116,19 +120,20 @@ const impersonationColours: Record<
   amber: {
     label: "Amber",
     swatch: "bg-amber-500",
-    frame: "bg-amber-500 dark:bg-amber-950",
+    frame: "bg-amber-300 dark:bg-amber-950",
     ring: "ring-amber-950/25",
     ringDark: "dark:ring-amber-200/20",
-    chrome: "bg-amber-500",
+    chrome: "bg-amber-300",
     chromeDark: "dark:bg-amber-950",
     chromeBorder: "border-amber-800/30",
     chromeBorderDark: "dark:border-amber-400/20",
+    chromeText: "text-amber-950",
     chromeTextDark: "dark:text-amber-50",
     chromeShadow:
       "shadow-[0_1px_0_rgba(255,255,255,0.35)_inset,0_8px_20px_rgba(245,158,11,0.24)]",
     chromeShadowDark:
       "dark:shadow-[0_1px_0_rgba(255,255,255,0.12)_inset,0_8px_20px_rgba(0,0,0,0.25)]",
-    contentBorder: "border-amber-500",
+    contentBorder: "border-amber-300",
     contentBorderDark: "dark:border-amber-950",
     contentShadow:
       "shadow-[0_0_0_1px_rgba(255,255,255,0.3)_inset,0_18px_45px_rgba(245,158,11,0.22)]",
@@ -140,19 +145,20 @@ const impersonationColours: Record<
   purple: {
     label: "Purple",
     swatch: "bg-purple-500",
-    frame: "bg-purple-500 dark:bg-purple-950",
+    frame: "bg-purple-300 dark:bg-purple-950",
     ring: "ring-purple-950/25",
     ringDark: "dark:ring-purple-200/20",
-    chrome: "bg-purple-500",
+    chrome: "bg-purple-300",
     chromeDark: "dark:bg-purple-950",
     chromeBorder: "border-purple-800/30",
     chromeBorderDark: "dark:border-purple-400/20",
+    chromeText: "text-purple-950",
     chromeTextDark: "dark:text-purple-50",
     chromeShadow:
       "shadow-[0_1px_0_rgba(255,255,255,0.35)_inset,0_8px_20px_rgba(168,85,247,0.24)]",
     chromeShadowDark:
       "dark:shadow-[0_1px_0_rgba(255,255,255,0.12)_inset,0_8px_20px_rgba(0,0,0,0.25)]",
-    contentBorder: "border-purple-500",
+    contentBorder: "border-purple-300",
     contentBorderDark: "dark:border-purple-950",
     contentShadow:
       "shadow-[0_0_0_1px_rgba(255,255,255,0.3)_inset,0_18px_45px_rgba(168,85,247,0.22)]",
@@ -359,11 +365,12 @@ export default function ImpersonationBanner({
       >
         <div
           className={cn(
-            "shrink-0 rounded-t-xl border-b px-4 py-2 text-white",
+            "shrink-0 rounded-t-xl border-b px-4 py-2",
             colourTheme.chrome,
             colourTheme.chromeDark,
             colourTheme.chromeBorder,
             colourTheme.chromeBorderDark,
+            colourTheme.chromeText,
             colourTheme.chromeTextDark,
             colourTheme.chromeShadow,
             colourTheme.chromeShadowDark,
@@ -380,7 +387,7 @@ export default function ImpersonationBanner({
                 variant="outline"
                 size="sm"
                 className={cn(
-                  "h-10 px-4 text-base sm:h-7 sm:px-3 sm:text-sm border-white/65 bg-white/10 text-white hover:border-white hover:bg-white dark:border-white/60 dark:text-white dark:hover:border-white dark:hover:bg-white",
+                  "h-10 px-4 text-base sm:h-7 sm:px-3 sm:text-sm border-current/45 bg-white/30 text-current hover:border-current/60 hover:bg-white/70 dark:border-white/60 dark:bg-white/10 dark:text-white dark:hover:border-white dark:hover:bg-white",
                   colourTheme.buttonHoverText,
                   colourTheme.buttonHoverTextDark,
                 )}
@@ -467,7 +474,7 @@ function ImpersonationColourPicker({
           type="button"
           variant="outline"
           size="icon-sm"
-          className="h-10 w-10 border-white/65 bg-white/10 text-white hover:border-white hover:bg-white hover:text-foreground sm:h-7 sm:w-7 dark:border-white/60 dark:text-white dark:hover:border-white dark:hover:bg-white"
+          className="h-10 w-10 border-current/45 bg-white/30 text-current hover:border-current/60 hover:bg-white/70 hover:text-foreground sm:h-7 sm:w-7 dark:border-white/60 dark:bg-white/10 dark:text-white dark:hover:border-white dark:hover:bg-white"
           aria-label="Choose impersonation colour"
           title="Choose impersonation colour"
         >

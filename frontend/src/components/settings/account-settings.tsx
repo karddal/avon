@@ -470,51 +470,39 @@ export default function AccountSettings({
           </h3>
           <div className="space-y-2">
             {isAdmin && !settingsPage ? (
-              <div className="flex flex-col gap-2 @lg/role:flex-row">
-                <Select
-                  value={selectedRole ?? undefined}
-                  onValueChange={async (value) => {
-                    setSelectedRole(value);
+              <Select
+                value={selectedRole ?? undefined}
+                onValueChange={async (value) => {
+                  setSelectedRole(value);
 
-                    if (value === role) {
-                      return;
-                    }
+                  if (value === role) {
+                    return;
+                  }
 
-                    const result = await change_role(activeUser.id, value);
+                  const result = await change_role(activeUser.id, value);
 
-                    if (!result.success) {
-                      toast.error("Failed to update role");
-                      setSelectedRole(role);
-                      return;
-                    }
+                  if (!result.success) {
+                    toast.error("Failed to update role");
+                    setSelectedRole(role);
+                    return;
+                  }
 
-                    setRole(value);
-                    toast.success("Role updated successfully");
-                  }}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select role" />
-                  </SelectTrigger>
+                  setRole(value);
+                  toast.success("Role updated successfully");
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select role" />
+                </SelectTrigger>
 
-                  <SelectContent>
-                    {ROLES.map((r) => (
-                      <SelectItem key={r.value} value={r.value}>
-                        {r.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full @lg/role:w-fit"
-                  onClick={handleImpersonateUser}
-                  disabled={isImpersonatingUser || isSelectedUserCurrentUser}
-                >
-                  <Eye />
-                  {isImpersonatingUser ? "Opening..." : "View as"}
-                </Button>
-              </div>
+                <SelectContent>
+                  {ROLES.map((r) => (
+                    <SelectItem key={r.value} value={r.value}>
+                      {r.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             ) : (
               <p className="text-base font-medium">{roleLabel}</p>
             )}
@@ -545,6 +533,20 @@ export default function AccountSettings({
         ) : (
           <></>
         )}
+        {isAdmin && !settingsPage ? (
+          <div className="w-full md:col-span-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={handleImpersonateUser}
+              disabled={isImpersonatingUser || isSelectedUserCurrentUser}
+            >
+              <Eye />
+              {isImpersonatingUser ? "Opening..." : "Impersonate"}
+            </Button>
+          </div>
+        ) : null}
         <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
           <AlertDialogContent>
             <AlertDialogHeader>
