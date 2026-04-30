@@ -138,7 +138,7 @@ export default function AccountSettings({
   };
 
   const ImpersonationLoadingOverlay = () => (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-sky-500 p-3 text-white dark:bg-sky-950">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-sky-500 p-3 text-white animate-in fade-in-0 duration-200 dark:bg-sky-950">
       <div className="absolute inset-3 rounded-xl border border-white/30 shadow-[0_22px_70px_rgba(0,0,0,0.45),0_0_0_1px_rgba(255,255,255,0.25)_inset] animate-in fade-in-0 zoom-in-95 duration-300" />
       <div className="absolute inset-x-3 top-3 h-12 rounded-t-xl border-b border-white/30 bg-white/10 animate-in slide-in-from-top-2 fade-in-0 duration-300" />
       <div className="relative flex flex-col items-center gap-4 text-center animate-in fade-in-0 zoom-in-95 duration-300">

@@ -165,6 +165,19 @@ function Sidebar({
   collapsible?: "offcanvas" | "icon" | "none";
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
+  const [mobilePortalContainer, setMobilePortalContainer] =
+    React.useState<HTMLElement | null>(null);
+
+  React.useEffect(() => {
+    if (!isMobile) {
+      setMobilePortalContainer(null);
+      return;
+    }
+
+    setMobilePortalContainer(
+      document.querySelector<HTMLElement>("[data-impersonation-content]"),
+    );
+  }, [isMobile]);
 
   if (collapsible === "none") {
     return (
@@ -188,11 +201,14 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
+          portalContainer={mobilePortalContainer}
           className="sm:max-w-full bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
           style={
             {
               "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
-              height: SIDEBAR_HEIGHT_MOBILE,
+              height: mobilePortalContainer
+                ? "calc(100% - 3rem)"
+                : SIDEBAR_HEIGHT_MOBILE,
             } as React.CSSProperties
           }
           side={"top"}

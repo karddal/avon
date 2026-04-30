@@ -114,7 +114,7 @@ const impersonationColours: Record<
     buttonHoverTextDark: "dark:hover:text-green-950",
   },
   amber: {
-    label: "Amber / Orange",
+    label: "Amber",
     swatch: "bg-amber-500",
     frame: "bg-amber-500 dark:bg-amber-950",
     ring: "ring-amber-950/25",
@@ -163,10 +163,13 @@ const impersonationColours: Record<
   },
 };
 
-const impersonationColourOptions = Object.entries(impersonationColours) as [
-  ImpersonationColour,
-  (typeof impersonationColours)[ImpersonationColour],
-][];
+const impersonationColourOptions: ImpersonationColour[] = [
+  "red",
+  "amber",
+  "green",
+  "blue",
+  "purple",
+];
 
 export default function ImpersonationBanner({
   children,
@@ -188,7 +191,7 @@ export default function ImpersonationBanner({
   const isImpersonating = isBetterAuthImpersonating || isStoredImpersonating;
   const [isReturningToAdmin, setIsReturningToAdmin] = useState(false);
   const [impersonationColour, setImpersonationColour] =
-    useState<ImpersonationColour>("blue");
+    useState<ImpersonationColour>("red");
   const [transition, setTransition] = useState<
     "impersonating" | "returning" | null
   >(null);
@@ -242,12 +245,10 @@ export default function ImpersonationBanner({
     }
 
     if (transition === "impersonating" && isImpersonating) {
-      setIsTransitionExiting(true);
       const timeout = window.setTimeout(() => {
         clearStoredImpersonationTransition();
-        setIsTransitionExiting(false);
         setTransition(null);
-      }, 220);
+      }, 200);
 
       return () => window.clearTimeout(timeout);
     }
@@ -308,6 +309,7 @@ export default function ImpersonationBanner({
     return (
       <ImpersonationTransitionOverlay
         colourTheme={colourTheme}
+        isEntering={transition === "impersonating"}
         isExiting={isTransitionExiting}
         title={
           transition === "impersonating"
@@ -341,6 +343,7 @@ export default function ImpersonationBanner({
       {isReturningToAdmin ? (
         <ImpersonationTransitionOverlay
           colourTheme={colourTheme}
+          isEntering={false}
           isExiting={false}
           title="Returning to admin..."
           description="Restoring your session"
@@ -377,7 +380,7 @@ export default function ImpersonationBanner({
                 variant="outline"
                 size="sm"
                 className={cn(
-                  "h-7 border-white/65 bg-white/10 text-white hover:border-white hover:bg-white dark:border-white/60 dark:text-white dark:hover:border-white dark:hover:bg-white",
+                  "h-10 px-4 text-base sm:h-7 sm:px-3 sm:text-sm border-white/65 bg-white/10 text-white hover:border-white hover:bg-white dark:border-white/60 dark:text-white dark:hover:border-white dark:hover:bg-white",
                   colourTheme.buttonHoverText,
                   colourTheme.buttonHoverTextDark,
                 )}
@@ -414,12 +417,14 @@ function ImpersonationTransitionOverlay({
   title,
   description,
   colourTheme,
+  isEntering,
   isExiting,
   contained = false,
 }: {
   title: string;
   description: string;
   colourTheme: (typeof impersonationColours)[ImpersonationColour];
+  isEntering: boolean;
   isExiting: boolean;
   contained?: boolean;
 }) {
@@ -428,6 +433,7 @@ function ImpersonationTransitionOverlay({
       className={cn(
         contained ? "absolute" : "fixed",
         "inset-0 z-[100] flex items-center justify-center overflow-hidden p-3 text-white opacity-100 transition-opacity duration-200 ease-out",
+        isEntering && "animate-in fade-in-0",
         isExiting && "opacity-0",
         colourTheme.frame,
       )}
@@ -461,7 +467,7 @@ function ImpersonationColourPicker({
           type="button"
           variant="outline"
           size="icon-sm"
-          className="h-7 w-7 border-white/65 bg-white/10 text-white hover:border-white hover:bg-white hover:text-foreground dark:border-white/60 dark:text-white dark:hover:border-white dark:hover:bg-white"
+          className="h-10 w-10 border-white/65 bg-white/10 text-white hover:border-white hover:bg-white hover:text-foreground sm:h-7 sm:w-7 dark:border-white/60 dark:text-white dark:hover:border-white dark:hover:bg-white"
           aria-label="Choose impersonation colour"
           title="Choose impersonation colour"
         >
@@ -469,24 +475,28 @@ function ImpersonationColourPicker({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-44">
-        {impersonationColourOptions.map(([colour, option]) => (
-          <DropdownMenuItem
-            key={colour}
-            className="cursor-pointer"
-            onClick={() => onSelectColour(colour)}
-          >
-            <span
-              className={cn(
-                "size-3 rounded-full ring-1 ring-black/10",
-                option.swatch,
-              )}
-            />
-            <span>{option.label}</span>
-            {selectedColour === colour ? (
-              <Check className="ml-auto size-4" />
-            ) : null}
-          </DropdownMenuItem>
-        ))}
+        {impersonationColourOptions.map((colour) => {
+          const option = impersonationColours[colour];
+
+          return (
+            <DropdownMenuItem
+              key={colour}
+              className="cursor-pointer"
+              onClick={() => onSelectColour(colour)}
+            >
+              <span
+                className={cn(
+                  "size-3 rounded-full ring-1 ring-black/10",
+                  option.swatch,
+                )}
+              />
+              <span>{option.label}</span>
+              {selectedColour === colour ? (
+                <Check className="ml-auto size-4" />
+              ) : null}
+            </DropdownMenuItem>
+          );
+        })}
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -516,14 +526,14 @@ export function setStoredImpersonationTransition(
 
 function getStoredImpersonationColour(): ImpersonationColour {
   if (typeof window === "undefined") {
-    return "blue";
+    return "red";
   }
 
   const storedColour = window.sessionStorage.getItem(
     IMPERSONATION_COLOUR_STORAGE_KEY,
   );
 
-  return isImpersonationColour(storedColour) ? storedColour : "blue";
+  return isImpersonationColour(storedColour) ? storedColour : "red";
 }
 
 function setStoredImpersonationColour(colour: ImpersonationColour) {
