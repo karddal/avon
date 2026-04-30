@@ -225,45 +225,31 @@ export default function AccountSettings({
     <div className="w-full">
       {isImpersonatingUser ? <ImpersonationLoadingOverlay /> : null}
       <div
-        className={`mt-6 px-6 grid grid-cols-1 gap-4 ${
-          settingsPage ? "" : "md:grid-cols-2"
+        className={`grid grid-cols-1 gap-4 ${
+          settingsPage ? "mt-4" : "mt-6 px-6 md:grid-cols-2"
         }`}
       >
         <div
           className={`w-full rounded-md border border-border p-4 ${
             settingsPage ? "" : "md:col-span-2"
-          } ${settingsPage ? "" : "@container/profile"}`}
+          } @container/profile`}
         >
           <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
             Profile
           </h3>
-          <div
-            className={`${
-              settingsPage
-                ? ""
-                : "flex flex-col gap-4 @md/profile:flex-row @md/profile:items-center"
-            }`}
-          >
-            <div
-              className={`w-full ${
-                settingsPage
-                  ? "max-w-full"
-                  : "@md/profile:h-full @md/profile:w-fit"
-              }`}
-            >
+          <div className="flex flex-col gap-4 @md/profile:flex-row @md/profile:items-center">
+            <div className="w-full @md/profile:h-full @md/profile:w-fit">
               <ProfileImageUploader
                 imageUrl={image}
                 name={name}
                 buttonLabel="Upload new profile picture"
                 disabled
                 layout="stacked"
-                className={settingsPage ? undefined : "@md/profile:h-full"}
-                previewWrapperClassName={
-                  settingsPage ? undefined : "@md/profile:h-full"
-                }
+                className="@md/profile:h-full"
+                previewWrapperClassName="@md/profile:h-full"
                 imageSizeClassName={
                   settingsPage
-                    ? "aspect-square h-auto"
+                    ? "aspect-square h-auto @md/profile:h-full @md/profile:w-auto @md/profile:max-w-40"
                     : "aspect-square h-auto @md/profile:h-full @md/profile:w-auto @md/profile:max-w-48"
                 }
                 showButton={false}
@@ -272,7 +258,7 @@ export default function AccountSettings({
             </div>
 
             <div
-              className={`${settingsPage ? "space-y-4 my-2" : "min-w-0 space-y-4"}`}
+              className={`${settingsPage ? "min-w-0 space-y-4 @md/profile:grid @md/profile:flex-1 @md/profile:grid-cols-2 @md/profile:gap-x-6 @md/profile:gap-y-4 @md/profile:space-y-0" : "min-w-0 space-y-4"}`}
             >
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">Full name</p>
@@ -454,7 +440,7 @@ export default function AccountSettings({
                       </TooltipContent>
                     </Tooltip>
                   ) : (
-                    <p className="text-sm text-muted-foreground text-center">
+                    <p className="text-sm text-muted-foreground @md/profile:self-end">
                       JPG, PNG, GIF or WebP up to 5MB.
                     </p>
                   )}

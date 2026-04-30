@@ -22,7 +22,7 @@ export default function SettingsContents({ user }: { user: User }) {
           Theme
         </TabsTrigger>
       </TabsList>
-      <div className="w-full p-6 overflow-hidden">
+      <div className="w-full overflow-hidden p-3 sm:p-4">
         <TabsContent
           className="w-full p-0 border-none bg-transparent shadow-none overflow-hidden"
           value={"account"}

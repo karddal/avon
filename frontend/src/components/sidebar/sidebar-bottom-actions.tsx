@@ -51,7 +51,7 @@ export default function SidebarBottomActions({
             </DialogTrigger>
           </SidebarMenuButton>
 
-          <DialogContent>
+          <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-3xl lg:max-w-4xl">
             <DialogHeader>
               <DialogTitle>Settings</DialogTitle>
             </DialogHeader>
