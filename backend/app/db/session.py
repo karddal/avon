@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from contextlib import asynccontextmanager
 from typing import Annotated
 
@@ -9,6 +10,8 @@ from sqlalchemy.pool import NullPool
 from app.core.env import get_database_url, is_test_app_env, load_backend_env
 from app.sqs_worker import sqs_worker
 # from app.provision_worker import run_provision_worker
+
+logger = logging.getLogger("app.db.session")
 
 load_backend_env()
 
@@ -40,7 +43,7 @@ def get_session():
 # Create the tables
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
-    print("[BACKEND] Database created")
+    logger.info("Database created")
 
 
 SessionDep = Annotated[Session, Depends(get_session)]
@@ -49,7 +52,7 @@ SessionDep = Annotated[Session, Depends(get_session)]
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("lifespan started")
+    logger.info("Lifespan started")
     from app.core.settings import settings
     from app.provision_worker import run_provision_worker
 
