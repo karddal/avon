@@ -13,4 +13,6 @@ export default defineConfig({
     testFixtureKey: process.env.TEST_FIXTURE_KEY ?? "sep-test-fixture-key",
   },
   defaultCommandTimeout: 10000,
+  video: false,
+  numTestsKeptInMemory: 0,
 });

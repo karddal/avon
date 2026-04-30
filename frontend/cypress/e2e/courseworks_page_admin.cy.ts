@@ -1,6 +1,9 @@
 describe("Coursework listing page - admin tests", () => {
-  beforeEach(() => {
+  before(() => {
     cy.resetDb();
+  });
+
+  beforeEach(() => {
     cy.clearAuthSession();
     cy.login("admin@bris.ac.uk", "changeme", false);
   });
@@ -79,6 +82,7 @@ describe("Coursework listing page - admin tests", () => {
   });
 
   it("Admin can create coursework", () => {
+    cy.resetDb();
     const courseworkName = `Cypress Created Coursework ${Date.now()}`;
     const courseworkSelectorName = courseworkName
       .toLowerCase()
@@ -122,6 +126,7 @@ describe("Coursework listing page - admin tests", () => {
 
   // Deletion
   it("Admin can delete coursework", () => {
+    cy.resetDb();
     cy.visit("/coursework");
     cy.getByCy("coursework-card-computer-architecture-2025-2026-encrypt")
       .should("be.visible")
