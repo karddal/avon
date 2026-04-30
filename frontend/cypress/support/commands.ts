@@ -88,21 +88,37 @@ Cypress.Commands.add("clearAuthSession", () => {
 Cypress.Commands.add(
   "login",
   (username: string, password: string, student: boolean) => {
-    cy.visit("/login");
-    cy.location("pathname").should("eq", "/login");
+    const redirectPath = student ? "/units" : "/dashboard";
 
-    cy.get("#email").should("be.visible").clear().type(username, {
-      force: true,
-    });
-    cy.get("#password").clear().type(password, { force: true });
-    cy.get("button[type=submit]").click({ force: true });
+    cy.session(
+      [username, student],
+      () => {
+        cy.visit("/login");
+        cy.location("pathname").should("eq", "/login");
+
+        cy.get("#email").should("be.visible").clear().type(username, {
+          force: true,
+        });
+        cy.get("#password").clear().type(password, { force: true });
+        cy.get("button[type=submit]").click({ force: true });
+        cy.url().should("include", redirectPath);
+        cy.getCookie("__Secure-better-auth.session_token").should("exist");
+      },
+      {
+        cacheAcrossSpecs: true,
+        validate() {
+          cy.getCookie("__Secure-better-auth.session_token").should("exist");
+          cy.request("/api/auth/get-session").its("status").should("eq", 200);
+        },
+      },
+    );
+
+    cy.visit(redirectPath);
     if (student) {
       cy.url().should("include", "/units");
     } else {
       cy.url().should("include", "/dashboard");
     }
-    // cy.get("span").should("contain", "One");
-    cy.getCookie("__Secure-better-auth.session_token").should("exist");
   },
 );
 

@@ -184,6 +184,7 @@ async def me_courseworks(
         id=unit.id,
         unit_code=unit.unit_code,
         name=unit.name,
+        unlocked=unit.unlocked,
         programme_start_date=unit.programme.start_date,
         programme_end_date=unit.programme.end_date,
         courseworks=unit.courseworks

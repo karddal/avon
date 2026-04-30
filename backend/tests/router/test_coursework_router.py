@@ -1,14 +1,18 @@
 import uuid
 from datetime import datetime, timedelta
 from uuid import UUID, uuid4
+from unittest.mock import patch
 
 import pytest
+from fastapi.security import HTTPAuthorizationCredentials
 from sqlmodel import Session, SQLModel, create_engine, select
 
+from app.core.settings import settings
 from app.models.coursework import Coursework
 from app.models.programme import Programme
 from app.models.unit import Unit
 from app.models.unit_enrollment import UnitEnrollment
+from app.schemas.security import CurrentUser
 from tests.helpers.factories import create_students, create_unit
 
 
@@ -263,3 +267,159 @@ def test_get_coursework_scopes(client, session):
     scopes = response.json()["scopes"]
     assert "unit:read" in scopes
     assert "unit:coursework_gitlab" in scopes
+
+
+def test_template_files_requires_coursework_gitlab_scope(client, session):
+    previous_ignore_auth = settings.ignore_auth
+    settings.ignore_auth = False
+
+    try:
+        unit_id = create_unit(session).id
+        requesting_user = "student-user"
+        session.add(UnitEnrollment(unit_id=unit_id, user_id=requesting_user, type="student"))
+        coursework = Coursework(
+            name="Template scoped",
+            description="Test",
+            unit_id=unit_id,
+            due_date=datetime.now() + timedelta(days=11),
+            colour="abcdef",
+            gitlab_id="123456",
+            template_id=98765,
+        )
+        session.add(coursework)
+        session.commit()
+
+        fake_token = HTTPAuthorizationCredentials(
+            scheme="Bearer",
+            credentials="fake.jwt.token",
+        )
+
+        def override_get_bearer():
+            yield fake_token
+
+        from app.core.security import get_bearer
+        from app.main import app
+
+        app.dependency_overrides[get_bearer] = override_get_bearer
+
+        with patch(
+            "app.core.scopes.scopes.verify_token_and_get_user",
+            return_value=CurrentUser(user_id=requesting_user, role="user"),
+        ):
+            response = client.get("/coursework/template/files?templateId=98765")
+
+        assert response.status_code == 401
+        assert "Missing scopes" in response.json()["detail"]
+    finally:
+        settings.ignore_auth = previous_ignore_auth
+        from app.core.security import get_bearer
+        from app.main import app
+
+        app.dependency_overrides.pop(get_bearer, None)
+
+
+def test_template_upload_requires_coursework_gitlab_scope(client, session):
+    previous_ignore_auth = settings.ignore_auth
+    settings.ignore_auth = False
+
+    try:
+        unit_id = create_unit(session).id
+        requesting_user = "student-user"
+        session.add(UnitEnrollment(unit_id=unit_id, user_id=requesting_user, type="student"))
+        coursework = Coursework(
+            name="Upload scoped",
+            description="Test",
+            unit_id=unit_id,
+            due_date=datetime.now() + timedelta(days=11),
+            colour="abcdef",
+            gitlab_id="123456",
+        )
+        session.add(coursework)
+        session.commit()
+        session.refresh(coursework)
+
+        fake_token = HTTPAuthorizationCredentials(
+            scheme="Bearer",
+            credentials="fake.jwt.token",
+        )
+
+        def override_get_bearer():
+            yield fake_token
+
+        from app.core.security import get_bearer
+        from app.main import app
+
+        app.dependency_overrides[get_bearer] = override_get_bearer
+
+        with patch(
+            "app.core.scopes.scopes.verify_token_and_get_user",
+            return_value=CurrentUser(user_id=requesting_user, role="user"),
+        ):
+            response = client.post(
+                f"/coursework/{coursework.id}/template/upload-zip",
+                files={"file": ("template.zip", b"PK\x05\x06" + b"\x00" * 18, "application/zip")},
+            )
+
+        assert response.status_code == 401
+        assert "Missing scopes" in response.json()["detail"]
+    finally:
+        settings.ignore_auth = previous_ignore_auth
+        from app.core.security import get_bearer
+        from app.main import app
+
+        app.dependency_overrides.pop(get_bearer, None)
+
+
+def test_locked_unit_rejects_student_coursework_access(client, session):
+    previous_ignore_auth = settings.ignore_auth
+    settings.ignore_auth = False
+
+    try:
+        unit_id = create_unit(session).id
+        unit = session.get(Unit, unit_id)
+        unit.unlocked = False
+        requesting_user = "student-user"
+        session.add(unit)
+        session.add(UnitEnrollment(unit_id=unit_id, user_id=requesting_user, type="student"))
+        coursework = Coursework(
+            name="Locked unit coursework",
+            description="Test",
+            unit_id=unit_id,
+            due_date=datetime.now() + timedelta(days=11),
+            colour="abcdef",
+            gitlab_id="123456",
+        )
+        session.add(coursework)
+        session.commit()
+        session.refresh(coursework)
+
+        fake_token = HTTPAuthorizationCredentials(
+            scheme="Bearer",
+            credentials="fake.jwt.token",
+        )
+
+        def override_get_bearer():
+            yield fake_token
+
+        from app.core.security import get_bearer
+        from app.main import app
+
+        app.dependency_overrides[get_bearer] = override_get_bearer
+
+        with patch(
+            "app.core.scopes.scopes.verify_token_and_get_user",
+            return_value=CurrentUser(user_id=requesting_user, role="user"),
+        ):
+            scopes_response = client.get(f"/coursework/{coursework.id}/scopes")
+            detail_response = client.get(f"/coursework/{coursework.id}")
+
+        assert scopes_response.status_code == 200
+        assert "unit:read" not in scopes_response.json()["scopes"]
+        assert detail_response.status_code == 401
+        assert "Missing scopes" in detail_response.json()["detail"]
+    finally:
+        settings.ignore_auth = previous_ignore_auth
+        from app.core.security import get_bearer
+        from app.main import app
+
+        app.dependency_overrides.pop(get_bearer, None)

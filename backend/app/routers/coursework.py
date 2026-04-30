@@ -82,6 +82,29 @@ router = APIRouter(prefix="/coursework", tags=["coursework"])
 session_dependency = Annotated[Session, Depends(get_session)]
 token_dependency = Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]
 
+
+async def require_coursework_gitlab_scope_by_template_id(
+    template_id: int,
+    session: Session,
+    token: HTTPAuthorizationCredentials,
+) -> Coursework:
+    coursework = session.exec(
+        select(Coursework).where(Coursework.template_id == template_id)
+    ).first()
+    if coursework is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Coursework not found"
+        )
+
+    await require_scopes(
+        ResourceInformation(type=Unit, id=coursework.unit_id),
+        Scopes.UNIT_COURSEWORK_GITLAB,
+        token=token,
+        session=session,
+    )
+    return coursework
+
+
 @router.get(
     "/{id}/test_run/{tid}",
     status_code=status.HTTP_200_OK,
@@ -783,6 +806,7 @@ async def all_courseworks(session: session_dependency, token: token_dependency):
             id=unit.id,
             unit_code=unit.unit_code,
             name=unit.name,
+            unlocked=unit.unlocked,
             programme_start_date=unit.programme.start_date,
             programme_end_date=unit.programme.end_date,
             courseworks=unit.courseworks,
@@ -1091,8 +1115,9 @@ async def activate_template(
 
 @router.get("/template/files", response_model=list[CourseworkTemplateFile])
 async def get_files(
-    templateId: str, session: session_dependency, token: token_dependency
+    templateId: int, session: session_dependency, token: token_dependency
 ):
+    await require_coursework_gitlab_scope_by_template_id(templateId, session, token)
     try:
         fileData = await gl_template_files(templateId)
     except Exception:
@@ -1105,8 +1130,9 @@ async def get_files(
 
 @router.get("/template/urls", response_model=CourseworkTemplateUrl)
 async def template_urls(
-    templateId: str, session: session_dependency, token: token_dependency
+    templateId: int, session: session_dependency, token: token_dependency
 ):
+    await require_coursework_gitlab_scope_by_template_id(templateId, session, token)
     try:
         urlData = await gl_template_urls(templateId)
     except Exception:
@@ -1132,6 +1158,12 @@ async def upload_zip(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Coursework not found"
         )
+    await require_scopes(
+        ResourceInformation(type=Unit, id=coursework.unit_id),
+        Scopes.UNIT_COURSEWORK_GITLAB,
+        token=token,
+        session=session,
+    )
     courseworkGitLabId = coursework.gitlab_id
 
     try:
@@ -1158,10 +1190,14 @@ async def upload_zip(
 
 @router.post("/template/overwrite-zip")
 async def overwrite_zip(
-    templateId: str, token: token_dependency, file: UploadFile = File(...)
+    templateId: int,
+    session: session_dependency,
+    token: token_dependency,
+    file: UploadFile = File(...),
 ):
     if not file.filename.endswith(".zip"):
         raise HTTPException(status_code=400, detail="File must be in ZIP format")
+    await require_coursework_gitlab_scope_by_template_id(templateId, session, token)
     try:
         response = await gl_overwrite_zip(templateId, file)
 

@@ -1,8 +1,7 @@
-import logging
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.core.logging import configure_logging
 from app.core.settings import settings
 from app.core.testing import ensure_test_fixture_key_configured
 from app.db.session import create_db_and_tables, lifespan
@@ -24,9 +23,7 @@ from app.routers import (
 )
 from app.routers import seeding
 
-logging.basicConfig(
-    level=settings.log_level.upper(),
-)
+configure_logging()
 
 app = FastAPI(lifespan=lifespan)
 

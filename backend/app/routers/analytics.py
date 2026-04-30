@@ -37,7 +37,7 @@ router = APIRouter(prefix="/analytics", tags=["analytics"])
 session_dependency = Annotated[Session, Depends(get_session)]
 
 
-def _repo_name_from_url(repo_url: str) -> str:
+def repo_name_from_url(repo_url: str) -> str:
     trimmed = repo_url.rstrip("/")
     if trimmed.endswith(".git"):
         trimmed = trimmed[:-4]
@@ -66,7 +66,7 @@ def _start_of_day_utc(value: datetime.date) -> datetime.datetime:
     )
 
 
-def _parse_gitlab_datetime(value: str | None) -> datetime.datetime | None:
+def parse_gitlab_datetime(value: str | None) -> datetime.datetime | None:
     if value is None:
         return None
 
@@ -78,7 +78,7 @@ def _parse_gitlab_datetime(value: str | None) -> datetime.datetime | None:
     return parsed.astimezone(datetime.timezone.utc)
 
 
-def _normalize_pair(first: int, second: int) -> tuple[float, float]:
+def normalize_pair(first: int, second: int) -> tuple[float, float]:
     ceiling = max(first, second, 1)
     return (first / ceiling) * 100, (second / ceiling) * 100
 
@@ -139,7 +139,7 @@ async def get_commit_feed(
 
         project_path = gitlab_project_path_from_repo_url(student_repo.repo_url)
         repo_url = student_repo.repo_url
-        repo_name = _repo_name_from_url(repo_url)
+        repo_name = repo_name_from_url(repo_url)
 
         try:
             async with semaphore:
@@ -452,7 +452,7 @@ async def get_activity_trend(
 
         for repo_commits in commit_lists:
             for commit in repo_commits:
-                authored_at = _parse_gitlab_datetime(commit.get("authored_date"))
+                authored_at = parse_gitlab_datetime(commit.get("authored_date"))
                 if authored_at is None or not (range_start <= authored_at < range_end):
                     continue
 
@@ -575,7 +575,7 @@ async def get_coursework_comparison(
                 in_range_commits = [
                     commit
                     for commit in commits
-                    if (authored_at := _parse_gitlab_datetime(commit.get("authored_date")))
+                    if (authored_at := parse_gitlab_datetime(commit.get("authored_date")))
                     and authored_at >= cutoff
                 ]
                 commit_count += len(in_range_commits)
@@ -616,11 +616,11 @@ async def get_coursework_comparison(
         summarize_coursework(coursework_by_id[coursework_b_id]),
     )
 
-    commit_volume_a, commit_volume_b = _normalize_pair(
+    commit_volume_a, commit_volume_b = normalize_pair(
         first_summary["commit_count"],
         second_summary["commit_count"],
     )
-    test_volume_a, test_volume_b = _normalize_pair(
+    test_volume_a, test_volume_b = normalize_pair(
         first_summary["test_run_count"],
         second_summary["test_run_count"],
     )

@@ -12,6 +12,7 @@ from sqlmodel import Session, select
 from app.core.jwt_utils import verify_token_and_get_user
 from app.core.settings import settings
 from app.db.session import get_session
+from app.models.unit import Unit
 from app.models.unit_enrollment import UnitEnrollment
 
 logger = logging.getLogger("permissions")
@@ -101,7 +102,15 @@ async def resolve_unit_scopes(
         logger.debug("no enrollment found, so no scopes are valid for this unit.")
         return set()
 
+    unit = session.get(Unit, unit_id)
+    if unit is None:
+        logger.debug("unit not found, so no scopes are valid for this unit.")
+        return set()
+
     scopes = ENROLLMENT_TYPE_SCOPES.get(enrollment.type, [])
+    if enrollment.type == "student" and not unit.unlocked:
+        logger.debug("student enrollment found, but unit is locked.")
+        scopes = []
 
     logger.debug(
         f"scopes due to enrollment type {enrollment.type} added, they are {scopes}"

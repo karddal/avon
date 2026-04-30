@@ -45,6 +45,9 @@ fixit:
 build-fe:
     npm run build
 
+build-e2e-fe:
+    npm run build:e2e
+
 test-be:
     @echo "Testing backend routers..."
     uv run pytest -v
@@ -54,7 +57,16 @@ run-fe env = "dev":
 
 test-fe:
     @echo "Testing frontend..."
-    npm test
+    npm run test:e2e
+
+test-e2e-prebuilt-fe:
+    @echo "Testing frontend against an existing e2e build..."
+    npm run test:e2e:prebuilt
+
+unit-fe:
+    @echo "Running frontend unit tests..."
+    npm run test:unit
+
 
 test:
     just fe test

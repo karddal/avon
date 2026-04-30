@@ -6,6 +6,7 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 from app.core.env import BACKEND_DIR, load_backend_env
+from app.core.terminal import format_message
 
 DEFAULT_SEEDING_URL = "http://localhost:8000/seeding/reset-db"
 DEFAULT_SEED_SQL = BACKEND_DIR / "sql" / "seed.sql"
@@ -42,6 +43,11 @@ def _reset_locally(args: argparse.Namespace) -> dict[str, str]:
     )
 
 
+def _format_seed_result(result: dict[str, object]) -> str:
+    message = str(result.get("message") or "Database seeded")
+    return format_message("seed", message)
+
+
 def cmd_seed(args: argparse.Namespace) -> None:
     try:
         result = _reset_via_backend(args.url)
@@ -51,7 +57,7 @@ def cmd_seed(args: argparse.Namespace) -> None:
     except URLError:
         result = _reset_locally(args)
 
-    print(json.dumps(result))
+    print(_format_seed_result(result))
 
 
 def build_parser() -> argparse.ArgumentParser:

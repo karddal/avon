@@ -23,6 +23,7 @@ type unit = {
   id: string;
   unit_code: string;
   name: string;
+  unlocked: boolean;
   programme_start_date: string;
   programme_end_date: string;
   courseworks: CourseworkData[];
@@ -109,6 +110,7 @@ export default async function CourseworkList({
                         colour: coursework.colour,
                         creation_date: coursework.creation_date,
                         due_date: coursework.due_date,
+                        locked: !unit.unlocked && !hasPermissions,
                         selector_suffix: toDataCyValue(
                           `${unit.name} ${getUnitYears(unit)} ${coursework.name}`,
                         ),

@@ -2,7 +2,7 @@
 
 Currently, Avon has tests for the backend and frontend.
 
-We use [Pytest](https://docs.pytest.org/en/stable/) for backend testing and [Cypress](https://www.cypress.io/) for backend tests.
+We use [Pytest](https://docs.pytest.org/en/stable/) for backend testing and [Cypress](https://www.cypress.io/) for frontend end-to-end tests.
 
 ## Backend tests
 
@@ -12,24 +12,27 @@ To run backend tests use `just test-be`.
 
 ## Frontend tests
 
-We use end-to-end tests using Cypress that mocks the browser. We are able to define what a page should look like. Please see the login page tests to see how to cache
-the logged in state. The database is reset and seeded before every test, again see the login tests for an example.
+We use Cypress for frontend end-to-end tests. The shared Cypress commands live in `frontend/cypress/support/commands.ts`.
 
-Fixture setup now uses the backend test-only fixture API under `/testing/fixtures/*`.
+To run the full local frontend e2e flow, use `just test-fe`. This seeds the test database, builds the frontend with the e2e environment, starts the backend and frontend, then runs Cypress.
 
-This router is only mounted when `ENABLE_TEST_FIXTURES=True` in a test backend environment, and every request must include the `X-Test-Fixture-Key` header. These routes are test infrastructure only. They are not part of the product API surface and should not be used by application code.
+If a compatible e2e build already exists, use:
 
-For Cypress, prefer the shared commands in `frontend/cypress/support/commands.ts`:
-- `cy.testResetDomain()`
-- `cy.testCreateProgramme(...)`
-- `cy.testCreateUnit(...)`
-- `cy.testCreateCoursework(...)`
-- `cy.testEnrollStudents(...)`
-- `cy.testEnrollLecturers(...)`
+```bash
+just fe test-e2e-prebuilt
+```
 
-Use those helpers to create targeted state in the middle of a test instead of relying on `IGNORE_AUTH` or restarting the backend.
+To only create that build, use:
 
-To run tests, use `just test-fe`. This will start up the backend.
+```bash
+just fe build-e2e
+```
+
+CI uses this split path: it builds once with `just fe build-e2e`/`npm run build:e2e`, then runs Cypress with `npm run test:e2e:prebuilt` so Cypress does not pay for another `next build`.
+
+Prefer `cy.login(...)` for authenticated tests. It uses Cypress session caching so specs do not repeat the full login flow unless the cached Better Auth session is invalid. Keep direct login-form assertions in the login spec so authentication itself remains covered.
+
+Use `cy.resetDb()` only where isolation is needed. Read-only specs should reset once before the spec; mutation tests should reset at the start of the test if they depend on seeded state.
 
 ## All tests
 

@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { CourseworkDeadlineBannerFromSlug } from "@/components/coursework/coursework-banner";
 import CourseworkLectDropdown from "@/components/coursework/coursework-lect-dropdown";
@@ -157,6 +158,9 @@ async function CourseworkPageContent({
   await requireSession();
   const token = await getRequestJWT();
   const scopes: Set<string> = await get_coursework_scopes(slug);
+  if (!scopes.has("unit:read")) {
+    redirect("/coursework");
+  }
   const canEditLayouts =
     scopes.has("unit:coursework_manage") ||
     scopes.has("unit:coursework_gitlab") ||

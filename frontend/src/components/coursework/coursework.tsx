@@ -1,5 +1,5 @@
 "use client";
-import { Ellipsis, SquareX } from "lucide-react";
+import { Ellipsis, LockKeyhole, SquareX } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import DeleteCourseworkButton from "@/components/coursework/delete_coursework_button";
@@ -34,6 +34,7 @@ type courseworkData = {
   due_date: string;
   selector_suffix?: string;
   unit_code?: string;
+  locked?: boolean;
 };
 
 function _getRandomTestsPassed(): number {
@@ -57,29 +58,46 @@ export default function Coursework({
     ? `coursework-link-${props.selector_suffix}`
     : "coursework-link";
   const [showDelete, setShowDelete] = useState(false);
+  const cardContent = (
+    <div className="h-full flex-row justify-between">
+      <div className="flex flex-col">
+        <p className="text-lg lg:text-xl">{props.name}</p>
+        <p className="text-muted-foreground">{props.unit_code}</p>
+      </div>
+      <div className="flex flex-row gap-2">
+        <p className="text-sm lg:text-xl text-muted-foreground">
+          <span className="text-sm">Due: </span>
+          {formatIsoDate(props.due_date)}
+        </p>
+      </div>
+    </div>
+  );
+
   return (
     <div data-cy={cardDataCy}>
       <div style={colouring} className="h-2 w-full"></div>
-      <Card className="bg-muted h-full flex flex-row p-2 hover:bg-foreground/10">
-        <Link
-          data-cy={linkDataCy}
-          className={"flex-1 h-full"}
-          href={`/coursework/${props.id}`}
-        >
-          <div className="h-full flex-row justify-between">
-            <div className="flex flex-col">
-              <p className="text-lg lg:text-xl">{props.name}</p>
-              <p className="text-muted-foreground">{props.unit_code}</p>
-            </div>
-            <div className="flex flex-row gap-2">
-              <p className="text-sm lg:text-xl text-muted-foreground">
-                <span className="text-sm">Due: </span>
-                {formatIsoDate(props.due_date)}
-              </p>
-            </div>
+      <Card
+        className={
+          props.locked
+            ? "relative bg-muted h-full flex flex-row p-2 opacity-60 grayscale"
+            : "bg-muted h-full flex flex-row p-2 hover:bg-foreground/10"
+        }
+      >
+        {props.locked ? (
+          <div data-cy={linkDataCy} className="flex-1 h-full">
+            {cardContent}
+            <LockKeyhole className="text-foreground/60 absolute right-3 bottom-3 h-5 w-5" />
           </div>
-        </Link>
-        {hasPermissions && (
+        ) : (
+          <Link
+            data-cy={linkDataCy}
+            className={"flex-1 h-full"}
+            href={`/coursework/${props.id}`}
+          >
+            {cardContent}
+          </Link>
+        )}
+        {hasPermissions && !props.locked && (
           <div className={"z-20 place-self-end"}>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

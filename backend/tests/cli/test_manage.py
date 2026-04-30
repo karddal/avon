@@ -1,11 +1,11 @@
 import argparse
 import io
-import json
 from urllib.error import HTTPError, URLError
 
 import pytest
 
 from app.cli import manage
+from app.core.terminal import format_message
 
 
 def _http_error(url: str, code: int, body: str = '{"detail":"Not Found"}') -> HTTPError:
@@ -41,7 +41,9 @@ def test_cmd_seed_uses_backend_when_available(
 
     manage.cmd_seed(args)
 
-    assert json.loads(capsys.readouterr().out.strip()) == expected
+    assert capsys.readouterr().out.rstrip("\n") == (
+        format_message("seed", expected["message"])
+    )
 
 
 def test_cmd_seed_falls_back_to_local_when_backend_is_unavailable(
@@ -66,7 +68,9 @@ def test_cmd_seed_falls_back_to_local_when_backend_is_unavailable(
 
     manage.cmd_seed(args)
 
-    assert json.loads(capsys.readouterr().out.strip()) == expected
+    assert capsys.readouterr().out.rstrip("\n") == (
+        format_message("seed", expected["message"])
+    )
 
 
 def test_cmd_seed_keeps_custom_url_http_errors(

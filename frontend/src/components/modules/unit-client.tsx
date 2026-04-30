@@ -21,6 +21,8 @@ type UnitClientProps = {
   unit: UnitData;
   role: string;
   canEditLayouts: boolean;
+  canCreateCoursework: boolean;
+  canDeleteCoursework: boolean;
   lecturers: Lecturer[];
   courseworks: courseworkResponse;
 };
@@ -54,6 +56,8 @@ export default function UnitClient({
   unit,
   role,
   canEditLayouts,
+  canCreateCoursework,
+  canDeleteCoursework,
   lecturers,
   courseworks,
 }: UnitClientProps) {
@@ -102,6 +106,8 @@ export default function UnitClient({
         layout={layout}
         unit={unit}
         role={role}
+        canCreateCoursework={canCreateCoursework}
+        canDeleteCoursework={canDeleteCoursework}
         lecturers={lecturers}
         courseworks={courseworks}
       />

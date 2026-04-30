@@ -1,8 +1,13 @@
 import pytest
+from unittest.mock import patch
 from uuid import uuid4, UUID
 from datetime import date, timedelta
 
+from fastapi.security import HTTPAuthorizationCredentials
+
+from app.core.settings import settings
 from app.models.programme import Programme
+from app.schemas.security import CurrentUser
 
 
 def programme_payload():
@@ -158,3 +163,71 @@ def test_delete_programme_not_found(client):
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Programme not found"
+
+
+def test_create_programme_rejects_non_admin(client, session):
+    previous_ignore_auth = settings.ignore_auth
+    settings.ignore_auth = False
+
+    try:
+        fake_token = HTTPAuthorizationCredentials(
+            scheme="Bearer",
+            credentials="fake.jwt.token",
+        )
+
+        def override_get_bearer():
+            yield fake_token
+
+        from app.core.security import get_bearer
+        from app.main import app
+
+        app.dependency_overrides[get_bearer] = override_get_bearer
+
+        with patch(
+            "app.core.scopes.scopes.verify_token_and_get_user",
+            return_value=CurrentUser(user_id="lecturer-user", role="lecturer"),
+        ):
+            response = client.post("/programmes/create", json=programme_payload())
+
+        assert response.status_code == 401
+        assert "Not correct role" in response.json()["detail"]
+    finally:
+        settings.ignore_auth = previous_ignore_auth
+        from app.core.security import get_bearer
+        from app.main import app
+
+        app.dependency_overrides.pop(get_bearer, None)
+
+
+def test_list_programmes_rejects_non_admin(client, session):
+    previous_ignore_auth = settings.ignore_auth
+    settings.ignore_auth = False
+
+    try:
+        fake_token = HTTPAuthorizationCredentials(
+            scheme="Bearer",
+            credentials="fake.jwt.token",
+        )
+
+        def override_get_bearer():
+            yield fake_token
+
+        from app.core.security import get_bearer
+        from app.main import app
+
+        app.dependency_overrides[get_bearer] = override_get_bearer
+
+        with patch(
+            "app.core.scopes.scopes.verify_token_and_get_user",
+            return_value=CurrentUser(user_id="lecturer-user", role="lecturer"),
+        ):
+            response = client.get("/programmes/")
+
+        assert response.status_code == 401
+        assert "Not correct role" in response.json()["detail"]
+    finally:
+        settings.ignore_auth = previous_ignore_auth
+        from app.core.security import get_bearer
+        from app.main import app
+
+        app.dependency_overrides.pop(get_bearer, None)

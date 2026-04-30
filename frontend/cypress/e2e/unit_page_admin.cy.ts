@@ -61,9 +61,10 @@ describe("Unit page", () => {
   });
 
   it("admin can delete unit", () => {
+    cy.resetDb();
     cy.visit("/units");
     cy.contains('[role="tab"]', "Year 1 Computer Science 2025-2026").click();
-    cy.contains("p", "Mathematics for Computer Science B")
+    cy.contains("p", "Mathematics for Computer Science A")
       .should("be.visible")
       .closest("a")
       .parent()

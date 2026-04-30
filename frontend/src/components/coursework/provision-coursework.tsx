@@ -1,6 +1,6 @@
 "use client";
 
-import { Component, UserIcon, Users } from "lucide-react";
+import { UserIcon, Users } from "lucide-react";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import { toast } from "sonner";
 import StudsListDialogForProvision from "@/components/coursework/stud_list_for_provisioning/studs-table-dialog";
@@ -172,61 +172,6 @@ export default function ProvisionCoursework({
               refresh={refresh}
               gitlabData={gitlab_data}
             />
-
-            <div className="md:w-px md:h-auto h-px w-full bg-border self-stretch" />
-
-            <div className="flex flex-col flex-1 gap-2 border h-full">
-              <Item className="h-full" variant={"muted"}>
-                <ItemHeader className="flex flex-row gap-4 justify-start">
-                  <ItemMedia variant={"icon"}>
-                    <Component />
-                  </ItemMedia>
-                  <ItemTitle>Group provisioning</ItemTitle>
-                </ItemHeader>
-                <ItemContent>
-                  <ItemDescription>
-                    Specify student groups using a CSV and provision repos
-                    accordingly.
-                  </ItemDescription>
-                </ItemContent>
-                <ItemActions className={"w-full"}>
-                  {status === 0 && !loadingState && (
-                    <Button
-                      onClick={() => provisionForIndividuals(gitlab_data)}
-                      disabled
-                      variant={"outline"}
-                      className="w-full mt-4"
-                    >
-                      Coming soon...
-                    </Button>
-                  )}
-
-                  {status === 1 && !loadingState && (
-                    <Button className="w-full mt-4">
-                      <Spinner className="mr-2 h-4 w-4" />
-                    </Button>
-                  )}
-
-                  {loadingState && (
-                    <Button disabled className="w-full mt-4">
-                      <Spinner className="mr-2 h-4 w-4" />
-                      Provisioning...
-                    </Button>
-                  )}
-
-                  {status === 2 && !loadingState && (
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="w-full border-green-500 text-green-600 cursor-default"
-                      disabled
-                    >
-                      ✓ All projects provisioned
-                    </Button>
-                  )}
-                </ItemActions>
-              </Item>
-            </div>
           </div>
         </div>
       </DialogContent>

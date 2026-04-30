@@ -12,5 +12,7 @@ export default defineConfig({
     apiUrl: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8001",
     testFixtureKey: process.env.TEST_FIXTURE_KEY ?? "sep-test-fixture-key",
   },
-  defaultCommandTimeout: 30000,
+  defaultCommandTimeout: 10000,
+  video: false,
+  numTestsKeptInMemory: 0,
 });

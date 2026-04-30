@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from datetime import datetime, timedelta
 from sqlmodel import Session, select
 
@@ -7,6 +8,8 @@ from app.db.session import engine
 from app.models.projects import ProvisionProject, ProvisionBatch
 from app.models.student_repo import StudentRepo
 from app.core.helpers.gitlab import gl_create_fork
+
+logger = logging.getLogger("provision_worker")
 
 
 async def run_provision_worker():
@@ -22,7 +25,7 @@ async def run_provision_worker():
 
             await process_job(job_id, batch_id)
     except asyncio.CancelledError:
-        print("worker shutting down cleanly")
+        logger.info("Worker shutting down cleanly")
         return
 
 

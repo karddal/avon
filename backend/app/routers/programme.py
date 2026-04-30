@@ -1,10 +1,13 @@
 from typing import Annotated
 from app.core.helpers.gitlab import gl_create_programme, gl_delete_programme, gl_update_programme
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials
 from app.db.session import get_session
 from sqlmodel import Session, select
 from uuid import UUID
 from app.core.settings import settings
+from app.core.scopes.scopes import FERoles, require_role
+from app.core.security import get_bearer
 
 from app.models.programme import Programme
 from app.schemas.programme import ProgrammeCreate, ProgrammeRead, ProgrammeDelete
@@ -16,9 +19,15 @@ from app.schemas.programme import ProgrammeAll
 
 router = APIRouter(prefix="/programmes", tags=["programmes"])
 session_dependency = Annotated[Session, Depends(get_session)]
+token_dependency = Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]
 
 @router.post('/create', response_model = ProgrammeRead, status_code=status.HTTP_201_CREATED)
-async def create_programme(programme: ProgrammeCreate, session: session_dependency) -> Programme:
+async def create_programme(
+    programme: ProgrammeCreate,
+    session: session_dependency,
+    token: token_dependency,
+) -> Programme:
+    await require_role(FERoles.ADMIN, token=token, session=session)
     
     programmeAlreadyExists = session.exec(select(Programme).where((Programme.name == programme.name))).first()
 
@@ -53,13 +62,15 @@ async def create_programme(programme: ProgrammeCreate, session: session_dependen
 
 
 @router.get("/all", response_model=list[ProgrammeRead])
-async def list_programmes(session: session_dependency):
+async def list_programmes(session: session_dependency, token: token_dependency):
+    await require_role(FERoles.ADMIN, token=token, session=session)
     statement = select(Programme)
     programmes = session.exec(statement).all()
     return programmes
 
 @router.get('/{id}', response_model = ProgrammeRead, status_code=status.HTTP_200_OK)
-async def get_programme(id: UUID, session: session_dependency):
+async def get_programme(id: UUID, session: session_dependency, token: token_dependency):
+    await require_role(FERoles.ADMIN, token=token, session=session)
     programme = session.get(Programme, id)
 
     if programme is None:
@@ -70,7 +81,13 @@ async def get_programme(id: UUID, session: session_dependency):
 
 
 @router.delete("/{id}", response_model=ProgrammeDelete)
-async def delete_programme(id: UUID, session: session_dependency):
+async def delete_programme(
+    id: UUID,
+    session: session_dependency,
+    token: token_dependency,
+):
+    await require_role(FERoles.ADMIN, token=token, session=session)
+
     programme = session.get(Programme, id)
 
     if programme is None:
@@ -92,8 +109,13 @@ async def delete_programme(id: UUID, session: session_dependency):
 
 @router.put("/{id}", response_model=ProgrammeRead)
 async def update_programme(
-    id: UUID, programme: ProgrammeUpdate, session: session_dependency
+    id: UUID,
+    programme: ProgrammeUpdate,
+    session: session_dependency,
+    token: token_dependency,
 ):
+    await require_role(FERoles.ADMIN, token=token, session=session)
+
     programme_db = session.get(Programme, id)
 
     if programme_db is None:
@@ -117,7 +139,8 @@ async def update_programme(
 
 
 @router.get("/", response_model=ProgrammeAll, status_code=status.HTTP_200_OK)
-async def get_programmes(session: session_dependency):
+async def get_programmes(session: session_dependency, token: token_dependency):
+    await require_role(FERoles.ADMIN, token=token, session=session)
     statement = select(Programme)
     programmes = session.exec(statement).all()
     return {"programmes": programmes}

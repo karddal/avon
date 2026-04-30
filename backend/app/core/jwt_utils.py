@@ -7,7 +7,7 @@ from app.schemas.security import CurrentUser
 
 logger = logging.getLogger("jwt_util")
 
-def _token_fingerprint(token: str) -> str:
+def token_fingerprint(token: str) -> str:
     return hashlib.sha256(token.encode("utf-8")).hexdigest()[:8]
 
 class JwksProvider:
@@ -21,7 +21,7 @@ class JwksProvider:
 jwks_provider = JwksProvider(settings.jwks_url)
 
 def verify_token_and_get_user(token_str: str) -> CurrentUser:
-    fingerprint = _token_fingerprint(token_str)
+    fingerprint = token_fingerprint(token_str)
 
     logger.debug("JWT token fingerprint=%s", fingerprint)
 

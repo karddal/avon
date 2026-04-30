@@ -122,7 +122,7 @@ async def sqs_worker(s, queue_url: str):
                             QueueUrl=queue_url, ReceiptHandle=msg["ReceiptHandle"]
                         )
                     except Exception as e:
-                        print(f"Background worker error: {e}")
+                        logger.error(f"Background worker error: {e}")
 
             except Exception as e:
                 logger.error(f"Could not receive sqs messages: {e}")

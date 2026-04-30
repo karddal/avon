@@ -1,8 +1,11 @@
 import "cypress-real-events";
 
 describe("Coursework page", () => {
-  beforeEach(() => {
+  before(() => {
     cy.resetDb();
+  });
+
+  beforeEach(() => {
     cy.clearAuthSession();
     // cy.visit("/login");
     // cy.get("#email").type("admin@bris.ac.uk");
@@ -63,6 +66,7 @@ describe("Coursework page", () => {
   });
 
   it("Admin can edit a coursework name", () => {
+    cy.resetDb();
     cy.visit("/coursework");
     cy.getByCy("coursework-unit-tab-computer-architecture-2025-2026").click();
     cy.getByCy("coursework-link-computer-architecture-2025-2026-encrypt").click(
@@ -85,6 +89,7 @@ describe("Coursework page", () => {
   });
 
   it("Admin can edit a coursework description", () => {
+    cy.resetDb();
     cy.visit("/coursework");
     cy.getByCy("coursework-unit-tab-computer-architecture-2025-2026").click();
     cy.getByCy("coursework-link-computer-architecture-2025-2026-encrypt").click(

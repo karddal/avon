@@ -23,10 +23,21 @@ token_dependency = Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]
 
 
 @router.post("", response_model=UnitEnrollmentRead, status_code=201)
-def enroll_unit(payload: UnitEnrollmentCreate, session: session_dependency):
+async def enroll_unit(
+    payload: UnitEnrollmentCreate,
+    session: session_dependency,
+    token: token_dependency,
+):
     unit = session.get(Unit, ident=payload.unit_id)
     if not unit:
         raise HTTPException(status_code=404, detail="Unit not found")
+
+    await require_scopes(
+        ResourceInformation(Unit, payload.unit_id),
+        Scopes.UNIT_ENROLL,
+        token=token,
+        session=session,
+    )
 
     if session.get(UnitEnrollment, (payload.unit_id, payload.user_id)):
         raise HTTPException(
@@ -54,9 +65,20 @@ def enroll_unit(payload: UnitEnrollmentCreate, session: session_dependency):
 
 
 @router.delete("", status_code=201)
-def delete_unit_enrollment(payload: UnitEnrollmentDelete, session: session_dependency):
+async def delete_unit_enrollment(
+    payload: UnitEnrollmentDelete,
+    session: session_dependency,
+    token: token_dependency,
+):
     if not session.get(Unit, payload.unit_id):
         raise HTTPException(status_code=404, detail="Unit not found")
+
+    await require_scopes(
+        ResourceInformation(Unit, payload.unit_id),
+        Scopes.UNIT_ENROLL,
+        token=token,
+        session=session,
+    )
 
     find = session.get(UnitEnrollment, (payload.unit_id, payload.user_id))
 
@@ -69,9 +91,20 @@ def delete_unit_enrollment(payload: UnitEnrollmentDelete, session: session_depen
 
 
 @router.post("/batch", status_code=201)
-def enroll_unit_batch_students(payload: UnitEnrollmentBatchCreate, session: session_dependency):
+async def enroll_unit_batch_students(
+    payload: UnitEnrollmentBatchCreate,
+    session: session_dependency,
+    token: token_dependency,
+):
     if not session.get(Unit, payload.unit_id):
         raise HTTPException(status_code=404, detail="Unit not found")
+
+    await require_scopes(
+        ResourceInformation(Unit, payload.unit_id),
+        Scopes.UNIT_ENROLL,
+        token=token,
+        session=session,
+    )
 
     # find existing ones in bulk
     statement = select(UnitEnrollment.user_id).where(
@@ -96,9 +129,20 @@ def enroll_unit_batch_students(payload: UnitEnrollmentBatchCreate, session: sess
     return {"message": f"{len(new_enrollments)} users enrolled successfully"}
 
 @router.delete("/batch", status_code=201)
-def unenroll_unit(payload: UnitEnrollmentBatchDelete, session: session_dependency):
+async def unenroll_unit(
+    payload: UnitEnrollmentBatchDelete,
+    session: session_dependency,
+    token: token_dependency,
+):
     if not session.get(Unit, payload.unit_id):
         raise HTTPException(status_code=404, detail="Unit not found")
+
+    await require_scopes(
+        ResourceInformation(Unit, payload.unit_id),
+        Scopes.UNIT_ENROLL,
+        token=token,
+        session=session,
+    )
 
     # find in bulk if they don't exist
     stmt = select(UnitEnrollment.user_id).where(UnitEnrollment.unit_id == payload.unit_id, UnitEnrollment.type == "student", UnitEnrollment.user_id.notin_(payload.omitted_user_ids))
@@ -118,14 +162,31 @@ def unenroll_unit(payload: UnitEnrollmentBatchDelete, session: session_dependenc
     return {"message": "users un-enrolled successfully, excluding omitted "}
 
 @router.post("/batch/transfer", status_code=201)
-def transfer_unit_members(payload: UnitEnrollmentBatchTransfer, session: session_dependency):
+async def transfer_unit_members(
+    payload: UnitEnrollmentBatchTransfer,
+    session: session_dependency,
+    token: token_dependency,
+):
     # Making sure teh unit to transfer from exists, and the units to transfer to exist
     if not session.get(Unit, payload.unitIdFrom):
         raise HTTPException(status_code=404, detail="Unit to delete from, not found")
 
+    await require_scopes(
+        ResourceInformation(Unit, payload.unitIdFrom),
+        Scopes.UNIT_ENROLL,
+        token=token,
+        session=session,
+    )
+
     for unitToTransfer in payload.unitIdsTo:
         if not session.get(Unit, unitToTransfer):
             raise HTTPException(status_code=404, detail=f"Unit with id {unitToTransfer} not found")
+        await require_scopes(
+            ResourceInformation(Unit, unitToTransfer),
+            Scopes.UNIT_ENROLL,
+            token=token,
+            session=session,
+        )
 
     filtered_stmt = select(UnitEnrollment.user_id).where(
         UnitEnrollment.unit_id == payload.unitIdFrom,
@@ -171,9 +232,20 @@ def transfer_unit_members(payload: UnitEnrollmentBatchTransfer, session: session
     return {"message": "users transferred successfully"}
 
 @router.post("/batch/lecturers", status_code=201)
-def enroll_unit_batch_lecturers(payload: UnitEnrollmentBatchCreate, session: session_dependency):
+async def enroll_unit_batch_lecturers(
+    payload: UnitEnrollmentBatchCreate,
+    session: session_dependency,
+    token: token_dependency,
+):
     if not session.get(Unit, payload.unit_id):
         raise HTTPException(status_code=404, detail="Unit not found")
+
+    await require_scopes(
+        ResourceInformation(Unit, payload.unit_id),
+        Scopes.UNIT_ENROLL,
+        token=token,
+        session=session,
+    )
 
     # find existing ones in bulk
     statement = select(UnitEnrollment.user_id).where(
@@ -227,7 +299,18 @@ def create_owner_enrollment(unit_id: UUID, user_id: UUID, session: Session) -> U
     return new_owner
 
 @router.get("/{unit_id}/owner", status_code=200)
-def get_owner_of_unit(unit_id: UUID, session: session_dependency):
+async def get_owner_of_unit(
+    unit_id: UUID,
+    session: session_dependency,
+    token: token_dependency,
+):
+    await require_scopes(
+        ResourceInformation(Unit, unit_id),
+        Scopes.UNIT_READ,
+        token=token,
+        session=session,
+    )
+
     stmt = select(UnitEnrollment).where(
         UnitEnrollment.unit_id == unit_id,
         UnitEnrollment.type == "owner"
