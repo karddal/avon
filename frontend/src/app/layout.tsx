@@ -59,9 +59,7 @@ export default function RootLayout({
           <TooltipProvider>
             <Suspense
               fallback={
-                <ImpersonationBanner initialIsImpersonating={false}>
-                  {children}
-                </ImpersonationBanner>
+                <div className="min-h-svh bg-background" aria-hidden="true" />
               }
             >
               <ImpersonationSessionShell>{children}</ImpersonationSessionShell>

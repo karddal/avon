@@ -25,8 +25,11 @@ const trustedOrigins = [
 
 export const auth = betterAuth({
   trustedOrigins,
+  rateLimit: {
+    enabled: process.env.TESTING_MODE !== "True",
+  },
   database: useSqlite
-    ? new DatabaseSync(dbPath)
+    ? new DatabaseSync(dbPath, { timeout: 5000 })
     : new Pool({
         connectionString: process.env.BA_DATABASE_URL,
         ssl: {

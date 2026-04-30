@@ -26,7 +26,7 @@ from app.schemas.notification import Notifications, ReadNotification, UnitWithNo
     NotificationsUnreadExist
 from app.schemas.profile_image import ProfileImageUploadResponse
 from app.schemas.security import CurrentUser
-from app.schemas.unit import UnitAll, UnitAllByGroup, UnitRead
+from app.schemas.unit import UnitAll, UnitAllByGroup
 
 router = APIRouter(prefix="/me", tags=["me"])
 session_dependency = Annotated[Session, Depends(get_session)]
@@ -138,23 +138,20 @@ async def me_active_units(
 ):
     today = datetime.date.today()
 
-    statement = select(Unit)
+    statement = (
+        select(Unit)
+        .join(Programme)
+        .where(Programme.start_date <= today, Programme.end_date >= today)
+        .options(selectinload(Unit.programme))
+    )
 
     if not me.is_admin:
-        statement = statement.join(UnitEnrollment).where(UnitEnrollment.user_id == me.user_id)
+        statement = statement.join(UnitEnrollment).where(
+            UnitEnrollment.user_id == me.user_id
+        )
 
     results = session.exec(statement).all()
-
-    filtered = [
-        UnitRead.model_validate(unit)
-        for unit in results
-        if unit.programme.start_date <= today <= unit.programme.end_date
-    ]
-
-    return UnitAll(
-        units=filtered
-    )
-    return UnitAll(units=filtered)
+    return UnitAll(units=results)
 
 
 @router.get("/units-by-programme", response_model=UnitAllByGroup)

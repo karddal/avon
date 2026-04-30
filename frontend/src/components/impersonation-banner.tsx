@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { stop_impersonating } from "@/lib/actions/auth/impersonation";
-import { authClient } from "@/lib/auth-client";
 
 export default function ImpersonationBanner({
   children,
@@ -18,8 +17,7 @@ export default function ImpersonationBanner({
   initialImpersonatedUserName?: string;
 }) {
   const router = useRouter();
-  const { data: session, isPending } = authClient.useSession();
-  const isBetterAuthImpersonating = Boolean(session?.session.impersonatedBy);
+  const isBetterAuthImpersonating = initialIsImpersonating;
   const [isStoredImpersonating, setIsStoredImpersonating] = useState(
     initialIsImpersonating,
   );
@@ -70,7 +68,7 @@ export default function ImpersonationBanner({
   }, []);
 
   useEffect(() => {
-    if (!transition || isPending) return;
+    if (!transition) return;
 
     if (transition === "impersonating" && isImpersonating) {
       const timeout = window.setTimeout(() => {
@@ -92,7 +90,7 @@ export default function ImpersonationBanner({
 
       return () => window.clearTimeout(timeout);
     }
-  }, [isBetterAuthImpersonating, isImpersonating, isPending, transition]);
+  }, [isBetterAuthImpersonating, isImpersonating, transition]);
 
   useEffect(() => {
     if (!isImpersonating) return;
@@ -152,8 +150,8 @@ export default function ImpersonationBanner({
     return <>{children}</>;
   }
   const impersonatedUserName =
-    isBetterAuthImpersonating && session?.user.name
-      ? session.user.name
+    isBetterAuthImpersonating && initialImpersonatedUserName
+      ? initialImpersonatedUserName
       : (storedImpersonatedUserName ?? "selected user");
 
   return (
