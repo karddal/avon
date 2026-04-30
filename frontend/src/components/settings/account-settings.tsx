@@ -1,9 +1,17 @@
 "use client";
 
 import type { User } from "better-auth";
-import { Info, Pencil } from "lucide-react";
+import { Eye, Info, Loader2, Pencil } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import {
+  clearStoredImpersonationActive,
+  clearStoredImpersonationTransition,
+  clearStoredReturnTransition,
+  setStoredImpersonationActive,
+  setStoredImpersonationTransition,
+} from "@/components/impersonation-banner";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -20,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { impersonate_managed_user } from "@/lib/actions/auth/impersonation";
 import { update_managed_user } from "@/lib/actions/auth/update_managed_user";
 import { update_user_profile_image } from "@/lib/actions/auth/update_user_profile_image";
 import { change_role } from "@/lib/actions/change_role";
@@ -48,6 +57,7 @@ export default function AccountSettings({
   onUserUpdated?: (user: User | null) => void;
   onProfileImageUpdated?: () => void;
 }) {
+  const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
   const [role, setRole] = useState<string | null>(null);
   const [showDelete, setShowDelete] = useState(false);
@@ -68,6 +78,7 @@ export default function AccountSettings({
   const [draftEmail, setDraftEmail] = useState("");
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingEmail, setIsEditingEmail] = useState(false);
+  const [isImpersonatingUser, setIsImpersonatingUser] = useState(false);
   const isValidPassword =
     newPasswordInp &&
     newPasswordInp.length >= 8 &&
@@ -94,6 +105,54 @@ export default function AccountSettings({
   );
   const hasEmailChanged = Boolean(
     activeUser && normalizedDraftEmail !== activeUser.email,
+  );
+  const isSelectedUserCurrentUser = activeUser?.id === session?.user.id;
+
+  const handleImpersonateUser = async () => {
+    if (!activeUser) return;
+
+    try {
+      setIsImpersonatingUser(true);
+      clearStoredImpersonationActive();
+      clearStoredReturnTransition();
+      setStoredImpersonationTransition("impersonating");
+
+      const result = await impersonate_managed_user(activeUser.id);
+
+      if (result?.success === false) {
+        throw new Error(result.error);
+      }
+
+      setStoredImpersonationActive(result.userName ?? activeUser.name);
+      router.replace("/dashboard");
+      router.refresh();
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to start impersonation",
+      );
+      clearStoredImpersonationTransition();
+      setIsImpersonatingUser(false);
+    }
+  };
+
+  const ImpersonationLoadingOverlay = () => (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-sky-500 p-3 text-white dark:bg-sky-950">
+      <div className="absolute inset-3 rounded-xl border border-white/30 shadow-[0_22px_70px_rgba(0,0,0,0.45),0_0_0_1px_rgba(255,255,255,0.25)_inset] animate-in fade-in-0 zoom-in-95 duration-300" />
+      <div className="absolute inset-x-3 top-3 h-12 rounded-t-xl border-b border-white/30 bg-white/10 animate-in slide-in-from-top-2 fade-in-0 duration-300" />
+      <div className="relative flex flex-col items-center gap-4 text-center animate-in fade-in-0 zoom-in-95 duration-300">
+        <div className="flex size-14 items-center justify-center rounded-full border border-white/35 bg-white/10 shadow-lg">
+          <Loader2 className="size-7 animate-spin" />
+        </div>
+        <div className="space-y-1">
+          <p className="text-lg font-semibold">Loading impersonation view...</p>
+          <p className="text-sm text-white/80">
+            Opening as {activeUser?.name ?? "selected user"}
+          </p>
+        </div>
+      </div>
+    </div>
   );
 
   useEffect(() => {
@@ -164,6 +223,7 @@ export default function AccountSettings({
 
   return (
     <div className="w-full">
+      {isImpersonatingUser ? <ImpersonationLoadingOverlay /> : null}
       <div
         className={`mt-6 px-6 grid grid-cols-1 gap-4 ${
           settingsPage ? "" : "md:grid-cols-2"
@@ -396,39 +456,51 @@ export default function AccountSettings({
           </h3>
           <div className="space-y-2">
             {isAdmin && !settingsPage ? (
-              <Select
-                value={selectedRole ?? undefined}
-                onValueChange={async (value) => {
-                  setSelectedRole(value);
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <Select
+                  value={selectedRole ?? undefined}
+                  onValueChange={async (value) => {
+                    setSelectedRole(value);
 
-                  if (value === role) {
-                    return;
-                  }
+                    if (value === role) {
+                      return;
+                    }
 
-                  const result = await change_role(activeUser.id, value);
+                    const result = await change_role(activeUser.id, value);
 
-                  if (!result.success) {
-                    toast.error("Failed to update role");
-                    setSelectedRole(role);
-                    return;
-                  }
+                    if (!result.success) {
+                      toast.error("Failed to update role");
+                      setSelectedRole(role);
+                      return;
+                    }
 
-                  setRole(value);
-                  toast.success("Role updated successfully");
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select role" />
-                </SelectTrigger>
+                    setRole(value);
+                    toast.success("Role updated successfully");
+                  }}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select role" />
+                  </SelectTrigger>
 
-                <SelectContent>
-                  {ROLES.map((r) => (
-                    <SelectItem key={r.value} value={r.value}>
-                      {r.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                  <SelectContent>
+                    {ROLES.map((r) => (
+                      <SelectItem key={r.value} value={r.value}>
+                        {r.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full sm:w-fit"
+                  onClick={handleImpersonateUser}
+                  disabled={isImpersonatingUser || isSelectedUserCurrentUser}
+                >
+                  <Eye />
+                  {isImpersonatingUser ? "Opening..." : "View as"}
+                </Button>
+              </div>
             ) : (
               <p className="text-base font-medium">{roleLabel}</p>
             )}
