@@ -146,7 +146,7 @@ function buildRuntimeConfig(): RuntimeConfig {
 
   const runnerEnv = {
     ...process.env,
-    CI_MODE: process.env.CI_nMODE ?? "True",
+    CI_MODE: process.env.CI_MODE ?? "True",
     TESTING_MODE: process.env.TESTING_MODE ?? "True",
     ENV: process.env.ENV ?? "development",
     BETTER_AUTH_SECRET:
