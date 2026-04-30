@@ -9,7 +9,7 @@ from pwdlib import PasswordHash
 from pydantic import BaseModel
 from starlette import status
 import jwt
-from app.core.jwt_utils import _token_fingerprint, verify_token_and_get_user
+from app.core.jwt_utils import token_fingerprint, verify_token_and_get_user
 from app.schemas.security import CurrentUser
 
 from app.core.settings import settings
@@ -63,7 +63,7 @@ def credentials_exception():
     )
 
 async def get_current_user_with_role(token: Annotated[HTTPAuthorizationCredentials, Depends(get_bearer)]) -> CurrentUser:
-    fingerprint = _token_fingerprint(token.credentials)
+    fingerprint = token_fingerprint(token.credentials)
     try:
         return verify_token_and_get_user(token.credentials)
 
@@ -91,4 +91,3 @@ async def get_current_user_with_role(token: Annotated[HTTPAuthorizationCredentia
 
 async def get_current_user(user: Annotated[CurrentUser, Depends(get_current_user_with_role)]) -> str:
     return user.user_id
-

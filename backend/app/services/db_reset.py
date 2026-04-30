@@ -262,7 +262,7 @@ def _fetch_user_ids_by_role(session: Session, role: str) -> list[str]:
     return [str(row[0]) for row in session.exec(statement).all()]
 
 
-def _current_academic_year_start(today: date | None = None) -> int:
+def current_academic_year_start(today: date | None = None) -> int:
     today = today or date.today()
 
     # academic year start day (today is before this will be "previs year-this year" i.e. "2025-2026")
@@ -272,48 +272,48 @@ def _current_academic_year_start(today: date | None = None) -> int:
     return today.year - 1
 
 
-def _programme_seed_years(
+def programme_seed_years(
     seed: dict[str, str | int],
     today: date | None = None,
 ) -> tuple[int, int]:
-    start_year = _current_academic_year_start(today) + int(seed["academic_year_offset"])
+    start_year = current_academic_year_start(today) + int(seed["academic_year_offset"])
     return start_year, start_year + 1
 
 
-def _programme_seed_name(seed: dict[str, str | int], today: date | None = None) -> str:
-    start_year, end_year = _programme_seed_years(seed, today)
+def programme_seed_name(seed: dict[str, str | int], today: date | None = None) -> str:
+    start_year, end_year = programme_seed_years(seed, today)
     return f"Year {seed['study_year']} Computer Science {start_year}-{end_year}"
 
 
-def _programme_seed_start_date(
+def programme_seed_start_date(
     seed: dict[str, str | int],
     today: date | None = None,
 ) -> date:
-    start_year, _end_year = _programme_seed_years(seed, today)
+    start_year, _end_year = programme_seed_years(seed, today)
     return date(start_year, 9, 10)
 
 
-def _programme_seed_end_date(
+def programme_seed_end_date(
     seed: dict[str, str | int],
     today: date | None = None,
 ) -> date:
-    _start_year, end_year = _programme_seed_years(seed, today)
+    _start_year, end_year = programme_seed_years(seed, today)
     return date(end_year, 8, 31)
 
 
-def _build_programmes(today: date | None = None) -> dict[str, Programme]:
+def build_programmes(today: date | None = None) -> dict[str, Programme]:
     return {
         str(seed["key"]): Programme(
-            name=_programme_seed_name(seed, today),
-            start_date=_programme_seed_start_date(seed, today),
-            end_date=_programme_seed_end_date(seed, today),
+            name=programme_seed_name(seed, today),
+            start_date=programme_seed_start_date(seed, today),
+            end_date=programme_seed_end_date(seed, today),
             gitlab_id=GITLAB_ID_DEFAULT,
         )
         for seed in PROGRAMME_SEEDS
     }
 
 
-def _build_units(programmes: dict[str, Programme]) -> dict[str, Unit]:
+def build_units(programmes: dict[str, Programme]) -> dict[str, Unit]:
     units: dict[str, Unit] = {}
 
     for seed in UNIT_SEEDS:
@@ -331,7 +331,7 @@ def _build_units(programmes: dict[str, Programme]) -> dict[str, Unit]:
     return units
 
 
-def _build_unit_enrollments(
+def build_unit_enrollments(
     units: dict[str, Unit],
     student_ids: list[str],
     lecturer_ids: list[str],
@@ -356,7 +356,7 @@ def _coursework_due_date(seed: dict[str, str | int]) -> datetime:
     return datetime.combine(due_date, time(hour=17, minute=0, second=0))
 
 
-def _build_courseworks(units: dict[str, Unit]) -> list[Coursework]:
+def build_courseworks(units: dict[str, Unit]) -> list[Coursework]:
     return [
         Coursework(
             name=seed["name"],
@@ -376,13 +376,13 @@ def seed_database_data(session: Session) -> None:
     student_ids = _fetch_user_ids_by_role(session, "user")
     lecturer_ids = _fetch_user_ids_by_role(session, "lecturer")
 
-    programmes = _build_programmes()
-    units = _build_units(programmes)
+    programmes = build_programmes()
+    units = build_units(programmes)
 
     session.add_all(list(programmes.values()))
     session.add_all(list(units.values()))
-    session.add_all(_build_unit_enrollments(units, student_ids, lecturer_ids))
-    session.add_all(_build_courseworks(units))
+    session.add_all(build_unit_enrollments(units, student_ids, lecturer_ids))
+    session.add_all(build_courseworks(units))
 
 
 def reset_database(

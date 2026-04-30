@@ -4,13 +4,13 @@ from unittest.mock import patch
 import jwt
 import pytest
 
-from app.core.jwt_utils import _token_fingerprint, verify_token_and_get_user
+from app.core.jwt_utils import token_fingerprint, verify_token_and_get_user
 from app.schemas.security import CurrentUser
 
 
 def test_token_fingerprint_is_stable_and_short():
-    assert _token_fingerprint("token-value") == _token_fingerprint("token-value")
-    assert len(_token_fingerprint("token-value")) == 8
+    assert token_fingerprint("token-value") == token_fingerprint("token-value")
+    assert len(token_fingerprint("token-value")) == 8
 
 
 def test_verify_token_uses_sub_claim_for_user_id():

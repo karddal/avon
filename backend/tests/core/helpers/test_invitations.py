@@ -69,16 +69,16 @@ def patch_client(monkeypatch, fake_client):
 
 
 def test_extract_email_helpers_ignore_malformed_entries():
-    assert invitations._extract_invited_emails(
+    assert invitations.extract_invited_emails(
         [{"invite_email": "A@EXAMPLE.COM"}, {"other": "ignored"}, "bad"]
     ) == {"a@example.com"}
-    assert invitations._extract_member_emails(
+    assert invitations.extract_member_emails(
         [{"email": "B@EXAMPLE.COM"}, {"other": "ignored"}, "bad"]
     ) == {"b@example.com"}
 
 
 @pytest.mark.asyncio
-async def test_gitlab_get_list_coerces_non_list_json_to_empty_list():
+async def test_gitlab_list_request_coerces_non_list_json_to_empty_list():
     async def get(*args, **kwargs):
         return FakeResponse(data={"not": "a-list"})
 
@@ -86,14 +86,14 @@ async def test_gitlab_get_list_coerces_non_list_json_to_empty_list():
         get=get
     )
 
-    data, response = await invitations._gitlab_get_list(client, "https://gitlab")
+    data, response = await invitations.gitlab_get_list(client, "https://gitlab")
 
     assert data == []
     assert response.status_code == 200
 
 
 @pytest.mark.asyncio
-async def test_fetch_paginated_list_follows_next_page_headers(monkeypatch):
+async def test_paginated_list_fetch_follows_next_page_headers(monkeypatch):
     fake_client = FakeAsyncClient(
         [
             FakeResponse(data=[{"id": 1}, "ignored"], headers={"x-next-page": "2"}),
@@ -101,7 +101,7 @@ async def test_fetch_paginated_list_follows_next_page_headers(monkeypatch):
         ]
     )
 
-    results = await invitations._fetch_paginated_list(fake_client, "https://gitlab")
+    results = await invitations.fetch_paginated_list(fake_client, "https://gitlab")
 
     assert results == [{"id": 1}, {"id": 2}]
     assert fake_client.calls[0][2]["params"]["page"] == 1
@@ -123,12 +123,12 @@ async def test_lookup_invited_and_member_emails_by_query():
         ]
     )
 
-    invited = await invitations._lookup_invited_emails_by_query(
+    invited = await invitations.lookup_invited_emails_by_query(
         invited_client,
         "123",
         {"a@example.com"},
     )
-    members = await invitations._lookup_member_emails_by_query(
+    members = await invitations.lookup_member_emails_by_query(
         member_client,
         "123",
         {"b@example.com"},
@@ -183,12 +183,12 @@ async def test_gl_inv_batch_get_statuses_uses_query_lookup_for_small_batches(mon
 
     monkeypatch.setattr(
         invitations,
-        "_lookup_invited_emails_by_query",
+        "lookup_invited_emails_by_query",
         invited,
     )
     monkeypatch.setattr(
         invitations,
-        "_lookup_member_emails_by_query",
+        "lookup_member_emails_by_query",
         members,
     )
     monkeypatch.setattr(invitations, "QUERY_LOOKUP_THRESHOLD", 10)

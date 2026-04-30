@@ -38,12 +38,12 @@ def add_test_run(
 
 
 def test_analytics_helper_functions():
-    assert analytics._repo_name_from_url("https://gitlab.example/group/repo.git") == "repo"
-    assert analytics._repo_name_from_url("") == ""
-    assert analytics._parse_gitlab_datetime(None) is None
-    assert analytics._parse_gitlab_datetime("2026-04-29T10:00:00Z").tzinfo is not None
-    assert analytics._normalize_pair(2, 4) == (50.0, 100.0)
-    assert analytics._normalize_pair(0, 0) == (0.0, 0.0)
+    assert analytics.repo_name_from_url("https://gitlab.example/group/repo.git") == "repo"
+    assert analytics.repo_name_from_url("") == ""
+    assert analytics.parse_gitlab_datetime(None) is None
+    assert analytics.parse_gitlab_datetime("2026-04-29T10:00:00Z").tzinfo is not None
+    assert analytics.normalize_pair(2, 4) == (50.0, 100.0)
+    assert analytics.normalize_pair(0, 0) == (0.0, 0.0)
 
 
 @pytest.mark.asyncio

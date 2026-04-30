@@ -120,12 +120,12 @@ async def gl_inv_batch_get_statuses(
                 target_emails = {target.user_email for target in project_items}
 
                 if len(target_emails) <= QUERY_LOOKUP_THRESHOLD:
-                    invited_emails = await _lookup_invited_emails_by_query(
+                    invited_emails = await lookup_invited_emails_by_query(
                         client=client,
                         project_id=project_id,
                         emails=target_emails,
                     )
-                    member_emails = await _lookup_member_emails_by_query(
+                    member_emails = await lookup_member_emails_by_query(
                         client=client,
                         project_id=project_id,
                         emails=target_emails,
@@ -183,7 +183,7 @@ def _gitlab_headers() -> dict[str, str]:
     }
 
 
-def _extract_invited_emails(data: list[dict]) -> set[str]:
+def extract_invited_emails(data: list[dict]) -> set[str]:
     return {
         invite["invite_email"].lower()
         for invite in data
@@ -191,7 +191,7 @@ def _extract_invited_emails(data: list[dict]) -> set[str]:
     }
 
 
-def _extract_member_emails(data: list[dict]) -> set[str]:
+def extract_member_emails(data: list[dict]) -> set[str]:
     return {
         member["email"].lower()
         for member in data
@@ -199,7 +199,7 @@ def _extract_member_emails(data: list[dict]) -> set[str]:
     }
 
 
-async def _gitlab_get_list(
+async def gitlab_get_list(
     client: httpx.AsyncClient,
     url: str,
     params: dict | None = None,
@@ -220,7 +220,7 @@ async def _gitlab_get_list(
     return data, response
 
 
-async def _fetch_paginated_list(
+async def fetch_paginated_list(
     client: httpx.AsyncClient,
     url: str,
     params: dict | None = None,
@@ -232,7 +232,7 @@ async def _fetch_paginated_list(
         if params:
             request_params.update(params)
 
-        data, response = await _gitlab_get_list(
+        data, response = await gitlab_get_list(
             client=client,
             url=url,
             params=request_params,
@@ -251,55 +251,55 @@ async def _fetch_all_project_invited_emails(
     client: httpx.AsyncClient,
     project_id: str,
 ) -> set[str]:
-    data = await _fetch_paginated_list(
+    data = await fetch_paginated_list(
         client=client,
         url=f"{BASE_URL}/projects/{project_id}/invitations",
     )
-    return _extract_invited_emails(data)
+    return extract_invited_emails(data)
 
 
 async def _fetch_all_project_member_emails(
     client: httpx.AsyncClient,
     project_id: str,
 ) -> set[str]:
-    data = await _fetch_paginated_list(
+    data = await fetch_paginated_list(
         client=client,
         url=f"{BASE_URL}/projects/{project_id}/members/all",
     )
-    return _extract_member_emails(data)
+    return extract_member_emails(data)
 
 
-async def _lookup_invited_emails_by_query(
+async def lookup_invited_emails_by_query(
     client: httpx.AsyncClient,
     project_id: str,
     emails: set[str],
 ) -> set[str]:
     invited_emails: set[str] = set()
     for email in emails:
-        data, _ = await _gitlab_get_list(
+        data, _ = await gitlab_get_list(
             client=client,
             url=f"{BASE_URL}/projects/{project_id}/invitations",
             params={"query": email},
         )
-        extracted_emails = _extract_invited_emails(data)
+        extracted_emails = extract_invited_emails(data)
         if email in extracted_emails:
             invited_emails.add(email)
     return invited_emails
 
 
-async def _lookup_member_emails_by_query(
+async def lookup_member_emails_by_query(
     client: httpx.AsyncClient,
     project_id: str,
     emails: set[str],
 ) -> set[str]:
     member_emails: set[str] = set()
     for email in emails:
-        data, _ = await _gitlab_get_list(
+        data, _ = await gitlab_get_list(
             client=client,
             url=f"{BASE_URL}/projects/{project_id}/members/all",
             params={"query": email, "per_page": GITLAB_PAGE_SIZE},
         )
-        extracted_emails = _extract_member_emails(data)
+        extracted_emails = extract_member_emails(data)
         if email in extracted_emails:
             member_emails.add(email)
     return member_emails
