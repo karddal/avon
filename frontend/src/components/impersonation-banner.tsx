@@ -394,6 +394,7 @@ export default function ImpersonationBanner({
           </div>
         </div>
         <div
+          data-impersonation-content
           className={cn(
             "relative min-h-0 flex-1 transform-gpu overflow-auto overscroll-contain rounded-b-xl border-x-2 border-b-2 bg-background",
             colourTheme.contentBorder,
