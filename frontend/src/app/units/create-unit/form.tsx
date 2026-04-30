@@ -47,6 +47,7 @@ import { Spinner } from "@/components/ui/spinner";
 import UserCard from "@/components/user-card";
 import { getProgrammes } from "@/lib/actions/programme/get_all_programmes";
 import { create_unit } from "@/lib/actions/unit/create_unit";
+import { hasActiveImpersonationClientState } from "@/lib/impersonation-client";
 import { multistep_unit_flow } from "./multistep_unit_flow";
 
 interface FormProps {
@@ -70,10 +71,14 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
   const [selectedOwner, setSelectedOwner] = useState<string>("");
   const [ownerName, setOwnerName] = useState<string>("");
   const loadProgrammes = useCallback(async () => {
+    if (hasActiveImpersonationClientState()) {
+      return;
+    }
+
     const programmesReq = await getProgrammes();
     if (programmesReq.success) {
       setProgrammes(programmesReq.data.programmes);
-    } else {
+    } else if (!hasActiveImpersonationClientState()) {
       toast.error("Failed to load programmes");
     }
   }, []);

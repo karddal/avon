@@ -241,14 +241,14 @@ export default function AccountSettings({
             className={`${
               settingsPage
                 ? ""
-                : "flex flex-col gap-4 @lg/profile:flex-row @lg/profile:items-center"
+                : "flex flex-col gap-4 @md/profile:flex-row @md/profile:items-center"
             }`}
           >
             <div
               className={`w-full ${
                 settingsPage
                   ? "max-w-full"
-                  : "@lg/profile:h-full @lg/profile:w-fit"
+                  : "@md/profile:h-full @md/profile:w-fit"
               }`}
             >
               <ProfileImageUploader
@@ -257,14 +257,14 @@ export default function AccountSettings({
                 buttonLabel="Upload new profile picture"
                 disabled
                 layout="stacked"
-                className={settingsPage ? undefined : "@lg/profile:h-full"}
+                className={settingsPage ? undefined : "@md/profile:h-full"}
                 previewWrapperClassName={
-                  settingsPage ? undefined : "@lg/profile:h-full"
+                  settingsPage ? undefined : "@md/profile:h-full"
                 }
                 imageSizeClassName={
                   settingsPage
                     ? "aspect-square h-auto"
-                    : "aspect-square h-auto @lg/profile:h-full @lg/profile:w-auto @lg/profile:max-w-48"
+                    : "aspect-square h-auto @md/profile:h-full @md/profile:w-auto @md/profile:max-w-48"
                 }
                 showButton={false}
                 onUploaded={() => {}}

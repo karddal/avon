@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getProgrammes } from "@/lib/actions/programme/get_all_programmes";
+import { hasActiveImpersonationClientState } from "@/lib/impersonation-client";
 import { Button } from "../ui/button";
 import BulkTransferButton from "./bulk-transfer-button";
 import OmitMembers from "./omit-users";
@@ -120,11 +121,15 @@ export default function BulkSwitch() {
 
   // Get the data we need to poulate buttons and give info to user, it's programmes list with units as children
   const loadProgrammes = useCallback(async () => {
+    if (hasActiveImpersonationClientState()) {
+      return;
+    }
+
     const programmesReq = await getProgrammes();
     if (programmesReq.success) {
       // console.log("Programmes array:", programmesReq.data.programmes);
       setProgrammes(programmesReq.data.programmes);
-    } else {
+    } else if (!hasActiveImpersonationClientState()) {
       toast.error("Failed to load programmes");
     }
   }, []);

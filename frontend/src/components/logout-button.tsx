@@ -41,7 +41,7 @@ export default function LogoutButton() {
       {isImpersonating ? (
         <DropdownMenuItem onClick={stopImpersonating}>
           <Undo2 />
-          Return to admin
+          Exit Impersonation
         </DropdownMenuItem>
       ) : (
         <DropdownMenuItem onClick={lo}>

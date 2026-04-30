@@ -1,181 +1,22 @@
 "use client";
 
-import { Check, Eye, Loader2, Palette, Undo2 } from "lucide-react";
+import { Eye, Info, Loader2, Undo2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { stop_impersonating } from "@/lib/actions/auth/impersonation";
 import { cn } from "@/lib/utils";
 
-type ImpersonationColour = "blue" | "red" | "green" | "amber" | "purple";
-
-const IMPERSONATION_COLOUR_STORAGE_KEY = "impersonation-colour";
-
-const impersonationColours: Record<
-  ImpersonationColour,
-  {
-    label: string;
-    swatch: string;
-    frame: string;
-    ring: string;
-    ringDark: string;
-    chrome: string;
-    chromeDark: string;
-    chromeBorder: string;
-    chromeBorderDark: string;
-    chromeText: string;
-    chromeTextDark: string;
-    chromeShadow: string;
-    chromeShadowDark: string;
-    contentBorder: string;
-    contentBorderDark: string;
-    contentShadow: string;
-    contentShadowDark: string;
-    buttonHoverText: string;
-    buttonHoverTextDark: string;
-  }
-> = {
-  blue: {
-    label: "Blue",
-    swatch: "bg-sky-500",
-    frame: "bg-sky-300 dark:bg-sky-950",
-    ring: "ring-sky-950/25",
-    ringDark: "dark:ring-sky-200/20",
-    chrome: "bg-sky-300",
-    chromeDark: "dark:bg-sky-950",
-    chromeBorder: "border-sky-800/30",
-    chromeBorderDark: "dark:border-sky-400/20",
-    chromeText: "text-sky-950",
-    chromeTextDark: "dark:text-sky-50",
-    chromeShadow:
-      "shadow-[0_1px_0_rgba(255,255,255,0.35)_inset,0_8px_20px_rgba(2,132,199,0.24)]",
-    chromeShadowDark:
-      "dark:shadow-[0_1px_0_rgba(255,255,255,0.12)_inset,0_8px_20px_rgba(0,0,0,0.25)]",
-    contentBorder: "border-sky-300",
-    contentBorderDark: "dark:border-sky-950",
-    contentShadow:
-      "shadow-[0_0_0_1px_rgba(255,255,255,0.3)_inset,0_18px_45px_rgba(2,132,199,0.22)]",
-    contentShadowDark:
-      "dark:shadow-[0_0_0_1px_rgba(255,255,255,0.08)_inset,0_18px_45px_rgba(0,0,0,0.35)]",
-    buttonHoverText: "hover:text-sky-700",
-    buttonHoverTextDark: "dark:hover:text-sky-950",
-  },
-  red: {
-    label: "Red",
-    swatch: "bg-red-500",
-    frame: "bg-red-300 dark:bg-red-950",
-    ring: "ring-red-950/25",
-    ringDark: "dark:ring-red-200/20",
-    chrome: "bg-red-300",
-    chromeDark: "dark:bg-red-950",
-    chromeBorder: "border-red-800/30",
-    chromeBorderDark: "dark:border-red-400/20",
-    chromeText: "text-red-950",
-    chromeTextDark: "dark:text-red-50",
-    chromeShadow:
-      "shadow-[0_1px_0_rgba(255,255,255,0.35)_inset,0_8px_20px_rgba(239,68,68,0.24)]",
-    chromeShadowDark:
-      "dark:shadow-[0_1px_0_rgba(255,255,255,0.12)_inset,0_8px_20px_rgba(0,0,0,0.25)]",
-    contentBorder: "border-red-300",
-    contentBorderDark: "dark:border-red-950",
-    contentShadow:
-      "shadow-[0_0_0_1px_rgba(255,255,255,0.3)_inset,0_18px_45px_rgba(239,68,68,0.22)]",
-    contentShadowDark:
-      "dark:shadow-[0_0_0_1px_rgba(255,255,255,0.08)_inset,0_18px_45px_rgba(0,0,0,0.35)]",
-    buttonHoverText: "hover:text-red-700",
-    buttonHoverTextDark: "dark:hover:text-red-950",
-  },
-  green: {
-    label: "Green",
-    swatch: "bg-green-500",
-    frame: "bg-green-300 dark:bg-green-950",
-    ring: "ring-green-950/25",
-    ringDark: "dark:ring-green-200/20",
-    chrome: "bg-green-300",
-    chromeDark: "dark:bg-green-950",
-    chromeBorder: "border-green-800/30",
-    chromeBorderDark: "dark:border-green-400/20",
-    chromeText: "text-green-950",
-    chromeTextDark: "dark:text-green-50",
-    chromeShadow:
-      "shadow-[0_1px_0_rgba(255,255,255,0.35)_inset,0_8px_20px_rgba(34,197,94,0.24)]",
-    chromeShadowDark:
-      "dark:shadow-[0_1px_0_rgba(255,255,255,0.12)_inset,0_8px_20px_rgba(0,0,0,0.25)]",
-    contentBorder: "border-green-300",
-    contentBorderDark: "dark:border-green-950",
-    contentShadow:
-      "shadow-[0_0_0_1px_rgba(255,255,255,0.3)_inset,0_18px_45px_rgba(34,197,94,0.22)]",
-    contentShadowDark:
-      "dark:shadow-[0_0_0_1px_rgba(255,255,255,0.08)_inset,0_18px_45px_rgba(0,0,0,0.35)]",
-    buttonHoverText: "hover:text-green-700",
-    buttonHoverTextDark: "dark:hover:text-green-950",
-  },
-  amber: {
-    label: "Amber",
-    swatch: "bg-amber-500",
-    frame: "bg-amber-300 dark:bg-amber-950",
-    ring: "ring-amber-950/25",
-    ringDark: "dark:ring-amber-200/20",
-    chrome: "bg-amber-300",
-    chromeDark: "dark:bg-amber-950",
-    chromeBorder: "border-amber-800/30",
-    chromeBorderDark: "dark:border-amber-400/20",
-    chromeText: "text-amber-950",
-    chromeTextDark: "dark:text-amber-50",
-    chromeShadow:
-      "shadow-[0_1px_0_rgba(255,255,255,0.35)_inset,0_8px_20px_rgba(245,158,11,0.24)]",
-    chromeShadowDark:
-      "dark:shadow-[0_1px_0_rgba(255,255,255,0.12)_inset,0_8px_20px_rgba(0,0,0,0.25)]",
-    contentBorder: "border-amber-300",
-    contentBorderDark: "dark:border-amber-950",
-    contentShadow:
-      "shadow-[0_0_0_1px_rgba(255,255,255,0.3)_inset,0_18px_45px_rgba(245,158,11,0.22)]",
-    contentShadowDark:
-      "dark:shadow-[0_0_0_1px_rgba(255,255,255,0.08)_inset,0_18px_45px_rgba(0,0,0,0.35)]",
-    buttonHoverText: "hover:text-amber-700",
-    buttonHoverTextDark: "dark:hover:text-amber-950",
-  },
-  purple: {
-    label: "Purple",
-    swatch: "bg-purple-500",
-    frame: "bg-purple-300 dark:bg-purple-950",
-    ring: "ring-purple-950/25",
-    ringDark: "dark:ring-purple-200/20",
-    chrome: "bg-purple-300",
-    chromeDark: "dark:bg-purple-950",
-    chromeBorder: "border-purple-800/30",
-    chromeBorderDark: "dark:border-purple-400/20",
-    chromeText: "text-purple-950",
-    chromeTextDark: "dark:text-purple-50",
-    chromeShadow:
-      "shadow-[0_1px_0_rgba(255,255,255,0.35)_inset,0_8px_20px_rgba(168,85,247,0.24)]",
-    chromeShadowDark:
-      "dark:shadow-[0_1px_0_rgba(255,255,255,0.12)_inset,0_8px_20px_rgba(0,0,0,0.25)]",
-    contentBorder: "border-purple-300",
-    contentBorderDark: "dark:border-purple-950",
-    contentShadow:
-      "shadow-[0_0_0_1px_rgba(255,255,255,0.3)_inset,0_18px_45px_rgba(168,85,247,0.22)]",
-    contentShadowDark:
-      "dark:shadow-[0_0_0_1px_rgba(255,255,255,0.08)_inset,0_18px_45px_rgba(0,0,0,0.35)]",
-    buttonHoverText: "hover:text-purple-700",
-    buttonHoverTextDark: "dark:hover:text-purple-950",
-  },
-};
-
-const impersonationColourOptions: ImpersonationColour[] = [
-  "red",
-  "amber",
-  "green",
-  "blue",
-  "purple",
-];
+const IMPERSONATION_FRAME_CLASS = "bg-red-300 dark:bg-red-950";
+const IMPERSONATION_BANNER_CLASS =
+  "border-red-800/30 bg-red-300 text-red-950 dark:border-red-400/20 dark:bg-red-950 dark:text-red-50";
+const IMPERSONATION_BUTTON_CLASS = "hover:text-red-700 dark:hover:text-red-950";
 
 export default function ImpersonationBanner({
   children,
@@ -196,17 +37,13 @@ export default function ImpersonationBanner({
   );
   const isImpersonating = isBetterAuthImpersonating || isStoredImpersonating;
   const [isReturningToAdmin, setIsReturningToAdmin] = useState(false);
-  const [impersonationColour, setImpersonationColour] =
-    useState<ImpersonationColour>("red");
   const [transition, setTransition] = useState<
     "impersonating" | "returning" | null
   >(null);
   const [isTransitionExiting, setIsTransitionExiting] = useState(false);
-  const colourTheme = impersonationColours[impersonationColour];
 
   useEffect(() => {
     setTransition(getStoredImpersonationTransition());
-    setImpersonationColour(getStoredImpersonationColour());
     setIsStoredImpersonating(
       initialIsImpersonating || getStoredImpersonationActive(),
     );
@@ -220,7 +57,6 @@ export default function ImpersonationBanner({
       const nextTransition = getStoredImpersonationTransition();
       setTransition(nextTransition);
       setIsTransitionExiting(false);
-      setImpersonationColour(getStoredImpersonationColour());
       setIsStoredImpersonating(getStoredImpersonationActive());
       setStoredImpersonatedUserName(getStoredImpersonatedUserName());
 
@@ -306,26 +142,20 @@ export default function ImpersonationBanner({
     router.refresh();
   }
 
-  function updateImpersonationColour(colour: ImpersonationColour) {
-    setImpersonationColour(colour);
-    setStoredImpersonationColour(colour);
-  }
-
   if (transition) {
     return (
       <ImpersonationTransitionOverlay
-        colourTheme={colourTheme}
         isEntering={transition === "impersonating"}
         isExiting={isTransitionExiting}
         title={
           transition === "impersonating"
             ? "Loading impersonation view..."
-            : "Returning to admin..."
+            : "Returning to your session..."
         }
         description={
           transition === "impersonating"
-            ? "Preparing the impersonated session"
-            : "Restoring your session"
+            ? "Preparing the impersonated session..."
+            : "See you soon!"
         }
       />
     );
@@ -340,81 +170,79 @@ export default function ImpersonationBanner({
       : (storedImpersonatedUserName ?? "selected user");
 
   return (
-    <div
-      className={cn(
-        "fixed inset-0 overflow-hidden p-2 sm:p-3",
-        colourTheme.frame,
-      )}
-    >
+    <div className="fixed inset-0 overflow-hidden bg-background">
       {isReturningToAdmin ? (
         <ImpersonationTransitionOverlay
-          colourTheme={colourTheme}
           isEntering={false}
           isExiting={false}
-          title="Returning to admin..."
+          title="Returning to your session..."
           description="Restoring your session"
           contained
         />
       ) : null}
-      <div
-        className={cn(
-          "mx-auto flex h-full max-w-[1800px] flex-col overflow-hidden rounded-xl ring-1 shadow-[0_22px_70px_rgba(0,0,0,0.45),0_0_0_1px_rgba(255,255,255,0.25)_inset] dark:shadow-[0_22px_70px_rgba(0,0,0,0.65),0_0_0_1px_rgba(255,255,255,0.12)_inset]",
-          colourTheme.ring,
-          colourTheme.ringDark,
-        )}
-      >
+      <div className="pointer-events-none absolute inset-x-0 top-3 z-40 flex justify-center px-3">
         <div
           className={cn(
-            "shrink-0 rounded-t-xl border-b px-4 py-2",
-            colourTheme.chrome,
-            colourTheme.chromeDark,
-            colourTheme.chromeBorder,
-            colourTheme.chromeBorderDark,
-            colourTheme.chromeText,
-            colourTheme.chromeTextDark,
-            colourTheme.chromeShadow,
-            colourTheme.chromeShadowDark,
+            "pointer-events-auto flex max-w-[calc(100vw-1.5rem)] flex-col items-center justify-center gap-2 border px-4 py-2 text-sm font-medium shadow-[0_10px_24px_rgba(0,0,0,0.18),0_1px_0_rgba(255,255,255,0.35)_inset] sm:flex-row dark:shadow-[0_10px_28px_rgba(0,0,0,0.36),0_1px_0_rgba(255,255,255,0.12)_inset]",
+            IMPERSONATION_BANNER_CLASS,
           )}
         >
-          <div className="flex flex-col items-center justify-center gap-2 text-sm font-medium sm:flex-row">
-            <div className="flex items-center gap-2">
-              <Eye className="size-4" />
-              <span>Viewing as {impersonatedUserName}</span>
-            </div>
-            <div className="flex items-center gap-2 whitespace-nowrap">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
+          <div className="flex items-center gap-2">
+            <Eye className="size-4" />
+            <span>Viewing as {impersonatedUserName}</span>
+          </div>
+          <div className="flex items-center gap-2 whitespace-nowrap">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className={cn(
+                "h-10 px-4 text-base sm:h-7 sm:px-3 sm:text-sm border-current/45 bg-white/30 text-current hover:border-current/60 hover:bg-white/70 dark:border-white/60 dark:bg-white/10 dark:text-white dark:hover:border-white dark:hover:bg-white",
+                IMPERSONATION_BUTTON_CLASS,
+              )}
+              onClick={stopImpersonating}
+            >
+              <Undo2 />
+              Exit Impersonation
+            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon-sm"
+                  className="h-10 w-10 border-current/45 bg-white/30 text-current hover:border-current/60 hover:bg-white/70 hover:text-red-700 sm:h-7 sm:w-7 dark:border-white/60 dark:bg-white/10 dark:text-white dark:hover:border-white dark:hover:bg-white dark:hover:text-red-950"
+                  aria-label="What is impersonation?"
+                >
+                  <Info className="size-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                sideOffset={8}
+                showArrow={false}
                 className={cn(
-                  "h-10 px-4 text-base sm:h-7 sm:px-3 sm:text-sm border-current/45 bg-white/30 text-current hover:border-current/60 hover:bg-white/70 dark:border-white/60 dark:bg-white/10 dark:text-white dark:hover:border-white dark:hover:bg-white",
-                  colourTheme.buttonHoverText,
-                  colourTheme.buttonHoverTextDark,
+                  "z-[120] max-w-80 border p-3 text-left text-xs shadow-[0_10px_24px_rgba(0,0,0,0.18),0_1px_0_rgba(255,255,255,0.35)_inset] dark:shadow-[0_10px_28px_rgba(0,0,0,0.36),0_1px_0_rgba(255,255,255,0.12)_inset]",
+                  IMPERSONATION_BANNER_CLASS,
                 )}
-                onClick={stopImpersonating}
               >
-                <Undo2 />
-                Return to admin
-              </Button>
-              <ImpersonationColourPicker
-                selectedColour={impersonationColour}
-                onSelectColour={updateImpersonationColour}
-              />
-            </div>
+                <p className="mb-1 text-lg font-semibold">What is this?</p>
+                <p>
+                  You are currently <strong>impersonating</strong> this user.
+                  <br /> This means that you see the Avon interface as they
+                  would, and any actions you take will be handled as if they had
+                  taken that action. <strong>Exercise caution!</strong>
+                </p>
+              </TooltipContent>
+            </Tooltip>
           </div>
         </div>
-        <div
-          data-impersonation-content
-          className={cn(
-            "relative min-h-0 flex-1 transform-gpu overflow-auto overscroll-contain rounded-b-xl border-x-2 border-b-2 bg-background",
-            colourTheme.contentBorder,
-            colourTheme.contentBorderDark,
-            colourTheme.contentShadow,
-            colourTheme.contentShadowDark,
-          )}
-        >
-          {children}
-        </div>
+      </div>
+      <div
+        data-impersonation-content
+        className="relative h-full min-h-0 transform-gpu overflow-auto overscroll-contain bg-background"
+      >
+        {children}
       </div>
     </div>
   );
@@ -423,14 +251,12 @@ export default function ImpersonationBanner({
 function ImpersonationTransitionOverlay({
   title,
   description,
-  colourTheme,
   isEntering,
   isExiting,
   contained = false,
 }: {
   title: string;
   description: string;
-  colourTheme: (typeof impersonationColours)[ImpersonationColour];
   isEntering: boolean;
   isExiting: boolean;
   contained?: boolean;
@@ -439,10 +265,10 @@ function ImpersonationTransitionOverlay({
     <div
       className={cn(
         contained ? "absolute" : "fixed",
-        "inset-0 z-[100] flex items-center justify-center overflow-hidden p-3 text-white opacity-100 transition-opacity duration-200 ease-out",
+        "inset-0 z-[100] flex items-center justify-center overflow-hidden p-3 text-red-950 opacity-100 transition-opacity duration-200 ease-out dark:text-white",
         isEntering && "animate-in fade-in-0",
         isExiting && "opacity-0",
-        colourTheme.frame,
+        IMPERSONATION_FRAME_CLASS,
       )}
     >
       <div className="absolute inset-3 rounded-xl border border-white/30 shadow-[0_22px_70px_rgba(0,0,0,0.45),0_0_0_1px_rgba(255,255,255,0.25)_inset] animate-in fade-in-0 zoom-in-95 duration-300" />
@@ -453,59 +279,12 @@ function ImpersonationTransitionOverlay({
         </div>
         <div className="space-y-1">
           <p className="text-lg font-semibold">{title}</p>
-          <p className="text-sm text-white/80">{description}</p>
+          <p className="text-sm text-red-950/75 dark:text-white/80">
+            {description}
+          </p>
         </div>
       </div>
     </div>
-  );
-}
-
-function ImpersonationColourPicker({
-  selectedColour,
-  onSelectColour,
-}: {
-  selectedColour: ImpersonationColour;
-  onSelectColour: (colour: ImpersonationColour) => void;
-}) {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          type="button"
-          variant="outline"
-          size="icon-sm"
-          className="h-10 w-10 border-current/45 bg-white/30 text-current hover:border-current/60 hover:bg-white/70 hover:text-foreground sm:h-7 sm:w-7 dark:border-white/60 dark:bg-white/10 dark:text-white dark:hover:border-white dark:hover:bg-white"
-          aria-label="Choose impersonation colour"
-          title="Choose impersonation colour"
-        >
-          <Palette className="size-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-44">
-        {impersonationColourOptions.map((colour) => {
-          const option = impersonationColours[colour];
-
-          return (
-            <DropdownMenuItem
-              key={colour}
-              className="cursor-pointer"
-              onClick={() => onSelectColour(colour)}
-            >
-              <span
-                className={cn(
-                  "size-3 rounded-full ring-1 ring-black/10",
-                  option.swatch,
-                )}
-              />
-              <span>{option.label}</span>
-              {selectedColour === colour ? (
-                <Check className="ml-auto size-4" />
-              ) : null}
-            </DropdownMenuItem>
-          );
-        })}
-      </DropdownMenuContent>
-    </DropdownMenu>
   );
 }
 
@@ -529,35 +308,6 @@ export function setStoredImpersonationTransition(
 ) {
   window.sessionStorage.setItem("impersonation-transition", transition);
   window.dispatchEvent(new Event("impersonation-transition-change"));
-}
-
-function getStoredImpersonationColour(): ImpersonationColour {
-  if (typeof window === "undefined") {
-    return "red";
-  }
-
-  const storedColour = window.sessionStorage.getItem(
-    IMPERSONATION_COLOUR_STORAGE_KEY,
-  );
-
-  return isImpersonationColour(storedColour) ? storedColour : "red";
-}
-
-function setStoredImpersonationColour(colour: ImpersonationColour) {
-  window.sessionStorage.setItem(IMPERSONATION_COLOUR_STORAGE_KEY, colour);
-  window.dispatchEvent(new Event("impersonation-transition-change"));
-}
-
-function isImpersonationColour(
-  colour: string | null,
-): colour is ImpersonationColour {
-  return (
-    colour === "blue" ||
-    colour === "red" ||
-    colour === "green" ||
-    colour === "amber" ||
-    colour === "purple"
-  );
 }
 
 export function clearStoredImpersonationTransition() {
