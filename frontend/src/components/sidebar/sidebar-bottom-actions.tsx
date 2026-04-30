@@ -1,5 +1,6 @@
 "use client";
 
+import type { User as BetterAuthUser } from "better-auth";
 import { SettingsIcon, User } from "lucide-react";
 import LogoutButton from "@/components/logout-button";
 import SettingsContents from "@/components/settings/settings-contents";
@@ -23,9 +24,11 @@ import {
 import { SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 
 export default function SidebarBottomActions({
+  user,
   userName,
   role,
 }: {
+  user: BetterAuthUser;
   userName: string;
   role: string;
 }) {
@@ -52,7 +55,7 @@ export default function SidebarBottomActions({
             <DialogHeader>
               <DialogTitle>Settings</DialogTitle>
             </DialogHeader>
-            <SettingsContents />
+            <SettingsContents user={user} />
             <DialogFooter>
               <DialogClose asChild>
                 <Button variant="outline">Close</Button>

@@ -1,3 +1,4 @@
+import type { User } from "better-auth";
 import { Palette, SquareUser } from "lucide-react";
 import AccountSettings from "@/components/settings/account-settings";
 import {
@@ -7,7 +8,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/new_tabs";
 
-export default function SettingsContents() {
+export default function SettingsContents({ user }: { user: User }) {
   return (
     <Tabs defaultValue={"account"} orientation={"vertical"}>
       <TabsList variant={"default"}>
@@ -26,7 +27,7 @@ export default function SettingsContents() {
           className="w-full p-0 border-none bg-transparent shadow-none overflow-hidden"
           value={"account"}
         >
-          <AccountSettings user={null} isAdmin={false} settingsPage={true} />
+          <AccountSettings user={user} isAdmin={false} settingsPage={true} />
         </TabsContent>
         <TabsContent value={"notifications"}></TabsContent>
       </div>

@@ -97,7 +97,7 @@ export default function AccountSettings({
     { value: "lecturer", label: "Lecturer" },
     { value: "user", label: "Student" },
   ];
-  const activeUser = settingsPage ? session?.user : user;
+  const activeUser = settingsPage ? user || session?.user : user;
   const trimmedDraftName = draftName.trim();
   const normalizedDraftEmail = draftEmail.trim().toLowerCase();
   const hasNameChanged = Boolean(
@@ -232,17 +232,23 @@ export default function AccountSettings({
         <div
           className={`w-full rounded-md border border-border p-4 ${
             settingsPage ? "" : "md:col-span-2"
-          }`}
+          } ${settingsPage ? "" : "@container/profile"}`}
         >
           <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
             Profile
           </h3>
           <div
-            className={`${settingsPage ? "" : "flex flex-row gap-4 items-center"}`}
+            className={`${
+              settingsPage
+                ? ""
+                : "flex flex-col gap-4 @lg/profile:flex-row @lg/profile:items-center"
+            }`}
           >
             <div
               className={`w-full ${
-                settingsPage ? "max-w-full" : "md:h-full md:w-fit"
+                settingsPage
+                  ? "max-w-full"
+                  : "@lg/profile:h-full @lg/profile:w-fit"
               }`}
             >
               <ProfileImageUploader
@@ -251,19 +257,23 @@ export default function AccountSettings({
                 buttonLabel="Upload new profile picture"
                 disabled
                 layout="stacked"
-                className={settingsPage ? undefined : "md:h-full"}
-                previewWrapperClassName={settingsPage ? undefined : "md:h-full"}
+                className={settingsPage ? undefined : "@lg/profile:h-full"}
+                previewWrapperClassName={
+                  settingsPage ? undefined : "@lg/profile:h-full"
+                }
                 imageSizeClassName={
                   settingsPage
                     ? "aspect-square h-auto"
-                    : "aspect-square h-auto md:h-full md:w-auto md:max-w-48"
+                    : "aspect-square h-auto @lg/profile:h-full @lg/profile:w-auto @lg/profile:max-w-48"
                 }
                 showButton={false}
                 onUploaded={() => {}}
               />
             </div>
 
-            <div className={`${settingsPage ? "space-y-4 my-2" : "space-y-4"}`}>
+            <div
+              className={`${settingsPage ? "space-y-4 my-2" : "min-w-0 space-y-4"}`}
+            >
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">Full name</p>
                 {isEditingName ? (
@@ -299,8 +309,10 @@ export default function AccountSettings({
                     />
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2">
-                    <p className="text-base font-medium">{name}</p>
+                  <div className="flex min-w-0 items-center gap-2">
+                    <p className="min-w-0 text-base font-medium break-words">
+                      {name}
+                    </p>
                     {isAdmin && !settingsPage ? (
                       <Button
                         type="button"
@@ -359,8 +371,10 @@ export default function AccountSettings({
                     />
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2">
-                    <p className="text-base font-medium">{email}</p>
+                  <div className="flex min-w-0 items-center gap-2">
+                    <p className="min-w-0 text-base font-medium break-all">
+                      {email}
+                    </p>
                     {isAdmin && !settingsPage ? (
                       <Button
                         type="button"
@@ -450,13 +464,13 @@ export default function AccountSettings({
           </div>
         </div>
         {/* <div className="mt-8 px-6"> */}
-        <div className="w-full rounded-md border border-border p-4">
+        <div className="w-full rounded-md border border-border p-4 @container/role">
           <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
             Role
           </h3>
           <div className="space-y-2">
             {isAdmin && !settingsPage ? (
-              <div className="flex flex-col gap-2 sm:flex-row">
+              <div className="flex flex-col gap-2 @lg/role:flex-row">
                 <Select
                   value={selectedRole ?? undefined}
                   onValueChange={async (value) => {
@@ -493,7 +507,7 @@ export default function AccountSettings({
                 <Button
                   type="button"
                   variant="outline"
-                  className="w-full sm:w-fit"
+                  className="w-full @lg/role:w-fit"
                   onClick={handleImpersonateUser}
                   disabled={isImpersonatingUser || isSelectedUserCurrentUser}
                 >

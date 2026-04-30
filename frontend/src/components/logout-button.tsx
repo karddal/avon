@@ -4,7 +4,6 @@ import { DoorOpen, Undo2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
-  clearStoredImpersonationActive,
   clearStoredImpersonationTransition,
   setStoredImpersonationTransition,
 } from "@/components/impersonation-banner";
@@ -29,8 +28,6 @@ export default function LogoutButton() {
       return;
     }
 
-    clearStoredImpersonationActive();
-    clearStoredImpersonationTransition();
     router.replace("/management");
     router.refresh();
   }
