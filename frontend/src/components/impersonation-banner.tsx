@@ -2,7 +2,7 @@
 
 import { Eye, Info, Loader2, Undo2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -41,6 +41,15 @@ export default function ImpersonationBanner({
     "impersonating" | "returning" | null
   >(null);
   const [isTransitionExiting, setIsTransitionExiting] = useState(false);
+  // retract behaviour states
+  const bannerRef = useRef<HTMLDivElement | null>(null);
+  const retractTimerRef = useRef<number | null>(null);
+  const [isPointerOverBanner, setIsPointerOverBanner] = useState(false);
+  const [isPointerOverButton, setIsPointerOverButton] = useState(false);
+  const [isRetracted, setIsRetracted] = useState(false);
+  const [_bannerHeight, setBannerHeight] = useState<number | null>(null);
+  const RETRACT_DELAY_MS = 100;
+  const VISIBLE_STRIP_PX = 2; // visible area when retracted (enough for users to know it's there)
 
   useEffect(() => {
     setTransition(getStoredImpersonationTransition());
@@ -52,6 +61,69 @@ export default function ImpersonationBanner({
     );
   }, [initialImpersonatedUserName, initialIsImpersonating]);
 
+  // measure banner height and keep updated
+  useEffect(() => {
+    function measure() {
+      if (bannerRef.current) {
+        setBannerHeight(bannerRef.current.offsetHeight || null);
+      }
+    }
+
+    measure();
+    if (typeof window !== "undefined" && window.ResizeObserver) {
+      const ro = new window.ResizeObserver(measure);
+      if (bannerRef.current) ro.observe(bannerRef.current);
+      return () => ro.disconnect();
+    }
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  const EXPAND_BACKOFF_MS = 1000;
+
+  useEffect(() => {
+    function clearRetractTimer() {
+      if (retractTimerRef.current) {
+        window.clearTimeout(retractTimerRef.current);
+        retractTimerRef.current = null;
+      }
+    }
+
+    // Expanding manually if mouse hits top of screen
+    function onDocumentMouseMove(e: MouseEvent) {
+      if (isRetracted && e.clientY < 30) {
+        setIsRetracted(false);
+      }
+    }
+
+    document.addEventListener("mousemove", onDocumentMouseMove);
+
+    if (isPointerOverBanner && !isPointerOverButton) {
+      // Hovering banner body: schedule it to retract out of the way
+      clearRetractTimer();
+      retractTimerRef.current = window.setTimeout(() => {
+        setIsRetracted(true);
+      }, RETRACT_DELAY_MS);
+    } else if (!isPointerOverBanner) {
+      // Left the banner: start a backoff period before expanding,
+      // giving the user completely free access to content beneath it
+      clearRetractTimer();
+      if (isRetracted) {
+        retractTimerRef.current = window.setTimeout(() => {
+          setIsRetracted(false);
+        }, EXPAND_BACKOFF_MS);
+      }
+    } else if (isPointerOverButton) {
+      // Hovering buttons: forcefully keep it open
+      clearRetractTimer();
+      setIsRetracted(false);
+    }
+
+    return () => {
+      clearRetractTimer();
+      document.removeEventListener("mousemove", onDocumentMouseMove);
+    };
+  }, [isPointerOverBanner, isPointerOverButton, isRetracted]);
   useEffect(() => {
     function handleTransitionChange() {
       const nextTransition = getStoredImpersonationTransition();
@@ -181,9 +253,23 @@ export default function ImpersonationBanner({
         />
       ) : null}
       <div className="pointer-events-none absolute inset-x-0 top-3 z-40 flex justify-center px-3">
-        <div
+        <section
+          ref={bannerRef}
+          aria-label="Impersonation banner"
+          onMouseEnter={() => setIsPointerOverBanner(true)}
+          onMouseLeave={() => setIsPointerOverBanner(false)}
+          onMouseMove={(e) => {
+            const target = e.target as HTMLElement | null;
+            const overBtn = !!target?.closest?.("[data-no-retract]");
+            setIsPointerOverButton(overBtn);
+          }}
+          style={{
+            transform: isRetracted
+              ? `translateY(calc(-100% + ${VISIBLE_STRIP_PX}px))`
+              : "translateY(0)",
+          }}
           className={cn(
-            "pointer-events-auto flex max-w-[calc(100vw-1.5rem)] flex-col items-center justify-center gap-2 border px-4 py-2 text-sm font-medium shadow-[0_10px_24px_rgba(0,0,0,0.18),0_1px_0_rgba(255,255,255,0.35)_inset] sm:flex-row dark:shadow-[0_10px_28px_rgba(0,0,0,0.36),0_1px_0_rgba(255,255,255,0.12)_inset]",
+            "pointer-events-auto flex max-w-[calc(100vw-1.5rem)] flex-col items-center justify-center gap-2 border px-4 py-2 text-sm font-medium shadow-[0_10px_24px_rgba(0,0,0,0.18),0_1px_0_rgba(255,255,255,0.35)_inset] sm:flex-row dark:shadow-[0_10px_28px_rgba(0,0,0,0.36),0_1px_0_rgba(255,255,255,0.12)_inset] transition-transform duration-300 ease-in-out",
             IMPERSONATION_BANNER_CLASS,
           )}
         >
@@ -196,6 +282,7 @@ export default function ImpersonationBanner({
               type="button"
               variant="outline"
               size="sm"
+              data-no-retract
               className={cn(
                 "h-10 px-4 text-base sm:h-7 sm:px-3 sm:text-sm border-current/45 bg-white/30 text-current hover:border-current/60 hover:bg-white/70 dark:border-white/60 dark:bg-white/10 dark:text-white dark:hover:border-white dark:hover:bg-white",
                 IMPERSONATION_BUTTON_CLASS,
@@ -211,6 +298,7 @@ export default function ImpersonationBanner({
                   type="button"
                   variant="outline"
                   size="icon-sm"
+                  data-no-retract
                   className="h-10 w-10 border-current/45 bg-white/30 text-current hover:border-current/60 hover:bg-white/70 hover:text-red-700 sm:h-7 sm:w-7 dark:border-white/60 dark:bg-white/10 dark:text-white dark:hover:border-white dark:hover:bg-white dark:hover:text-red-950"
                   aria-label="What is impersonation?"
                 >
@@ -236,7 +324,7 @@ export default function ImpersonationBanner({
               </TooltipContent>
             </Tooltip>
           </div>
-        </div>
+        </section>
       </div>
       <div
         data-impersonation-content
