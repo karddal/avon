@@ -96,7 +96,6 @@ If omitted, it defaults to `dev`.
 
 | Command       | Purpose                       |
 |---------------|-------------------------------|
-|`just db reset`| Resets the db, drop all tables|
 |`just db seed` | Seeds db with sample data     |
 
 Please follow the rest of the instructions in this chapter to setup the tools for running the frontend and the backend.

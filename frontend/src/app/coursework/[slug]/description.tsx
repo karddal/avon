@@ -1,4 +1,9 @@
-type courseworkData = {
+import { Info } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+type CourseworkData = {
   id: string;
   name: string;
   description: string;
@@ -12,37 +17,51 @@ type courseworkData = {
   totalTests: number;
 };
 
-export default async function CourseworkDescription({
+export default function CourseworkDescription({
   slug,
-  token,
+  courseworkData,
 }: {
   slug: string;
-  token?: string;
+  courseworkData?: CourseworkData | null;
 }) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/coursework/${slug}`,
-    {
-      headers: {
-        Cookie: `access_token=${token}`,
-        "Content-Type": "application/json",
-      },
-    },
-  );
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch unit");
-  }
-  const coursework: courseworkData = await res.json();
+  void slug;
+  const coursework = courseworkData;
 
   return (
-    <div className="flex flex-col overflow-y-auto wrap-break-word h-32 border bg-accent p-2">
-      {coursework.description ? (
-        coursework.description
-      ) : (
-        <span className="text-muted-foreground italic">
-          No description available.
-        </span>
-      )}
+    <div className="flex h-full min-h-0 flex-col gap-4">
+      <Card
+        data-cy="coursework-description-section"
+        id="coursework-description"
+        className="h-full min-h-0 overflow-hidden"
+      >
+        <CardHeader>
+          <CardTitle>
+            <div className="text-2xl flex flex-row gap-2 items-center">
+              <Info />
+              Description
+            </div>
+            <div className="font-light">Information about the coursework.</div>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex min-h-0 flex-1 flex-col">
+          <div
+            data-cy="coursework-description-content"
+            className="flex-1 min-h-0 overflow-y-auto whitespace-pre-wrap wrap-break-word rounded-md border bg-accent p-3"
+          >
+            {coursework?.description ? (
+              <div className="prose prose-sm max-w-none dark:prose-invert">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {coursework.description}
+                </ReactMarkdown>
+              </div>
+            ) : (
+              <span className="text-muted-foreground italic">
+                No description available.
+              </span>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

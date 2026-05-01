@@ -1,0 +1,7 @@
+[tools]
+just = "latest"
+node = "25.8.2"
+uv = "latest"
+
+[env]
+_.python.venv = { path = "backend/.venv" }

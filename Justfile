@@ -12,7 +12,7 @@ set windows-shell := ["powershell.exe", "-NoProfile", "-Command"]
     just -f Justfile -d documentation {{cmd}}-doc {{args}}
 
 @db cmd *args:
-    just -f Justfile {{cmd}}-db {{args}}
+    just -f Justfile -d backend {{cmd}}-db {{args}}
 
 # real command
 default:
@@ -45,28 +45,40 @@ fixit:
 build-fe:
     npm run build
 
+build-e2e-fe:
+    npm run build:e2e
+
 test-be:
-	@echo "Testing backend routers..."
-	uv run pytest -v
+    @echo "Testing backend routers..."
+    uv run pytest -v
 
 run-fe env = "dev":
     npm run {{env}}
 
 test-fe:
     @echo "Testing frontend..."
-    npm test
+    npm run test:e2e
 
-test: 
+test-e2e-prebuilt-fe:
+    @echo "Testing frontend against an existing e2e build..."
+    npm run test:e2e:prebuilt
+
+unit-fe:
+    @echo "Running frontend unit tests..."
+    npm run test:unit
+
+
+test:
     just fe test
     just be test
 
 [windows]
 run-be env = "dev":
-    $env:ENV="{{env}}"; uv run fastapi dev
+    $env:APP_ENV="{{env}}"; uv run fastapi dev
 
 [unix]
 run-be env = "dev":
-    ENV={{env}} uv run fastapi dev
+    APP_ENV={{env}} uv run fastapi dev
 
 sync-fe:
     npm i
@@ -78,11 +90,13 @@ sync:
     just fe sync
     just be sync
 
-seed-db:
-    just fe run db:seed
-
-reset-db:
-    just fe run db:reset
-
 serve-doc:
     mdbook serve --open
+
+[windows]
+seed-db env = "dev":
+    $env:APP_ENV="{{env}}"; uv run python -m app.cli.manage seed
+
+[unix]
+seed-db env = "dev":
+    APP_ENV={{env}} uv run python -m app.cli.manage seed

@@ -12,9 +12,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import UserCard from "@/components/user-card";
-import { get_batch_user_info } from "@/lib/actions/get_batch_user_details";
-import { get_students } from "@/lib/actions/get_students";
-import { remove_user_enrollment } from "@/lib/actions/remove_user_enrollment";
+import { get_batch_user_info } from "@/lib/actions/auth/get_batch_user_details";
+import { get_students } from "@/lib/actions/unit/get_students";
+import { remove_user_enrollment } from "@/lib/actions/unit/remove_user_enrollment";
 
 type studentInfo = {
   id: string;
@@ -22,13 +22,20 @@ type studentInfo = {
   src?: string;
 };
 
-export default function StudentList({ unit_id }: { unit_id: string }) {
+export default function StudentList({
+  canManageEnrollment,
+  unit_id,
+}: {
+  canManageEnrollment: boolean;
+  unit_id: string;
+}) {
   const [students, setStudents] = useState<studentInfo[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [loading, setLoading] = useState(true);
 
   async function handleDelete(id: string) {
     const result = await remove_user_enrollment(unit_id, id);
+    console.log(result);
     if (result) {
       toast.success("Student unenrolled successfully");
     } else {
@@ -45,6 +52,9 @@ export default function StudentList({ unit_id }: { unit_id: string }) {
       if (studentIds && studentIds.length > 0) {
         const enrichedStudents = await get_batch_user_info(studentIds);
         setStudents(enrichedStudents);
+      } else {
+        // when the last student is removed, setStudents should be empty
+        setStudents([]);
       }
     } finally {
       setLoading(false);
@@ -93,6 +103,7 @@ export default function StudentList({ unit_id }: { unit_id: string }) {
                 id={student.id}
                 name={student.displayName}
                 image={student.src}
+                user_role={false}
               />
 
               <div className="absolute top-2 right-2 w-8 h-8">
@@ -105,15 +116,17 @@ export default function StudentList({ unit_id }: { unit_id: string }) {
                       <TextSearch></TextSearch>
                       View Student
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => handleDelete(student.id)}
-                      className="text-destructive hover:text-destructive"
-                    >
-                      <X className="text-destructive hover:text-destructive"></X>
-                      <p className="text-destructive hover:text-destructive">
-                        Remove Student
-                      </p>
-                    </DropdownMenuItem>
+                    {canManageEnrollment && (
+                      <DropdownMenuItem
+                        onClick={() => handleDelete(student.id)}
+                        className="text-destructive hover:text-destructive"
+                      >
+                        <X className="text-destructive hover:text-destructive"></X>
+                        <p className="text-destructive hover:text-destructive">
+                          Remove Student
+                        </p>
+                      </DropdownMenuItem>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>

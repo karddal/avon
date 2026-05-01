@@ -1,4 +1,5 @@
-import { KeyRound, Palette, SquareUser } from "lucide-react";
+import type { User } from "better-auth";
+import { Palette, SquareUser } from "lucide-react";
 import AccountSettings from "@/components/settings/account-settings";
 import {
   Tabs,
@@ -7,7 +8,7 @@ import {
   TabsTrigger,
 } from "@/components/ui/new_tabs";
 
-export default function SettingsContents() {
+export default function SettingsContents({ user }: { user: User }) {
   return (
     <Tabs defaultValue={"account"} orientation={"vertical"}>
       <TabsList variant={"default"}>
@@ -15,24 +16,19 @@ export default function SettingsContents() {
           <SquareUser />
           Account
         </TabsTrigger>
-        <TabsTrigger value="password">
-          <KeyRound />
-          Security
-        </TabsTrigger>
+        {/*Not sure what more settings tabs / pages we need*/}
         <TabsTrigger value="notifications">
           <Palette />
           Theme
         </TabsTrigger>
       </TabsList>
-      <div
-        className={
-          "no-scrollbar -mx-4 max-h-[50vh] w-full overflow-y-auto px-4"
-        }
-      >
-        <TabsContent value={"account"}>
-          <AccountSettings />
+      <div className="w-full overflow-hidden p-3 sm:p-4">
+        <TabsContent
+          className="w-full p-0 border-none bg-transparent shadow-none overflow-hidden"
+          value={"account"}
+        >
+          <AccountSettings user={user} isAdmin={false} settingsPage={true} />
         </TabsContent>
-        <TabsContent value={"password"}></TabsContent>
         <TabsContent value={"notifications"}></TabsContent>
       </div>
     </Tabs>

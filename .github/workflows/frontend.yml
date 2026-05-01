@@ -1,65 +1,72 @@
 name: Frontend Lints, Run Tests
+
 on:
   pull_request:
     paths:
       - "frontend/**"
 
 jobs:
-  lint-and-format-check:
+  frontend:
     runs-on: ubuntu-latest
+    env:
+      APP_ENV: test
+      TEST_FIXTURE_KEY: sep-test-fixture-key
     defaults:
       run:
         working-directory: ./frontend
+
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-      - name: Install npm
+
+      - name: Setup node
         uses: actions/setup-node@v6
         with:
           node-version: 25
-      - name: Install dependencies
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Cache Next.js build
+        uses: actions/cache@v4
+        with:
+          path: frontend/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('frontend/package-lock.json') }}-${{ hashFiles('frontend/**/*.[jt]s', 'frontend/**/*.[jt]sx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('frontend/package-lock.json') }}-
+
+      - name: Install frontend dependencies
         run: npm ci
 
       - name: Run lints
         run: npx biome ci
 
-      - name: Build Frontend
-        run: npm run build
-      # - name: Run tests
-      #   run: bun test
-      # - name: Publish Test Report
-      #   uses: mikepenz/action-junit-report@v5
-      #   if: success() || failure() # always run even if the previous step fails
-      #   with:
-      #     report_paths: '**/ci/*.xml'
+      - name: Build frontend for e2e
+        run: npm run build:e2e
 
-  run-frontend-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-      - name: "Set up Python"
+      - name: Run unit tests
+        run: npm run test:unit
+
+      - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version-file: "./backend/.python-version"
+          python-version-file: ./backend/.python-version
+
       - name: Install uv
         uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
-      - name: Install the project
-        run: cd ./backend && uv sync --locked --all-extras --dev
-      - name: Setup node
-        uses: actions/setup-node@v6
-        with:
-          node-version: 25
-      - name: Install frontend dependencies
-        working-directory: ./frontend
-        run: npm ci
+
+      - name: Install the backend project
+        working-directory: ./backend
+        run: uv sync --locked --all-extras --dev
+
       - name: Cypress run
         uses: cypress-io/github-action@v6
         env:
-          NODE_ENV: test
+          APP_ENV: test
+          TEST_FIXTURE_KEY: sep-test-fixture-key
         with:
           working-directory: ./frontend
-          env: NODE_ENV=test
-          command: npm run test
+          install: false
+          env: APP_ENV=test,TEST_FIXTURE_KEY=sep-test-fixture-key
+          command: npm run test:e2e:prebuilt

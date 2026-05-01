@@ -1,7 +1,15 @@
-import { CalendarDays, Clock } from "lucide-react";
-import { DropdownCard } from "@/components/dropdown-card";
+import { BellElectric, CalendarDays, Clock } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatIsoShortDate, formatIsoTime } from "@/lib/date-format";
 
-type courseworkData = {
+// Helper to separate Time and Date for the "Ticker" look
+function parseDateTime(dateStr: string) {
+  const time = formatIsoTime(dateStr);
+  const day = formatIsoShortDate(dateStr);
+  return { time, day };
+}
+
+type CourseworkData = {
   id: string;
   name: string;
   description: string;
@@ -15,81 +23,69 @@ type courseworkData = {
   totalTests: number;
 };
 
-// Helper to separate Time and Date for the "Ticker" look
-function parseDateTime(dateStr: string) {
-  const date = new Date(dateStr);
-  const time = date.toLocaleTimeString("en-GB", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
-  const day = date.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "2-digit",
-  });
-  return { time, day };
-}
-
-export default async function CourseworkInformation({
+export default function CourseworkInformation({
   slug,
-  token,
+  courseworkData,
 }: {
   slug: string;
-  token?: string;
+  courseworkData?: CourseworkData | null;
 }) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/coursework/${slug}`,
-    {
-      headers: {
-        Cookie: `access_token=${token}`,
-        "Content-Type": "application/json",
-      },
-    },
-  );
-
-  if (!res.ok) throw new Error("Failed to fetch coursework");
-
-  const coursework: courseworkData = await res.json();
-  const start = parseDateTime(coursework.creation_date);
-  const end = parseDateTime(coursework.due_date);
+  void slug;
+  const coursework = courseworkData;
+  const start = coursework
+    ? parseDateTime(coursework.creation_date)
+    : { time: "", day: "" };
+  const end = coursework
+    ? parseDateTime(coursework.due_date)
+    : { time: "", day: "" };
 
   return (
-    <DropdownCard
-      title={"Information"}
-      desc={"Deadlines and scheduling details."}
-      openByDefault={true}
-      className="h-full"
+    <Card
+      data-cy="coursework-information-section"
+      className="h-full min-h-0 overflow-hidden"
     >
-      <div className="flex flex-row items-center justify-evenly gap-8 py-4">
-        <div className="flex flex-col gap-2">
-          <span className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-            <Clock className="w-3 h-3" /> Set Date
-          </span>
-          <div className="flex flex-col">
-            <h2 className="text-4xl font-mono font-black tracking-tighter tabular-nums">
-              {start.time}
-            </h2>
-            <p className="text-sm font-medium text-muted-foreground mt-1">
-              {start.day}
-            </p>
+      <CardHeader className="flex flex-col">
+        <CardTitle>
+          <div className="text-2xl flex flex-row items-center gap-2">
+            <BellElectric />
+            Information
           </div>
-        </div>
+          <div className="font-light">
+            Information about the coursework is shown below.
+          </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="min-h-0 flex-1 overflow-y-auto">
+        <div className="flex flex-row items-center justify-evenly gap-8 py-4">
+          <div className="flex flex-col gap-2">
+            <span className="text-sm font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+              <Clock className="w-3 h-3" /> Set Date
+            </span>
+            <div className="flex flex-col">
+              <h2 className="text-4xl font-mono font-black tracking-tighter tabular-nums">
+                {start.time}
+              </h2>
+              <p className="text-sm font-medium text-muted-foreground mt-1">
+                {start.day}
+              </p>
+            </div>
+          </div>
 
-        <div className="flex flex-col gap-2">
-          <span className="text-sm font-bold uppercase tracking-widest text-destructive flex items-center gap-2">
-            <CalendarDays className="w-3 h-3" /> Due Date
-          </span>
-          <div className="flex flex-col">
-            <h2 className="text-4xl font-mono font-black tracking-tighter tabular-nums text-destructive">
-              {end.time}
-            </h2>
-            <p className="text-sm font-medium text-muted-foreground mt-1">
-              {end.day}
-            </p>
+          <div className="flex flex-col gap-2">
+            <span className="text-sm font-bold uppercase tracking-widest text-destructive flex items-center gap-2">
+              <CalendarDays className="w-3 h-3" /> Due Date
+            </span>
+            <div className="flex flex-col">
+              <h2 className="text-4xl font-mono font-black tracking-tighter tabular-nums text-destructive">
+                {end.time}
+              </h2>
+              <p className="text-sm font-medium text-muted-foreground mt-1">
+                {end.day}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-    </DropdownCard>
+      </CardContent>
+    </Card>
   );
 }

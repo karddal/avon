@@ -1,6 +1,5 @@
 import { BookDashed } from "lucide-react";
 import Coursework from "@/components/coursework/coursework";
-import { getRequestJWT, requireSession } from "@/lib/auth-utils";
 import {
   Empty,
   EmptyDescription,
@@ -22,44 +21,32 @@ type courseworkResponse = {
   courseworks: courseworkData[];
 };
 
-export default async function UnitsCourseworkList({
+export default function UnitsCourseworkList({
   finished,
-  unit_id,
+  courseworks,
+  canDeleteCoursework = false,
 }: {
   finished: boolean;
-  unit_id: string;
+  courseworks: courseworkResponse;
+  canDeleteCoursework?: boolean;
 }) {
-  const token = await getRequestJWT();
-  const s = await requireSession();
-  const role = s.user.role;
-  const hasPermissions = role === "lecturer" || role === "admin";
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/units/${unit_id}/courseworks`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      cache: "no-cache",
-    },
-  );
-
-  const courseworkResponse: courseworkResponse = await response.json();
   const now = new Date();
-  const courseworkListData = courseworkResponse.courseworks;
-  const filtered = courseworkListData.filter((coursework) => {
-    const created = new Date(coursework.creation_date);
-    const due = new Date(coursework.due_date);
+  const courseworkListData = courseworks.courseworks;
+  var filtered: courseworkData[] = [];
+  if (courseworkListData) {
+    filtered = courseworkListData.filter((coursework) => {
+      const created = new Date(coursework.creation_date);
+      const due = new Date(coursework.due_date);
 
-    const isActive = now >= created && now <= due;
+      const isActive = now >= created && now <= due;
 
-    if (finished) {
-      return now > due;
-    }
+      if (finished) {
+        return now > due;
+      }
 
-    return isActive;
-  });
+      return isActive;
+    });
+  }
 
   return (
     <>
@@ -82,7 +69,7 @@ export default async function UnitsCourseworkList({
             <Coursework
               key={coursework.id}
               props={coursework}
-              hasPermissions={hasPermissions}
+              hasPermissions={canDeleteCoursework}
             />
           ))}
         </div>

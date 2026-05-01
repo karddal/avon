@@ -31,7 +31,7 @@ import {
   InputGroupTextarea,
 } from "@/components/ui/input-group";
 import { Spinner } from "@/components/ui/spinner";
-import { send_notification } from "@/lib/actions/send-notification";
+import { send_notification } from "@/lib/actions/unit/send-notification";
 
 const formSchema = z.object({
   title: z

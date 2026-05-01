@@ -1,6 +1,6 @@
 describe("Login page", () => {
   before(() => {
-    cy.exec("npm run db:seed");
+    cy.resetDb();
   });
 
   it("redirects to login page", () => {
@@ -37,6 +37,12 @@ describe("Login page", () => {
       cy.get("span").should("contain", "One");
     },
   );
+
+  it("redirects authenticated users away from login page", () => {
+    cy.login("one@bris.ac.uk", "changeme", false);
+    cy.visit("/login");
+    cy.location("pathname").should("eq", "/dashboard");
+  });
 
   it("shows error with invalid credentials", () => {
     cy.visit("/");

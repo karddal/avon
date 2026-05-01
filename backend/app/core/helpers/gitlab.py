@@ -1,17 +1,19 @@
-import re
 import base64
 import io
-import zipfile
-from pathlib import PurePosixPath #Just easier path hadnling
-from fastapi import HTTPException, UploadFile
-import httpx
-from dotenv import load_dotenv
 import os
+import re
+import zipfile
+from pathlib import PurePosixPath  #Just easier path hadnling
+from urllib.parse import quote, urlparse
 
-load_dotenv()
-TOKEN = os.getenv("GITLAB_API_TOKEN")
-BASE_URL = os.getenv("GITLAB_BASE_URL")
-ROOT_ID = os.getenv("GITLAB_ROOT_ID")
+import httpx
+from fastapi import HTTPException, UploadFile
+
+from app.core.settings import settings
+
+TOKEN = settings.gitlab_api_token
+BASE_URL = settings.gitlab_base_url
+ROOT_ID = settings.gitlab_root_id
 
 # Programme CRUD
 
@@ -24,9 +26,9 @@ def generate_gitlab_path(name: str) -> str:
 async def gl_create_programme(name):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
-        
+
     path = generate_gitlab_path(name)
-    
+
     async with httpx.AsyncClient() as client:
         try:
             response = await client.post(
@@ -52,10 +54,9 @@ async def gl_create_programme(name):
                     "error": data.get("message") or "Failed to create GitLab group"
                 }
 
-        except httpx.RequestError as err:
-            print(f"[BACKEND] Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
-        
+
     return {
         "success": True,
         "gitlabGroupId": data.get("id"),
@@ -66,7 +67,7 @@ async def gl_create_programme(name):
 async def gl_delete_programme(gitlab_group_id):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
-    
+
     async with httpx.AsyncClient() as client:
             try:
                 response = await client.delete(
@@ -84,12 +85,11 @@ async def gl_delete_programme(gitlab_group_id):
                         "success": False,
                         "error": data.get("message") or "Failed to delete GitLab group"
                     }
-                
-            except httpx.RequestError as err:
-                print(f"Network Error: {err}")
+
+            except httpx.RequestError:
                 raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
     return {
-        "success": True 
+        "success": True
     }
 
 async def gl_update_programme(gitlab_group_id, name):
@@ -115,8 +115,7 @@ async def gl_update_programme(gitlab_group_id, name):
                     "success": False,
                     "error": data.get("message") or "Failed to update GitLab group"
                 }
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
     return {
         "success": True,
@@ -130,9 +129,9 @@ async def gl_update_programme(gitlab_group_id, name):
 async def gl_create_unit(name, programme_id):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
-        
+
     path = generate_gitlab_path(name)
-    
+
     async with httpx.AsyncClient() as client:
         try:
             response = await client.post(
@@ -159,10 +158,9 @@ async def gl_create_unit(name, programme_id):
                     "error": data.get("message") or "Failed to create GitLab group"
                 }
 
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
-        
+
     return {
         "success": True,
         "gitlabGroupId": data.get("id"),
@@ -173,7 +171,7 @@ async def gl_create_unit(name, programme_id):
 async def gl_delete_unit(gitlab_group_id):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
-    
+
     async with httpx.AsyncClient() as client:
             try:
                 response = await client.delete(
@@ -190,12 +188,11 @@ async def gl_delete_unit(gitlab_group_id):
                         "success": False,
                         "error": data.get("message") or "Failed to delete GitLab group"
                     }
-                
-            except httpx.RequestError as err:
-                print(f"Network Error: {err}")
+
+            except httpx.RequestError:
                 raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
     return {
-        "success": True 
+        "success": True
     }
 
 async def gl_update_unit(gitlab_group_id, name):
@@ -221,8 +218,7 @@ async def gl_update_unit(gitlab_group_id, name):
                     "success": False,
                     "error": data.get("message") or "Failed to update GitLab group"
                 }
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
     return {
         "success": True,
@@ -235,9 +231,9 @@ async def gl_update_unit(gitlab_group_id, name):
 async def gl_create_coursework(name, unit_id):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
-        
+
     path = generate_gitlab_path(name)
-    
+
     async with httpx.AsyncClient() as client:
         try:
             response = await client.post(
@@ -264,21 +260,21 @@ async def gl_create_coursework(name, unit_id):
                     "error": data.get("message") or "Failed to create GitLab group"
                 }
 
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
-        
+
     return {
         "success": True,
         "gitlabGroupId": data.get("id"),
         "webUrl": data.get("web_url"),
         "path": data.get("path"),
-    }    
+    }
+
 
 async def gl_create_template_group(coursework_id):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
-        
+
     async with httpx.AsyncClient() as client:
         try:
             response = await client.post(
@@ -304,10 +300,9 @@ async def gl_create_template_group(coursework_id):
                     "error": data.get("message") or "Failed to create GitLab group"
                 }
 
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
-        
+
     return {
         "success": True,
         "gitlabGroupId": data.get("id"),
@@ -318,7 +313,7 @@ async def gl_create_template_group(coursework_id):
 async def gl_create_template_project(group_id):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
-    
+
     async with httpx.AsyncClient(base_url=BASE_URL) as client:
         try:
             response = await client.post(
@@ -342,16 +337,15 @@ async def gl_create_template_project(group_id):
                     "error": data.get("message") or "Failed to create GitLab group"
                 }
 
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
-    
+
     return data
 
 async def gl_create_skeleton_code(group_id, coursework_name):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
-    
+
     name = "skeleton-code"
     path = generate_gitlab_path(name)
     async with httpx.AsyncClient(base_url=BASE_URL) as client:
@@ -375,24 +369,24 @@ async def gl_create_skeleton_code(group_id, coursework_name):
                     "success": False,
                     "error": data.get("message") or "Failed to create GitLab group"
                 }
-            
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+
+        except httpx.RequestError:
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
-    
+
     return response
 
-
+# Use this for creating projects
 async def gl_create_fork(name, user_id, group_id, template_id):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
-    
-    name = name+"-"+user_id
+
+
+    name = str(name)+"-"+str(user_id)
     path = generate_gitlab_path(name)
     async with httpx.AsyncClient(base_url=BASE_URL) as client:
         try:
             response = await client.post(
-                "/projects/"+template_id+"/fork",
+                "/projects/"+str(template_id)+"/fork",
                 headers={
                     "PRIVATE-TOKEN": TOKEN,
                     "Content-Type": "application/json",
@@ -412,51 +406,9 @@ async def gl_create_fork(name, user_id, group_id, template_id):
                     "error": data.get("message") or "Failed to create GitLab group"
                 }
 
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
-    
-    return data 
 
-async def gl_create_project(name, user_id, group_id, template_group_id, template_id):
-    print(template_group_id, template_id)
-    if not TOKEN or not BASE_URL:
-        raise HTTPException(status_code=500, detail="Missing GitLab configuration")
-    
-    name = name+"-"+user_id
-    path = generate_gitlab_path(name)
-    async with httpx.AsyncClient(base_url=BASE_URL) as client:
-        try:
-            response = await client.post(
-                "/projects/",
-                headers={
-                    "PRIVATE-TOKEN": TOKEN,
-                    "Content-Type": "application/json",
-                },
-                json={
-                    "name": name,
-                    "path": path,
-                    "namespace_id":group_id,
-                    "description":"Project repo for " + user_id,
-                    "use_custom_template": "true",
-                    # "group_with_project_templates_id": 124803838,
-                    # "template_project_id": 79388377
-                    "group_with_project_templates_id": template_group_id,
-                    "template_project_id": template_id
-                },
-                timeout=10.0
-            )
-            data = response.json()
-            if response.status_code != 201:
-                return {
-                    "success": False,
-                    "error": data.get("message") or "Failed to create GitLab group"
-                }
-
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
-            raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
-    
     return data
 
 async def gl_get_project(project_id):
@@ -474,12 +426,119 @@ async def gl_get_project(project_id):
                 timeout=10.0
             )
             data = response.json()
+        except httpx.RequestError:
+            raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
+
+    project_data = {"id": data["id"], "name": data["name"], "path": data["path"], "web_url": data["web_url"]}
+    return project_data
+
+def gitlab_project_path_from_repo_url(repo_url: str) -> str:
+    parsed = urlparse(repo_url)
+    project_path = parsed.path.strip("/")
+    if project_path.endswith(".git"):
+        project_path = project_path[:-4]
+    return project_path
+
+async def gl_get_project_commits(
+    project_path: str,
+    per_page: int = 5,
+    since: str | None = None,
+):
+    """This function returns commits to MAIN!!!/default branch because it doesn't specify ref_name"""
+    if not TOKEN or not BASE_URL:
+        raise HTTPException(status_code=500, detail="Missing GitLab configuration")
+
+    encoded_project_path = quote(project_path, safe="")
+
+    async with httpx.AsyncClient(base_url=BASE_URL) as client:
+        try:
+            params = {"per_page": per_page, "with_stats": "true"}
+            if since:
+                params["since"] = since
+
+            response = await client.get(
+                f"/projects/{encoded_project_path}/repository/commits",
+                headers={
+                    "PRIVATE-TOKEN": TOKEN,
+                    "Content-Type": "application/json"
+                },
+                params=params,
+                timeout=20.0
+            )
+            data = response.json()
+            if response.status_code != 200:
+                return {
+                    "success": False,
+                    "error": data.get("message") or "Failed to fetch project commits"
+                }
+        except httpx.RequestError as err:
+            print(f"Network Error while fetching commits for {project_path}: {err!r}")
+            raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
+
+    return data
+
+async def gl_get_commit_count(project_path: str, sha: str):
+    if not TOKEN or not BASE_URL:
+        raise HTTPException(status_code=500, detail="Missing GitLab configuration")
+
+    encoded_project_path = quote(project_path, safe="")
+    encoded_sha = quote(sha, safe="")
+
+    async with httpx.AsyncClient(base_url=BASE_URL) as client:
+        try:
+            response = await client.get(
+                f"/projects/{encoded_project_path}/repository/commits/{encoded_sha}/sequence",
+                headers={
+                    "PRIVATE-TOKEN": TOKEN,
+                    "Content-Type": "application/json"
+                },
+                timeout=10.0
+            )
+            data = response.json()
+            if response.status_code != 200:
+                return {
+                    "success": False,
+                    "error": data.get("message") or "Failed to fetch commit count"
+                }
         except httpx.RequestError as err:
             print(f"Network Error: {err}")
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
-    
-    project_data = {"id": data["id"], "name": data["name"], "path": data["path"], "web_url": data["web_url"]}
-    return project_data
+
+    return data
+
+async def gl_get_project_tree(project_path: str):
+    if not TOKEN or not BASE_URL:
+        raise HTTPException(status_code=500, detail="Missing GitLab configuration")
+
+    encoded_project_path = quote(project_path, safe="")
+
+    async with httpx.AsyncClient(base_url=BASE_URL) as client:
+        try:
+            response = await client.get(
+                f"/projects/{encoded_project_path}/repository/tree",
+                headers={
+                    "PRIVATE-TOKEN": TOKEN,
+                    "Content-Type": "application/json"
+                },
+                params={
+                    "recursive": "true",
+                    "per_page": "1000",
+                },
+                timeout=10.0
+            )
+            if response.status_code == 404:
+                return []
+            data = response.json()
+            if response.status_code != 200:
+                return {
+                    "success": False,
+                    "error": data.get("message") or "Failed to fetch project tree"
+                }
+        except httpx.RequestError as err:
+            print(f"Network Error: {err}")
+            raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
+
+    return data
 
 async def gl_delete_project(project_id):
     if not TOKEN or not BASE_URL:
@@ -495,13 +554,12 @@ async def gl_delete_project(project_id):
                 },
                 timeout=10.0
             )
-            
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+
+        except httpx.RequestError:
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
-    
-    return response.status_code
-    
+
+    return response
+
 
 async def gl_get_projects(group_id):
     if not TOKEN or not BASE_URL:
@@ -524,8 +582,7 @@ async def gl_get_projects(group_id):
                     "error": "Failed to find "
                 }
 
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
 
     coursework_data = []
@@ -533,13 +590,88 @@ async def gl_get_projects(group_id):
         coursework_data.append({"id": coursework["id"], "name": coursework["name"], "path":coursework["path"], "web_url":coursework["web_url"]})
     return coursework_data
 
+
+async def gl_get_group_projects_recursive(group_id: str):
+    if not TOKEN or not BASE_URL:
+        raise HTTPException(status_code=500, detail="Missing GitLab configuration")
+
+    page = 1
+    per_page = 100
+    projects = []
+
+    async with httpx.AsyncClient(base_url=BASE_URL) as client:
+        while True:
+            try:
+                response = await client.get(
+                    f"/groups/{group_id}/projects",
+                    headers={
+                        "PRIVATE-TOKEN": TOKEN,
+                        "Content-Type": "application/json",
+                    },
+                    params={
+                        "include_subgroups": "true",
+                        "per_page": per_page,
+                        "page": page,
+                    },
+                    timeout=10.0,
+                )
+                data = response.json()
+                if response.status_code != 200:
+                    return {
+                        "success": False,
+                        "error": data.get("message") or "Failed to fetch group projects",
+                    }
+            except httpx.RequestError as err:
+                print(f"Network Error: {err}")
+                raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
+
+            if not isinstance(data, list) or len(data) == 0:
+                break
+
+            projects.extend(data)
+
+            next_page = response.headers.get("X-Next-Page")
+            if not next_page:
+                break
+
+            page = int(next_page)
+
+    return projects
+
+
+async def gl_get_group_details(group_id: str):
+    if not TOKEN or not BASE_URL:
+        raise HTTPException(status_code=500, detail="Missing GitLab configuration")
+
+    async with httpx.AsyncClient(base_url=BASE_URL) as client:
+        try:
+            response = await client.get(
+                f"/groups/{group_id}",
+                headers={
+                    "PRIVATE-TOKEN": TOKEN,
+                    "Content-Type": "application/json",
+                },
+                timeout=10.0,
+            )
+            data = response.json()
+            if response.status_code != 200:
+                return {
+                    "success": False,
+                    "error": data.get("message") or "Failed to fetch group details",
+                }
+        except httpx.RequestError as err:
+            print(f"Network Error: {err}")
+            raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
+
+    return data
+
 async def gl_delete_projects(group_id: int):
     status = {"deleted": [], "failed": []}
     projects_to_delete = await gl_get_projects(group_id)
     for project in projects_to_delete:
         if project["name"] != "skeleton-code":
             status_code = await gl_delete_project(project["id"])
-        if status_code == 202:
+        if status_code.status_code == 202:
             status["deleted"].append(project["name"])
         else:
             status["failed"].append(project["name"])
@@ -548,8 +680,8 @@ async def gl_delete_projects(group_id: int):
 async def gl_delete_coursework(gitlab_group_id):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
-    
-    async with httpx.AsyncClient() as client: 
+
+    async with httpx.AsyncClient() as client:
             try:
                 response = await client.delete(
                     f"{BASE_URL}/groups/{gitlab_group_id}",
@@ -566,18 +698,18 @@ async def gl_delete_coursework(gitlab_group_id):
                         "success": False,
                         "error": data.get("message") or "Failed to delete GitLab group"
                     }
-                
-            except httpx.RequestError as err:
-                print(f"Network Error: {err}")
+
+            except httpx.RequestError:
                 raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
+
     return {
-        "success": True 
+        "success": True
     }
 
 async def gl_update_coursework(gitlab_group_id, name):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
-    
+
     async with httpx.AsyncClient() as client:
         try:
             response = await client.put(
@@ -597,8 +729,7 @@ async def gl_update_coursework(gitlab_group_id, name):
                     "success": False,
                     "error": data.get("message") or "Failed to update GitLab group"
                 }
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
     return {
         "success": True,
@@ -638,8 +769,7 @@ async def gl_activate_template_project(coursework_id):
 
             data = response.json()
 
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(
                 status_code=500,
                 detail="Internal Server Error when connecting to GitLab",
@@ -673,10 +803,9 @@ async def gl_template_files(template_id):
                     status_code=response.status_code,
                     detail="gitlab reponse is not status 200"
                 )
-            
+
             data = response.json()
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(
                 status_code=500,
                 detail="Internal Server Error when connecting to GitLab",
@@ -706,8 +835,7 @@ async def gl_template_urls(template_id):
 
             data = response.json()
 
-        except httpx.RequestError as err:
-            print(f"Network Error: {err}")
+        except httpx.RequestError:
             raise HTTPException(
                 status_code=500,
                 detail="Internal Server Error when connecting to GitLab",
@@ -736,7 +864,7 @@ async def check_file_safe(file: UploadFile):
         chunk = await file.read(1024 * 1024)  # Read in 1MB chunks
         if not chunk:
             break
-        
+
         total_bytes_read += len(chunk)
         if total_bytes_read > MAX_COMPRESSED:
             raise HTTPException(status_code=453, detail="Compressed file size exceeds limit")
@@ -749,7 +877,7 @@ async def check_file_safe(file: UploadFile):
         zip_ref = zipfile.ZipFile(buffer, "r")
     except zipfile.BadZipFile:
         raise HTTPException(status_code=453, detail="Invalid ZIP file")
-    
+
     # Validate contents of it (not too many files, not too large uncompressed, valid / correct paths as well)
     total_uncompressed = 0
     file_count = 0
@@ -778,10 +906,10 @@ async def check_file_safe(file: UploadFile):
 async def gl_upload_zip(courseworkGitLabId: str, file: UploadFile):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
-    
-    
+
+
     commit_actions = []
-    
+
     zip_ref = await check_file_safe(file)
 
     file_list = zip_ref.namelist()
@@ -856,7 +984,7 @@ async def gl_upload_zip(courseworkGitLabId: str, file: UploadFile):
 async def gl_overwrite_zip(templateId: str, file: UploadFile):
     if not TOKEN or not BASE_URL:
         raise HTTPException(status_code=500, detail="Missing GitLab configuration")
-    
+
     commit_actions = []
 
     current_files = await gl_template_files(templateId)
@@ -865,11 +993,11 @@ async def gl_overwrite_zip(templateId: str, file: UploadFile):
     dir_paths = set()
     for tempFile in current_files:
         if (tempFile["type"] == "blob"): # Only need fiels in comparison as we only commit files not directories, gitlab infers that (gitlab repository/tree includes directories as type tree)
-            file_paths.add(tempFile["path"]) 
+            file_paths.add(tempFile["path"])
         else:
             dir_paths.add(tempFile["path"])
-            
-    zip_ref = await check_file_safe(file)        
+
+    zip_ref = await check_file_safe(file)
 
     file_list = zip_ref.namelist()
 
@@ -906,7 +1034,7 @@ async def gl_overwrite_zip(templateId: str, file: UploadFile):
         while str(parent_dir) != ".":
             dir_with_files.add(str(parent_dir) + "/")
             parent_dir = parent_dir.parent
-        
+
         file_paths.discard(filename)
 
     for filename in file_paths:
@@ -936,7 +1064,7 @@ async def gl_overwrite_zip(templateId: str, file: UploadFile):
             "content": base64.b64encode(b"").decode("utf-8"),
             "encoding": "base64",
         })
-            
+
     async with httpx.AsyncClient() as client:
         response = await client.post(
             f"{BASE_URL}/projects/{templateId}/repository/commits",
@@ -955,3 +1083,44 @@ async def gl_overwrite_zip(templateId: str, file: UploadFile):
             )
 
     return {"success": True}
+
+
+# Do not use this for creating projects
+async def gl_create_project(name, user_id, group_id, template_group_id, template_id):
+    print(template_group_id, template_id)
+    if not TOKEN or not BASE_URL:
+        raise HTTPException(status_code=500, detail="Missing GitLab configuration")
+
+    name = name+"-"+user_id
+    path = generate_gitlab_path(name)
+    async with httpx.AsyncClient(base_url=BASE_URL) as client:
+        try:
+            response = await client.post(
+                "/projects/",
+                headers={
+                    "PRIVATE-TOKEN": TOKEN,
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "name": name,
+                    "path": path,
+                    "namespace_id":group_id,
+                    "description":"Project repo for " + user_id,
+                    "use_custom_template": "true",
+                    "group_with_project_templates_id": template_group_id,
+                    "template_project_id": template_id
+                },
+                timeout=10.0
+            )
+            data = response.json()
+            if response.status_code != 201:
+                return {
+                    "success": False,
+                    "error": data.get("message") or "Failed to create GitLab group"
+                }
+
+        except httpx.RequestError as err:
+            print(f"Network Error: {err}")
+            raise HTTPException(status_code=500, detail="Internal Server Error when connecting to GitLab")
+
+    return data

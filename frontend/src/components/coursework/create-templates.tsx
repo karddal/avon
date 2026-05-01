@@ -9,9 +9,9 @@ import {
 } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Spinner } from "@/components/ui/spinner";
-import { template_existance } from "@/lib/actions/template_existance";
-import { template_file_tree } from "@/lib/actions/template_file_tree";
-import { template_url } from "@/lib/actions/template_url";
+import { template_existance } from "@/lib/actions/coursework/template_existance";
+import { template_file_tree } from "@/lib/actions/coursework/template_file_tree";
+import { template_url } from "@/lib/actions/coursework/template_url";
 import ActivateTemplateRepo from "./activate-templateRepo-button";
 import RepoTree from "./file-tree";
 import RepoAccessBox from "./repo-access-box";
@@ -171,7 +171,7 @@ export default function CreateTemplate({
               </div>
               <div className="p-8 pt-0">
                 {activateStatus === 0 && (
-                  <div className="h-64 rounded-md bg-gray-100 flex items-center justify-center">
+                  <div className="h-64 bg-accent flex items-center justify-center">
                     <p className="text-sm text-gray-400">
                       Repository preview unavailable until activation
                     </p>
@@ -179,14 +179,12 @@ export default function CreateTemplate({
                 )}
 
                 {activateStatus === 1 && (
-                  <div className="h-64 rounded-md bg-gray-100 flex items-center justify-center">
+                  <div className="h-64 rounded-md bg-accent flex items-center justify-center">
                     <Spinner className="mr-2 h-4 w-4" />
                   </div>
                 )}
 
-                {activateStatus === 2 && (
-                  <RepoTree fileTree={fileTree} /> //repoId={templateId}
-                )}
+                {activateStatus === 2 && <RepoTree fileTree={fileTree} />}
               </div>
             </div>
           </div>

@@ -10,6 +10,8 @@ import { HexColorInput, HexColorPicker } from "react-colorful";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
+import AddMemberLecturerAll from "@/app/units/create-unit/add-member-lec";
+import { MarkdownEditor } from "@/components/markdown-editor";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -42,9 +44,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
-import { Textarea } from "@/components/ui/textarea";
-import { create_unit } from "@/lib/actions/create_unit";
-import { getProgrammes } from "@/lib/actions/get_all_programmes";
+import UserCard from "@/components/user-card";
+import { getProgrammes } from "@/lib/actions/programme/get_all_programmes";
+import { create_unit } from "@/lib/actions/unit/create_unit";
+import { hasActiveImpersonationClientState } from "@/lib/impersonation-client";
 import { multistep_unit_flow } from "./multistep_unit_flow";
 
 interface FormProps {
@@ -65,12 +68,17 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
   const { step, next, back } = multistep_unit_flow();
   const [programmes, setProgrammes] = useState<Programme[]>([]);
   const [programmeName, setProgrammeName] = useState<string>("");
-
+  const [selectedOwner, setSelectedOwner] = useState<string>("");
+  const [ownerName, setOwnerName] = useState<string>("");
   const loadProgrammes = useCallback(async () => {
+    if (hasActiveImpersonationClientState()) {
+      return;
+    }
+
     const programmesReq = await getProgrammes();
     if (programmesReq.success) {
       setProgrammes(programmesReq.data.programmes);
-    } else {
+    } else if (!hasActiveImpersonationClientState()) {
       toast.error("Failed to load programmes");
     }
   }, []);
@@ -88,6 +96,9 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
   const formSchema = z.object({
     name: z
       .string()
+      .regex(/^[A-Za-z0-9](?:[A-Za-z0-9]|[ \-(][A-Za-z0-9])*(?:\))?$/, {
+        message: "Only alphanumeric characters and hyphens are allowed",
+      })
       .min(2, {
         error: "Name must be at least 2 characters.",
       })
@@ -138,7 +149,6 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // do something with values, submit here
     try {
       const s = await loadSlug();
       console.log(s);
@@ -149,6 +159,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
         unit_code: values.unitCode,
         colour: colour.substring(1),
         programme_id: values.programme,
+        owner: selectedOwner,
       };
 
       console.log(payload);
@@ -180,7 +191,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
       <div className="flex sm:flex-row w-full lg:w-[70%] gap-4 mb-2 h-fit">
         <Card className={"flex-1"}>
           <Progress
-            value={step * (100 / 2)}
+            value={step * (100 / 3)}
             className={"rounded-none"}
           ></Progress>
           <CardHeader>
@@ -192,7 +203,7 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
           </CardHeader>
           <CardContent className={"flex flex-col content-between"}>
             <form id={"form-flow"} onSubmit={form.handleSubmit(onSubmit)}>
-              <AnimatePresence mode={"wait"}>
+              <AnimatePresence mode={"wait"} initial={false}>
                 {step === 0 && (
                   <motion.div
                     key="step-0"
@@ -232,13 +243,9 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                             <FieldLabel htmlFor={"form-flow-description"}>
                               Give Your Unit a Description
                             </FieldLabel>
-                            <Textarea
-                              {...field}
-                              id={"form-flow-description"}
-                              aria-invalid={fieldState.invalid}
-                              placeholder={"A great description"}
-                              autoComplete={"off"}
-                              maxLength={2000}
+                            <MarkdownEditor
+                              value={field.value}
+                              onChange={field.onChange}
                             />
                             {fieldState.invalid && (
                               <FieldError errors={[fieldState.error]} />
@@ -246,7 +253,6 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                           </Field>
                         )}
                       />
-                      {/* Select the Unit Code */}
                       <Controller
                         name={"unitCode"}
                         control={form.control}
@@ -273,7 +279,6 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                         )}
                       />
 
-                      {/* Select the programme it's part of */}
                       <Controller
                         name={"programme"}
                         control={form.control}
@@ -329,8 +334,8 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                               "unitCode",
                               "programme",
                             ])
-                            .then((_result) => {
-                              if (form.formState.isValid) {
+                            .then((isValid) => {
+                              if (isValid) {
                                 next();
                               }
                             });
@@ -339,13 +344,71 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                         Next
                         <ArrowRight />
                       </Button>
-                      {/* </div> */}
                     </FieldGroup>
                   </motion.div>
                 )}
                 {step === 1 && (
                   <motion.div
                     key="step-1"
+                    initial="hidden"
+                    animate={"visible"}
+                    variants={formVariants}
+                    exit={"exit"}
+                  >
+                    <FieldGroup>
+                      <Field className="flex flex-col gap-4 mb-4">
+                        <FieldLabel
+                          htmlFor={"form-flow-owner"}
+                          className="flex flex-col gap-2 w-full bg-card"
+                        >
+                          Add an owner to the unit
+                        </FieldLabel>
+                        {selectedOwner && (
+                          <UserCard
+                            id={selectedOwner}
+                            name={ownerName}
+                            image={null}
+                            user_role={true}
+                          ></UserCard>
+                        )}
+
+                        <AddMemberLecturerAll
+                          onOwnerSelect={setSelectedOwner}
+                          selectedOwnerId={selectedOwner}
+                          setOwnerName={setOwnerName}
+                        />
+                      </Field>
+                    </FieldGroup>
+                    <div className="flex flex-col w-full gap-2">
+                      <Button
+                        className="bg-black text-white hover:bg-zinc-700 hover:text-white hover:cursor-pointer"
+                        type={"button"}
+                        variant={"outline"}
+                        disabled={!selectedOwner}
+                        onClick={() => {
+                          next();
+                        }}
+                      >
+                        Next
+                        <ArrowRight />
+                      </Button>
+                      <Button
+                        className="hover:cursor-pointer"
+                        type={"button"}
+                        variant={"outline"}
+                        onClick={() => {
+                          back();
+                        }}
+                      >
+                        <ArrowLeft />
+                        Back
+                      </Button>
+                    </div>
+                  </motion.div>
+                )}
+                {step === 2 && (
+                  <motion.div
+                    key="step-2"
                     initial="hidden"
                     animate={"visible"}
                     variants={formVariants}
@@ -467,21 +530,14 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                           </Field>
                         )}
                       />
-                      {/* <Button
-                        type={"button"}
-                        variant={"outline"}
-                        onClick={() => next()}
-                      >
-                        Next
-                      </Button> */}
                       <div className="flex flex-col w-full gap-2">
                         <Button
                           className="bg-black text-white hover:bg-zinc-700 hover:text-white hover:cursor-pointer"
                           type={"button"}
                           variant={"outline"}
                           onClick={() => {
-                            form.trigger(["color"]).then((_result) => {
-                              if (form.formState.isValid) {
+                            form.trigger(["color"]).then((isValid) => {
+                              if (isValid) {
                                 next();
                               }
                             });
@@ -495,8 +551,8 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                           type={"button"}
                           variant={"outline"}
                           onClick={() => {
-                            form.trigger([]).then((_result) => {
-                              if (form.formState.isValid) {
+                            form.trigger([]).then((isValid) => {
+                              if (isValid) {
                                 back();
                               }
                             });
@@ -509,9 +565,9 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                     </FieldGroup>
                   </motion.div>
                 )}
-                {step === 2 && (
+                {step === 3 && (
                   <motion.div
-                    key="step-2"
+                    key="step-3"
                     initial="visible"
                     animate={"visible"}
                     variants={formVariants}
@@ -547,6 +603,15 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                             <ItemDescription>
                               {programme ? programmeName : "Not provided."}
                             </ItemDescription>
+                            <ItemTitle>Owner</ItemTitle>
+                            {selectedOwner && (
+                              <UserCard
+                                id={selectedOwner}
+                                name={ownerName}
+                                image={null}
+                                user_role={true}
+                              ></UserCard>
+                            )}
                             <ItemTitle>Colour</ItemTitle>
                             <ItemDescription>{colour}</ItemDescription>
                             <p
@@ -584,8 +649,8 @@ export const IntForm: React.FC<FormProps> = ({ slug }) => {
                         type={"button"}
                         variant={"outline"}
                         onClick={() => {
-                          form.trigger([]).then((_result) => {
-                            if (form.formState.isValid) {
+                          form.trigger([]).then((isValid) => {
+                            if (isValid) {
                               back();
                             }
                           });

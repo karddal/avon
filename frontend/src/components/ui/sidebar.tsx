@@ -140,6 +140,7 @@ function SidebarProvider({
           }
           className={cn(
             "group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex min-h-svh w-full",
+            "[[data-impersonation-content]_&]:h-full [[data-impersonation-content]_&]:min-h-0",
             className,
           )}
           {...props}
@@ -164,6 +165,19 @@ function Sidebar({
   collapsible?: "offcanvas" | "icon" | "none";
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
+  const [mobilePortalContainer, setMobilePortalContainer] =
+    React.useState<HTMLElement | null>(null);
+
+  React.useEffect(() => {
+    if (!isMobile) {
+      setMobilePortalContainer(null);
+      return;
+    }
+
+    setMobilePortalContainer(
+      document.querySelector<HTMLElement>("[data-impersonation-content]"),
+    );
+  }, [isMobile]);
 
   if (collapsible === "none") {
     return (
@@ -187,11 +201,14 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
+          portalContainer={mobilePortalContainer}
           className="sm:max-w-full bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
           style={
             {
               "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
-              height: SIDEBAR_HEIGHT_MOBILE,
+              height: mobilePortalContainer
+                ? "calc(100% - 3rem)"
+                : SIDEBAR_HEIGHT_MOBILE,
             } as React.CSSProperties
           }
           side={"top"}
@@ -231,6 +248,7 @@ function Sidebar({
         data-slot="sidebar-container"
         className={cn(
           "fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear md:flex",
+          "[[data-impersonation-content]_&]:absolute [[data-impersonation-content]_&]:h-full",
           side === "left"
             ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
             : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
@@ -312,6 +330,7 @@ function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
       className={cn(
         "bg-background relative flex w-full flex-1 flex-col",
         "md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2 lg:h-screen",
+        "[[data-impersonation-content]_&]:h-full [[data-impersonation-content]_&]:min-h-0 [[data-impersonation-content]_&]:lg:h-full",
         className,
       )}
       {...props}

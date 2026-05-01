@@ -1,18 +1,31 @@
-import { ClipboardPlus } from "lucide-react";
-import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import Loading from "@/app/coursework/loading";
-import UnitDescription from "@/app/units/[slug]/description";
 import UnitName from "@/app/units/[slug]/name";
-import { DropdownCard } from "@/components/dropdown-card";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import UnitClient from "@/components/modules/unit-client";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import LecturerDropdown from "@/components/units/lecturer-dropdown";
-import Lecturers from "@/components/units/lecturers";
-import UnitsCourseworkList from "@/components/units/units-coursework-list";
+import { get_username_from_id } from "@/lib/actions/auth/get_username";
+import { get_user_image_from_id } from "@/lib/actions/coursework/get_image";
+import { get_owner_of_unit } from "@/lib/actions/unit/get_owner_of_unit";
+import { get_unit_scopes } from "@/lib/actions/unit/get_unit_scopes";
+import {
+  getUnitLayoutForCurrentUnit,
+  saveUnitLayoutForCurrentUnit,
+} from "@/lib/actions/unit-layout";
 import { getRequestJWT, requireSession } from "@/lib/auth-utils";
+import { availableUnitModules } from "@/lib/unit-layout";
+
+type Response = {
+  lecturers: string[];
+};
+
+type Lecturer = {
+  id: string;
+  name: string;
+  image: string;
+  role: boolean;
+};
 
 type UnitDataResponse = {
   id: string;
@@ -22,6 +35,7 @@ type UnitDataResponse = {
   unit_code: string;
   colour: string;
   programme_id: string;
+  unlocked: boolean;
 };
 
 type UnitUpdateData = {
@@ -31,6 +45,20 @@ type UnitUpdateData = {
   colour: string;
   unit_code: string;
   programme_id: string;
+  unlocked: boolean;
+};
+
+type courseworkData = {
+  id: string;
+  name: string;
+  description: string;
+  colour: string;
+  creation_date: string;
+  due_date: string;
+};
+
+type courseworkResponse = {
+  courseworks: courseworkData[];
 };
 
 async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
@@ -39,11 +67,20 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
   console.log("UNIT", slug);
   const s = await requireSession();
   const token = await getRequestJWT();
+  const scopes: Set<string> = await get_unit_scopes(slug);
+  if (!scopes.has("unit:read")) {
+    redirect("/units");
+  }
+
   let userRole = s.user.role;
   const me = s.user.id;
   if (!userRole) {
     userRole = "user";
   }
+  const canEditLayouts = scopes.has("unit:manage");
+  const canCreateCoursework = scopes.has("unit:coursework_create");
+  const canDeleteCoursework = scopes.has("unit:coursework_delete");
+
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/units/${slug}/`,
     {
@@ -62,7 +99,49 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
     colour: c.colour,
     unit_code: c.unit_code,
     programme_id: c.programme_id,
+    unlocked: c.unlocked,
   };
+  const lecturersResponse = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/units/${data.id}/lecturers`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      cache: "no-cache",
+    },
+  );
+
+  const lecturerResponse: Response = await lecturersResponse.json();
+  const lecturers = lecturerResponse.lecturers;
+  const owner = await get_owner_of_unit(data.id);
+
+  const results: Lecturer[] = [];
+  for (const lecturer of lecturers) {
+    console.log(lecturer);
+    results.push({
+      id: lecturer,
+      name: await get_username_from_id(lecturer),
+      image: (await get_user_image_from_id(lecturer)) ?? "",
+      role: lecturer === owner,
+    });
+  }
+
+  const courseworkResponseRaw = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/units/${data.id}/courseworks`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      cache: "no-cache",
+    },
+  );
+  const savedLayout = await getUnitLayoutForCurrentUnit(data.id);
+  const courseworkResponse: courseworkResponse =
+    await courseworkResponseRaw.json();
 
   return (
     <>
@@ -78,11 +157,13 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
           >
             <div className="flex flex-row gap-4 justify-between items-center">
               <UnitName slug={slug} token={token} />
-              {(userRole === "lecturer" || userRole === "admin") && (
+              {scopes.size > 0 && (
                 <LecturerDropdown
                   unit_update_data={data}
                   me={me}
                   slug={slug}
+                  scopes={scopes}
+                  canEditLayouts={canEditLayouts}
                 ></LecturerDropdown>
               )}
             </div>
@@ -90,127 +171,19 @@ async function PageContent({ params }: { params: Promise<{ slug: string }> }) {
         </div>
         <div className="w-full bg-accent-foreground"></div>
       </div>
-
-      {/* Main sections */}
-      <section className="grid gap-4 grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 min-h-0 mb-2">
-        {/* Left column */}
-        <div className="flex flex-col lg:col-span-2 gap-4 lg:min-h-0">
-          {/* Unit Description */}
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                <div className="text-2xl">Description</div>
-                <div className="font-light">Information about the unit.</div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Suspense
-                fallback={
-                  <div className="space-y-2">
-                    <Skeleton className="h-2 w-full" />
-                    <Skeleton className="h-20 w-full rounded-lg" />
-                  </div>
-                }
-              >
-                <UnitDescription slug={slug} token={token} />
-              </Suspense>
-            </CardContent>
-          </Card>
-
-          {/* Coursework */}
-          <Card>
-            <CardHeader>
-              <CardTitle>
-                <div className="text-2xl">Coursework</div>
-                <div className="font-light">
-                  See your assigned courseworks here.
-                </div>
-              </CardTitle>
-            </CardHeader>
-
-            <CardContent className="w-full flex flex-col">
-              <Tabs defaultValue="ongoing">
-                <div
-                  className={
-                    "flex flex-row flex-wrap justify-between items-center"
-                  }
-                >
-                  <TabsList>
-                    <TabsTrigger value="ongoing">Ongoing</TabsTrigger>
-                    <TabsTrigger value="finished">Finished</TabsTrigger>
-                  </TabsList>
-                  {(userRole === "lecturer" || userRole === "admin") && (
-                    <Button asChild variant={"outline"} size={"sm"}>
-                      <Link href={`/units/${slug}/create-coursework`}>
-                        <ClipboardPlus />
-                        Assign coursework
-                      </Link>
-                    </Button>
-                  )}
-                </div>
-                <TabsContent value={"ongoing"}>
-                  <Suspense fallback={<Loading />}>
-                    <UnitsCourseworkList
-                      unit_id={slug}
-                      finished={false}
-                    ></UnitsCourseworkList>
-                  </Suspense>
-                </TabsContent>
-                <TabsContent className={"w-full"} value={"finished"}>
-                  <Suspense fallback={<Loading />}>
-                    <UnitsCourseworkList
-                      unit_id={slug}
-                      finished={true}
-                    ></UnitsCourseworkList>
-                  </Suspense>
-                </TabsContent>
-              </Tabs>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Right column */}
-        <div className="flex flex-col xl:col-span-1 lg:col-span-2 gap-4 min-h-0">
-          {/* Create a coursework*/}
-
-          {/* Unit Staff */}
-          <Suspense fallback={<Loading />}>
-            <DropdownCard
-              openByDefault={true}
-              title="Unit staff"
-              desc="Lecturers and teachers appear here"
-              className={""}
-            >
-              <Lecturers unit_id={slug}></Lecturers>
-            </DropdownCard>
-          </Suspense>
-
-          {/* Announcements */}
-          <DropdownCard
-            openByDefault={false}
-            title="Announcements"
-            desc="Recent announcements appear here."
-            className={"mb-16"}
-          >
-            {[1, 2, 3].map((i) => (
-              <Card
-                key={i}
-                className="py-0 bg-accent flex flex-row items-center gap-4"
-              >
-                <div className="flex flex-row">
-                  <div className="bg-red-500 h-auto w-1" />
-                  <div className="flex flex-col px-2">
-                    <div className="text-xl font-semibold">New coursework!</div>
-                    <div className="font-light">
-                      <span className="font-bold">Sketch</span> has been
-                      released. Get started now!
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </DropdownCard>
-        </div>
+      <section className="mb-8 mt-4 flex min-h-0 flex-1 flex-col space-y-4 md:mt-0 md:space-y-6">
+        <UnitClient
+          initialLayout={savedLayout}
+          availableModules={availableUnitModules}
+          saveLayout={saveUnitLayoutForCurrentUnit}
+          unit={data}
+          role={userRole}
+          canEditLayouts={canEditLayouts}
+          canCreateCoursework={canCreateCoursework}
+          canDeleteCoursework={canDeleteCoursework}
+          lecturers={results}
+          courseworks={courseworkResponse}
+        />
       </section>
     </>
   );

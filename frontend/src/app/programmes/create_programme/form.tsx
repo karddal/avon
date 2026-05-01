@@ -40,7 +40,7 @@ import {
 } from "@/components/ui/item";
 import { Progress } from "@/components/ui/progress";
 import { Spinner } from "@/components/ui/spinner";
-import { create_programme } from "@/lib/actions/create_programme";
+import { create_programme } from "@/lib/actions/programme/create_programme";
 
 function nextStep(step: number, setStep: Dispatch<SetStateAction<number>>) {
   if (step <= 0) {
@@ -65,6 +65,9 @@ export const ProgForm = () => {
     .object({
       name: z
         .string()
+        .regex(/^[A-Za-z0-9](?:[A-Za-z0-9]|[ \-(][A-Za-z0-9])*(?:\))?$/, {
+          message: "Only alphanumeric characters and hyphens are allowed",
+        })
         .min(1, { message: "Name must be at least 1 character." })
         .max(100, { message: "Name must be at most 100 characters." }),
       start_date: z.date(),
@@ -231,8 +234,8 @@ export const ProgForm = () => {
                         onClick={() => {
                           form
                             .trigger(["name", "start_date", "end_date"])
-                            .then((_result) => {
-                              if (form.formState.isValid) {
+                            .then((isValid) => {
+                              if (isValid) {
                                 nextStep(step, setStep);
                               }
                             });

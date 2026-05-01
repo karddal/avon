@@ -7,7 +7,7 @@ from app.schemas.security import CurrentUser
 
 logger = logging.getLogger("jwt_util")
 
-def _token_fingerprint(token: str) -> str:
+def token_fingerprint(token: str) -> str:
     return hashlib.sha256(token.encode("utf-8")).hexdigest()[:8]
 
 class JwksProvider:
@@ -21,7 +21,7 @@ class JwksProvider:
 jwks_provider = JwksProvider(settings.jwks_url)
 
 def verify_token_and_get_user(token_str: str) -> CurrentUser:
-    fingerprint = _token_fingerprint(token_str)
+    fingerprint = token_fingerprint(token_str)
 
     logger.debug("JWT token fingerprint=%s", fingerprint)
 
@@ -44,5 +44,5 @@ def verify_token_and_get_user(token_str: str) -> CurrentUser:
         logger.warning("JWT missing user_id fingerprint=%s payload_keys=%s", fingerprint, list(payload.keys()))
         raise jwt.PyJWTError("missing user_id")
 
-    logger.info("JWT verify success fingerprint=%s user_id=%s role=%s", fingerprint, user_id, role)
+    logger.debug("JWT verify success fingerprint=%s user_id=%s role=%s", fingerprint, user_id, role)
     return CurrentUser(user_id=user_id, role=role)

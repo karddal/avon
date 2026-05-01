@@ -1,33 +1,24 @@
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
 type UnitData = {
   id: string;
   name: string;
   description?: string;
-  creation_date: string;
+  colour: string;
+  unit_code: string;
+  programme_id: string;
 };
 
-export default async function UnitDescription({
-  slug,
-  token,
-}: {
-  slug: string;
-  token?: string;
-}) {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/units/${slug}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    },
-  );
-
-  const unit: UnitData = await response.json();
-
+export default function UnitDescription({ unit }: { unit: UnitData }) {
   return (
-    <div className="flex flex-col overflow-y-auto break-words h-32 border bg-accent p-2">
+    <div className="h-full min-h-0 overflow-y-auto wrap-break-word border bg-accent p-3">
       {unit.description ? (
-        unit.description
+        <div className="prose prose-sm max-w-none dark:prose-invert">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {unit.description}
+          </ReactMarkdown>
+        </div>
       ) : (
         <span className="text-muted-foreground italic">
           No description available.

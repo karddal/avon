@@ -1,24 +1,38 @@
-import path from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
-import { admin as adminPlugin, jwt } from "better-auth/plugins";
+import { admin as adminPlugin, bearer, jwt } from "better-auth/plugins";
 import { Pool } from "pg";
 import { ac, admin, lecturer, user } from "@/lib/permissions";
+import {
+  getSqliteDbPath,
+  shouldUseExternalDatabase,
+} from "@/lib/server-runtime";
 
-var dbPath = "../sqlite.db";
-if (process.env.CI_MODE === "True") {
-  dbPath = path.resolve(process.cwd(), "../../..", "sqlite.db");
-}
+const dbPath = getSqliteDbPath();
+const useSqlite = !shouldUseExternalDatabase();
+const configuredTrustedOrigins =
+  process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean) ?? [];
+const productionTrustedOrigins = ["https://avon.ac", "https://www.avon.ac"];
 
-console.log(dbPath);
-
-const useSqlite =
-  process.env.NODE_ENV !== "production" || process.env.TESTING_MODE === "True";
+const trustedOrigins = [
+  ...(process.env.NODE_ENV === "production" ? productionTrustedOrigins : []),
+  ...configuredTrustedOrigins,
+  ...(process.env.NODE_ENV === "production"
+    ? []
+    : ["http://localhost:3000", "https://localhost:3000"]),
+];
 
 export const auth = betterAuth({
+  baseURL: process.env.BETTER_AUTH_URL,
+  trustedOrigins,
+  rateLimit: {
+    enabled: process.env.TESTING_MODE !== "True",
+  },
   database: useSqlite
-    ? new DatabaseSync(dbPath)
+    ? new DatabaseSync(dbPath, { timeout: 5000 })
     : new Pool({
         connectionString: process.env.BA_DATABASE_URL,
         ssl: {
@@ -28,8 +42,17 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        required: false,
+        defaultValue: "user",
+        input: false, // stops users setting it during signup
+      },
+    },
+  },
   plugins: [
-    nextCookies(),
     adminPlugin({
       ac,
       roles: {
@@ -37,6 +60,7 @@ export const auth = betterAuth({
         user,
         lecturer,
       },
+      impersonationSessionDuration: 60 * 60 * 24 * 7,
     }),
     jwt({
       jwt: {
@@ -48,5 +72,7 @@ export const auth = betterAuth({
         },
       },
     }),
+    bearer(),
+    nextCookies(),
   ],
 });

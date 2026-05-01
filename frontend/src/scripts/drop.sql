@@ -1,5 +1,11 @@
 drop table if exists account;
 
+drop table if exists studentrepo;
+
+drop table if exists baseimage;
+
+drop table if exists testrun;
+
 drop table if exists coursework;
 
 drop table if exists jwks;
