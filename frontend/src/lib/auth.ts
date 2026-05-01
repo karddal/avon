@@ -11,10 +11,25 @@ import {
 
 const dbPath = getSqliteDbPath();
 const useSqlite = !shouldUseExternalDatabase();
+const configuredTrustedOrigins =
+  process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean) ?? [];
+
+const trustedOrigins = [
+  ...configuredTrustedOrigins,
+  ...(process.env.NODE_ENV === "production"
+    ? []
+    : ["http://localhost:3000", "https://localhost:3000"]),
+];
 
 export const auth = betterAuth({
+  trustedOrigins,
+  rateLimit: {
+    enabled: process.env.TESTING_MODE !== "True",
+  },
   database: useSqlite
-    ? new DatabaseSync(dbPath)
+    ? new DatabaseSync(dbPath, { timeout: 5000 })
     : new Pool({
         connectionString: process.env.BA_DATABASE_URL,
         ssl: {

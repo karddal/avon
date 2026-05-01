@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getProgrammes } from "@/lib/actions/programme/get_all_programmes";
+import { hasActiveImpersonationClientState } from "@/lib/impersonation-client";
 import { Button } from "../ui/button";
 import BulkDeleteButton from "./bulk-delete-button";
 import OmitMembers from "./omit-users";
@@ -63,11 +64,15 @@ export default function BulkDelete() {
   }, [selectedProgrammeId]);
 
   const loadProgrammes = useCallback(async () => {
+    if (hasActiveImpersonationClientState()) {
+      return;
+    }
+
     const programmesReq = await getProgrammes();
     if (programmesReq.success) {
       // console.log("Programmes array:", programmesReq.data.programmes);
       setProgrammes(programmesReq.data.programmes);
-    } else {
+    } else if (!hasActiveImpersonationClientState()) {
       toast.error("Failed to load programmes");
     }
   }, []);

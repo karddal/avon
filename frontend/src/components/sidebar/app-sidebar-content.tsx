@@ -203,7 +203,11 @@ export default async function AppSidebarContent() {
               ))}
           </div>
 
-          <SidebarBottomActions userName={s.user.name} role={type} />
+          <SidebarBottomActions
+            user={s.user}
+            userName={s.user.name}
+            role={type}
+          />
         </SidebarMenu>
       </SidebarGroup>
     </SidebarContent>

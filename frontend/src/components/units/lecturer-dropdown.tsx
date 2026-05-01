@@ -37,11 +37,6 @@ import {
   DropDrawerSeparator,
   DropDrawerTrigger,
 } from "@/components/ui/dropdrawer";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import DeleteUnitButton from "@/components/units/delete-unit-button";
 import EditUnit from "@/components/units/edit-unit";
 import ListMembers from "@/components/units/list-members";
@@ -189,78 +184,51 @@ export default function LecturerDropdown({
             </>
           )}
 
-          {hasDeleteScope &&
-            (hasReadScope ||
-              hasEnrollScope ||
-              canEditLayouts ||
-              hasNotificationScope ||
-              hasManageScope) && <DropdownMenuSeparator />}
-          <DropdownMenuItem
-            onSelect={() =>
-              unit_update_data.unlocked
-                ? setShowLock(true)
-                : setShowUnlock(true)
-            }
-            className="group flex cursor-pointer items-center"
-          >
-            {unit_update_data.unlocked ? (
-              // This is to take an unlocked unit and lock it
-              hasLockingScope ? (
-                <>
-                  <LockOpen className="mr-2 h-4 w-4 text-green-700 group-data-highlighted:hidden" />
-                  <Lock className="mr-2 hidden h-4 w-4 text-red-600 group-data-highlighted:block" />
+          {hasLockingScope && (
+            <>
+              {(hasReadScope ||
+                hasEnrollScope ||
+                canEditLayouts ||
+                hasNotificationScope ||
+                hasManageScope) && <DropdownMenuSeparator />}
+              <DropdownMenuItem
+                onSelect={() =>
+                  unit_update_data.unlocked
+                    ? setShowLock(true)
+                    : setShowUnlock(true)
+                }
+                className="group flex cursor-pointer items-center"
+              >
+                {unit_update_data.unlocked ? (
+                  // This is to take an unlocked unit and lock it
+                  <>
+                    <LockOpen className="mr-2 h-4 w-4 text-green-700 group-data-highlighted:hidden" />
+                    <Lock className="mr-2 hidden h-4 w-4 text-red-600 group-data-highlighted:block" />
 
-                  <span className="text-green-700 group-data-highlighted:hidden">
-                    Unlocked
-                  </span>
-                  <span className="hidden text-red-600 group-data-highlighted:inline">
-                    Lock Unit
-                  </span>
-                </>
-              ) : (
-                <>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="flex flex-row">
-                        <Lock className="mr-4 h-4 w-4 text-green-700" />
-                        <span className="text-green-700">Unlock</span>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Only Unit Owner can lock units</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </>
-              )
-            ) : // This is to take a locked unit and unlock it
-            hasLockingScope ? (
-              <>
-                <Lock className="mr-2 h-4 w-4 text-red-600 group-data-highlighted:hidden" />
-                <LockOpen className="mr-2 hidden h-4 w-4 text-green-700 group-data-highlighted:block" />
+                    <span className="text-green-700 group-data-highlighted:hidden">
+                      Unlocked
+                    </span>
+                    <span className="hidden text-red-600 group-data-highlighted:inline">
+                      Lock Unit
+                    </span>
+                  </>
+                ) : (
+                  // This is to take a locked unit and unlock it
+                  <>
+                    <Lock className="mr-2 h-4 w-4 text-red-600 group-data-highlighted:hidden" />
+                    <LockOpen className="mr-2 hidden h-4 w-4 text-green-700 group-data-highlighted:block" />
 
-                <span className="text-red-600 group-data-highlighted:hidden">
-                  Locked
-                </span>
-                <span className="hidden text-green-700 group-data-highlighted:inline">
-                  Unlock Unit
-                </span>
-              </>
-            ) : (
-              <>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="flex flex-row">
-                      <Lock className="mr-4 h-4 w-4 text-red-600" />
-                      <span className="text-red-600">Locked</span>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Only Unit Owner can unlock units</p>
-                  </TooltipContent>
-                </Tooltip>
-              </>
-            )}
-          </DropdownMenuItem>
+                    <span className="text-red-600 group-data-highlighted:hidden">
+                      Locked
+                    </span>
+                    <span className="hidden text-green-700 group-data-highlighted:inline">
+                      Unlock Unit
+                    </span>
+                  </>
+                )}
+              </DropdownMenuItem>
+            </>
+          )}
 
           {hasDeleteScope && (
             <>

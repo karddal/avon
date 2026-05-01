@@ -137,13 +137,15 @@ async def get_units_by_programme(session: session_dependency, token: token_depen
 @router.get("/active", response_model=UnitAll)
 async def active_units(session: session_dependency, token: token_dependency):
     await require_role(FERoles.ADMIN, session=session, token=token)
-    results = session.exec(select(Unit).join(UnitEnrollment)).unique()
     today = date.today()
-    filtered = filter(
-        lambda unit: unit.programme.start_date <= today <= unit.programme.end_date,
-        results,
-    )
-    return UnitAll(units=filtered)
+    results = session.exec(
+        select(Unit)
+        .join(UnitEnrollment)
+        .join(Programme)
+        .where(Programme.start_date <= today, Programme.end_date >= today)
+        .options(selectinload(Unit.programme))
+    ).unique()
+    return UnitAll(units=list(results))
 
 
 @router.get("/units", response_model=list[UnitEventRead])

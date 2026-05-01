@@ -1,8 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, IBM_Plex_Sans, PT_Serif } from "next/font/google";
+import { headers } from "next/headers";
+import { Suspense } from "react";
 import "./globals.css";
+import ImpersonationBanner from "@/components/impersonation-banner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { auth } from "@/lib/auth";
 import "../app/globals.css";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
@@ -52,10 +56,41 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <TooltipProvider>{children}</TooltipProvider>
+          <TooltipProvider>
+            <Suspense
+              fallback={
+                <div className="min-h-svh bg-background" aria-hidden="true" />
+              }
+            >
+              <ImpersonationSessionShell>{children}</ImpersonationSessionShell>
+            </Suspense>
+          </TooltipProvider>
           <Toaster />
         </ThemeProvider>
       </body>
     </html>
+  );
+}
+
+async function ImpersonationSessionShell({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const session = await auth.api
+    .getSession({
+      headers: await headers(),
+    })
+    .catch(() => null);
+  const isImpersonating = Boolean(session?.session.impersonatedBy);
+  const impersonatedUserName = isImpersonating ? session?.user.name : undefined;
+
+  return (
+    <ImpersonationBanner
+      initialIsImpersonating={isImpersonating}
+      initialImpersonatedUserName={impersonatedUserName}
+    >
+      {children}
+    </ImpersonationBanner>
   );
 }

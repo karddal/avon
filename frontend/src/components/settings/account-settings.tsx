@@ -1,9 +1,17 @@
 "use client";
 
 import type { User } from "better-auth";
-import { Info, Pencil } from "lucide-react";
+import { Eye, Info, Loader2, Pencil } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import {
+  clearStoredImpersonationActive,
+  clearStoredImpersonationTransition,
+  clearStoredReturnTransition,
+  setStoredImpersonationActive,
+  setStoredImpersonationTransition,
+} from "@/components/impersonation-banner";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -20,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { impersonate_managed_user } from "@/lib/actions/auth/impersonation";
 import { update_managed_user } from "@/lib/actions/auth/update_managed_user";
 import { update_user_profile_image } from "@/lib/actions/auth/update_user_profile_image";
 import { change_role } from "@/lib/actions/change_role";
@@ -48,6 +57,7 @@ export default function AccountSettings({
   onUserUpdated?: (user: User | null) => void;
   onProfileImageUpdated?: () => void;
 }) {
+  const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
   const [role, setRole] = useState<string | null>(null);
   const [showDelete, setShowDelete] = useState(false);
@@ -68,6 +78,7 @@ export default function AccountSettings({
   const [draftEmail, setDraftEmail] = useState("");
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingEmail, setIsEditingEmail] = useState(false);
+  const [isImpersonatingUser, setIsImpersonatingUser] = useState(false);
   const isValidPassword =
     newPasswordInp &&
     newPasswordInp.length >= 8 &&
@@ -86,7 +97,7 @@ export default function AccountSettings({
     { value: "lecturer", label: "Lecturer" },
     { value: "user", label: "Student" },
   ];
-  const activeUser = settingsPage ? session?.user : user;
+  const activeUser = settingsPage ? user || session?.user : user;
   const trimmedDraftName = draftName.trim();
   const normalizedDraftEmail = draftEmail.trim().toLowerCase();
   const hasNameChanged = Boolean(
@@ -94,6 +105,54 @@ export default function AccountSettings({
   );
   const hasEmailChanged = Boolean(
     activeUser && normalizedDraftEmail !== activeUser.email,
+  );
+  const isSelectedUserCurrentUser = activeUser?.id === session?.user.id;
+
+  const handleImpersonateUser = async () => {
+    if (!activeUser) return;
+
+    try {
+      setIsImpersonatingUser(true);
+      clearStoredImpersonationActive();
+      clearStoredReturnTransition();
+      setStoredImpersonationTransition("impersonating");
+
+      const result = await impersonate_managed_user(activeUser.id);
+
+      if (result?.success === false) {
+        throw new Error(result.error);
+      }
+
+      setStoredImpersonationActive(result.userName ?? activeUser.name);
+      router.replace("/dashboard");
+      router.refresh();
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to start impersonation",
+      );
+      clearStoredImpersonationTransition();
+      setIsImpersonatingUser(false);
+    }
+  };
+
+  const ImpersonationLoadingOverlay = () => (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-sky-500 p-3 text-white animate-in fade-in-0 duration-200 dark:bg-sky-950">
+      <div className="absolute inset-3 rounded-xl border border-white/30 shadow-[0_22px_70px_rgba(0,0,0,0.45),0_0_0_1px_rgba(255,255,255,0.25)_inset] animate-in fade-in-0 zoom-in-95 duration-300" />
+      <div className="absolute inset-x-3 top-3 h-12 rounded-t-xl border-b border-white/30 bg-white/10 animate-in slide-in-from-top-2 fade-in-0 duration-300" />
+      <div className="relative flex flex-col items-center gap-4 text-center animate-in fade-in-0 zoom-in-95 duration-300">
+        <div className="flex size-14 items-center justify-center rounded-full border border-white/35 bg-white/10 shadow-lg">
+          <Loader2 className="size-7 animate-spin" />
+        </div>
+        <div className="space-y-1">
+          <p className="text-lg font-semibold">Loading impersonation view...</p>
+          <p className="text-sm text-white/80">
+            Opening as {activeUser?.name ?? "selected user"}
+          </p>
+        </div>
+      </div>
+    </div>
   );
 
   useEffect(() => {
@@ -164,46 +223,43 @@ export default function AccountSettings({
 
   return (
     <div className="w-full">
+      {isImpersonatingUser ? <ImpersonationLoadingOverlay /> : null}
       <div
-        className={`mt-6 px-6 grid grid-cols-1 gap-4 ${
-          settingsPage ? "" : "md:grid-cols-2"
+        className={`grid grid-cols-1 gap-4 ${
+          settingsPage ? "mt-4" : "mt-6 px-6 md:grid-cols-2"
         }`}
       >
         <div
           className={`w-full rounded-md border border-border p-4 ${
             settingsPage ? "" : "md:col-span-2"
-          }`}
+          } @container/profile`}
         >
           <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
             Profile
           </h3>
-          <div
-            className={`${settingsPage ? "" : "flex flex-row gap-4 items-center"}`}
-          >
-            <div
-              className={`w-full ${
-                settingsPage ? "max-w-full" : "md:h-full md:w-fit"
-              }`}
-            >
+          <div className="flex flex-col gap-4 @md/profile:flex-row @md/profile:items-center">
+            <div className="w-full @md/profile:h-full @md/profile:w-fit">
               <ProfileImageUploader
                 imageUrl={image}
                 name={name}
                 buttonLabel="Upload new profile picture"
                 disabled
                 layout="stacked"
-                className={settingsPage ? undefined : "md:h-full"}
-                previewWrapperClassName={settingsPage ? undefined : "md:h-full"}
+                className="@md/profile:h-full"
+                previewWrapperClassName="@md/profile:h-full"
                 imageSizeClassName={
                   settingsPage
-                    ? "aspect-square h-auto"
-                    : "aspect-square h-auto md:h-full md:w-auto md:max-w-48"
+                    ? "aspect-square h-auto @md/profile:h-full @md/profile:w-auto @md/profile:max-w-40"
+                    : "aspect-square h-auto @md/profile:h-full @md/profile:w-auto @md/profile:max-w-48"
                 }
                 showButton={false}
                 onUploaded={() => {}}
               />
             </div>
 
-            <div className={`${settingsPage ? "space-y-4 my-2" : "space-y-4"}`}>
+            <div
+              className={`${settingsPage ? "min-w-0 space-y-4 @md/profile:grid @md/profile:flex-1 @md/profile:grid-cols-2 @md/profile:gap-x-6 @md/profile:gap-y-4 @md/profile:space-y-0" : "min-w-0 space-y-4"}`}
+            >
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">Full name</p>
                 {isEditingName ? (
@@ -239,8 +295,10 @@ export default function AccountSettings({
                     />
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2">
-                    <p className="text-base font-medium">{name}</p>
+                  <div className="flex min-w-0 items-center gap-2">
+                    <p className="min-w-0 text-base font-medium break-words">
+                      {name}
+                    </p>
                     {isAdmin && !settingsPage ? (
                       <Button
                         type="button"
@@ -299,8 +357,10 @@ export default function AccountSettings({
                     />
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2">
-                    <p className="text-base font-medium">{email}</p>
+                  <div className="flex min-w-0 items-center gap-2">
+                    <p className="min-w-0 text-base font-medium break-all">
+                      {email}
+                    </p>
                     {isAdmin && !settingsPage ? (
                       <Button
                         type="button"
@@ -380,7 +440,7 @@ export default function AccountSettings({
                       </TooltipContent>
                     </Tooltip>
                   ) : (
-                    <p className="text-sm text-muted-foreground text-center">
+                    <p className="text-sm text-muted-foreground @md/profile:self-end">
                       JPG, PNG, GIF or WebP up to 5MB.
                     </p>
                   )}
@@ -390,7 +450,7 @@ export default function AccountSettings({
           </div>
         </div>
         {/* <div className="mt-8 px-6"> */}
-        <div className="w-full rounded-md border border-border p-4">
+        <div className="w-full rounded-md border border-border p-4 @container/role">
           <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
             Role
           </h3>
@@ -417,7 +477,7 @@ export default function AccountSettings({
                   toast.success("Role updated successfully");
                 }}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select role" />
                 </SelectTrigger>
 
@@ -459,6 +519,20 @@ export default function AccountSettings({
         ) : (
           <></>
         )}
+        {isAdmin && !settingsPage ? (
+          <div className="w-full md:col-span-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={handleImpersonateUser}
+              disabled={isImpersonatingUser || isSelectedUserCurrentUser}
+            >
+              <Eye />
+              {isImpersonatingUser ? "Opening..." : "Impersonate"}
+            </Button>
+          </div>
+        ) : null}
         <AlertDialog open={showDelete} onOpenChange={setShowDelete}>
           <AlertDialogContent>
             <AlertDialogHeader>
