@@ -10,7 +10,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { stop_impersonating } from "@/lib/actions/auth/impersonation";
+import { stopImpersonatingInBrowser } from "@/lib/client-impersonation";
 import { cn } from "@/lib/utils";
 
 const IMPERSONATION_FRAME_CLASS = "bg-red-300 dark:bg-red-950";
@@ -201,7 +201,7 @@ export default function ImpersonationBanner({
     setIsReturningToAdmin(true);
     setTransition("returning");
     setStoredImpersonationTransition("returning");
-    const result = await stop_impersonating();
+    const result = await stopImpersonatingInBrowser();
 
     if (result?.success === false) {
       toast.error(result.error);

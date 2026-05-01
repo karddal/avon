@@ -28,12 +28,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { impersonate_managed_user } from "@/lib/actions/auth/impersonation";
 import { update_managed_user } from "@/lib/actions/auth/update_managed_user";
 import { update_user_profile_image } from "@/lib/actions/auth/update_user_profile_image";
 import { change_role } from "@/lib/actions/change_role";
 import { get_user_role } from "@/lib/actions/get_user_role";
 import { authClient } from "@/lib/auth-client";
+import { impersonateManagedUserInBrowser } from "@/lib/client-impersonation";
 import EditUserFieldButton from "../management/edit-user-field-button";
 import ProfileImageUploader from "../management/profile-image-uploader";
 import { Button } from "../ui/button";
@@ -117,7 +117,7 @@ export default function AccountSettings({
       clearStoredReturnTransition();
       setStoredImpersonationTransition("impersonating");
 
-      const result = await impersonate_managed_user(activeUser.id);
+      const result = await impersonateManagedUserInBrowser(activeUser.id);
 
       if (result?.success === false) {
         throw new Error(result.error);
