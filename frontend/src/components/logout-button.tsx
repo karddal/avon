@@ -2,25 +2,47 @@
 
 import { DoorOpen, Undo2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
+  clearStoredImpersonationActive,
   clearStoredImpersonationTransition,
   setStoredImpersonationTransition,
 } from "@/components/impersonation-banner";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { stop_impersonating } from "@/lib/actions/auth/impersonation";
 import { logout } from "@/lib/actions/auth/login";
+import { stopImpersonatingInBrowser } from "@/lib/client-impersonation";
 
 export default function LogoutButton() {
   const router = useRouter();
-  const isImpersonating = Boolean(
-    sessionStorage.getItem("impersonation-active"),
-  );
-  // const router = useRouter();
+  const [hasStoredImpersonation, setHasStoredImpersonation] = useState(false);
+
+  useEffect(() => {
+    function syncStoredImpersonation() {
+      setHasStoredImpersonation(
+        window.sessionStorage.getItem("impersonation-active") === "true",
+      );
+    }
+
+    syncStoredImpersonation();
+    window.addEventListener(
+      "impersonation-transition-change",
+      syncStoredImpersonation,
+    );
+    window.addEventListener("storage", syncStoredImpersonation);
+
+    return () => {
+      window.removeEventListener(
+        "impersonation-transition-change",
+        syncStoredImpersonation,
+      );
+      window.removeEventListener("storage", syncStoredImpersonation);
+    };
+  }, []);
 
   async function stopImpersonating() {
     setStoredImpersonationTransition("returning");
-    const result = await stop_impersonating();
+    const result = await stopImpersonatingInBrowser();
 
     if (result?.success === false) {
       toast.error(result.error);
@@ -28,6 +50,7 @@ export default function LogoutButton() {
       return;
     }
 
+    clearStoredImpersonationActive();
     router.replace("/management");
     router.refresh();
   }
@@ -38,7 +61,7 @@ export default function LogoutButton() {
   }
   return (
     <>
-      {isImpersonating ? (
+      {hasStoredImpersonation ? (
         <DropdownMenuItem onClick={stopImpersonating}>
           <Undo2 />
           Exit Impersonation

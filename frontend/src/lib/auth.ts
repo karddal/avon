@@ -1,7 +1,7 @@
 import { DatabaseSync } from "node:sqlite";
 import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
-import { admin as adminPlugin, jwt } from "better-auth/plugins";
+import { admin as adminPlugin, bearer, jwt } from "better-auth/plugins";
 import { Pool } from "pg";
 import { ac, admin, lecturer, user } from "@/lib/permissions";
 import {
@@ -15,8 +15,10 @@ const configuredTrustedOrigins =
   process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(",")
     .map((origin) => origin.trim())
     .filter(Boolean) ?? [];
+const productionTrustedOrigins = ["https://avon.ac", "https://www.avon.ac"];
 
 const trustedOrigins = [
+  ...(process.env.NODE_ENV === "production" ? productionTrustedOrigins : []),
   ...configuredTrustedOrigins,
   ...(process.env.NODE_ENV === "production"
     ? []
@@ -24,6 +26,7 @@ const trustedOrigins = [
 ];
 
 export const auth = betterAuth({
+  baseURL: process.env.BETTER_AUTH_URL,
   trustedOrigins,
   rateLimit: {
     enabled: process.env.TESTING_MODE !== "True",
@@ -50,7 +53,6 @@ export const auth = betterAuth({
     },
   },
   plugins: [
-    nextCookies(),
     adminPlugin({
       ac,
       roles: {
@@ -58,6 +60,7 @@ export const auth = betterAuth({
         user,
         lecturer,
       },
+      impersonationSessionDuration: 60 * 60 * 24 * 7,
     }),
     jwt({
       jwt: {
@@ -69,5 +72,7 @@ export const auth = betterAuth({
         },
       },
     }),
+    bearer(),
+    nextCookies(),
   ],
 });
